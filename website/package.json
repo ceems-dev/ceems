@@ -28,8 +28,8 @@
     "docusaurus-plugin-openapi-docs": "^4.5.1",
     "docusaurus-theme-openapi-docs": "^4.5.1",
     "prism-react-renderer": "^2.4.1",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "3.8.1",
@@ -37,7 +37,7 @@
     "@docusaurus/types": "3.8.1",
     "cspell": "^9.2.0",
     "markdown-link-check": "3.13.7",
-    "typescript": "~5.8.3"
+    "typescript": "~5.9.2"
   },
   "browserslist": {
     "production": [
