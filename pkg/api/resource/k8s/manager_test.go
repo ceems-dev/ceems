@@ -84,7 +84,7 @@ var (
 			Name:            "pod21",
 			Project:         "ns2",
 			Group:           "",
-			User:            "ns2:" + base.UnknownUser,
+			User:            "ns2:" + base.ServiceAccountUser,
 			CreatedAt:       "2025-07-07T11:56:56+0200",
 			StartedAt:       "2025-07-07T11:56:58+0200",
 			EndedAt:         "N/A",
@@ -131,21 +131,21 @@ var (
 		},
 	}
 	expectedUsers = []models.User{
-		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "rb3", Projects: models.List{[]string{"ns3"}}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
-		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "rb1", Projects: models.List{[]string{"ns1", "ns2"}}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
-		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "rb2", Projects: models.List{[]string{"ns2"}}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
-		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "kusr1", Projects: models.List{[]string{"ns1"}}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
-		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "kusr2", Projects: models.List{[]string{"ns2"}}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
-		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "kusr3", Projects: models.List{[]string{"ns3"}}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
-		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "file1", Projects: models.List{[]string{"ns1"}}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
-		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "file2", Projects: models.List{[]string{"ns1"}}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
-		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "file3", Projects: models.List{[]string{"ns3"}}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
-		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "ns2:" + base.UnknownUser, Projects: models.List{[]string{"ns2"}}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
+		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "rb3", Projects: models.List{"ns3"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
+		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "rb1", Projects: models.List{"ns1", "ns2"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
+		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "rb2", Projects: models.List{"ns2"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
+		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "kusr1", Projects: models.List{"ns1"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
+		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "kusr2", Projects: models.List{"ns2"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
+		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "kusr3", Projects: models.List{"ns3"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
+		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "file1", Projects: models.List{"ns1"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
+		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "file2", Projects: models.List{"ns1"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
+		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "file3", Projects: models.List{"ns3"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
+		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "ns2:" + base.ServiceAccountUser, Projects: models.List{"ns2"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
 	}
 	expectedProjects = []models.Project{
-		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "ns3", Users: models.List{[]string{"file3", "kusr3", "rb3"}}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
-		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "ns1", Users: models.List{[]string{"file1", "file2", "kusr1", "rb1"}}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
-		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "ns2", Users: models.List{[]string{"kusr2", "ns2:" + base.UnknownUser, "rb1", "rb2"}}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
+		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "ns3", Users: models.List{"file3", "kusr3", "rb3"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
+		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "ns1", Users: models.List{"file1", "file2", "kusr1", "rb1"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
+		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "ns2", Users: models.List{"kusr2", "ns2:" + base.ServiceAccountUser, "rb1", "rb2"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
 	}
 )
 

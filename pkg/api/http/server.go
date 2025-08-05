@@ -434,7 +434,7 @@ func (s *CEEMSServer) getCommonProjectUsers(r *http.Request) []string {
 
 	if projects := r.URL.Query()["project"]; len(projects) > 0 {
 		for _, project := range projects {
-			users = append(users, fmt.Sprintf("%s:%s", project, base.UnknownUser))
+			users = append(users, fmt.Sprintf("%s:%s", project, base.ServiceAccountUser))
 		}
 	}
 
@@ -846,8 +846,11 @@ func (s *CEEMSServer) unitsAdmin(w http.ResponseWriter, r *http.Request) {
 	// Measure elapsed time
 	defer common.TimeTrack(time.Now(), "units admin endpoint", s.logger)
 
+	// Get project specific common users and add current user to slice
+	queriedUsers := append(s.getCommonProjectUsers(r), r.URL.Query()["user"]...)
+
 	// Query for units and write response
-	s.unitsQuerier(r.URL.Query()["user"], w, r)
+	s.unitsQuerier(queriedUsers, w, r)
 }
 
 // units         godoc
@@ -1213,8 +1216,11 @@ func (s *CEEMSServer) usersAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get project specific common users and add current user to slice
+	queriedUsers := append(s.getCommonProjectUsers(r), r.URL.Query()["user"]...)
+
 	// Query for users and write response
-	s.usersQuerier(r.URL.Query()["user"], w, r)
+	s.usersQuerier(queriedUsers, w, r)
 }
 
 // Get project details.
@@ -1446,7 +1452,10 @@ func (s *CEEMSServer) currentUsage(users []string, fields []string, w http.Respo
 	if present := s.usageCache.Has(cacheKey); present {
 		cacheValue := s.usageCache.Get(cacheKey)
 		usage = cacheValue.Value()
-		w.Header().Set("Expires", cacheValue.ExpiresAt().Format(time.RFC1123))
+		expiresAt := cacheValue.ExpiresAt().Format(time.RFC1123)
+		w.Header().Set("Expires", expiresAt)
+
+		s.logger.Debug("Found response in cache", "url", r.URL.Path, "expires_at", expiresAt)
 
 		goto writer
 	}
@@ -1813,6 +1822,9 @@ func (s *CEEMSServer) usageAdmin(w http.ResponseWriter, r *http.Request) {
 	// Get current user from header
 	loggedUser := s.getUser(r)
 
+	// Get project specific common users and add current user to slice
+	queriedUsers := append(s.getCommonProjectUsers(r), r.URL.Query()["user"]...)
+
 	// Get path parameter type
 	var mode string
 
@@ -1834,12 +1846,12 @@ func (s *CEEMSServer) usageAdmin(w http.ResponseWriter, r *http.Request) {
 
 	// handle current usage query
 	if mode == currentUsage {
-		s.currentUsage(r.URL.Query()["user"], queriedFields, w, r)
+		s.currentUsage(queriedUsers, queriedFields, w, r)
 	}
 
 	// handle global usage query
 	if mode == globalUsage {
-		s.globalUsage(r.URL.Query()["user"], queriedFields, w, r)
+		s.globalUsage(queriedUsers, queriedFields, w, r)
 	}
 }
 
@@ -2022,14 +2034,17 @@ func (s *CEEMSServer) statsAdmin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get project specific common users and add current user to slice
+	queriedUsers := append(s.getCommonProjectUsers(r), r.URL.Query()["user"]...)
+
 	// handle current usage query
 	if mode == currentUsage {
-		s.currentStats(r.URL.Query()["user"], w, r)
+		s.currentStats(queriedUsers, w, r)
 	}
 
 	// handle global usage query
 	if mode == globalUsage {
-		s.globalStats(r.URL.Query()["user"], w, r)
+		s.globalStats(queriedUsers, w, r)
 	}
 }
 

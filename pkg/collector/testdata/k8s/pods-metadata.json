@@ -52,6 +52,16 @@
             "type": "PodReadyToStartContainers",
             "status": "True",
             "lastTransitionTime": "2025-07-07T08:56:58Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2025-07-07T08:56:58Z"
+          },
+          {
+            "type": "PodScheduled",
+            "status": "True",
+            "lastTransitionTime": "2025-07-07T08:56:58Z"
           }
         ]
       }
@@ -99,6 +109,16 @@
         "conditions": [
           {
             "type": "PodReadyToStartContainers",
+            "status": "True",
+            "lastTransitionTime": "2025-07-07T09:56:58Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2025-07-07T09:56:58Z"
+          },
+          {
+            "type": "PodScheduled",
             "status": "True",
             "lastTransitionTime": "2025-07-07T09:56:58Z"
           }
@@ -149,6 +169,16 @@
         "conditions": [
           {
             "type": "PodReadyToStartContainers",
+            "status": "True",
+            "lastTransitionTime": "2025-07-07T09:26:58Z"
+          },
+          {
+            "type": "Ready",
+            "status": "True",
+            "lastTransitionTime": "2025-07-07T09:26:58Z"
+          },
+          {
+            "type": "PodScheduled",
             "status": "True",
             "lastTransitionTime": "2025-07-07T09:26:58Z"
           }

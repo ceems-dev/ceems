@@ -85,5 +85,5 @@ const (
 	ClusterIDHeader         = "X-Ceems-Cluster-Id"
 )
 
-// Username to be used for unknown users.
-const UnknownUser = "unknown"
+// Username to be used for service account users.
+const ServiceAccountUser = "svc"
