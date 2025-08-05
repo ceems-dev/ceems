@@ -1,1 +1,1 @@
-{"status":"success","data":[]}
+{"status":"success","data":[{"cluster_id":"k8s-0","resource_manager":"k8s","name":"ns2","users":["kusr2","ns2:svc","rb1","rb2"]},{"cluster_id":"k8s-1","resource_manager":"k8s","name":"ns2","users":["kusr2","ns2:svc","rb1","rb2"]}]}

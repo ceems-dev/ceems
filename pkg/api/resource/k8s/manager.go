@@ -209,27 +209,35 @@ func (k *k8sManager) fetchPods(
 		// pod in Running phase but containers cannot be started.
 		// So, we have to check the pod phases to get "real" status of the
 		// pod.
-		// We use PodReadyToStartContainers as proxy for start time as it
-		// indicates that the k8s has done everything to start containers
+		// We use pod.Status.StartTime as start time as it
+		// indicates that the k8s has scheduled the pod to start containers
 		// which launches apps. If anything is wrong with app, containers fail
 		// to start and based on restart polciy pod will keep trying to start
 		// failed containers. This should be regarded as pod "running" as containers
 		// are being launched (even if they fail) and thus consuming resources.
+		//
+		// Note that conditions like PodReadyToStartContainers can change their
+		// status to False when deleting a pod with updated time stamp. So, we cannot
+		// rely on that to get start time as timestamp will be updated between start
+		// and deletion of the pod. Seems like PodScheduled is the only stable one
+		// that has same timestamp in entire lifecycle.
 		case v1.PodRunning:
+			// Get pod start time
+			startedAt = pod.Status.StartTime.In(loc)
+
+			// If the pod has started in this update interval
+			// update activeTime from start till now
+			if startedAt.After(start) {
+				activeTimeSeconds = startedAt.Sub(start).Seconds()
+			} else {
+				activeTimeSeconds = end.Sub(start).Seconds()
+			}
+
 			// Get pod start time based on status conditions
 			for _, cond := range pod.Status.Conditions {
-				if cond.Type == v1.PodReadyToStartContainers {
+				if cond.Type == v1.PodReady {
 					if cond.Status == v1.ConditionTrue {
-						startedAt = cond.LastTransitionTime.In(loc)
 						status = fmt.Sprintf("%s/%s", v1.PodRunning, v1.PodReady)
-
-						// If the pod has started in this update interval
-						// update activeTime from start till now
-						if startedAt.After(start) {
-							activeTimeSeconds = startedAt.Sub(start).Seconds()
-						} else {
-							activeTimeSeconds = end.Sub(start).Seconds()
-						}
 					} else {
 						status = fmt.Sprintf("%s/%s", v1.PodRunning, cond.Reason)
 					}
@@ -241,12 +249,8 @@ func (k *k8sManager) fetchPods(
 		// Both these status indicate pod has been terminated with or without
 		// exit code 1. This means we should be able to get deletion time.
 		case v1.PodSucceeded, v1.PodFailed:
-			// Get pod start time based on status conditions
-			for _, cond := range pod.Status.Conditions {
-				if cond.Type == v1.PodReadyToStartContainers && cond.Status == v1.ConditionTrue {
-					startedAt = cond.LastTransitionTime.In(loc)
-				}
-			}
+			// Get pod start time
+			startedAt = pod.Status.StartTime.In(loc)
 
 			// Get pod deletion time
 			if pod.DeletionTimestamp != nil {
@@ -306,7 +310,7 @@ func (k *k8sManager) fetchPods(
 		}
 
 		// Use project:unknown as fallback username
-		username := fmt.Sprintf("%s:%s", project, base.UnknownUser)
+		username := fmt.Sprintf("%s:%s", project, base.ServiceAccountUser)
 
 		for key, value := range pod.GetObjectMeta().GetAnnotations() {
 			if slices.Contains(k.config.UsernameAnnotations, key) {
@@ -463,11 +467,18 @@ func (k *k8sManager) fetchUserNSs(ctx context.Context, current time.Time) ([]mod
 
 	for ns, users := range nsUsers {
 		slices.Sort(users)
+
+		var userList models.List
+
+		for _, user := range slices.Compact(users) {
+			userList = append(userList, user)
+		}
+
 		p := models.Project{
 			Name:            ns,
 			ClusterID:       k.cluster.ID,
 			ResourceManager: k.cluster.Manager,
-			Users:           models.List{slices.Compact(users)},
+			Users:           userList,
 			LastUpdatedAt:   currentTime,
 		}
 
@@ -476,11 +487,18 @@ func (k *k8sManager) fetchUserNSs(ctx context.Context, current time.Time) ([]mod
 
 	for user, nss := range usersNSs {
 		slices.Sort(nss)
+
+		var nsList models.List
+
+		for _, ns := range slices.Compact(nss) {
+			nsList = append(nsList, ns)
+		}
+
 		u := models.User{
 			Name:            user,
 			ClusterID:       k.cluster.ID,
 			ResourceManager: k.cluster.Manager,
-			Projects:        models.List{slices.Compact(nss)},
+			Projects:        nsList,
 			LastUpdatedAt:   currentTime,
 		}
 
