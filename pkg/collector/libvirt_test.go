@@ -94,7 +94,8 @@ func TestLibvirtInstanceProps(t *testing.T) {
 		logger:                        noOpLogger,
 		cgroupManager:                 cgManager,
 		vGPUActivated:                 true,
-		instanceDevicesCacheTTL:       500 * time.Millisecond,
+		instanceDevicesCacheTTL:       time.Second,
+		instanceIDUUIDMap:             make(map[string]string),
 		instanceDeviceslastUpdateTime: time.Now(),
 		securityContexts:              make(map[string]*security.SecurityContext),
 	}
@@ -124,11 +125,21 @@ func TestLibvirtInstanceProps(t *testing.T) {
 		"11": {{UUID: "2896bdd5-dbc2-4339-9d8e-ddd838bf35d3", NumShares: 1}},
 	}
 
+	expectedUUIDs := []string{"57f2d45e-8ddf-4338-91df-62d0044ff1b5", "b674a0a2-c300-4dc6-8c9c-65df16da6d69", "2896bdd5-dbc2-4339-9d8e-ddd838bf35d3", "4de89c5b-50d7-4d30-a630-14e135380fe8"}
+
 	cgroups, err := c.instanceCgroups()
 	require.NoError(t, err)
 
 	assert.ElementsMatch(t, []string{"instance-00000001", "instance-00000002", "instance-00000003", "instance-00000004"}, c.previousInstanceIDs)
 	assert.Len(t, cgroups, 4)
+
+	// Check cgroup UUIDs are properly populated
+	var gotUUIDs []string
+	for _, cgrp := range cgroups {
+		gotUUIDs = append(gotUUIDs, cgrp.uuid)
+	}
+
+	assert.ElementsMatch(t, expectedUUIDs, gotUUIDs)
 
 	for _, gpu := range c.gpuSMI.Devices {
 		if gpu.Index != "" {
@@ -140,14 +151,26 @@ func TestLibvirtInstanceProps(t *testing.T) {
 		}
 	}
 
-	// Sleep for 0.5 seconds to ensure we invalidate cache
-	time.Sleep(500 * time.Millisecond)
+	// Get cgroups again and we should have UUIDs populated correctly
+	cgroups, err = c.instanceCgroups()
+	require.NoError(t, err)
+
+	// Check cgroup UUIDs are properly populated
+	gotUUIDs = []string{}
+	for _, cgrp := range cgroups {
+		gotUUIDs = append(gotUUIDs, cgrp.uuid)
+	}
+
+	assert.ElementsMatch(t, expectedUUIDs, gotUUIDs)
+
+	// Sleep for a second to ensure we invalidate cache
+	time.Sleep(time.Second)
 
 	_, err = c.instanceCgroups()
 	require.NoError(t, err)
 
-	// Now check if lastUpdateTime is less than 0.5 se
-	assert.Greater(t, c.instanceDeviceslastUpdateTime.Sub(lastUpdateTime), 500*time.Millisecond)
+	// Now check if lastUpdateTime is less than 1 sec
+	assert.Greater(t, c.instanceDeviceslastUpdateTime.Sub(lastUpdateTime), 1000*time.Millisecond)
 }
 
 func TestInstancePropsCaching(t *testing.T) {
@@ -200,6 +223,7 @@ func TestInstancePropsCaching(t *testing.T) {
 		vGPUActivated:                 true,
 		instanceDevicesCacheTTL:       500 * time.Millisecond,
 		instanceDeviceslastUpdateTime: time.Now(),
+		instanceIDUUIDMap:             make(map[string]string),
 		securityContexts:              make(map[string]*security.SecurityContext),
 	}
 

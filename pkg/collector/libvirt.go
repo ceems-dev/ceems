@@ -119,6 +119,7 @@ type libvirtCollector struct {
 	instanceGpuFlag               *prometheus.Desc
 	instanceGpuNumSMs             *prometheus.Desc
 	collectError                  *prometheus.Desc
+	instanceIDUUIDMap             map[string]string
 	previousInstanceIDs           []string
 	instanceDevicesCacheTTL       time.Duration
 	instanceDeviceslastUpdateTime time.Time
@@ -262,6 +263,7 @@ func NewLibvirtCollector(logger *slog.Logger) (Collector, error) {
 		vGPUActivated:                 vGPUActivated,
 		instanceDevicesCacheTTL:       15 * time.Minute,
 		instanceDeviceslastUpdateTime: time.Now(),
+		instanceIDUUIDMap:             make(map[string]string),
 		securityContexts:              map[string]*security.SecurityContext{libvirtReadXMLCtx: securityCtx},
 		instanceGpuFlag: prometheus.NewDesc(
 			prometheus.BuildFQName(Namespace, genericSubsystem, "unit_gpu_index_flag"),
@@ -520,7 +522,7 @@ func (c *libvirtCollector) updateDeviceInstances(cgroups []cgroup) {
 	// Get current instance UUIDs on the node
 	currentInstanceIDs := make([]string, len(cgroups))
 	for icgroup, cgroup := range cgroups {
-		currentInstanceIDs[icgroup] = cgroup.uuid
+		currentInstanceIDs[icgroup] = cgroup.id
 	}
 
 	// Check if there are any new/deleted instance between current and previous
@@ -530,6 +532,13 @@ func (c *libvirtCollector) updateDeviceInstances(cgroups []cgroup) {
 	// instancePropsCache once in a while to ensure we capture any changes in instance
 	// flavours
 	if areEqual(currentInstanceIDs, c.previousInstanceIDs) && time.Since(c.instanceDeviceslastUpdateTime) < c.instanceDevicesCacheTTL {
+		// Setup instance UUIDs in cgroups
+		for icgroup, cgrp := range cgroups {
+			if uuid, ok := c.instanceIDUUIDMap[cgrp.id]; ok {
+				cgroups[icgroup].uuid = uuid
+			}
+		}
+
 		return
 	}
 
@@ -556,6 +565,10 @@ func (c *libvirtCollector) updateDeviceInstances(cgroups []cgroup) {
 		}
 
 		cgroups[icgrp].uuid = properties.uuid
+
+		// We keep a map of instance ID to instance UUID to setup
+		// UUIDs when this part of code is skipped
+		c.instanceIDUUIDMap[cgrp.id] = properties.uuid
 
 		for _, id := range properties.deviceIDs {
 			instanceDeviceMapper[id] = append(instanceDeviceMapper[id], properties.uuid)
