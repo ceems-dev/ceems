@@ -9,7 +9,7 @@
     },
     {
       "name": "DS_CEEMS-API",
-      "label": "CEEMS-API",
+      "label": "CEEMS API Server's datasource",
       "description": "",
       "type": "datasource",
       "pluginId": "yesoreyeram-infinity-datasource",
@@ -25,9 +25,9 @@
     {
       "name": "VAR_ENDPOINT",
       "type": "constant",
-      "label": "Set it to /admin for admin dashboards to consult usage statistics of any user. For user facing dashboards, set it to empty space",
+      "label": "Set it to /admin for admin dashboards to consult usage statistics of any user. For user dashboards that restrict data to current logged user, set it to empty space",
       "value": "",
-      "description": "Set it to /admin for admin dashboards to consult usage statistics of any user. For user facing dashboards, set it to empty space"
+      "description": "Set it to /admin for admin dashboards to consult usage statistics of any user. For user dashboards that restrict data to current logged user, set it to empty space"
     }
   ],
   "__elements": {},
@@ -91,7 +91,7 @@
       }
     ]
   },
-  "description": "List of Openstack VMs",
+  "description": "List of k8s pods",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
@@ -129,7 +129,7 @@
         "type": "yesoreyeram-infinity-datasource",
         "uid": "${DS_CEEMS-API}"
       },
-      "description": "Average usage statistics of all VMs of the user",
+      "description": "Average usage statistics of all pods of the user",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -280,7 +280,7 @@
         "type": "yesoreyeram-infinity-datasource",
         "uid": "${DS_CEEMS-API}"
       },
-      "description": "Total energy consumption of all VMs of the user",
+      "description": "Total energy consumption of all pods of the user",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -463,7 +463,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "# README\n\nThe panels to the left show the overall usage by the user\n<span style=\"color:red\">**${user}**</span> using the project <span style=\"color:red\">**${account}**</span>\nduring the period\n${__from:date:YYYY-MM-DD HH:mm:ss} to ${__to:date:YYYY-MM-DD HH:mm:ss}.\n\n- Average CPU, GPU, CPU memory and GPU memory usage is the average over all the VMs\nof the user during the above stated period.\n\n- Total energy usage is the total energy consumed by the VMs of the user during the above\nstated period.\n\n  - Host corresponds to the energy consumption by host components such as CPU, CPU memory and other\n  peripherals of the node excluding GPU (if present)\n  - GPU corresponds to the energy consumption of GPUs alone.\n  - Total is the sum of power consumption of Host and GPUs.\n\n- Total emissions is the total equivalent emissions due the energy consumed by the VMs\nof the user during the above stated period. Real time emission factors\n[RTE eCO2](https://www.rte-france.com/en/eco2mix/co2-emissions),\n[Electricity Maps](https://app.electricitymaps.com/map/72h) and\nstatic emission factor from [OWID](https://ourworldindata.org/co2-and-greenhouse-gas-emissions)\nare supported in the estimation of the emissions.\n\n  - Host is the equivalent emissions due to the energy consumed by host components such as CPU, CPU memory and\n  other peripherals of the node excluding GPU (if present)\n  - GPU is the equivalent emissions due to energy consumption of GPUs alone.\n  - Total is the sum of equivalent emissions of Host and GPUs.",
+        "content": "# README\n\nThe panels to the left show the overall usage by the user\n<span style=\"color:red\">**${user}**</span> using the project <span style=\"color:red\">**${account}**</span>\nduring the period\n${__from:date:YYYY-MM-DD HH:mm:ss} to ${__to:date:YYYY-MM-DD HH:mm:ss}.\n\n- Average CPU, GPU, CPU memory and GPU memory usage is the average over all the pods\nof the user during the above stated period.\n\n- Total energy usage is the total energy consumed by the pods of the user during the above\nstated period.\n\n  - Host corresponds to the energy consumption by host components such as CPU, CPU memory and other\n  peripherals of the node excluding GPU (if present)\n  - GPU corresponds to the energy consumption of GPUs alone.\n  - Total is the sum of power consumption of Host and GPUs.\n\n- Total emissions is the total equivalent emissions due the energy consumed by the pods\nof the user during the above stated period. Real time emission factors\n[RTE eCO2](https://www.rte-france.com/en/eco2mix/co2-emissions),\n[Electricity Maps](https://app.electricitymaps.com/map/72h) and\nstatic emission factor from [OWID](https://ourworldindata.org/co2-and-greenhouse-gas-emissions)\nare supported in the estimation of the emissions.\n\n  - Host is the equivalent emissions due to the energy consumed by host components such as CPU, CPU memory and\n  other peripherals of the node excluding GPU (if present)\n  - GPU is the equivalent emissions due to energy consumption of GPUs alone.\n  - Total is the sum of equivalent emissions of Host and GPUs.",
         "mode": "markdown"
       },
       "pluginVersion": "11.4.0",
@@ -474,7 +474,7 @@
         "type": "yesoreyeram-infinity-datasource",
         "uid": "${DS_CEEMS-API}"
       },
-      "description": "Total emissions from the energy consumption of all VMs of the user using emission factor from RTE eCO2 mix data",
+      "description": "Total emissions from the energy consumption of all pods of the user using emission factor from RTE eCO2 mix data",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -701,7 +701,7 @@
             "type": "yesoreyeram-infinity-datasource",
             "uid": "${DS_CEEMS-API}"
           },
-          "description": "Average usage statistics of all VMs of the user",
+          "description": "Average usage statistics of all pods of the user",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -847,7 +847,7 @@
             "type": "yesoreyeram-infinity-datasource",
             "uid": "${DS_CEEMS-API}"
           },
-          "description": "Total energy consumption of all VMs of the user",
+          "description": "Total energy consumption of all pods of the user",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1029,7 +1029,7 @@
               "showLineNumbers": false,
               "showMiniMap": false
             },
-            "content": "# README\n\nThe panels to the left show the overall usage by the project\n<span style=\"color:red\">**${account}**</span> during the period\n${__from:date:YYYY-MM-DD HH:mm:ss} to ${__to:date:YYYY-MM-DD HH:mm:ss}. This includes\nthe usage of all the users in the project. For consulting only user specific usage,\nplease refer to the panels above.\n\n- Average CPU, GPU, CPU memory and GPU memory usage is the average over all the VMs\nof the user during the above stated period.\n\n- Total energy usage is the total energy consumed by the VMs of the user during the above\nstated period.\n\n  - Host corresponds to the energy consumption by host components such as CPU, CPU memory and other\n  peripherals of the node excluding GPU (if present)\n  - GPU corresponds to the energy consumption of GPUs alone.\n  - Total is the sum of power consumption of Host and GPUs.\n\n- Total emissions is the total equivalent emissions due the energy consumed by the VMs\nof the user during the above stated period. Real time emission factors\n[RTE eCO2](https://www.rte-france.com/en/eco2mix/co2-emissions),\n[Electricity Maps](https://app.electricitymaps.com/map/72h) and\nstatic emission factor from [OWID](https://ourworldindata.org/co2-and-greenhouse-gas-emissions)\nare supported in the estimation of the emissions.\n\n  - Host corresponds to the energy consumption by host components such as CPU, CPU memory and other\n  peripherals of the node excluding GPU (if present)\n  - GPU is the equivalent emissions due to energy consumption of GPUs alone.\n  - Total is the sum of equivalent emissions of Host and GPUs.",
+            "content": "# README\n\nThe panels to the left show the overall usage by the project\n<span style=\"color:red\">**${account}**</span> during the period\n${__from:date:YYYY-MM-DD HH:mm:ss} to ${__to:date:YYYY-MM-DD HH:mm:ss}. This includes\nthe usage of all the users in the project. For consulting only user specific usage,\nplease refer to the panels above.\n\n- Average CPU, GPU, CPU memory and GPU memory usage is the average over all the pods\nof the user during the above stated period.\n\n- Total energy usage is the total energy consumed by the pods of the user during the above\nstated period.\n\n  - Host corresponds to the energy consumption by host components such as CPU, CPU memory and other\n  peripherals of the node excluding GPU (if present)\n  - GPU corresponds to the energy consumption of GPUs alone.\n  - Total is the sum of power consumption of Host and GPUs.\n\n- Total emissions is the total equivalent emissions due the energy consumed by the pods\nof the user during the above stated period. Real time emission factors\n[RTE eCO2](https://www.rte-france.com/en/eco2mix/co2-emissions),\n[Electricity Maps](https://app.electricitymaps.com/map/72h) and\nstatic emission factor from [OWID](https://ourworldindata.org/co2-and-greenhouse-gas-emissions)\nare supported in the estimation of the emissions.\n\n  - Host corresponds to the energy consumption by host components such as CPU, CPU memory and other\n  peripherals of the node excluding GPU (if present)\n  - GPU is the equivalent emissions due to energy consumption of GPUs alone.\n  - Total is the sum of equivalent emissions of Host and GPUs.",
             "mode": "markdown"
           },
           "pluginVersion": "11.4.0",
@@ -1041,7 +1041,7 @@
             "type": "yesoreyeram-infinity-datasource",
             "uid": "${DS_CEEMS-API}"
           },
-          "description": "Total emissions from the energy consumption of all VMs of the user using emission factor from RTE eCO2 mix data",
+          "description": "Total emissions from the energy consumption of all pods of the user using emission factor from RTE eCO2 mix data",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1432,7 +1432,7 @@
             "type": "yesoreyeram-infinity-datasource",
             "uid": "${DS_CEEMS-API}"
           },
-          "description": "Total emissions from the energy consumption of all VMs of the user using emission factor from RTE eCO2 mix data",
+          "description": "Total emissions from the energy consumption of all pods of the user using emission factor from RTE eCO2 mix data",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1665,7 +1665,7 @@
               "showLineNumbers": false,
               "showMiniMap": false
             },
-            "content": "# README\n\nThe panels to the left show the breakdown of total energy consumption and\nequivalent emissions for project\n<span style=\"color:red\">**${account}**</span> during the period\n${__from:date:YYYY-MM-DD HH:mm:ss} to ${__to:date:YYYY-MM-DD HH:mm:ss}.\n\n- Total energy consumption is sum of energy consumed by host and GPUs (if present)\nfor all VMs ran during this period.\n\n- Total equivalent emissions is the sum of equivalent emissions from the energy\nconsumed by host and GPUs (if present) for all VMs ran during this period. Real time emission factors\n[RTE eCO2](https://www.rte-france.com/en/eco2mix/co2-emissions),\n[Electricity Maps](https://app.electricitymaps.com/map/72h) and\nstatic emission factor from [OWID](https://ourworldindata.org/co2-and-greenhouse-gas-emissions)\nare supported in the estimation of the emissions.\n",
+            "content": "# README\n\nThe panels to the left show the breakdown of total energy consumption and\nequivalent emissions for project\n<span style=\"color:red\">**${account}**</span> during the period\n${__from:date:YYYY-MM-DD HH:mm:ss} to ${__to:date:YYYY-MM-DD HH:mm:ss}.\n\n- Total energy consumption is sum of energy consumed by host and GPUs (if present)\nfor all pods ran during this period.\n\n- Total equivalent emissions is the sum of equivalent emissions from the energy\nconsumed by host and GPUs (if present) for all pods ran during this period. Real time emission factors\n[RTE eCO2](https://www.rte-france.com/en/eco2mix/co2-emissions),\n[Electricity Maps](https://app.electricitymaps.com/map/72h) and\nstatic emission factor from [OWID](https://ourworldindata.org/co2-and-greenhouse-gas-emissions)\nare supported in the estimation of the emissions.\n",
             "mode": "markdown"
           },
           "pluginVersion": "11.4.0",
@@ -1687,27 +1687,32 @@
       "id": 32,
       "panels": [
         {
-          "id": 52,
-          "type": "table",
-          "title": "List of Openstack VMs",
-          "description": "List of all Openstack VMs of user ${user} with project ${account}. By clicking the row, user will be redirected to the dashboard that shows the time series metrics of that compute unit.",
-          "gridPos": {
-            "x": 0,
-            "y": 16,
-            "h": 27,
-            "w": 24
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "${DS_CEEMS-API}"
           },
+          "description": "List of all k8s pods of user ${user} and all service accounts within namespace ${account}. By clicking the row, user will be redirected to the dashboard that shows the time series metrics of that pod.",
           "fieldConfig": {
             "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
               "custom": {
                 "align": "left",
                 "cellOptions": {
                   "type": "auto",
                   "wrapText": false
                 },
-                "inspect": false,
-                "filterable": true
+                "filterable": true,
+                "inspect": false
               },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "k8s Pod Metrics Dashboard",
+                  "url": "/d/k8s-single-pod-metrics/_?orgId=${VAR_ORG_ID}﻿&var-uuid=${__data.fields.UUID}﻿﻿﻿﻿&from=${__data.fields.from}﻿﻿﻿﻿&to=${__data.fields.to}&var-provider=rte&var-submit=﻿﻿﻿﻿${__data.fields.created_at_ts}&var-start=﻿﻿﻿﻿${__data.fields.started_at_ts}&var-end=﻿﻿﻿﻿${__data.fields.ended_at_ts}﻿﻿﻿&var-name=﻿﻿﻿${__data.fields.Name}﻿﻿﻿&﻿﻿var-state=﻿﻿${__data.fields.State}﻿﻿&var-elapsed=﻿﻿${__data.fields.Elapsed}﻿&var-account=${account}&var-qos=${__data.fields.QoS}&var-cpu_usage=${__data.fields[\"CPU Usage (%)\"]}&var-cpumem_usage=${__data.fields[\"CPU Mem Usage (%)\"]}&var-cpu_energy=${__data.fields[\"Host Energy (kWh)\"]}&var-cpu_emissions_rte=${__data.fields[\"Host Emissions RTE (gms)\"]}&var-cpu_emissions_emaps=${__data.fields[\"Host Emissions EMaps (gms)\"]}&var-cpu_emissions_owid=${__data.fields[\"Host Emissions OWID (gms)\"]}&var-gpu_usage=${__data.fields[\"GPU Usage (%)\"]}&var-gpumem_usage=${__data.fields[\"GPU Mem Usage (%)\"]}&var-gpu_energy=${__data.fields[\"GPU Energy (kWh)\"]}&var-gpu_emissions_rte=${__data.fields[\"GPU Emissions RTE (gms)\"]}&var-gpu_emissions_emaps=${__data.fields[\"GPU Emissions EMaps (gms)\"]}&var-gpu_emissions_owid=${__data.fields[\"GPU Emissions OWID (gms)\"]}&var-total_energy=${__data.fields[\"Total Energy (kWh)\"]}&var-total_emissions_rte=${__data.fields[\"Total Emissions RTE (gms)\"]}&var-total_emissions_emaps=${__data.fields[\"Total Emissions EMaps (gms)\"]}&var-total_emissions_owid=${__data.fields[\"Total Emissions OWID (gms)\"]}"
+                }
+              ],
               "mappings": [],
               "thresholds": {
                 "mode": "absolute",
@@ -1721,17 +1726,7 @@
                     "value": 80
                   }
                 ]
-              },
-              "color": {
-                "mode": "palette-classic"
-              },
-              "links": [
-                {
-                  "targetBlank": true,
-                  "title": "Openstack VM Metrics Dashboard",
-                  "url": "/d/os-vm-metrics/_?orgId=${VAR_ORG_ID}﻿&var-uuid=${__data.fields.UUID}﻿﻿﻿﻿﻿&from=${__data.fields.from}﻿﻿﻿﻿&to=${__data.fields.to}&var-provider=rte&var-submit=﻿﻿﻿﻿﻿${__data.fields.created_at_ts}﻿﻿﻿﻿&var-start=﻿﻿﻿﻿﻿${__data.fields.started_at_ts}﻿&var-end=﻿﻿﻿﻿﻿${__data.fields.ended_at_ts}﻿&var-name=﻿﻿﻿﻿${__data.fields.Name}﻿﻿﻿﻿&var-nodelist=﻿﻿﻿﻿${__data.fields.Nodelist}﻿﻿﻿&var-state=﻿﻿﻿${__data.fields.State}﻿﻿﻿&var-elapsed=﻿﻿﻿${__data.fields.Elapsed}﻿﻿&var-account=﻿${account}﻿&var-cpu_usage=${__data.fields[\"CPU Usage (%)\"]}&var-cpumem_usage=${__data.fields[\"CPU Mem Usage (%)\"]}&var-cpu_energy=${__data.fields[\"Host Energy (kWh)\"]}&var-cpu_emissions_rte=${__data.fields[\"Host Emissions RTE (gms)\"]}&var-cpu_emissions_emaps=${__data.fields[\"Host Emissions EMaps (gms)\"]}&var-cpu_emissions_owid=${__data.fields[\"Host Emissions OWID (gms)\"]}&var-gpu_usage=${__data.fields[\"GPU Usage (%)\"]}&var-gpumem_usage=${__data.fields[\"GPU Mem Usage (%)\"]}&var-gpu_energy=${__data.fields[\"GPU Energy (kWh)\"]}&var-gpu_emissions_rte=${__data.fields[\"GPU Emissions RTE (gms)\"]}&var-gpu_emissions_emaps=${__data.fields[\"GPU Emissions EMaps (gms)\"]}&var-gpu_emissions_owid=${__data.fields[\"GPU Emissions OWID (gms)\"]}&var-total_energy=${__data.fields[\"Total Energy (kWh)\"]}&var-total_emissions_rte=${__data.fields[\"Total Emissions RTE (gms)\"]}&var-total_emissions_emaps=${__data.fields[\"Total Emissions EMaps (gms)\"]}&var-total_emissions_owid=${__data.fields[\"Total Emissions OWID (gms)\"]}"
-                }
-              ]
+              }
             },
             "overrides": [
               {
@@ -1748,155 +1743,33 @@
               }
             ]
           },
-          "transformations": [
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Total Energy (kWh)",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "Host Energy (kWh)"
-                    }
-                  },
-                  "right": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "GPU Energy (kWh)"
-                    }
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
+          "gridPos": {
+            "h": 27,
+            "w": 24,
+            "x": 0,
+            "y": 26
+          },
+          "id": 52,
+          "options": {
+            "cellHeight": "sm",
+            "footer": {
+              "countRows": false,
+              "enablePagination": true,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
             },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Total Emissions EMaps (gms)",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "Host Emissions EMaps (gms)"
-                    }
-                  },
-                  "right": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "GPU Emissions EMaps (gms)"
-                    }
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "Start Time"
               }
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Total Emissions OWID (gms)",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "Host Emissions OWID (gms)"
-                    }
-                  },
-                  "right": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "GPU Emissions OWID (gms)"
-                    }
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Total Emissions RTE (gms)",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "Host Emissions RTE (gms)"
-                    }
-                  },
-                  "right": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "GPU Emissions RTE (gms)"
-                    }
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "organize",
-              "options": {
-                "excludeByName": {
-                  "Partition": false,
-                  "QoS": false,
-                  "created_at_ts": false,
-                  "ended_at_ts": false,
-                  "project": false,
-                  "started_at_ts": false,
-                  "total_time_seconds.walltime": true,
-                  "username": true
-                },
-                "includeByName": {},
-                "indexByName": {
-                  "CPU Mem Usage (%)": 11,
-                  "CPU Usage (%)": 10,
-                  "Elapsed": 4,
-                  "End Time": 3,
-                  "GPU Emissions EMaps (gms)": 20,
-                  "GPU Emissions OWID (gms)": 21,
-                  "GPU Emissions RTE (gms)": 19,
-                  "GPU Energy (kWh)": 18,
-                  "GPU Mem Usage (%)": 17,
-                  "GPU Usage (%)": 16,
-                  "Host Emissions EMaps (gms)": 14,
-                  "Host Emissions OWID (gms)": 15,
-                  "Host Emissions RTE (gms)": 13,
-                  "Host Energy (kWh)": 12,
-                  "Name": 1,
-                  "Nodelist": 22,
-                  "Partition": 23,
-                  "QoS": 24,
-                  "Start Time": 2,
-                  "State": 5,
-                  "Total Emissions EMaps (gms)": 8,
-                  "Total Emissions OWID (gms)": 9,
-                  "Total Emissions RTE (gms)": 7,
-                  "Total Energy (kWh)": 6,
-                  "UUID": 0,
-                  "created_at_ts": 25,
-                  "ended_at_ts": 26,
-                  "project": 27,
-                  "started_at_ts": 28,
-                  "total_time_seconds.walltime": 29,
-                  "username": 30
-                },
-                "renameByName": {}
-              }
-            }
-          ],
-          "pluginVersion": "11.3.1",
+            ]
+          },
+          "pluginVersion": "11.4.0",
           "targets": [
             {
               "columns": [
@@ -2002,6 +1875,11 @@
                   "type": "string"
                 },
                 {
+                  "selector": "tags.qos",
+                  "text": "QoS",
+                  "type": "string"
+                },
+                {
                   "selector": "total_cpu_emissions_gms.emaps_total",
                   "text": "Host Emissions EMaps (gms)",
                   "type": "number"
@@ -2047,7 +1925,7 @@
               "root_selector": "data",
               "source": "url",
               "type": "json",
-              "url": "/api/v1/units/admin",
+              "url": "/api/v1/units${VAR_ENDPOINT}",
               "url_options": {
                 "data": "",
                 "headers": [],
@@ -2081,41 +1959,165 @@
               }
             }
           ],
-          "datasource": {
-            "type": "yesoreyeram-infinity-datasource",
-            "uid": "${DS_CEEMS-API}"
-          },
-          "options": {
-            "showHeader": true,
-            "cellHeight": "sm",
-            "footer": {
-              "show": false,
-              "reducer": [
-                "sum"
-              ],
-              "countRows": false,
-              "fields": "",
-              "enablePagination": true
-            },
-            "sortBy": [
-              {
-                "desc": true,
-                "displayName": "Start Time"
+          "title": "List of k8s pods",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Total Energy (kWh)",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Host Energy (kWh)"
+                    }
+                  },
+                  "right": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "GPU Energy (kWh)"
+                    }
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
               }
-            ]
-          }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Total Emissions EMaps (gms)",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Host Emissions EMaps (gms)"
+                    }
+                  },
+                  "right": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "GPU Emissions EMaps (gms)"
+                    }
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Total Emissions OWID (gms)",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Host Emissions OWID (gms)"
+                    }
+                  },
+                  "right": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "GPU Emissions OWID (gms)"
+                    }
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Total Emissions RTE (gms)",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Host Emissions RTE (gms)"
+                    }
+                  },
+                  "right": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "GPU Emissions RTE (gms)"
+                    }
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "QoS": false,
+                  "created_at_ts": false,
+                  "ended_at_ts": false,
+                  "project": false,
+                  "started_at_ts": false,
+                  "total_time_seconds.walltime": true,
+                  "username": true
+                },
+                "includeByName": {},
+                "indexByName": {
+                  "CPU Mem Usage (%)": 11,
+                  "CPU Usage (%)": 10,
+                  "Elapsed": 4,
+                  "End Time": 3,
+                  "GPU Emissions EMaps (gms)": 20,
+                  "GPU Emissions OWID (gms)": 21,
+                  "GPU Emissions RTE (gms)": 19,
+                  "GPU Energy (kWh)": 18,
+                  "GPU Mem Usage (%)": 17,
+                  "GPU Usage (%)": 16,
+                  "Host Emissions EMaps (gms)": 14,
+                  "Host Emissions OWID (gms)": 15,
+                  "Host Emissions RTE (gms)": 13,
+                  "Host Energy (kWh)": 12,
+                  "UUID": 0,
+                  "Name": 1,
+                  "QoS": 22,
+                  "Start Time": 2,
+                  "State": 5,
+                  "Total Emissions EMaps (gms)": 8,
+                  "Total Emissions OWID (gms)": 9,
+                  "Total Emissions RTE (gms)": 7,
+                  "Total Energy (kWh)": 6,
+                  "created_at_ts": 23,
+                  "ended_at_ts": 24,
+                  "project": 25,
+                  "started_at_ts": 26,
+                  "total_time_seconds.walltime": 27,
+                  "username": 28
+                },
+                "renameByName": {}
+              }
+            }
+          ],
+          "type": "table"
         }
       ],
-      "title": "VM Metrics from ${__from:date:YYYY-MM-DD HH:mm:ss} to ${__to:date:YYYY-MM-DD HH:mm:ss}",
+      "title": "Pod Metrics from ${__from:date:YYYY-MM-DD HH:mm:ss} to ${__to:date:YYYY-MM-DD HH:mm:ss}",
       "type": "row"
     }
   ],
   "refresh": "",
   "schemaVersion": 40,
   "tags": [
-    "vm",
+    "pod",
     "aggregate",
-    "openstack",
+    "k8s",
     "energy",
     "emissions"
   ],
@@ -2181,7 +2183,7 @@
         },
         "definition": "",
         "includeAll": false,
-        "label": "Project:",
+        "label": "Account:",
         "name": "account",
         "options": [],
         "query": {
@@ -2269,7 +2271,7 @@
     ]
   },
   "timezone": "",
-  "title": "User Openstack VM Summary",
+  "title": "User k8s Pod Summary",
   "version": 1,
   "weekStart": ""
 }

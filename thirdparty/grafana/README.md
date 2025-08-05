@@ -6,6 +6,7 @@ In the folder [dashbaords](./dashboards/), we can find 3 sub folders:
 - [admin](./dashboards/admin) folder contains the dashboards for admin operators
 - [slurm](./dashboards/slurm/) folder contains the dashboards for SLURM clusters
 - [openstack](./dashboards/openstack/) folder contains the dashboards for Openstack clusters
+- [k8s](./dashboards/k8s/) folder contains the dashboards for k8s clusters
 
 ## Dashboards
 
@@ -26,9 +27,11 @@ job metrics for each job and clicking the link in the table will redirect the us
 `Single Job Metrics` dashboard with all the dashboard variables correctly populated with
 job metadata.
 - Similarly [Openstack VM Summary](./dashboards/openstack/os-vm-summary.json) and
-[Openstack Single VM Metrics](./dashboards/openstack/os-single-vm-metrics.json) provide
-the same functionality as `SLURM job Summary` and `SLURM Single Job Metrics` dashboards,
-respectively, but for Openstack VMs.
+[k8s Pod Summary](./dashboards/k8s/k8s-pod-summary.json) provide VM and pod summary for
+Openstack and k8s clusters, respectively. Finally,
+[Openstack Single VM Metrics](./dashboards/openstack/os-single-vm-metrics.json) and
+[k8s Single Pod Metrics](./dashboards/k8s/k8s-single-pod-metrics.json) provide
+metrics for individual VM and pod for Openstack and k8s clusters, respectively.
 
 ## Importing Dashboards
 
@@ -44,6 +47,7 @@ CEEMS (and DCGM/AMD SMI) exporters.
 
 ### [SLURM Job Summary](./dashboards/slurm/slurm-job-summary.json)
 
+- `Organization ID`: Grafana organization ID. Default is 1.
 - `CEEMS API Server's datasource`: Choose the infinity datasource corresponding to CEEMS API server.
 - `CEEMS Cluster ID`: It must the same cluster ID as the one defined in
 [CEEMS API Server's cluster configuration](https://ceems-dev.github.io/ceems/docs/configuration/config-reference/#cluster_config)
@@ -56,9 +60,13 @@ dashboards to consult usage statistics of _any_ user. For user facing dashboards
 CEEMS (and DCGM/AMD SMI) exporters. If [CEEMS LB](https://ceems-dev.github.io/ceems/docs/components/ceems-lb)
 has been enabled, choose the datasource corresponding to CEEMS LB as it ensures the access control
 enforcement.
+- `Pyroscope datasource`: Choose the datasource corresponding to Pyroscope server where continuous profiling
+data is stored. If [CEEMS LB](https://ceems-dev.github.io/ceems/docs/components/ceems-lb)
+has been enabled, choose the datasource corresponding to CEEMS LB as it ensures the access control.
 
 ### [Openstack VM Summary](./dashboards/openstack/os-vm-summary.json)
 
+- `Organization ID`: Grafana organization ID. Default is 1.
 - `CEEMS API Server's datasource`: Choose the infinity datasource corresponding to CEEMS API server.
 - `CEEMS Cluster ID`: It must the same cluster ID as the one defined in
 [CEEMS API Server's cluster configuration](https://ceems-dev.github.io/ceems/docs/configuration/config-reference/#cluster_config)
@@ -71,3 +79,22 @@ dashboards to consult usage statistics of _any_ user. For user facing dashboards
 CEEMS (and DCGM/AMD SMI) exporters. If [CEEMS LB](https://ceems-dev.github.io/ceems/docs/components/ceems-lb)
 has been enabled, choose the datasource corresponding to CEEMS LB as it ensures the access control
 enforcement.
+
+### [k8s Pod Summary](./dashboards/k8s/k8s-pod-summary.json)
+
+- `Organization ID`: Grafana organization ID. Default is 1.
+- `CEEMS API Server's datasource`: Choose the infinity datasource corresponding to CEEMS API server.
+- `CEEMS Cluster ID`: It must the same cluster ID as the one defined in
+[CEEMS API Server's cluster configuration](https://ceems-dev.github.io/ceems/docs/configuration/config-reference/#cluster_config)
+- `Endpoint`: As briefed in [Dashboards](#dashboards) section, use `/admin` for creating Admin facing
+dashboards to consult usage statistics of _any_ user. For user facing dashboards, use an **empty space**.
+
+### [k8s Single Pod Metrics](./dashboards/k8s/k8s-single-pod-metrics.json)
+
+- `Prometheus datasource`: Choose the datasource corresponding to Prometheus server that is scrapping
+CEEMS (and DCGM/AMD SMI) exporters. If [CEEMS LB](https://ceems-dev.github.io/ceems/docs/components/ceems-lb)
+has been enabled, choose the datasource corresponding to CEEMS LB as it ensures the access control
+enforcement.
+- `Pyroscope datasource`: Choose the datasource corresponding to Pyroscope server where continuous profiling
+data is stored. If [CEEMS LB](https://ceems-dev.github.io/ceems/docs/components/ceems-lb)
+has been enabled, choose the datasource corresponding to CEEMS LB as it ensures the access control.
