@@ -91,7 +91,7 @@ FUNC_INLINE int prepend_name(char *buf, char **bufptr, int *buflen, const unsign
 	if (namelen < 0 || namelen > 256)
 		return -ENAMETOOLONG;
 
-	s64 buffer_offset = (s64)(*bufptr) - (s64)buf;
+	u64 buffer_offset = (u64)(*bufptr) - (u64)buf;
 
 	// Change name and namelen to fit in the buffer.
 	// We prefer to store the part of it that fits rather than discard it.
@@ -111,8 +111,7 @@ FUNC_INLINE int prepend_name(char *buf, char **bufptr, int *buflen, const unsign
 	// This will never happen. buffer_offset is the diff of the initial buffer pointer
 	// with the current buffer pointer. This will be at max 4096 bytes (similar to the initial
 	// size).
-	// Needed to bound that for bpf_probe_read call.
-	if (buffer_offset < 0 || buffer_offset >= MAX_BUF_LEN)
+	if (buffer_offset >= MAX_BUF_LEN)
 		return -ENAMETOOLONG;
 
 	if (write_slash)
