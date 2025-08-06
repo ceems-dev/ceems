@@ -1104,6 +1104,11 @@ func loadObject(path string) (*ebpf.Collection, error) {
 	// Instantiate a Collection from a CollectionSpec.
 	coll, err := ebpf.NewCollection(spec)
 	if err != nil {
+		var ve *ebpf.VerifierError
+		if errors.As(err, &ve) {
+			err = fmt.Errorf("%+v", ve) //nolint:errorlint
+		}
+
 		return nil, fmt.Errorf("failed to instantiate collection: %w", err)
 	}
 

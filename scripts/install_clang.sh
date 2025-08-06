@@ -13,8 +13,10 @@ find_llvm() {
         if [[ "$dir" == *"llvm"* ]]; then
             llvm_ver=$(echo "${dir}" | grep -o "llvm-[0-9]\+" | cut -d "-" -f2)
             if (( ${llvm_ver} >= 18 )); then
-                LLVM_DIR="${dir}"
-                break
+                if [ -f "${dir}/bin/clang" ] && [ -f "${dir}/bin/llc" ]; then
+                    LLVM_DIR="${dir}"
+                    break
+                fi
             fi
         fi
     done
