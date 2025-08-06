@@ -10,7 +10,7 @@ executors:
     resource_class: medium
   arm:
     machine:
-      image: ubuntu-2204:current
+      image: ubuntu-2404:current
     resource_class: arm.medium
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
       - run: CGO_APPS=1 make
   build:
     machine:
-      image: ubuntu-2204:current
+      image: ubuntu-2404:current
     resource_class: medium
     parallelism: 3
     steps:
