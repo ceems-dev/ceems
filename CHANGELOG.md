@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.2 / 2025-08-07
+
+- [BUGFIX] Fix bpf code to work with LLVM 20 [#393](https://github.com/mahendrapaipuri/ceems/pull/393) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [BUGFIX] Fix k8s resource manager [#392](https://github.com/mahendrapaipuri/ceems/pull/392) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump dependencies [#389](https://github.com/mahendrapaipuri/ceems/pull/389), [#390](https://github.com/mahendrapaipuri/ceems/pull/390), [#387](https://github.com/mahendrapaipuri/ceems/pull/387) ([@dependabot](https://github.com/dependabot))
+
 ## 0.10.1 / 2025-07-22
 
 - [BUGFIX] Fix parsing nvidia-smi XML output [#388](https://github.com/mahendrapaipuri/ceems/pull/388) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
