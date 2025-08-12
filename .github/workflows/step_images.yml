@@ -87,7 +87,7 @@ jobs:
 
       - name: Push README to registry
         uses: christian-korneck/update-container-description-action@d36005551adeaba9698d8d67a296bd16fa91f8e8 # v1
-        if: (github.ref == 'refs/heads/main' || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))) && github.repository_owner == 'mahendrapaipuri' # Don't run this workflow on forks.
+        if: (github.ref == 'refs/heads/main' || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))) && github.repository_owner == 'ceems' # Don't run this workflow on forks.
         env:
           # For dockerhub registry
           DOCKER_USER: ${{ secrets.login }}
