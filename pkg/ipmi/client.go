@@ -3,6 +3,8 @@
 package ipmi
 
 import (
+	"bytes"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -24,19 +26,35 @@ const (
 	IPMI_BMC_CHANNEL                = 0xF        //nolint:stylecheck
 )
 
+type Client interface {
+	Do(r *Request) (*Response, error)
+	Close() error
+	DCMIPowerReading() (*PowerReading, error)
+	LanIP() (*string, error)
+	SensorRecords() ([]*FullSensorRecord, error)
+	SensorReadings(records []*FullSensorRecord) (map[*FullSensorRecord]float64, error)
+}
+
+type Config struct {
+	Logger  *slog.Logger
+	DevNum  int
+	Timeout time.Duration
+}
+
 type timeout struct {
 	value time.Duration
 }
 
-type IPMIClient struct {
-	Logger  *slog.Logger
-	DevFile *os.File
-	BMCAddr ipmiSystemInterfaceAddr
+type ipmiClient struct {
+	logger  *slog.Logger
+	devFile *os.File
+	bmcAddr ipmiSystemInterfaceAddr
+	timeout time.Duration
 }
 
-// NewIPMIClient returns a new instance of IPMIClient struct.
-func NewIPMIClient(devNum int, logger *slog.Logger) (*IPMIClient, error) {
-	if devNum < 0 {
+// NewClient returns a new instance of Client struct.
+func NewClient(c *Config) (Client, error) {
+	if c.DevNum < 0 {
 		return nil, errors.New("device number for IPMI must be greater than zero")
 	}
 
@@ -47,8 +65,8 @@ func NewIPMIClient(devNum int, logger *slog.Logger) (*IPMIClient, error) {
 	var devFile *os.File
 
 	for _, d := range ipmiDevs {
-		if f, err := os.Open(fmt.Sprintf(d, devNum)); err == nil {
-			logger.Debug("IPMI device found", "device", fmt.Sprintf(d, devNum))
+		if f, err := os.Open(fmt.Sprintf(d, c.DevNum)); err == nil {
+			c.Logger.Debug("IPMI device found", "device", fmt.Sprintf(d, c.DevNum))
 
 			devFile = f
 
@@ -67,25 +85,34 @@ func NewIPMIClient(devNum int, logger *slog.Logger) (*IPMIClient, error) {
 		return nil, fmt.Errorf("failed to enable IPMI event receiver: %w", errno)
 	}
 
-	return &IPMIClient{
-		Logger:  logger,
-		DevFile: devFile,
-		BMCAddr: ipmiSystemInterfaceAddr{
+	// Set a valid timeout
+	if c.Timeout == 0 {
+		c.Timeout = time.Second
+	}
+
+	// Instantitate client
+	client := &ipmiClient{
+		logger:  c.Logger,
+		devFile: devFile,
+		bmcAddr: ipmiSystemInterfaceAddr{
 			AddrType: IPMI_SYSTEM_INTERFACE_ADDR_TYPE,
 			Channel:  IPMI_BMC_CHANNEL,
 			Lun:      0x0,
 		},
-	}, nil
+		timeout: c.Timeout,
+	}
+
+	return client, nil
 }
 
 // Do sends IPMI request and returns the response.
-func (i *IPMIClient) Do(req *ipmiReq, t time.Duration) (*ipmiResp, error) {
+func (i *ipmiClient) Do(req *Request) (*Response, error) {
 	// Device file descriptor
-	fd := i.DevFile.Fd()
+	fd := i.devFile.Fd()
 
 	// Send request
 	if _, _, errno := syscall.Syscall(syscall.SYS_IOCTL, fd, IPMICTL_SEND_COMMAND, uintptr(unsafe.Pointer(req))); errno != 0 {
-		i.Logger.Error("Failed to send IPMI request", "err", errno)
+		i.logger.Error("Failed to send IPMI request", "err", errno)
 
 		return nil, fmt.Errorf("failed to send IPMI request: %w", errno)
 	}
@@ -102,7 +129,7 @@ func (i *IPMIClient) Do(req *ipmiReq, t time.Duration) (*ipmiResp, error) {
 	FDZero(&activeFdSet)
 	FDSet(fd, &activeFdSet)
 
-	resp := ipmiResp{}
+	resp := Response{}
 	addr := ipmiAddr{}
 	recv := ipmiRecv{
 		Addr:    uintptr(unsafe.Pointer(&addr)),
@@ -114,44 +141,49 @@ func (i *IPMIClient) Do(req *ipmiReq, t time.Duration) (*ipmiResp, error) {
 	}
 
 	// Set timeout for select
-	timeout := timeout{t}
+	timeout := timeout{i.timeout}
 
 	_, err := unix.Select(serverFD+1, &activeFdSet, nil, nil, timeout.timeval())
 	if err != nil {
-		i.Logger.Error("Failed to receive response from IPMI device interface", "err", err)
+		i.logger.Error("Failed to receive response from IPMI device interface", "err", err)
 
 		return nil, fmt.Errorf("failed to receive response from IPMI device interface: %w", err)
 	}
 
 	// Check if fd is ready to read
 	if !FDIsSet(fd, &activeFdSet) {
-		i.Logger.Error("No response received from IPMI device interface")
+		i.logger.Error("No response received from IPMI device interface")
 
 		return nil, errors.New("no response received from IPMI device interface")
 	}
 
 	// Read data into recv struct
 	if _, _, errno := syscall.Syscall(syscall.SYS_IOCTL, fd, IPMICTL_RECEIVE_MSG_TRUNC, uintptr(unsafe.Pointer(&recv))); errno != 0 {
-		i.Logger.Error("Failed to read response from IPMI device interface", "err", errno)
+		i.logger.Error("Failed to read response from IPMI device interface", "err", errno)
 
 		return nil, fmt.Errorf("failed to read response from IPMI device interface: %w", errno)
 	}
 
 	// If Msgids match between response and request break
 	if req.Msgid != recv.Msgid {
-		i.Logger.Error("Received response with unexpected ID", "req_id", req.Msgid, "resp_id", recv.Msgid)
+		i.logger.Error("Received response with unexpected ID", "req_id", req.Msgid, "resp_id", recv.Msgid)
 
 		return nil, fmt.Errorf("received response with unexpected id: %d", recv.Msgid)
 	}
 
 	// Read response data
 	resp.DataLen = int32(recv.Msg.DataLen)
-	i.Logger.Debug("IPMI response data", "data", resp.Data[0:resp.DataLen])
+	// i.logger.Debug("IPMI response data", "data", resp.Data[0:resp.DataLen])
+
+	// Check completion code
+	if err := binary.Read(bytes.NewReader(resp.Data[0:1]), binary.BigEndian, &resp.Ccode); err == nil && resp.Ccode != 0 {
+		return nil, errors.New("received non zero completion code in IPMI response")
+	}
 
 	return &resp, nil
 }
 
 // Close IPMI device file.
-func (i *IPMIClient) Close() error {
-	return i.DevFile.Close()
+func (i *ipmiClient) Close() error {
+	return i.devFile.Close()
 }

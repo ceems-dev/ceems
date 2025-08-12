@@ -521,9 +521,9 @@ then
         --collector.slurm.gres-config-file="pkg/collector/testdata/gres.conf" \
         --collector.gpu.type="nvidia" \
         --collector.gpu.nvidia-smi-path="pkg/collector/testdata/nvidia-smi" \
-        --collector.ipmi_dcmi \
-        --collector.ipmi_dcmi.test-mode \
-        --collector.ipmi_dcmi.cmd="pkg/collector/testdata/ipmi/freeipmi/ipmi-dcmi" \
+        --collector.ipmi \
+        --collector.ipmi.test-mode \
+        --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/freeipmi/ipmi-dcmi" \
         --collector.redfish \
         --collector.redfish.web-config="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
@@ -545,9 +545,9 @@ then
         --collector.slurm.gres-config-file="pkg/collector/testdata/gres.conf" \
         --collector.gpu.type="nvidia" \
         --collector.gpu.nvidia-smi-path="pkg/collector/testdata/nvidia-smi" \
-        --collector.ipmi_dcmi \
-        --collector.ipmi_dcmi.cmd="pkg/collector/testdata/ipmi/freeipmi/ipmi-dcmi" \
-        --collector.ipmi_dcmi.test-mode \
+        --collector.ipmi \
+        --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/freeipmi/ipmi-dcmi" \
+        --collector.ipmi.test-mode \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -567,8 +567,8 @@ then
         --collector.rdma.stats \
         --collector.rdma.cmd="pkg/collector/testdata/rdma" \
         --collector.empty-hostname-label \
-        --collector.ipmi_dcmi \
-        --collector.ipmi_dcmi.test-mode \
+        --collector.ipmi \
+        --collector.ipmi.test-mode \
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
@@ -592,8 +592,8 @@ then
         --collector.rdma.stats \
         --collector.rdma.cmd="pkg/collector/testdata/rdma" \
         --collector.empty-hostname-label \
-        --collector.ipmi_dcmi \
-        --collector.ipmi_dcmi.test-mode \
+        --collector.ipmi \
+        --collector.ipmi.test-mode \
         --collector.cray_pm_counters \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -611,8 +611,8 @@ then
         --collector.gpu.rocm-smi-path="pkg/collector/testdata/rocm-smi" \
         --collector.empty-hostname-label \
         --collector.hwmon \
-        --collector.ipmi_dcmi \
-        --collector.ipmi_dcmi.test-mode \
+        --collector.ipmi \
+        --collector.ipmi.test-mode \
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
@@ -630,8 +630,8 @@ then
         --collector.slurm \
         --collector.gpu.type="nogpu" \
         --collector.empty-hostname-label \
-        --collector.ipmi_dcmi \
-        --collector.ipmi_dcmi.test-mode \
+        --collector.ipmi \
+        --collector.ipmi.test-mode \
         --collector.infiniband \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -647,9 +647,9 @@ then
         --collector.slurm \
         --collector.gpu.type="nvidia" \
         --collector.gpu.nvidia-smi-path="pkg/collector/testdata/nvidia-smi" \
-        --collector.ipmi_dcmi \
+        --collector.ipmi \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/ipmiutils/ipmiutil" \
-        --collector.ipmi_dcmi.test-mode \
+        --collector.ipmi.test-mode \
         --collector.cray_pm_counters \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
@@ -668,9 +668,9 @@ then
         --collector.gpu.rocm-smi-path="pkg/collector/testdata/rocm-smi" \
         --collector.slurm.swap.memory.metrics \
         --collector.slurm.psi.metrics \
-        --collector.ipmi_dcmi \
+        --collector.ipmi \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
-        --collector.ipmi_dcmi.test-mode \
+        --collector.ipmi.test-mode \
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
@@ -693,9 +693,9 @@ then
         --collector.libvirt.swap-memory-metrics \
         --collector.libvirt.psi-metrics \
         --collector.libvirt.blkio-metrics \
-        --collector.ipmi_dcmi \
+        --collector.ipmi \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
-        --collector.ipmi_dcmi.test-mode \
+        --collector.ipmi.test-mode \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -714,9 +714,9 @@ then
         --collector.libvirt.swap-memory-metrics \
         --collector.libvirt.psi-metrics \
         --collector.libvirt.blkio-metrics \
-        --collector.ipmi_dcmi \
+        --collector.ipmi \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
-        --collector.ipmi_dcmi.test-mode \
+        --collector.ipmi.test-mode \
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
@@ -738,9 +738,9 @@ then
         --collector.libvirt.swap-memory-metrics \
         --collector.libvirt.psi-metrics \
         --collector.libvirt.blkio-metrics \
-        --collector.ipmi_dcmi \
+        --collector.ipmi \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
-        --collector.ipmi_dcmi.test-mode \
+        --collector.ipmi.test-mode \
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
@@ -760,9 +760,9 @@ then
         --collector.k8s.kubelet-socket-file="${CEEMS_KUBELET_SOCKET_DIR}/nvidia/kubelet.sock" \
         --collector.gpu.type="nvidia" \
         --collector.gpu.nvidia-smi-path="pkg/collector/testdata/nvidia-smi" \
-        --collector.ipmi_dcmi \
+        --collector.ipmi \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
-        --collector.ipmi_dcmi.test-mode \
+        --collector.ipmi.test-mode \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -779,9 +779,9 @@ then
         --collector.k8s.kubelet-socket-file="${CEEMS_KUBELET_SOCKET_DIR}/amd/kubelet.sock" \
         --collector.gpu.type="amd" \
         --collector.gpu.amd-smi-path="pkg/collector/testdata/amd-smi" \
-        --collector.ipmi_dcmi \
+        --collector.ipmi \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
-        --collector.ipmi_dcmi.test-mode \
+        --collector.ipmi.test-mode \
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
@@ -799,9 +799,9 @@ then
         --collector.gpu.type="nogpu" \
         --collector.k8s \
         --collector.k8s.kube-config-file="pkg/collector/testdata/k8s/kubeconfig.yml" \
-        --collector.ipmi_dcmi \
+        --collector.ipmi \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
-        --collector.ipmi_dcmi.test-mode \
+        --collector.ipmi.test-mode \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -816,9 +816,9 @@ then
         --collector.cgroups.force-version="v2" \
         --collector.slurm \
         --collector.gpu.type="nogpu" \
-        --collector.ipmi_dcmi \
+        --collector.ipmi \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
-        --collector.ipmi_dcmi.test-mode \
+        --collector.ipmi.test-mode \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -833,9 +833,9 @@ then
         --collector.slurm \
         --collector.gpu.type="nogpu" \
         --collector.cgroups.force-version="v1" \
-        --collector.ipmi_dcmi \
+        --collector.ipmi \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
-        --collector.ipmi_dcmi.test-mode \
+        --collector.ipmi.test-mode \
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
@@ -1521,9 +1521,9 @@ then
         --collector.cgroups.force-version="v1" \
         --collector.slurm \
         --collector.gpu.type="nogpu" \
-        --collector.ipmi_dcmi \
-        --collector.ipmi_dcmi.test-mode \
-        --collector.ipmi_dcmi.cmd="pkg/collector/testdata/ipmi/freeipmi/ipmi-dcmi" \
+        --collector.ipmi \
+        --collector.ipmi.test-mode \
+        --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/freeipmi/ipmi-dcmi" \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:9010" \
         --web.disable-exporter-metrics \
@@ -1603,9 +1603,9 @@ then
         --collector.slurm \
         --collector.gpu.type="nvidia" \
         --collector.gpu.nvidia-smi-path="pkg/collector/testdata/nvidia-smi" \
-        --collector.ipmi_dcmi \
-        --collector.ipmi_dcmi.test-mode \
-        --collector.ipmi_dcmi.cmd="pkg/collector/testdata/ipmi/openipmi/ipmitool" \
+        --collector.ipmi \
+        --collector.ipmi.test-mode \
+        --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/openipmi/ipmitool" \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:9015" \
         --web.disable-exporter-metrics \

@@ -272,18 +272,18 @@ ceems_infiniband_vl15_dropped_total{device="hfi1_0",port="1"} 0
 ceems_infiniband_vl15_dropped_total{device="mlx4_0",port="1"} 0
 ceems_infiniband_vl15_dropped_total{device="mlx4_0",port="2"} 0
 ceems_infiniband_vl15_dropped_total{device="mlx5_0",port="1"} 0
-# HELP ceems_ipmi_dcmi_avg_watts Average Power consumption in watts
-# TYPE ceems_ipmi_dcmi_avg_watts gauge
-ceems_ipmi_dcmi_avg_watts{hostname=""} 5942
-# HELP ceems_ipmi_dcmi_current_watts Current Power consumption in watts
-# TYPE ceems_ipmi_dcmi_current_watts gauge
-ceems_ipmi_dcmi_current_watts{hostname=""} 5942
-# HELP ceems_ipmi_dcmi_max_watts Maximum Power consumption in watts
-# TYPE ceems_ipmi_dcmi_max_watts gauge
-ceems_ipmi_dcmi_max_watts{hostname=""} 6132
-# HELP ceems_ipmi_dcmi_min_watts Minimum Power consumption in watts
-# TYPE ceems_ipmi_dcmi_min_watts gauge
-ceems_ipmi_dcmi_min_watts{hostname=""} 5748
+# HELP ceems_ipmi_dcmi_power_avg_watts Average power consumption reported by DCMI in watts
+# TYPE ceems_ipmi_dcmi_power_avg_watts gauge
+ceems_ipmi_dcmi_power_avg_watts{hostname=""} 5942
+# HELP ceems_ipmi_dcmi_power_current_watts Current power consumption reported by DCMI in watts
+# TYPE ceems_ipmi_dcmi_power_current_watts gauge
+ceems_ipmi_dcmi_power_current_watts{hostname=""} 5942
+# HELP ceems_ipmi_dcmi_power_max_watts Maximum power consumption reported by DCMI in watts
+# TYPE ceems_ipmi_dcmi_power_max_watts gauge
+ceems_ipmi_dcmi_power_max_watts{hostname=""} 6132
+# HELP ceems_ipmi_dcmi_power_min_watts Minimum power consumption reported by DCMI in watts
+# TYPE ceems_ipmi_dcmi_power_min_watts gauge
+ceems_ipmi_dcmi_power_min_watts{hostname=""} 5748
 # HELP ceems_meminfo_MemAvailable_bytes Memory information field MemAvailable_bytes.
 # TYPE ceems_meminfo_MemAvailable_bytes gauge
 ceems_meminfo_MemAvailable_bytes{hostname=""} 0
@@ -315,7 +315,7 @@ ceems_rapl_package_power_limit_watts_total{hostname="",index="1",path="pkg/colle
 # TYPE ceems_scrape_collector_success gauge
 ceems_scrape_collector_success{collector="cpu"} 1
 ceems_scrape_collector_success{collector="infiniband"} 1
-ceems_scrape_collector_success{collector="ipmi_dcmi"} 1
+ceems_scrape_collector_success{collector="ipmi"} 1
 ceems_scrape_collector_success{collector="meminfo"} 1
 ceems_scrape_collector_success{collector="rapl"} 1
 ceems_scrape_collector_success{collector="slurm"} 1

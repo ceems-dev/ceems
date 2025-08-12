@@ -27,15 +27,21 @@ import (
 //go:embed rules
 var rulesFS embed.FS
 
+const (
+	ipmiPowerMetric    = "ceems_ipmi_dcmi_power_current_watts"
+	redfishPowerMetric = "ceems_redfish_power_current_watts"
+	crayPowerMetric    = "ceems_cray_pm_counters_power_watts"
+)
+
 var (
 	seriesNames = []string{
 		"ceems_compute_unit_cpu_user_seconds_total",
 		"ceems_compute_unit_memory_used_bytes",
 		"ceems_rapl_package_joules_total",
 		"ceems_rapl_dram_joules_total",
-		"ceems_ipmi_dcmi_current_watts",
-		"ceems_redfish_current_watts",
-		"ceems_cray_pm_counters_power_watts",
+		ipmiPowerMetric,
+		redfishPowerMetric,
+		crayPowerMetric,
 		"ceems_emissions_gCo2_kWh",
 		"DCGM_FI_DEV_POWER_USAGE_INSTANT",
 		"amd_gpu_power",
@@ -241,15 +247,15 @@ func CreatePromRecordingRules(
 		var hostPowerSeries string
 
 		switch {
-		case slices.Contains(jobSeries[job], "ceems_cray_pm_counters_power_watts"):
+		case slices.Contains(jobSeries[job], crayPowerMetric):
 			tmplFile = "cpu-cray.rules"
-			hostPowerSeries = "ceems_cray_pm_counters_power_watts"
-		case slices.Contains(jobSeries[job], "ceems_redfish_current_watts"):
+			hostPowerSeries = crayPowerMetric
+		case slices.Contains(jobSeries[job], redfishPowerMetric):
 			tmplFile = "cpu-ipmi-redfish.rules"
-			hostPowerSeries = "ceems_redfish_current_watts"
-		case slices.Contains(jobSeries[job], "ceems_ipmi_dcmi_current_watts"):
+			hostPowerSeries = redfishPowerMetric
+		case slices.Contains(jobSeries[job], ipmiPowerMetric):
 			tmplFile = "cpu-ipmi-redfish.rules"
-			hostPowerSeries = "ceems_ipmi_dcmi_current_watts"
+			hostPowerSeries = ipmiPowerMetric
 		case slices.Contains(jobSeries[job], "ceems_rapl_package_joules_total"):
 			tmplFile = "cpu-rapl.rules"
 			hostPowerSeries = "ceems_rapl_package_joules_total"
@@ -264,8 +270,8 @@ func CreatePromRecordingRules(
 
 		var hostPowerLabel string
 
-		if hostPowerSeries == "ceems_redfish_current_watts" {
-			matcher := fmt.Sprintf(`ceems_redfish_current_watts{job="%s"}`, job)
+		if hostPowerSeries == redfishPowerMetric {
+			matcher := fmt.Sprintf(`%s{job="%s"}`, redfishPowerMetric, job)
 
 			chassis, _, err := api.LabelValues(ctx, "chassis", []string{matcher}, stime, etime) // Ignoring warnings for now.
 			if err != nil {
@@ -277,7 +283,7 @@ func CreatePromRecordingRules(
 			// If there are more than 1 chassis, emit log for operators to tell them to
 			// choose appropriate chassis to get CPU power usage
 			if len(chassis) > 1 {
-				fmt.Fprintln(os.Stderr, "Multiple chassis found for ceems_redfish_current_watts for job", job)
+				fmt.Fprintln(os.Stderr, "Multiple chassis found for", redfishPowerMetric, "for job", job)
 				fmt.Fprintln(os.Stderr, "Choose the chassis that reports host power usage")
 
 				for ichas, chas := range chassis {
@@ -315,9 +321,9 @@ func CreatePromRecordingRules(
 			} else if len(chassis) == 1 {
 				targetChassis = chassis[0]
 			} else {
-				fmt.Fprintln(os.Stderr, "no chassis found for ceems_redfish_current_watts for job", job)
+				fmt.Fprintln(os.Stderr, "no chassis found for", redfishPowerMetric, "for job", job)
 
-				return errors.New("no chassis found for ceems_redfish_current_watts")
+				return fmt.Errorf("no chassis found for %s", redfishPowerMetric)
 			}
 
 			// If targetChassis is found, set up label

@@ -325,8 +325,8 @@ groups:
           (ceems_compute_unit_memory_total_bytes{job="cpu-ipmi-nvidia-gpu"} > 0)
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
-      - record: instance:ceems_ipmi_dcmi_current_watts:pue
-        expr: 1 * (label_replace(ceems_ipmi_dcmi_current_watts{job="cpu-ipmi-nvidia-gpu"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0
+      - record: instance:ceems_ipmi_dcmi_power_current_watts:pue
+        expr: 1 * (label_replace(ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -359,7 +359,7 @@ groups:
       #
       - record: uuid:ceems_host_power_watts:pue
         expr: |2
-            0.9 * instance:ceems_ipmi_dcmi_current_watts:pue{job="cpu-ipmi-nvidia-gpu"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
+            0.9 * instance:ceems_ipmi_dcmi_power_current_watts:pue{job="cpu-ipmi-nvidia-gpu"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
               * on (instance) group_right () # Total CPU Power * (Compute CPU Time / Total CPU Time) -> Compute Unit CPU Power
                 (
                     (
@@ -371,7 +371,7 @@ groups:
                     sum by (instance) (irate(ceems_cpu_seconds_total{job="cpu-ipmi-nvidia-gpu",mode!~"idle|iowait|steal"}[2s]))
                 )
             +
-                0.1 * instance:ceems_ipmi_dcmi_current_watts:pue{job="cpu-ipmi-nvidia-gpu"} # Total Misc Power Usage
+                0.1 * instance:ceems_ipmi_dcmi_power_current_watts:pue{job="cpu-ipmi-nvidia-gpu"} # Total Misc Power Usage
               * on (instance) group_right () # Total Misc Power usage / Number of Compute Units -> Misc Power Usage by Compute Unit
                 (
                     ceems_compute_unit_memory_used_bytes{job="cpu-ipmi-nvidia-gpu"}
@@ -440,7 +440,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * (label_replace(ceems_ipmi_dcmi_current_watts{job="cpu-ipmi-nvidia-gpu"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0)
+          sum by (job) (1 * (label_replace(ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0)
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
@@ -490,8 +490,8 @@ groups:
           (ceems_compute_unit_memory_total_bytes{job="cpu-only-ipmi"} > 0)
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
-      - record: instance:ceems_ipmi_dcmi_current_watts:pue
-        expr: 1 * ceems_ipmi_dcmi_current_watts{job="cpu-only-ipmi"}
+      - record: instance:ceems_ipmi_dcmi_power_current_watts:pue
+        expr: 1 * ceems_ipmi_dcmi_power_current_watts{job="cpu-only-ipmi"}
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -524,7 +524,7 @@ groups:
       #
       - record: uuid:ceems_host_power_watts:pue
         expr: |2
-            0.9 * instance:ceems_ipmi_dcmi_current_watts:pue{job="cpu-only-ipmi"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
+            0.9 * instance:ceems_ipmi_dcmi_power_current_watts:pue{job="cpu-only-ipmi"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL Package / (RAPL Package + RAPL DRAM)) -> Total CPU Power
                   (
                       sum by (instance) (irate(ceems_rapl_package_joules_total{job="cpu-only-ipmi"}[2s]))
@@ -546,7 +546,7 @@ groups:
                     sum by (instance) (irate(ceems_cpu_seconds_total{job="cpu-only-ipmi",mode!~"idle|iowait|steal"}[2s]))
                 )
             +
-                  0.9 * instance:ceems_ipmi_dcmi_current_watts:pue{job="cpu-only-ipmi"}
+                  0.9 * instance:ceems_ipmi_dcmi_power_current_watts:pue{job="cpu-only-ipmi"}
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL DRAM / (RAPL Package + RAPL DRAM)) -> Total CPU Memory Power
                   (
                       sum by (instance) (irate(ceems_rapl_dram_joules_total{job="cpu-only-ipmi"}[2s]))
@@ -568,7 +568,7 @@ groups:
                     )
                 )
             +
-                0.1 * instance:ceems_ipmi_dcmi_current_watts:pue{job="cpu-only-ipmi"} # Total Misc Power Usage
+                0.1 * instance:ceems_ipmi_dcmi_power_current_watts:pue{job="cpu-only-ipmi"} # Total Misc Power Usage
               * on (instance) group_right () # Total Misc Power usage / Number of Compute Units -> Misc Power Usage by Compute Unit
                 (
                     ceems_compute_unit_memory_used_bytes{job="cpu-only-ipmi"}
@@ -637,7 +637,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * ceems_ipmi_dcmi_current_watts{job="cpu-only-ipmi"})
+          sum by (job) (1 * ceems_ipmi_dcmi_power_current_watts{job="cpu-only-ipmi"})
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
@@ -849,8 +849,8 @@ groups:
           (ceems_compute_unit_memory_total_bytes{job="cpu-only-redfish"} > 0)
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
-      - record: instance:ceems_redfish_current_watts:pue
-        expr: 1 * ceems_redfish_current_watts{job="cpu-only-redfish",chassis="Chassis_1"}
+      - record: instance:ceems_redfish_power_current_watts:pue
+        expr: 1 * ceems_redfish_power_current_watts{job="cpu-only-redfish",chassis="Chassis_1"}
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -883,7 +883,7 @@ groups:
       #
       - record: uuid:ceems_host_power_watts:pue
         expr: |2
-            0.9 * instance:ceems_redfish_current_watts:pue{job="cpu-only-redfish"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
+            0.9 * instance:ceems_redfish_power_current_watts:pue{job="cpu-only-redfish"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL Package / (RAPL Package + RAPL DRAM)) -> Total CPU Power
                   (
                       sum by (instance) (irate(ceems_rapl_package_joules_total{job="cpu-only-redfish"}[2s]))
@@ -905,7 +905,7 @@ groups:
                     sum by (instance) (irate(ceems_cpu_seconds_total{job="cpu-only-redfish",mode!~"idle|iowait|steal"}[2s]))
                 )
             +
-                  0.9 * instance:ceems_redfish_current_watts:pue{job="cpu-only-redfish"}
+                  0.9 * instance:ceems_redfish_power_current_watts:pue{job="cpu-only-redfish"}
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL DRAM / (RAPL Package + RAPL DRAM)) -> Total CPU Memory Power
                   (
                       sum by (instance) (irate(ceems_rapl_dram_joules_total{job="cpu-only-redfish"}[2s]))
@@ -927,7 +927,7 @@ groups:
                     )
                 )
             +
-                0.1 * instance:ceems_redfish_current_watts:pue{job="cpu-only-redfish"} # Total Misc Power Usage
+                0.1 * instance:ceems_redfish_power_current_watts:pue{job="cpu-only-redfish"} # Total Misc Power Usage
               * on (instance) group_right () # Total Misc Power usage / Number of Compute Units -> Misc Power Usage by Compute Unit
                 (
                     ceems_compute_unit_memory_used_bytes{job="cpu-only-redfish"}
@@ -996,7 +996,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * ceems_redfish_current_watts{job="cpu-only-redfish",chassis="Chassis_1"})
+          sum by (job) (1 * ceems_redfish_power_current_watts{job="cpu-only-redfish",chassis="Chassis_1"})
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
@@ -1046,8 +1046,8 @@ groups:
           (ceems_compute_unit_memory_total_bytes{job="cpu-redfish-nvidia-gpu"} > 0)
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
-      - record: instance:ceems_redfish_current_watts:pue
-        expr: 1 * ceems_redfish_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_1"}
+      - record: instance:ceems_redfish_power_current_watts:pue
+        expr: 1 * ceems_redfish_power_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_1"}
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -1080,7 +1080,7 @@ groups:
       #
       - record: uuid:ceems_host_power_watts:pue
         expr: |2
-            0.9 * instance:ceems_redfish_current_watts:pue{job="cpu-redfish-nvidia-gpu"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
+            0.9 * instance:ceems_redfish_power_current_watts:pue{job="cpu-redfish-nvidia-gpu"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL Package / (RAPL Package + RAPL DRAM)) -> Total CPU Power
                   (
                       sum by (instance) (irate(ceems_rapl_package_joules_total{job="cpu-redfish-nvidia-gpu"}[2s]))
@@ -1102,7 +1102,7 @@ groups:
                     sum by (instance) (irate(ceems_cpu_seconds_total{job="cpu-redfish-nvidia-gpu",mode!~"idle|iowait|steal"}[2s]))
                 )
             +
-                  0.9 * instance:ceems_redfish_current_watts:pue{job="cpu-redfish-nvidia-gpu"}
+                  0.9 * instance:ceems_redfish_power_current_watts:pue{job="cpu-redfish-nvidia-gpu"}
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL DRAM / (RAPL Package + RAPL DRAM)) -> Total CPU Memory Power
                   (
                       sum by (instance) (irate(ceems_rapl_dram_joules_total{job="cpu-redfish-nvidia-gpu"}[2s]))
@@ -1124,7 +1124,7 @@ groups:
                     )
                 )
             +
-                0.1 * instance:ceems_redfish_current_watts:pue{job="cpu-redfish-nvidia-gpu"} # Total Misc Power Usage
+                0.1 * instance:ceems_redfish_power_current_watts:pue{job="cpu-redfish-nvidia-gpu"} # Total Misc Power Usage
               * on (instance) group_right () # Total Misc Power usage / Number of Compute Units -> Misc Power Usage by Compute Unit
                 (
                     ceems_compute_unit_memory_used_bytes{job="cpu-redfish-nvidia-gpu"}
@@ -1193,7 +1193,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * ceems_redfish_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_1"})
+          sum by (job) (1 * ceems_redfish_power_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_1"})
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
@@ -1860,8 +1860,8 @@ groups:
           (ceems_compute_unit_memory_total_bytes{job="cpu-ipmi-nvidia-gpu"} > 0)
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
-      - record: instance:ceems_ipmi_dcmi_current_watts:pue
-        expr: 1 * (label_replace(ceems_ipmi_dcmi_current_watts{job="cpu-ipmi-nvidia-gpu"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0
+      - record: instance:ceems_ipmi_dcmi_power_current_watts:pue
+        expr: 1 * (label_replace(ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -1894,7 +1894,7 @@ groups:
       #
       - record: uuid:ceems_host_power_watts:pue
         expr: |2
-            0.9 * instance:ceems_ipmi_dcmi_current_watts:pue{job="cpu-ipmi-nvidia-gpu"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
+            0.9 * instance:ceems_ipmi_dcmi_power_current_watts:pue{job="cpu-ipmi-nvidia-gpu"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
               * on (instance) group_right () # Total CPU Power * (Compute CPU Time / Total CPU Time) -> Compute Unit CPU Power
                 (
                     (
@@ -1906,7 +1906,7 @@ groups:
                     sum by (instance) (irate(ceems_cpu_seconds_total{job="cpu-ipmi-nvidia-gpu",mode!~"idle|iowait|steal"}[2s]))
                 )
             +
-                0.1 * instance:ceems_ipmi_dcmi_current_watts:pue{job="cpu-ipmi-nvidia-gpu"} # Total Misc Power Usage
+                0.1 * instance:ceems_ipmi_dcmi_power_current_watts:pue{job="cpu-ipmi-nvidia-gpu"} # Total Misc Power Usage
               * on (instance) group_right () # Total Misc Power usage / Number of Compute Units -> Misc Power Usage by Compute Unit
                 (
                     ceems_compute_unit_memory_used_bytes{job="cpu-ipmi-nvidia-gpu"}
@@ -1973,7 +1973,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * (label_replace(ceems_ipmi_dcmi_current_watts{job="cpu-ipmi-nvidia-gpu"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0)
+          sum by (job) (1 * (label_replace(ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0)
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
@@ -2030,8 +2030,8 @@ groups:
           (ceems_compute_unit_memory_total_bytes{job="cpu-only-ipmi"} > 0)
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
-      - record: instance:ceems_ipmi_dcmi_current_watts:pue
-        expr: 1 * ceems_ipmi_dcmi_current_watts{job="cpu-only-ipmi"}
+      - record: instance:ceems_ipmi_dcmi_power_current_watts:pue
+        expr: 1 * ceems_ipmi_dcmi_power_current_watts{job="cpu-only-ipmi"}
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -2064,7 +2064,7 @@ groups:
       #
       - record: uuid:ceems_host_power_watts:pue
         expr: |2
-            0.9 * instance:ceems_ipmi_dcmi_current_watts:pue{job="cpu-only-ipmi"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
+            0.9 * instance:ceems_ipmi_dcmi_power_current_watts:pue{job="cpu-only-ipmi"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL Package / (RAPL Package + RAPL DRAM)) -> Total CPU Power
                   (
                       sum by (instance) (irate(ceems_rapl_package_joules_total{job="cpu-only-ipmi"}[2s]))
@@ -2086,7 +2086,7 @@ groups:
                     sum by (instance) (irate(ceems_cpu_seconds_total{job="cpu-only-ipmi",mode!~"idle|iowait|steal"}[2s]))
                 )
             +
-                  0.9 * instance:ceems_ipmi_dcmi_current_watts:pue{job="cpu-only-ipmi"}
+                  0.9 * instance:ceems_ipmi_dcmi_power_current_watts:pue{job="cpu-only-ipmi"}
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL DRAM / (RAPL Package + RAPL DRAM)) -> Total CPU Memory Power
                   (
                       sum by (instance) (irate(ceems_rapl_dram_joules_total{job="cpu-only-ipmi"}[2s]))
@@ -2108,7 +2108,7 @@ groups:
                     )
                 )
             +
-                0.1 * instance:ceems_ipmi_dcmi_current_watts:pue{job="cpu-only-ipmi"} # Total Misc Power Usage
+                0.1 * instance:ceems_ipmi_dcmi_power_current_watts:pue{job="cpu-only-ipmi"} # Total Misc Power Usage
               * on (instance) group_right () # Total Misc Power usage / Number of Compute Units -> Misc Power Usage by Compute Unit
                 (
                     ceems_compute_unit_memory_used_bytes{job="cpu-only-ipmi"}
@@ -2175,7 +2175,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * ceems_ipmi_dcmi_current_watts{job="cpu-only-ipmi"})
+          sum by (job) (1 * ceems_ipmi_dcmi_power_current_watts{job="cpu-only-ipmi"})
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
@@ -2399,8 +2399,8 @@ groups:
           (ceems_compute_unit_memory_total_bytes{job="cpu-only-redfish"} > 0)
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
-      - record: instance:ceems_redfish_current_watts:pue
-        expr: 1 * ceems_redfish_current_watts{job="cpu-only-redfish",chassis="Chassis_1"}
+      - record: instance:ceems_redfish_power_current_watts:pue
+        expr: 1 * ceems_redfish_power_current_watts{job="cpu-only-redfish",chassis="Chassis_1"}
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -2433,7 +2433,7 @@ groups:
       #
       - record: uuid:ceems_host_power_watts:pue
         expr: |2
-            0.9 * instance:ceems_redfish_current_watts:pue{job="cpu-only-redfish"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
+            0.9 * instance:ceems_redfish_power_current_watts:pue{job="cpu-only-redfish"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL Package / (RAPL Package + RAPL DRAM)) -> Total CPU Power
                   (
                       sum by (instance) (irate(ceems_rapl_package_joules_total{job="cpu-only-redfish"}[2s]))
@@ -2455,7 +2455,7 @@ groups:
                     sum by (instance) (irate(ceems_cpu_seconds_total{job="cpu-only-redfish",mode!~"idle|iowait|steal"}[2s]))
                 )
             +
-                  0.9 * instance:ceems_redfish_current_watts:pue{job="cpu-only-redfish"}
+                  0.9 * instance:ceems_redfish_power_current_watts:pue{job="cpu-only-redfish"}
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL DRAM / (RAPL Package + RAPL DRAM)) -> Total CPU Memory Power
                   (
                       sum by (instance) (irate(ceems_rapl_dram_joules_total{job="cpu-only-redfish"}[2s]))
@@ -2477,7 +2477,7 @@ groups:
                     )
                 )
             +
-                0.1 * instance:ceems_redfish_current_watts:pue{job="cpu-only-redfish"} # Total Misc Power Usage
+                0.1 * instance:ceems_redfish_power_current_watts:pue{job="cpu-only-redfish"} # Total Misc Power Usage
               * on (instance) group_right () # Total Misc Power usage / Number of Compute Units -> Misc Power Usage by Compute Unit
                 (
                     ceems_compute_unit_memory_used_bytes{job="cpu-only-redfish"}
@@ -2544,7 +2544,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * ceems_redfish_current_watts{job="cpu-only-redfish",chassis="Chassis_1"})
+          sum by (job) (1 * ceems_redfish_power_current_watts{job="cpu-only-redfish",chassis="Chassis_1"})
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
@@ -2601,8 +2601,8 @@ groups:
           (ceems_compute_unit_memory_total_bytes{job="cpu-redfish-nvidia-gpu"} > 0)
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
-      - record: instance:ceems_redfish_current_watts:pue
-        expr: 1 * (label_replace(ceems_redfish_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_2"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0
+      - record: instance:ceems_redfish_power_current_watts:pue
+        expr: 1 * (label_replace(ceems_redfish_power_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_2"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -2635,7 +2635,7 @@ groups:
       #
       - record: uuid:ceems_host_power_watts:pue
         expr: |2
-            0.9 * instance:ceems_redfish_current_watts:pue{job="cpu-redfish-nvidia-gpu"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
+            0.9 * instance:ceems_redfish_power_current_watts:pue{job="cpu-redfish-nvidia-gpu"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL Package / (RAPL Package + RAPL DRAM)) -> Total CPU Power
                   (
                       sum by (instance) (irate(ceems_rapl_package_joules_total{job="cpu-redfish-nvidia-gpu"}[2s]))
@@ -2657,7 +2657,7 @@ groups:
                     sum by (instance) (irate(ceems_cpu_seconds_total{job="cpu-redfish-nvidia-gpu",mode!~"idle|iowait|steal"}[2s]))
                 )
             +
-                  0.9 * instance:ceems_redfish_current_watts:pue{job="cpu-redfish-nvidia-gpu"}
+                  0.9 * instance:ceems_redfish_power_current_watts:pue{job="cpu-redfish-nvidia-gpu"}
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL DRAM / (RAPL Package + RAPL DRAM)) -> Total CPU Memory Power
                   (
                       sum by (instance) (irate(ceems_rapl_dram_joules_total{job="cpu-redfish-nvidia-gpu"}[2s]))
@@ -2679,7 +2679,7 @@ groups:
                     )
                 )
             +
-                0.1 * instance:ceems_redfish_current_watts:pue{job="cpu-redfish-nvidia-gpu"} # Total Misc Power Usage
+                0.1 * instance:ceems_redfish_power_current_watts:pue{job="cpu-redfish-nvidia-gpu"} # Total Misc Power Usage
               * on (instance) group_right () # Total Misc Power usage / Number of Compute Units -> Misc Power Usage by Compute Unit
                 (
                     ceems_compute_unit_memory_used_bytes{job="cpu-redfish-nvidia-gpu"}
@@ -2746,7 +2746,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * (label_replace(ceems_redfish_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_2"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0)
+          sum by (job) (1 * (label_replace(ceems_redfish_power_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_2"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0)
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
@@ -3418,8 +3418,8 @@ groups:
           (ceems_compute_unit_memory_total_bytes{job="cpu-ipmi-nvidia-gpu"} > 0)
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
-      - record: instance:ceems_ipmi_dcmi_current_watts:pue
-        expr: 1 * (label_replace(ceems_ipmi_dcmi_current_watts{job="cpu-ipmi-nvidia-gpu"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0
+      - record: instance:ceems_ipmi_dcmi_power_current_watts:pue
+        expr: 1 * (label_replace(ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -3452,7 +3452,7 @@ groups:
       #
       - record: uuid:ceems_host_power_watts:pue
         expr: |2
-            0.9 * instance:ceems_ipmi_dcmi_current_watts:pue{job="cpu-ipmi-nvidia-gpu"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
+            0.9 * instance:ceems_ipmi_dcmi_power_current_watts:pue{job="cpu-ipmi-nvidia-gpu"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
               * on (instance) group_right () # Total CPU Power * (Compute CPU Time / Total CPU Time) -> Compute Unit CPU Power
                 (
                     (
@@ -3464,7 +3464,7 @@ groups:
                     sum by (instance) (irate(ceems_cpu_seconds_total{job="cpu-ipmi-nvidia-gpu",mode!~"idle|iowait|steal"}[2s]))
                 )
             +
-                0.1 * instance:ceems_ipmi_dcmi_current_watts:pue{job="cpu-ipmi-nvidia-gpu"} # Total Misc Power Usage
+                0.1 * instance:ceems_ipmi_dcmi_power_current_watts:pue{job="cpu-ipmi-nvidia-gpu"} # Total Misc Power Usage
               * on (instance) group_right () # Total Misc Power usage / Number of Compute Units -> Misc Power Usage by Compute Unit
                 (
                     ceems_compute_unit_memory_used_bytes{job="cpu-ipmi-nvidia-gpu"}
@@ -3531,7 +3531,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * (label_replace(ceems_ipmi_dcmi_current_watts{job="cpu-ipmi-nvidia-gpu"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0)
+          sum by (job) (1 * (label_replace(ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0)
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
@@ -3588,8 +3588,8 @@ groups:
           (ceems_compute_unit_memory_total_bytes{job="cpu-only-ipmi"} > 0)
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
-      - record: instance:ceems_ipmi_dcmi_current_watts:pue
-        expr: 1 * ceems_ipmi_dcmi_current_watts{job="cpu-only-ipmi"}
+      - record: instance:ceems_ipmi_dcmi_power_current_watts:pue
+        expr: 1 * ceems_ipmi_dcmi_power_current_watts{job="cpu-only-ipmi"}
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -3622,7 +3622,7 @@ groups:
       #
       - record: uuid:ceems_host_power_watts:pue
         expr: |2
-            0.9 * instance:ceems_ipmi_dcmi_current_watts:pue{job="cpu-only-ipmi"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
+            0.9 * instance:ceems_ipmi_dcmi_power_current_watts:pue{job="cpu-only-ipmi"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL Package / (RAPL Package + RAPL DRAM)) -> Total CPU Power
                   (
                       sum by (instance) (irate(ceems_rapl_package_joules_total{job="cpu-only-ipmi"}[2s]))
@@ -3644,7 +3644,7 @@ groups:
                     sum by (instance) (irate(ceems_cpu_seconds_total{job="cpu-only-ipmi",mode!~"idle|iowait|steal"}[2s]))
                 )
             +
-                  0.9 * instance:ceems_ipmi_dcmi_current_watts:pue{job="cpu-only-ipmi"}
+                  0.9 * instance:ceems_ipmi_dcmi_power_current_watts:pue{job="cpu-only-ipmi"}
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL DRAM / (RAPL Package + RAPL DRAM)) -> Total CPU Memory Power
                   (
                       sum by (instance) (irate(ceems_rapl_dram_joules_total{job="cpu-only-ipmi"}[2s]))
@@ -3666,7 +3666,7 @@ groups:
                     )
                 )
             +
-                0.1 * instance:ceems_ipmi_dcmi_current_watts:pue{job="cpu-only-ipmi"} # Total Misc Power Usage
+                0.1 * instance:ceems_ipmi_dcmi_power_current_watts:pue{job="cpu-only-ipmi"} # Total Misc Power Usage
               * on (instance) group_right () # Total Misc Power usage / Number of Compute Units -> Misc Power Usage by Compute Unit
                 (
                     ceems_compute_unit_memory_used_bytes{job="cpu-only-ipmi"}
@@ -3733,7 +3733,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * ceems_ipmi_dcmi_current_watts{job="cpu-only-ipmi"})
+          sum by (job) (1 * ceems_ipmi_dcmi_power_current_watts{job="cpu-only-ipmi"})
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
@@ -3957,8 +3957,8 @@ groups:
           (ceems_compute_unit_memory_total_bytes{job="cpu-only-redfish"} > 0)
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
-      - record: instance:ceems_redfish_current_watts:pue
-        expr: 1 * ceems_redfish_current_watts{job="cpu-only-redfish",chassis="Chassis_1"}
+      - record: instance:ceems_redfish_power_current_watts:pue
+        expr: 1 * ceems_redfish_power_current_watts{job="cpu-only-redfish",chassis="Chassis_1"}
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -3991,7 +3991,7 @@ groups:
       #
       - record: uuid:ceems_host_power_watts:pue
         expr: |2
-            0.9 * instance:ceems_redfish_current_watts:pue{job="cpu-only-redfish"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
+            0.9 * instance:ceems_redfish_power_current_watts:pue{job="cpu-only-redfish"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL Package / (RAPL Package + RAPL DRAM)) -> Total CPU Power
                   (
                       sum by (instance) (irate(ceems_rapl_package_joules_total{job="cpu-only-redfish"}[2s]))
@@ -4013,7 +4013,7 @@ groups:
                     sum by (instance) (irate(ceems_cpu_seconds_total{job="cpu-only-redfish",mode!~"idle|iowait|steal"}[2s]))
                 )
             +
-                  0.9 * instance:ceems_redfish_current_watts:pue{job="cpu-only-redfish"}
+                  0.9 * instance:ceems_redfish_power_current_watts:pue{job="cpu-only-redfish"}
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL DRAM / (RAPL Package + RAPL DRAM)) -> Total CPU Memory Power
                   (
                       sum by (instance) (irate(ceems_rapl_dram_joules_total{job="cpu-only-redfish"}[2s]))
@@ -4035,7 +4035,7 @@ groups:
                     )
                 )
             +
-                0.1 * instance:ceems_redfish_current_watts:pue{job="cpu-only-redfish"} # Total Misc Power Usage
+                0.1 * instance:ceems_redfish_power_current_watts:pue{job="cpu-only-redfish"} # Total Misc Power Usage
               * on (instance) group_right () # Total Misc Power usage / Number of Compute Units -> Misc Power Usage by Compute Unit
                 (
                     ceems_compute_unit_memory_used_bytes{job="cpu-only-redfish"}
@@ -4102,7 +4102,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * ceems_redfish_current_watts{job="cpu-only-redfish",chassis="Chassis_1"})
+          sum by (job) (1 * ceems_redfish_power_current_watts{job="cpu-only-redfish",chassis="Chassis_1"})
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
@@ -4159,8 +4159,8 @@ groups:
           (ceems_compute_unit_memory_total_bytes{job="cpu-redfish-nvidia-gpu"} > 0)
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
-      - record: instance:ceems_redfish_current_watts:pue
-        expr: 1 * (label_replace(ceems_redfish_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_2"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0
+      - record: instance:ceems_redfish_power_current_watts:pue
+        expr: 1 * (label_replace(ceems_redfish_power_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_2"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -4193,7 +4193,7 @@ groups:
       #
       - record: uuid:ceems_host_power_watts:pue
         expr: |2
-            0.9 * instance:ceems_redfish_current_watts:pue{job="cpu-redfish-nvidia-gpu"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
+            0.9 * instance:ceems_redfish_power_current_watts:pue{job="cpu-redfish-nvidia-gpu"} # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL Package / (RAPL Package + RAPL DRAM)) -> Total CPU Power
                   (
                       sum by (instance) (irate(ceems_rapl_package_joules_total{job="cpu-redfish-nvidia-gpu"}[2s]))
@@ -4215,7 +4215,7 @@ groups:
                     sum by (instance) (irate(ceems_cpu_seconds_total{job="cpu-redfish-nvidia-gpu",mode!~"idle|iowait|steal"}[2s]))
                 )
             +
-                  0.9 * instance:ceems_redfish_current_watts:pue{job="cpu-redfish-nvidia-gpu"}
+                  0.9 * instance:ceems_redfish_power_current_watts:pue{job="cpu-redfish-nvidia-gpu"}
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL DRAM / (RAPL Package + RAPL DRAM)) -> Total CPU Memory Power
                   (
                       sum by (instance) (irate(ceems_rapl_dram_joules_total{job="cpu-redfish-nvidia-gpu"}[2s]))
@@ -4237,7 +4237,7 @@ groups:
                     )
                 )
             +
-                0.1 * instance:ceems_redfish_current_watts:pue{job="cpu-redfish-nvidia-gpu"} # Total Misc Power Usage
+                0.1 * instance:ceems_redfish_power_current_watts:pue{job="cpu-redfish-nvidia-gpu"} # Total Misc Power Usage
               * on (instance) group_right () # Total Misc Power usage / Number of Compute Units -> Misc Power Usage by Compute Unit
                 (
                     ceems_compute_unit_memory_used_bytes{job="cpu-redfish-nvidia-gpu"}
@@ -4304,7 +4304,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * (label_replace(ceems_redfish_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_2"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0)
+          sum by (job) (1 * (label_replace(ceems_redfish_power_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_2"}, "instancehost", "$1", "instance", "([^:]+):\\d+") - on (instancehost) group_left () sum by (instancehost) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="nvidia-gpu"} / 1,  "instancehost", "$1", "instance", "([^:]+):\\d+"))) > 0)
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.

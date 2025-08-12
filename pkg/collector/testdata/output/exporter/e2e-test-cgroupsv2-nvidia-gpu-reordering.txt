@@ -176,18 +176,18 @@ ceems_cray_pm_counters_power_watts{domain="node",hostname=""} 873
 ceems_cray_pm_counters_temp_celsius{domain="cpu0",hostname=""} 48
 # HELP ceems_exporter_build_info A metric with a constant '1' value labeled by version, revision, branch, goversion from which ceems_exporter was built, and the goos and goarch for the build.
 # TYPE ceems_exporter_build_info gauge
-# HELP ceems_ipmi_dcmi_avg_watts Average Power consumption in watts
-# TYPE ceems_ipmi_dcmi_avg_watts gauge
-ceems_ipmi_dcmi_avg_watts{hostname=""} 49
-# HELP ceems_ipmi_dcmi_current_watts Current Power consumption in watts
-# TYPE ceems_ipmi_dcmi_current_watts gauge
-ceems_ipmi_dcmi_current_watts{hostname=""} 49
-# HELP ceems_ipmi_dcmi_max_watts Maximum Power consumption in watts
-# TYPE ceems_ipmi_dcmi_max_watts gauge
-ceems_ipmi_dcmi_max_watts{hostname=""} 304
-# HELP ceems_ipmi_dcmi_min_watts Minimum Power consumption in watts
-# TYPE ceems_ipmi_dcmi_min_watts gauge
-ceems_ipmi_dcmi_min_watts{hostname=""} 6
+# HELP ceems_ipmi_dcmi_power_avg_watts Average power consumption reported by DCMI in watts
+# TYPE ceems_ipmi_dcmi_power_avg_watts gauge
+ceems_ipmi_dcmi_power_avg_watts{hostname=""} 49
+# HELP ceems_ipmi_dcmi_power_current_watts Current power consumption reported by DCMI in watts
+# TYPE ceems_ipmi_dcmi_power_current_watts gauge
+ceems_ipmi_dcmi_power_current_watts{hostname=""} 49
+# HELP ceems_ipmi_dcmi_power_max_watts Maximum power consumption reported by DCMI in watts
+# TYPE ceems_ipmi_dcmi_power_max_watts gauge
+ceems_ipmi_dcmi_power_max_watts{hostname=""} 304
+# HELP ceems_ipmi_dcmi_power_min_watts Minimum power consumption reported by DCMI in watts
+# TYPE ceems_ipmi_dcmi_power_min_watts gauge
+ceems_ipmi_dcmi_power_min_watts{hostname=""} 6
 # HELP ceems_meminfo_MemAvailable_bytes Memory information field MemAvailable_bytes.
 # TYPE ceems_meminfo_MemAvailable_bytes gauge
 ceems_meminfo_MemAvailable_bytes{hostname=""} 0
@@ -269,7 +269,7 @@ ceems_rdma_state_id{device="mlx5_0",hostname="",manager="slurm",port="1"} 4
 # TYPE ceems_scrape_collector_success gauge
 ceems_scrape_collector_success{collector="cpu"} 1
 ceems_scrape_collector_success{collector="cray_pm_counters"} 1
-ceems_scrape_collector_success{collector="ipmi_dcmi"} 1
+ceems_scrape_collector_success{collector="ipmi"} 1
 ceems_scrape_collector_success{collector="meminfo"} 1
 ceems_scrape_collector_success{collector="rapl"} 1
 ceems_scrape_collector_success{collector="slurm"} 1

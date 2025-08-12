@@ -7,6 +7,7 @@ package collector
 // DCMI spec (old) https://www.intel.com/content/dam/www/public/us/en/documents/technical-specifications/dcmi-v1-5-rev-spec.pdf
 
 import (
+	"cmp"
 	"context"
 	"encoding/json"
 	"errors"
@@ -15,6 +16,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -25,11 +27,14 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-const ipmiCollectorSubsystem = "ipmi_dcmi"
+const (
+	ipmiCollectorSubsystem = "ipmi"
+	ipmiDcmiLabel          = "ipmi_dcmi_power"
+)
 
 // Custom errors.
 var (
-	ErrIPMIUnavailable = errors.New("IPMI Power readings not Active")
+	ErrIPMIUnavailable = errors.New("ipmi dcmi power readings are not active")
 )
 
 // Execution modes.
@@ -42,14 +47,16 @@ const (
 )
 
 type impiCollector struct {
-	logger           *slog.Logger
-	hostname         string
-	execMode         string
-	ipmiCmd          []string
-	client           *ipmi.IPMIClient
-	securityContexts map[string]*security.SecurityContext
-	cachedMetric     map[string]float64
-	metricDesc       map[string]*prometheus.Desc
+	logger               *slog.Logger
+	hostname             string
+	execMode             string
+	ipmiCmd              []string
+	client               ipmi.Client
+	sensorRecords        []*ipmi.FullSensorRecord
+	securityContexts     map[string]*security.SecurityContext
+	cachedDCMIReadings   map[string]float64
+	cachedSensorReadings map[*ipmi.FullSensorRecord]float64
+	metricDesc           map[string]*prometheus.Desc
 }
 
 /*
@@ -134,29 +141,35 @@ type impiCollector struct {
 */
 
 var (
-	ipmiDcmiCmdDepr = CEEMSExporterApp.Flag(
+	ipmiDcmiCmd = CEEMSExporterApp.Flag(
 		"collector.ipmi.dcmi.cmd",
 		"IPMI DCMI command to get system power statistics. Use full path to executables.",
-	).Hidden().Default("").String()
-	ipmiDcmiCmd = CEEMSExporterApp.Flag(
-		"collector.ipmi_dcmi.cmd",
-		"IPMI DCMI command to get system power statistics. Use full path to executables.",
 	).Default("").String()
+	ipmiPwrEnergySensors = CEEMSExporterApp.Flag(
+		"collector.ipmi.power-energy-sensor-readings",
+		"Enables collection of IPMI energy and/or power sensor readings. Sensors will be detected based on units. (default: disabled).",
+	).Default("false").Bool()
+	ipmiMiscSensors = CEEMSExporterApp.Flag(
+		"collector.ipmi.sensor-id",
+		"Sensor IDs to monitor and export metrics.",
+	).Uint8List()
 	ipmiDevNum = CEEMSExporterApp.Flag(
-		"collector.ipmi_dcmi.dev-num",
+		"collector.ipmi.dev-num",
 		"Device number used by OpenIPMI driver. For e.g. if device is found at /dev/ipmi0, device number is 0",
 	).Default("0").Int()
 	forceNativeMode = CEEMSExporterApp.Flag(
-		"collector.ipmi_dcmi.force-native-mode",
+		"collector.ipmi.force-native-mode",
 		"Force native mode using OpenIPMI driver.",
 	).Default("false").Bool()
 
 	// test flags. Hidden.
 	ipmiDcmiTestMode = CEEMSExporterApp.Flag(
-		"collector.ipmi_dcmi.test-mode",
+		"collector.ipmi.test-mode",
 		"Enables IPMI DCMI collector in test mode. Only used in unit and e2e tests.",
 	).Default("false").Hidden().Bool()
+)
 
+var (
 	ipmiDcmiCmds = []string{
 		"ipmi-dcmi --get-system-power-statistics",
 		"ipmitool dcmi power reading",
@@ -194,9 +207,15 @@ const (
 	openIPMICtx    = "open_ipmi"
 )
 
+type ipmiReadings struct {
+	dcmiPower map[string]float64
+	sensors   map[*ipmi.FullSensorRecord]float64
+}
+
 type ipmiClientSecurityCtxData struct {
-	client        *ipmi.IPMIClient
-	powerReadings map[string]float64
+	client        ipmi.Client
+	sensorRecords []*ipmi.FullSensorRecord
+	readings      *ipmiReadings
 }
 
 func init() {
@@ -205,32 +224,35 @@ func init() {
 
 // NewIPMICollector returns a new Collector exposing IMPI DCMI power metrics.
 func NewIPMICollector(logger *slog.Logger) (Collector, error) {
-	if *ipmiDcmiCmdDepr != "" {
-		logger.Warn("flag --collector.ipmi.dcmi.cmd has been deprecated. Use native mode by OpenIPMI driver using --collector.ipmi_dcmi.force-native-mode")
+	// Check if native mode is enabled when sensors are provided
+	if (*ipmiPwrEnergySensors || len(*ipmiMiscSensors) > 0) && !*forceNativeMode {
+		return nil, errors.New("fetching ipmi sensor readings is only supported when --collector.ipmi.force-native-mode is enabled")
 	}
 
 	var execMode string
 
 	// Initialize metricDesc map
-	metricDesc := make(map[string]*prometheus.Desc, 4)
+	metricDesc := make(map[string]*prometheus.Desc, 5)
 
-	cachedMetric := make(map[string]float64, 4)
-
-	metricDesc["current"] = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, ipmiCollectorSubsystem, "current_watts"),
-		"Current Power consumption in watts", []string{"hostname"}, nil,
+	metricDesc["dcmi_current"] = prometheus.NewDesc(
+		prometheus.BuildFQName(Namespace, ipmiDcmiLabel, "current_watts"),
+		"Current power consumption reported by DCMI in watts", []string{"hostname"}, nil,
 	)
-	metricDesc["min"] = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, ipmiCollectorSubsystem, "min_watts"),
-		"Minimum Power consumption in watts", []string{"hostname"}, nil,
+	metricDesc["dcmi_min"] = prometheus.NewDesc(
+		prometheus.BuildFQName(Namespace, ipmiDcmiLabel, "min_watts"),
+		"Minimum power consumption reported by DCMI in watts", []string{"hostname"}, nil,
 	)
-	metricDesc["max"] = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, ipmiCollectorSubsystem, "max_watts"),
-		"Maximum Power consumption in watts", []string{"hostname"}, nil,
+	metricDesc["dcmi_max"] = prometheus.NewDesc(
+		prometheus.BuildFQName(Namespace, ipmiDcmiLabel, "max_watts"),
+		"Maximum power consumption reported by DCMI in watts", []string{"hostname"}, nil,
 	)
-	metricDesc["avg"] = prometheus.NewDesc(
-		prometheus.BuildFQName(Namespace, ipmiCollectorSubsystem, "avg_watts"),
-		"Average Power consumption in watts", []string{"hostname"}, nil,
+	metricDesc["dcmi_avg"] = prometheus.NewDesc(
+		prometheus.BuildFQName(Namespace, ipmiDcmiLabel, "avg_watts"),
+		"Average power consumption reported by DCMI in watts", []string{"hostname"}, nil,
+	)
+	metricDesc["sensors"] = prometheus.NewDesc(
+		prometheus.BuildFQName(Namespace, "ipmi_sensor_reading", "current"),
+		"Current reading of IPMI sensor", []string{"hostname", "sensorname", "sensorunits"}, nil,
 	)
 
 	// If no IPMI command is provided, try to find one
@@ -245,7 +267,7 @@ func NewIPMICollector(logger *slog.Logger) (Collector, error) {
 		goto outside
 	}
 
-	if *ipmiDcmiCmd == "" && *ipmiDcmiCmdDepr == "" {
+	if *ipmiDcmiCmd == "" {
 		if cmdSlice, err = findIPMICmd(); err != nil {
 			logger.Info("None of ipmitool,ipmiutil,ipmi-dcmi commands found. Using native implementation using OpenIPMI interface")
 
@@ -254,11 +276,7 @@ func NewIPMICollector(logger *slog.Logger) (Collector, error) {
 			goto outside
 		}
 	} else {
-		if *ipmiDcmiCmdDepr != "" {
-			cmdSlice = strings.Split(*ipmiDcmiCmdDepr, " ")
-		} else {
-			cmdSlice = strings.Split(*ipmiDcmiCmd, " ")
-		}
+		cmdSlice = strings.Split(*ipmiDcmiCmd, " ")
 	}
 
 	logger.Debug("Using IPMI command", "ipmi", strings.Join(cmdSlice, " "))
@@ -307,17 +325,25 @@ func NewIPMICollector(logger *slog.Logger) (Collector, error) {
 		goto outside
 	}
 
+	// By this point, if we still did not find a execMode return error
+	if execMode == "" {
+		logger.Error("Failed to execute IPMI commands. Ensure enough privileges are set on exporter process")
+
+		return nil, errors.New("failed to execute ipmi commands due to lack of privileges")
+	}
+
 outside:
 
-	logger.Debug("IPMI DCMI collector", "execution_mode", execMode)
+	logger.Debug("IPMI collector", "execution_mode", execMode)
 
 	collector := impiCollector{
-		logger:           logger,
-		hostname:         hostname,
-		execMode:         execMode,
-		metricDesc:       metricDesc,
-		cachedMetric:     cachedMetric,
-		securityContexts: make(map[string]*security.SecurityContext),
+		logger:               logger,
+		hostname:             hostname,
+		execMode:             execMode,
+		metricDesc:           metricDesc,
+		cachedDCMIReadings:   make(map[string]float64),
+		cachedSensorReadings: make(map[*ipmi.FullSensorRecord]float64),
+		securityContexts:     make(map[string]*security.SecurityContext),
 	}
 
 	// Setup necessary capabilities.
@@ -356,19 +382,68 @@ outside:
 			logger.Warn("Failed to parse capability name(s)", "err", err)
 		}
 
+		// IPMI config
+		ipmiConfig := &ipmi.Config{
+			Logger:  logger.With("subsystem", "ipmi_client"),
+			DevNum:  *ipmiDevNum,
+			Timeout: time.Second,
+		}
+
 		// Setup IPMI client
-		collector.client, err = ipmi.NewIPMIClient(*ipmiDevNum, logger.With("subsystem", "ipmi_client"))
+		collector.client, err = ipmi.NewClient(ipmiConfig)
 		if err != nil {
 			logger.Error("Failed to create a IPMI client", "err", err)
 
 			return nil, err
 		}
 
+		if *ipmiPwrEnergySensors || len(*ipmiMiscSensors) > 0 {
+			// Get all sensor records
+			sensorRecords, err := collector.client.SensorRecords()
+			if err != nil {
+				logger.Error("Failed to get sensor records", "err", err)
+
+				return nil, err
+			}
+
+			// Filter records
+			for _, record := range sensorRecords {
+				// When power and energy sensors are requested, filter based on units
+				if *ipmiPwrEnergySensors {
+					if record.BaseUnit == ipmi.SensorUnitWatts || record.BaseUnit == ipmi.SensorUnitJoules {
+						collector.sensorRecords = append(collector.sensorRecords, record)
+					}
+				}
+
+				// When sensor IDs are requested
+				if slices.Contains(*ipmiMiscSensors, record.Number) {
+					collector.sensorRecords = append(collector.sensorRecords, record)
+				}
+			}
+
+			// Remove duplicates
+			slices.SortFunc(collector.sensorRecords, func(a, b *ipmi.FullSensorRecord) int {
+				return cmp.Compare(a.Number, b.Number)
+			})
+
+			collector.sensorRecords = slices.CompactFunc(collector.sensorRecords, func(a, b *ipmi.FullSensorRecord) bool {
+				return a.Number == b.Number
+			})
+
+			// Get sensor names
+			sensorNames := make([]string, len(collector.sensorRecords))
+			for irecord, record := range collector.sensorRecords {
+				sensorNames[irecord] = record.Identity
+			}
+
+			logger.Debug("Sensor to monitor", "sensors", strings.Join(sensorNames, ","), "num_sensors", len(collector.sensorRecords))
+		}
+
 		// Setup security context
 		cfg := &security.SCConfig{
 			Name:         openIPMICtx,
 			Caps:         caps,
-			Func:         dcmiPowerReading,
+			Func:         doIPMIRequests,
 			Logger:       logger,
 			ExecNatively: disableCapAwareness,
 		}
@@ -388,18 +463,27 @@ outside:
 
 // Update implements Collector and exposes IPMI DCMI power related metrics.
 func (c *impiCollector) Update(ch chan<- prometheus.Metric) error {
-	// Get power consumption from IPMI
-	powerReadings, err := c.update()
+	// Get IPMI readings
+	ipmiReadings, err := c.update()
 	if err != nil {
 		return ErrNoData
 	}
 
 	// Returned value 0 means Power Measurement is not avail
-	for rType, rValue := range powerReadings {
+	for rType, rValue := range ipmiReadings.dcmiPower {
 		if rValue > 0 {
 			ch <- prometheus.MustNewConstMetric(c.metricDesc[rType], prometheus.GaugeValue, float64(rValue), c.hostname)
 
-			c.cachedMetric[rType] = rValue
+			c.cachedDCMIReadings[rType] = rValue
+		}
+	}
+
+	// Returned value 0 means sensor reading is not avail
+	for sType, sValue := range ipmiReadings.sensors {
+		if sValue > 0 {
+			ch <- prometheus.MustNewConstMetric(c.metricDesc["sensors"], prometheus.GaugeValue, float64(sValue), c.hostname, sType.Identity, sType.BaseUnit.String())
+
+			c.cachedSensorReadings[sType] = sValue
 		}
 	}
 
@@ -423,40 +507,56 @@ func (c *impiCollector) Stop(_ context.Context) error {
 }
 
 // update returns current power readings or cached ones.
-func (c *impiCollector) update() (map[string]float64, error) {
-	// Get power consumption from IPMI
+func (c *impiCollector) update() (*ipmiReadings, error) {
+	// Get power consumption from DCMI and sensor readings
 	// IPMI commands tend to fail frequently. If that happens we use last cached metric
-	powerReadings, err := c.getPowerReadings()
+	readings, err := c.getIPMIReadings()
 	if err != nil {
-		// If there is no cached metric return
-		if len(c.cachedMetric) == 0 {
-			return nil, ErrNoData
+		// If there are no current and cached readings, return error
+		if readings == nil {
+			if len(c.cachedDCMIReadings) == 0 && len(c.cachedSensorReadings) == 0 {
+				return nil, ErrNoData
+			}
+
+			c.logger.Error("Failed to get readings from IPMI. Using last cached values", "err", err)
+
+			return &ipmiReadings{dcmiPower: c.cachedDCMIReadings, sensors: c.cachedSensorReadings}, nil
 		}
 
-		c.logger.Error(
-			"Failed to get power statistics from IPMI. Using last cached values",
-			"err", err, "cached_metrics", fmt.Sprintf("%#v", c.cachedMetric),
-		)
+		// If DCMI readings are not available and cached readings are available set them
+		if len(readings.dcmiPower) == 0 && len(c.cachedDCMIReadings) > 0 {
+			c.logger.Error(
+				"Failed to get power statistics from IPMI DCMI. Using last cached value",
+				"err", err, "cached_value", c.cachedDCMIReadings["dcmi_current"],
+			)
 
-		powerReadings = c.cachedMetric
+			readings.dcmiPower = c.cachedDCMIReadings
+		}
+
+		// If sensor readings are not available and cached readings are available set them
+		if len(c.sensorRecords) > 0 && len(readings.sensors) == 0 && len(c.cachedSensorReadings) > 0 {
+			c.logger.Error("Failed to get readings from IPMI sensors. Using last cached values", "err", err)
+
+			readings.sensors = c.cachedSensorReadings
+		}
 	} else {
 		// Ensure powerReadings are non nil
 		// Check only current usage which is more important
-		if currentUsage, ok := powerReadings["current"]; !ok || currentUsage == 0 {
+		if currentUsage, ok := readings.dcmiPower["dcmi_current"]; !ok || currentUsage == 0 {
 			c.logger.Error(
-				"IPMI returned null values. Using last cached values",
-				"err", err, "cached_metrics", fmt.Sprintf("%#v", c.cachedMetric),
+				"IPMI DCMI returned null values. Using last cached value",
+				"err", err, "cached_value", c.cachedDCMIReadings["dcmi_current"],
 			)
 
-			powerReadings = c.cachedMetric
+			readings.dcmiPower = c.cachedDCMIReadings
 		}
 	}
 
-	return powerReadings, nil
+	return readings, nil
 }
 
-// Get current, min and max power readings.
-func (c *impiCollector) getPowerReadings() (map[string]float64, error) {
+// Get current, min and max DCMI power and sensor readings.
+func (c *impiCollector) getIPMIReadings() (*ipmiReadings, error) {
 	// If mode is native, make request in security context
 	if c.execMode == nativeMode {
 		return c.doRequestInSecurityContext()
@@ -480,7 +580,7 @@ func (c *impiCollector) getPowerReadings() (map[string]float64, error) {
 		return nil, err
 	}
 
-	return values, nil
+	return &ipmiReadings{dcmiPower: values}, nil
 }
 
 // Parse current, min and max power readings for capmc output.
@@ -504,14 +604,14 @@ func (c *impiCollector) parseCapmcOutput(stdOut []byte) (map[string]float64, err
 	for rType := range ipmiDCMIPowerReadingRegexMap {
 		if value, ok := data[rType]; ok {
 			if valueFloat, valueOk := value.(float64); valueOk {
-				powerReadings[rType] = valueFloat
+				powerReadings["dcmi_"+rType] = valueFloat
 			}
 		}
 	}
 
 	// capmc does not return current power. So we use avg as proxy for current
-	if powerReadings["avg"] > 0 {
-		powerReadings["current"] = powerReadings["avg"]
+	if powerReadings["dcmi_avg"] > 0 {
+		powerReadings["dcmi_current"] = powerReadings["dcmi_avg"]
 	}
 
 	return powerReadings, nil
@@ -533,7 +633,7 @@ func (c *impiCollector) parseIPMIOutput(stdOut []byte) (map[string]float64, erro
 		for rType, regex := range ipmiDCMIPowerReadingRegexMap {
 			if reading, err := getValue(stdOut, regex); err == nil {
 				if readingValue, err := strconv.ParseFloat(reading, 64); err == nil {
-					powerReadings[rType] = readingValue
+					powerReadings["dcmi_"+rType] = readingValue
 				}
 			}
 		}
@@ -595,25 +695,28 @@ func (c *impiCollector) executeCmdInSecurityContext() ([]byte, error) {
 }
 
 // doRequestInSecurityContext makes requests to IPMI device interface within a security context.
-func (c *impiCollector) doRequestInSecurityContext() (map[string]float64, error) {
+func (c *impiCollector) doRequestInSecurityContext() (*ipmiReadings, error) {
 	// Execute command as root
 	dataPtr := &ipmiClientSecurityCtxData{
-		client: c.client,
+		client:        c.client,
+		sensorRecords: c.sensorRecords,
 	}
 
 	// Read stdOut of command into data
 	if securityCtx, ok := c.securityContexts[openIPMICtx]; ok {
+		// Always return readings as we might have partial result
+		// in readings
 		if err := securityCtx.Exec(dataPtr); err != nil {
-			return nil, err
+			return dataPtr.readings, err
 		}
 	} else {
 		return nil, security.ErrNoSecurityCtx
 	}
 
-	return dataPtr.powerReadings, nil
+	return dataPtr.readings, nil
 }
 
-func dcmiPowerReading(data any) error {
+func doIPMIRequests(data any) error {
 	// Assert data
 	var d *ipmiClientSecurityCtxData
 
@@ -622,19 +725,31 @@ func dcmiPowerReading(data any) error {
 		return security.ErrSecurityCtxDataAssertion
 	}
 
+	// Initialize readings
+	d.readings = &ipmiReadings{}
+
 	// Get current power reading from DCMI
-	reading, err := d.client.PowerReading(time.Second)
+	dcmiReading, err := d.client.DCMIPowerReading()
 	if err != nil {
 		return err
 	}
 
-	// Read power reading into dataPointer
-	d.powerReadings = map[string]float64{
-		"min":     float64(reading.Minimum),
-		"max":     float64(reading.Maximum),
-		"avg":     float64(reading.Average),
-		"current": float64(reading.Current),
+	// Read power readings into dataPointer
+	d.readings.dcmiPower = map[string]float64{
+		"dcmi_min":     float64(dcmiReading.Minimum),
+		"dcmi_max":     float64(dcmiReading.Maximum),
+		"dcmi_avg":     float64(dcmiReading.Average),
+		"dcmi_current": float64(dcmiReading.Current),
 	}
+
+	// Get sensor readings
+	sensorReadings, err := d.client.SensorReadings(d.sensorRecords)
+	if err != nil {
+		return err
+	}
+
+	// Read sensor readings into dataPointer
+	d.readings.sensors = sensorReadings
 
 	return nil
 }
