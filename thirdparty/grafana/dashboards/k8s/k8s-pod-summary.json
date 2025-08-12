@@ -2272,6 +2272,7 @@
   },
   "timezone": "",
   "title": "User k8s Pod Summary",
+  "uid": "k8s-pod-summary",
   "version": 1,
   "weekStart": ""
 }
