@@ -82,14 +82,14 @@ func (c *redfishClientConfig) UnmarshalYAML(unmarshal func(any) error) error {
 	// If BMC Hostname is not provided, attempt to discover it using OpenIPMI interface
 	if c.Hostname == "" {
 		// Make a new IPMI client
-		client, err := ipmi.NewIPMIClient(0, slog.New(slog.DiscardHandler))
+		client, err := ipmi.NewClient(&ipmi.Config{DevNum: 0, Logger: slog.New(slog.DiscardHandler), Timeout: time.Second})
 		if err != nil {
 			return fmt.Errorf("failed to create IPMI client to get BMC address: %w", err)
 		}
 		defer client.Close()
 
 		// Attempt to get new IP address
-		bmcIP, err := client.LanIP(time.Second)
+		bmcIP, err := client.LanIP()
 		if err != nil {
 			return fmt.Errorf("failed to get BMC LAN IP: %w", err)
 		}
@@ -181,19 +181,19 @@ func NewRedfishCollector(logger *slog.Logger) (Collector, error) {
 	// Initialize metricDesc map
 	metricDesc := map[string]*prometheus.Desc{
 		"current": prometheus.NewDesc(
-			prometheus.BuildFQName(Namespace, redfishCollectorSubsystem, "current_watts"),
+			prometheus.BuildFQName(Namespace, redfishCollectorSubsystem, "power_current_watts"),
 			"Current Power consumption in watts", []string{"hostname", "chassis"}, nil,
 		),
 		"min": prometheus.NewDesc(
-			prometheus.BuildFQName(Namespace, redfishCollectorSubsystem, "min_watts"),
+			prometheus.BuildFQName(Namespace, redfishCollectorSubsystem, "power_min_watts"),
 			"Minimum Power consumption in watts", []string{"hostname", "chassis"}, nil,
 		),
 		"max": prometheus.NewDesc(
-			prometheus.BuildFQName(Namespace, redfishCollectorSubsystem, "max_watts"),
+			prometheus.BuildFQName(Namespace, redfishCollectorSubsystem, "power_max_watts"),
 			"Maximum Power consumption in watts", []string{"hostname", "chassis"}, nil,
 		),
 		"avg": prometheus.NewDesc(
-			prometheus.BuildFQName(Namespace, redfishCollectorSubsystem, "avg_watts"),
+			prometheus.BuildFQName(Namespace, redfishCollectorSubsystem, "power_avg_watts"),
 			"Average Power consumption in watts", []string{"hostname", "chassis"}, nil,
 		),
 	}

@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.11.0 / 2025-*-*
+
+### Breaking Changes
+
+#### CEEMS Exporter
+
+- Collector `ipmi_dcmi` has been renamed to `ipmi` as more functionality beyond DCMI has been added to the collector.
+- Following metric labels have been renamed to be more consistent with Prometheus naming convention:
+    * `ceems_ipmi_dcmi_current_watts` -> `ceems_ipmi_dcmi_power_current_watts`
+    * `ceems_ipmi_dcmi_min_watts` -> `ceems_ipmi_dcmi_power_min_watts`
+    * `ceems_ipmi_dcmi_max_watts` -> `ceems_ipmi_dcmi_power_max_watts`
+    * `ceems_ipmi_dcmi_avg_watts` -> `ceems_ipmi_dcmi_power_avg_watts`
+    * `ceems_redfish_current_watts` -> `ceems_redfish_power_current_watts`
+    * `ceems_redfish_min_watts` -> `ceems_redfish_power_min_watts`
+    * `ceems_redfish_max_watts` -> `ceems_redfish_power_max_watts`
+    * `ceems_redfish_avg_watts` -> `ceems_redfish_power_avg_watts`
+
 ## 0.10.2 / 2025-08-07
 
 - [BUGFIX] Fix bpf code to work with LLVM 20 [#393](https://github.com/mahendrapaipuri/ceems/pull/393) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))

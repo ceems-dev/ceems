@@ -1,11 +1,8 @@
 package ipmi
 
 import (
-	"bytes"
 	"encoding/binary"
-	"errors"
 	"fmt"
-	"time"
 	"unsafe"
 )
 
@@ -18,19 +15,19 @@ const (
 )
 
 type PowerReading struct {
-	Minimum, Maximum, Average, Current uint16
+	Minimum, Maximum, Average, Current float64
 	Activated                          bool
 }
 
 // PowerReading returns the current IPMI DCMI power reading.
-func (i *IPMIClient) PowerReading(timeout time.Duration) (*PowerReading, error) {
+func (i *ipmiClient) DCMIPowerReading() (*PowerReading, error) {
 	// Request payload
 	msgData := [4]uint8{IPMI_DCMI, 0x1, 0x0, 0x0}
 
 	// IPMI Request
-	req := ipmiReq{
-		Addr:    uintptr(unsafe.Pointer(&i.BMCAddr)),
-		AddrLen: uint(unsafe.Sizeof(i.BMCAddr)),
+	req := Request{
+		Addr:    uintptr(unsafe.Pointer(&i.bmcAddr)),
+		AddrLen: uint(unsafe.Sizeof(i.bmcAddr)),
 		Msgid:   1,
 		Msg: ipmiMsg{
 			Data:    uintptr(unsafe.Pointer(&msgData[0])),
@@ -41,25 +38,19 @@ func (i *IPMIClient) PowerReading(timeout time.Duration) (*PowerReading, error) 
 	}
 
 	// Do request and read response
-	resp, err := i.Do(&req, timeout)
+	resp, err := i.Do(&req)
 	if err != nil {
-		i.Logger.Error("Failed to make IPMI request", "err", err)
+		i.logger.Error("Failed to make IPMI request to get DCMI reading", "err", err)
 
-		return nil, fmt.Errorf("failed to make IPMI request: %w", err)
-	}
-
-	// Check completion code
-	var completionCode uint16
-	if err := binary.Read(bytes.NewReader(resp.Data[0:1]), binary.BigEndian, &completionCode); err == nil && completionCode != 0 {
-		return nil, errors.New("received non zero completion code for IPMI power readings response")
+		return nil, fmt.Errorf("failed to make ipmi request for dcmi reading: %w", err)
 	}
 
 	// Get readings
 	return &PowerReading{
-		Current:   binary.LittleEndian.Uint16(resp.Data[2:4]),
-		Minimum:   binary.LittleEndian.Uint16(resp.Data[4:6]),
-		Maximum:   binary.LittleEndian.Uint16(resp.Data[6:8]),
-		Average:   binary.LittleEndian.Uint16(resp.Data[8:10]),
+		Current:   float64(binary.LittleEndian.Uint16(resp.Data[2:4])),
+		Minimum:   float64(binary.LittleEndian.Uint16(resp.Data[4:6])),
+		Maximum:   float64(binary.LittleEndian.Uint16(resp.Data[6:8])),
+		Average:   float64(binary.LittleEndian.Uint16(resp.Data[8:10])),
 		Activated: resp.Data[18] == IPMI_DCMI_ACTIVATED,
 	}, nil
 }

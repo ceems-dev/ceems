@@ -175,18 +175,18 @@ ceems_hwmon_power_max_watts{chip="socket",chip_name="socket",hostname="",sensor=
 # TYPE ceems_hwmon_power_min_watts gauge
 ceems_hwmon_power_min_watts{chip="socket",chip_name="socket",hostname="",sensor="power1"} 65
 ceems_hwmon_power_min_watts{chip="socket",chip_name="socket",hostname="",sensor="power2"} 46
-# HELP ceems_ipmi_dcmi_avg_watts Average Power consumption in watts
-# TYPE ceems_ipmi_dcmi_avg_watts gauge
-ceems_ipmi_dcmi_avg_watts{hostname=""} 2567
-# HELP ceems_ipmi_dcmi_current_watts Current Power consumption in watts
-# TYPE ceems_ipmi_dcmi_current_watts gauge
-ceems_ipmi_dcmi_current_watts{hostname=""} 2578
-# HELP ceems_ipmi_dcmi_max_watts Maximum Power consumption in watts
-# TYPE ceems_ipmi_dcmi_max_watts gauge
-ceems_ipmi_dcmi_max_watts{hostname=""} 4294
-# HELP ceems_ipmi_dcmi_min_watts Minimum Power consumption in watts
-# TYPE ceems_ipmi_dcmi_min_watts gauge
-ceems_ipmi_dcmi_min_watts{hostname=""} 2118
+# HELP ceems_ipmi_dcmi_power_avg_watts Average power consumption reported by DCMI in watts
+# TYPE ceems_ipmi_dcmi_power_avg_watts gauge
+ceems_ipmi_dcmi_power_avg_watts{hostname=""} 2567
+# HELP ceems_ipmi_dcmi_power_current_watts Current power consumption reported by DCMI in watts
+# TYPE ceems_ipmi_dcmi_power_current_watts gauge
+ceems_ipmi_dcmi_power_current_watts{hostname=""} 2578
+# HELP ceems_ipmi_dcmi_power_max_watts Maximum power consumption reported by DCMI in watts
+# TYPE ceems_ipmi_dcmi_power_max_watts gauge
+ceems_ipmi_dcmi_power_max_watts{hostname=""} 4294
+# HELP ceems_ipmi_dcmi_power_min_watts Minimum power consumption reported by DCMI in watts
+# TYPE ceems_ipmi_dcmi_power_min_watts gauge
+ceems_ipmi_dcmi_power_min_watts{hostname=""} 2118
 # HELP ceems_meminfo_MemAvailable_bytes Memory information field MemAvailable_bytes.
 # TYPE ceems_meminfo_MemAvailable_bytes gauge
 ceems_meminfo_MemAvailable_bytes{hostname=""} 0
@@ -212,29 +212,29 @@ ceems_rapl_package_joules_total{hostname="",index="1",path="pkg/collector/testda
 # TYPE ceems_rapl_package_power_limit_watts_total counter
 ceems_rapl_package_power_limit_watts_total{hostname="",index="0",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:0"} 180
 ceems_rapl_package_power_limit_watts_total{hostname="",index="1",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:1"} 180
-# HELP ceems_redfish_avg_watts Average Power consumption in watts
-# TYPE ceems_redfish_avg_watts gauge
-ceems_redfish_avg_watts{chassis="Chassis_1",hostname=""} 365
-ceems_redfish_avg_watts{chassis="Chassis_2",hostname=""} 1734
-# HELP ceems_redfish_current_watts Current Power consumption in watts
-# TYPE ceems_redfish_current_watts gauge
-ceems_redfish_current_watts{chassis="Chassis_1",hostname=""} 397
-ceems_redfish_current_watts{chassis="Chassis_2",hostname=""} 1696
-# HELP ceems_redfish_max_watts Maximum Power consumption in watts
-# TYPE ceems_redfish_max_watts gauge
-ceems_redfish_max_watts{chassis="Chassis_1",hostname=""} 609
-ceems_redfish_max_watts{chassis="Chassis_2",hostname=""} 2155
-# HELP ceems_redfish_min_watts Minimum Power consumption in watts
-# TYPE ceems_redfish_min_watts gauge
-ceems_redfish_min_watts{chassis="Chassis_1",hostname=""} 326
-ceems_redfish_min_watts{chassis="Chassis_2",hostname=""} 588
+# HELP ceems_redfish_power_avg_watts Average Power consumption in watts
+# TYPE ceems_redfish_power_avg_watts gauge
+ceems_redfish_power_avg_watts{chassis="Chassis_1",hostname=""} 365
+ceems_redfish_power_avg_watts{chassis="Chassis_2",hostname=""} 1734
+# HELP ceems_redfish_power_current_watts Current Power consumption in watts
+# TYPE ceems_redfish_power_current_watts gauge
+ceems_redfish_power_current_watts{chassis="Chassis_1",hostname=""} 397
+ceems_redfish_power_current_watts{chassis="Chassis_2",hostname=""} 1696
+# HELP ceems_redfish_power_max_watts Maximum Power consumption in watts
+# TYPE ceems_redfish_power_max_watts gauge
+ceems_redfish_power_max_watts{chassis="Chassis_1",hostname=""} 609
+ceems_redfish_power_max_watts{chassis="Chassis_2",hostname=""} 2155
+# HELP ceems_redfish_power_min_watts Minimum Power consumption in watts
+# TYPE ceems_redfish_power_min_watts gauge
+ceems_redfish_power_min_watts{chassis="Chassis_1",hostname=""} 326
+ceems_redfish_power_min_watts{chassis="Chassis_2",hostname=""} 588
 # HELP ceems_scrape_collector_duration_seconds ceems_exporter: Duration of a collector scrape.
 # TYPE ceems_scrape_collector_duration_seconds gauge
 # HELP ceems_scrape_collector_success ceems_exporter: Whether a collector succeeded.
 # TYPE ceems_scrape_collector_success gauge
 ceems_scrape_collector_success{collector="cpu"} 1
 ceems_scrape_collector_success{collector="hwmon"} 1
-ceems_scrape_collector_success{collector="ipmi_dcmi"} 1
+ceems_scrape_collector_success{collector="ipmi"} 1
 ceems_scrape_collector_success{collector="meminfo"} 1
 ceems_scrape_collector_success{collector="rapl"} 1
 ceems_scrape_collector_success{collector="redfish"} 1
