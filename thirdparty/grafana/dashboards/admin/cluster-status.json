@@ -2058,6 +2058,10 @@
       {
         "allValue": ".*",
         "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
         "definition": "label_values(job)",
         "description": "Prometheus Scrape Job",
         "label": "Scrape Job:",
@@ -2132,7 +2136,7 @@
   },
   "timezone": "",
   "title": "Cluster Status",
-  "uid": "cldpmdfp36n2tcb",
+  "uid": "ceems-cluster-status",
   "version": 2,
   "weekStart": ""
 }

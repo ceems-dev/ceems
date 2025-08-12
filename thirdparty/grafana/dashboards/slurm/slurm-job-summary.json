@@ -2290,6 +2290,7 @@
   },
   "timezone": "",
   "title": "User SLURM Job Summary",
+  "uid": "slurm-job-summary",
   "version": 1,
   "weekStart": ""
 }

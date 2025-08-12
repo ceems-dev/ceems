@@ -2270,6 +2270,7 @@
   },
   "timezone": "",
   "title": "User Openstack VM Summary",
+  "uid": "os-vm-summary",
   "version": 1,
   "weekStart": ""
 }
