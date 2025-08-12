@@ -309,8 +309,10 @@ for getting deviceIDs attached to each pod. This is discussed more in detail in
 
 :::important[IMPORTANT]
 
+In version `0.11.0`, this collector has been renamed to `--collector.ipmi`.
+
 From version `0.5.0`, this collector is disabled by default and it
-must be explicitly enabled using the CLI flag `--collector.ipmi_dcmi`
+must be explicitly enabled using the CLI flag `--collector.ipmi`
 
 :::
 
@@ -327,7 +329,7 @@ implementation of the IPMI protocol using the
 Currently, this mode is only used as a fallback when no third-party libraries are found
 on the host. However, the pure Go implementation is more performant than calling
 third-party libraries in a sub-process and it should be preferred over other methods.
-Users can force this mode by passing the CLI flag `--collector.ipmi_dcmi.force-native-mode`
+Users can force this mode by passing the CLI flag `--collector.ipmi.force-native-mode`
 
 :::
 
@@ -335,7 +337,7 @@ Thus, in order to enable and force the IPMI collector in native mode, the follow
 must be passed to the exporter:
 
 ```bash
-ceems_exporter --collector.ipmi_dcmi --collector.ipmi_dcmi.force-native-mode
+ceems_exporter --collector.ipmi --collector.ipmi.force-native-mode
 ```
 
 Generally, `ipmi` related commands are available only for `root`. More on the privileges
@@ -348,6 +350,16 @@ power reading reports exactly. Depending on the vendor's implementation, it migh
 might not include the power consumption of GPUs.
 
 :::
+
+When native mode is enabled, IPMI collector is capable of exporting sensor reading
+metrics as well. When flag `--collector.ipmi.power-energy-sensor-readings` is enabled,
+the collector will automatically detect the sensors that have units of Watts or Joules
+and exports the readings of those sensors to Prometheus. In case the user wants to
+export metrics of sensors other than power and energy, it can be configured using the
+CLI flag `--collector.ipmi.sensor-id` (it can be repeated to configure multiple sensors).
+The sensor IDs can be fetched using commands like `ipmitool sdr elist` or `ipmi-sensors -v`.
+Note that sensor IDs are presented in hex in ths output of these commands and they must be
+converted to decimal in the CLI flag `--collector.ipmi.sensor-id`.
 
 ### Redfish collector
 

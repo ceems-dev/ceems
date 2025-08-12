@@ -20,3 +20,8 @@ docs/api/*.ts
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Ignore copied files
+docs/97-SECURITY.md
+docs/98-CONTRIBUTING.md
+docs/99-CHANGELOG.md

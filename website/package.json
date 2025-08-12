@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
-    "start": "yarn re-gen && docusaurus start",
-    "build": "yarn re-gen && docusaurus build",
+    "start": "yarn copy && yarn re-gen && docusaurus start",
+    "build": "yarn copy && yarn re-gen && docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -15,6 +15,7 @@
     "gen-all": "docusaurus gen-api-docs all --all-versions",
     "clean-all": "docusaurus clean-api-docs all --all-versions",
     "re-gen": "yarn clean-all && yarn gen-all",
+    "copy": "cp ../SECURITY.md docs/97-SECURITY.md && cp ../CONTRIBUTING.md docs/98-CONTRIBUTING.md && cp ../CHANGELOG.md docs/99-CHANGELOG.md",
     "typecheck": "tsc",
     "spellcheck": "cspell docs/**/*.md docs/*.md ../etc/**/*.md ../README.md",
     "linkcheck": "markdown-link-check -c md-link-check.json docs/**/*.md docs/*.md ../etc/**/*.md ../README.md",
