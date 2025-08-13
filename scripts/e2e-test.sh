@@ -41,6 +41,15 @@ do
   esac
 done
 
+# Kill any existing servers from previous tests
+pkill mock_exporters || true
+pkill mock_servers || true
+pkill ceems_exporter || true
+pkill ceems_api_server || true
+pkill ceems_lb || true
+pkill redfish_proxy || true
+pkill ceems_k8s_admission_controller || true
+
 if [[ "${scenario}" =~ ^"exporter" ]]
 then
   # cgroups_mode=$([ $(stat -fc %T /sys/fs/cgroup/) = "cgroup2fs" ] && echo "unified" || ( [ -e /sys/fs/cgroup/unified/ ] && echo "hybrid" || echo "legacy"))
@@ -528,6 +537,7 @@ then
         --collector.redfish.web-config="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
         --collector.cray_pm_counters \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -548,6 +558,7 @@ then
         --collector.ipmi \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/freeipmi/ipmi-dcmi" \
         --collector.ipmi.test-mode \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -574,6 +585,7 @@ then
         --collector.redfish.config.file.expand-env-vars \
         --collector.netdev \
         --collector.netdev.device-include="eth0" \
+        --collector.rapl \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -595,6 +607,7 @@ then
         --collector.ipmi \
         --collector.ipmi.test-mode \
         --collector.cray_pm_counters \
+        --collector.rapl \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -616,6 +629,7 @@ then
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
+        --collector.rapl \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -633,6 +647,7 @@ then
         --collector.ipmi \
         --collector.ipmi.test-mode \
         --collector.infiniband \
+        --collector.rapl \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -651,6 +666,7 @@ then
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/ipmiutils/ipmiutil" \
         --collector.ipmi.test-mode \
         --collector.cray_pm_counters \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -675,6 +691,7 @@ then
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
         --collector.cray_pm_counters \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -696,6 +713,7 @@ then
         --collector.ipmi \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
         --collector.ipmi.test-mode \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -720,6 +738,7 @@ then
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -745,6 +764,7 @@ then
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
         --collector.empty-hostname-label \
+        --collector.rapl \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -763,6 +783,7 @@ then
         --collector.ipmi \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
         --collector.ipmi.test-mode \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -785,6 +806,7 @@ then
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -803,6 +825,7 @@ then
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
         --collector.ipmi.test-mode \
         --collector.empty-hostname-label \
+        --collector.rapl \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -820,6 +843,7 @@ then
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
         --collector.ipmi.test-mode \
         --collector.empty-hostname-label \
+        --collector.rapl \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -839,6 +863,7 @@ then
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -855,6 +880,7 @@ then
         --collector.k8s \
         --collector.k8s.kube-config-file="pkg/collector/testdata/k8s/kubeconfig.yml" \
         --collector.k8s.kubelet-socket-file="${CEEMS_KUBELET_SOCKET_DIR}/amd/kubelet.sock" \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -874,6 +900,7 @@ then
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -1504,6 +1531,9 @@ then
       ./bin/mock_servers redfish > /dev/null 2>&1 &
       MOCK_REDFISH_PID=$!
 
+      # Check rules provided in repo
+      find etc/prometheus -name "*.rules" | xargs -I {} promtool check rules {} >> "${logfile}" 2>&1
+
       waitport "5000"
 
       ./bin/mock_exporters test-mode dcgm amd-smi amd-device-metrics > /dev/null 2>&1 &
@@ -1524,6 +1554,7 @@ then
         --collector.ipmi \
         --collector.ipmi.test-mode \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/freeipmi/ipmi-dcmi" \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:9010" \
         --web.disable-exporter-metrics \
@@ -1538,6 +1569,7 @@ then
         --collector.cgroups.force-version="v1" \
         --collector.slurm \
         --collector.gpu.type="nogpu" \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:9011" \
         --web.disable-exporter-metrics \
@@ -1555,6 +1587,7 @@ then
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:9012" \
         --web.disable-exporter-metrics \
@@ -1568,11 +1601,13 @@ then
         --path.procfs="pkg/collector/testdata/proc" \
         --collector.cgroups.force-version="v1" \
         --collector.slurm \
+        --collector.slurm.gres-config-file="pkg/collector/testdata/gres.conf" \
         --collector.gpu.type="nvidia" \
         --collector.gpu.nvidia-smi-path="pkg/collector/testdata/nvidia-smi" \
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:9013" \
         --web.disable-exporter-metrics \
@@ -1589,11 +1624,29 @@ then
         --collector.gpu.type="amd" \
         --collector.gpu.rocm-smi-path="pkg/collector/testdata/rocm-smi" \
         --collector.cray_pm_counters \
+        --collector.rapl \
         --collector.empty-hostname-label \
         --web.listen-address "127.0.0.1:9014" \
         --web.disable-exporter-metrics \
         --log.level="debug" > /dev/null 2>&1 &
       MOCK_EXPORTER5_PID=$!
+
+      # Hwmon available
+      ./bin/ceems_exporter \
+        --path.sysfs="pkg/collector/testdata/sys" \
+        --path.cgroupfs="pkg/collector/testdata/sys/fs/cgroup" \
+        --path.procfs="pkg/collector/testdata/proc" \
+        --collector.cgroups.force-version="v1" \
+        --collector.slurm \
+        --collector.gpu.type="amd" \
+        --collector.gpu.rocm-smi-path="pkg/collector/testdata/rocm-smi" \
+        --collector.hwmon \
+        --collector.rapl \
+        --collector.empty-hostname-label \
+        --web.listen-address "127.0.0.1:9015" \
+        --web.disable-exporter-metrics \
+        --log.level="debug" > /dev/null 2>&1 &
+      MOCK_EXPORTER6_PID=$!
 
       # Only IPMI available (No RAPL). IPMI includes GPU power
       ./bin/ceems_exporter \
@@ -1601,16 +1654,18 @@ then
         --path.procfs="pkg/collector/testdata/proc" \
         --collector.cgroups.force-version="v1" \
         --collector.slurm \
+        --collector.slurm.gres-config-file="pkg/collector/testdata/gres.conf" \
         --collector.gpu.type="nvidia" \
         --collector.gpu.nvidia-smi-path="pkg/collector/testdata/nvidia-smi" \
         --collector.ipmi \
         --collector.ipmi.test-mode \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/openipmi/ipmitool" \
+        --collector.rapl \
         --collector.empty-hostname-label \
-        --web.listen-address "127.0.0.1:9015" \
+        --web.listen-address "127.0.0.1:9016" \
         --web.disable-exporter-metrics \
         --log.level="debug" > /dev/null 2>&1 &
-      MOCK_EXPORTER6_PID=$!
+      MOCK_EXPORTER7_PID=$!
 
       # Emissions target
       ./bin/ceems_exporter \
@@ -1618,10 +1673,10 @@ then
         --collector.emissions \
         --collector.emissions.provider=owid \
         --collector.empty-hostname-label \
-        --web.listen-address "127.0.0.1:9016" \
+        --web.listen-address "127.0.0.1:9017" \
         --web.disable-exporter-metrics \
         --log.level="debug" > /dev/null 2>&1 &
-      MOCK_EXPORTER7_PID=$!
+      MOCK_EXPORTER8_PID=$!
 
       waitport "9010"
       waitport "9011"
@@ -1630,6 +1685,7 @@ then
       waitport "9014"
       waitport "9015"
       waitport "9016"
+      waitport "9017"
 
       prometheus \
         --config.file cmd/ceems_tool/testdata/prometheus.yml \
@@ -1645,6 +1701,10 @@ then
 
       # Sleep a while for Prometheus to scrape metrics
       sleep 30
+
+      # Get series from rules
+      ./scripts/extract_query_value "job series" $(curl -gs 'http://localhost:9090/api/v1/query?' --data-urlencode 'query=count({__name__=~"job:(.*)"})') >> "${fixture_output}"
+      ./scripts/extract_query_value "uuid series" $(curl -gs 'http://localhost:9090/api/v1/query?' --data-urlencode 'query=count({__name__=~"uuid:(.*)"})') >> "${fixture_output}"
 
       echo "0" | ./bin/ceems_tool tsdb create-recording-rules --country-code=FR --output-dir "${tmpdir}/rules" >> "${logfile}" 2>&1
 
@@ -1670,7 +1730,7 @@ then
       done
 
       # Rules with static emission factor
-      echo "1" | ./bin/ceems_tool tsdb create-recording-rules --emission-factor=50 --output-dir "${tmpdir}/rules" >> "${logfile}" 2>&1
+      echo "0" | ./bin/ceems_tool tsdb create-recording-rules --emission-factor=50 --output-dir "${tmpdir}/rules" >> "${logfile}" 2>&1
 
       # Add content of each recording file to fixture_output
       find "${tmpdir}/rules" -type f -print0 | sort -z | while IFS= read -r -d $'\0' file; do
@@ -1690,8 +1750,14 @@ then
       # Kill and restart Prom to sync data
       kill -9 "${PROMETHEUS_PID}"
 
+       # Make a copy of Prometheus config
+      cp cmd/ceems_tool/testdata/prometheus.yml "${tmpdir}/prometheus.yml"
+
+      # Ignore existing recording rules
+      sed -i 's/prometheus/prometheus1/g' "${tmpdir}/prometheus.yml"
+
       prometheus \
-        --config.file cmd/ceems_tool/testdata/prometheus.yml \
+        --config.file "${tmpdir}/prometheus.yml" \
         --storage.tsdb.retention.time 10y \
         --storage.tsdb.path "${tmpdir}/tsdb" \
         --log.level="debug" >> "${logfile}" 2>&1 &

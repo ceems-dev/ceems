@@ -11,6 +11,7 @@
 # We leverage these rules to include PUE (Power Usage Effectiveness) in the Power
 # estimation as well.
 #
+{{- $labelreplace := "label_replace(label_replace(%s%s{job=\"%s\"}, \"gpuuuid\", \"$1\", \"serial_number\", \"(.*)\"), \"gpuiid\", \"$1\", \"gpu_partition_id\", \"(.*)\")" }}
 groups:
   - name: compute-unit-gpu-rules-{{.GPUJob}}
     interval: {{.EvaluationInterval}}
@@ -18,35 +19,64 @@ groups:
       # GPU Usage (%) by compute unit
       - record: uuid:ceems_gpu_usage:ratio
         expr: |2
-            gpu_gfx_activity{job="{{.GPUJob}}"}
-            * on (index) group_right ()
+            {{ printf $labelreplace .GPUMetricPrefix "gpu_gfx_activity" .GPUJob }}
+            * on (gpuuuid,gpuiid) group_right ()
             ceems_compute_unit_gpu_index_flag{job="{{.Job}}"}
 
       # GPU Memory Usage (%) by compute unit
       - record: uuid:ceems_gpu_memory_usage:ratio
+        labels:
+          type: vram
         expr: |2
           (
-              gpu_used_vram{job="{{.GPUJob}}"} * 100
+              {{ printf $labelreplace .GPUMetricPrefix "gpu_used_vram" .GPUJob }} * 100
             /
-              gpu_total_vram{job="{{.GPUJob}}"}
+              {{ printf $labelreplace .GPUMetricPrefix "gpu_total_vram" .GPUJob }} > 0
           )
-          * on (index) group_right ()
+          * on (gpuuuid,gpuiid) group_right ()
+          ceems_compute_unit_gpu_index_flag{job="{{.Job}}"}
+
+      - record: uuid:ceems_gpu_memory_usage:ratio
+        labels:
+          type: gtt
+        expr: |2
+          (
+              {{ printf $labelreplace .GPUMetricPrefix "gpu_used_gtt" .GPUJob }} * 100
+            /
+              {{ printf $labelreplace .GPUMetricPrefix "gpu_total_gtt" .GPUJob }} > 0
+          )
+          * on (gpuuuid,gpuiid) group_right ()
+          ceems_compute_unit_gpu_index_flag{job="{{.Job}}"}
+
+      - record: uuid:ceems_gpu_memory_usage:ratio
+        labels:
+          type: visiblevram
+        expr: |2
+          (
+              {{ printf $labelreplace .GPUMetricPrefix "gpu_used_visible_vram" .GPUJob }} * 100
+            /
+              {{ printf $labelreplace .GPUMetricPrefix "gpu_total_visible_vram" .GPUJob }} > 0
+          )
+          * on (gpuuuid,gpuiid) group_right ()
           ceems_compute_unit_gpu_index_flag{job="{{.Job}}"}
       
       # Total power (Watts) consumed by the GPU by accounting Power Usage Effectiveness (PUE) value.
+      # For AMD device metrics exporter, gpu_partition 0 is the one that has non zero power usage and
+      # rest of partitions will report zero. So, we need to always consider partition 0 to get real usage
+      # of GPU. In the relabel config we change
       - record: dev:gpu_power_usage_watts:pue
-        expr: {{.PUE}} * gpu_power_usage{job="{{.GPUJob}}"}
+        expr: {{.PUE}} * {{ printf $labelreplace .GPUMetricPrefix "gpu_package_power" .GPUJob }}
 
       - record: uuid:ceems_gpu_power_watts:pue
         expr: |2
           (
               ceems_compute_unit_gpu_sm_count{job="{{.Job}}"}
-            / on (index) group_left ()
-              (sum by (index) (ceems_compute_unit_gpu_sm_count{job="{{.Job}}"}) > 0)
+            / on (gpuuuid) group_left ()
+              (sum by (gpuuuid) (ceems_compute_unit_gpu_sm_count{job="{{.Job}}"}) > 0)
           )
-            * on (index) group_right()
-              dev:gpu_power_usage_watts:pue{job="{{.GPUJob}}"}
-          * on (index) group_right()
+            * on (gpuuuid) group_left()
+              dev:gpu_power_usage_watts:pue{job="{{.GPUJob}}",gpuiid="0"}
+          * on (gpuuuid,gpuiid,uuid) group_right()
           ceems_compute_unit_gpu_index_flag{job="{{.Job}}"}
           
 {{- $numproviders := len .Providers -}}
@@ -58,22 +88,14 @@ groups:
       - record: uuid:ceems_gpu_emissions_g_s:pue
         expr: |2
           label_replace(
-              dev:gpu_power_usage_watts:pue{job="{{$.GPUJob}}"} / 3.6e+06
-            * on (index) group_right ()
-              ceems_compute_unit_gpu_index_flag{job="{{$.Job}}"},
+              uuid:ceems_gpu_power_watts:pue{job="{{$.Job}}"} / 3.6e+06,
               "provider",
               "{{$v}}",
               "instance",
               "(.*)"
             )
           * on (provider) group_left ()
-            label_replace(
-              ceems_emissions_gCo2_kWh{country_code="{{$.CountryCode}}",provider="{{$v}}"},
-              "common_label",
-              "mock",
-              "instance",
-              "(.*)"
-            ) 
+            ceems_emissions_gCo2_kWh{country_code="{{$.CountryCode}}",provider="{{$v}}"} 
 {{ end }}
 {{- else }}
 {{- if gt $.EmissionFactor.Value 0.0 }}
@@ -84,9 +106,7 @@ groups:
       - record: uuid:ceems_gpu_emissions_g_s:pue
         expr: |2
           label_replace(
-              dev:gpu_power_usage_watts:pue{job="{{$.GPUJob}}"} / 3.6e+06
-            * on (index) group_right ()
-              ceems_compute_unit_gpu_index_flag{job="{{$.Job}}"},
+              uuid:ceems_gpu_power_watts:pue{job="{{$.GPUJob}}"} / 3.6e+06,
               "provider",
               "{{$.EmissionFactor.Provider}}",
               "instance",
@@ -95,6 +115,25 @@ groups:
           * {{$.EmissionFactor.Value}}
 {{- end }}
 {{- end }}
+
+      # Profiling metrics
+{{ range $i, $v := .AMDProfSeries }}
+{{- $stringname := printf "%s" $v -}}
+{{- $metricprefix := printf "%sgpu_" $.GPUMetricPrefix -}}
+{{- $splitname := Split $stringname $metricprefix -}}
+{{- $suffix := "sum" }}
+{{- if or (IsSubString $stringname "active") (IsSubString $stringname "percent") }}
+{{- $suffix = "ratio" }}
+{{- end }}
+{{- $name := index $splitname 1 -}}
+{{- $namelower := $name | ToLower }}
+{{- $label := printf "uuid:ceems_gpu_%s:%s" $namelower $suffix }}
+      - record: {{ $label }}
+        expr: |2
+          {{ printf $labelreplace "" $v $.GPUJob }}
+          * on (gpuuuid,gpuiid) group_right ()
+          ceems_compute_unit_gpu_index_flag{job="{{$.Job}}"}
+{{ end }}
 
   # The following recording rules estimate the average GPU, GPU memory usages and
   # total GPU power and its equivalent emissions aggregared for all hosts 
@@ -105,23 +144,27 @@ groups:
     rules:
       # Average GPU Usage (%) for all hosts aggregated per Prometheus job
       - record: job:ceems_gpu_usage:avg
-        expr: avg by (job) (gpu_gfx_activity{job="{{.GPUJob}}"})
+        expr: avg by (job) ({{.GPUMetricPrefix}}gpu_gfx_activity{job="{{.GPUJob}}"})
 
       # Average GPU memory usage (%) for all hosts aggregated per Prometheus job
       - record: job:ceems_gpu_memory_usage:avg_ratio
-        expr: |2
-          avg by (job) (
-            (
-                gpu_used_vram{job="{{.GPUJob}}"} * 100
-              /
-                gpu_total_vram{job="{{.GPUJob}}"}
-            )
-          )
+        labels:
+          type: vram
+        expr: avg by (job) (({{.GPUMetricPrefix}}gpu_used_vram{job="{{.GPUJob}}"} * 100 / {{.GPUMetricPrefix}}gpu_total_vram{job="{{.GPUJob}}"} > 0))
+      
+      - record: job:ceems_gpu_memory_usage:avg_ratio
+        labels:
+          type: gtt
+        expr: avg by (job) (({{.GPUMetricPrefix}}gpu_used_gtt{job="{{.GPUJob}}"} * 100 / {{.GPUMetricPrefix}}gpu_total_gtt{job="{{.GPUJob}}"} > 0))
 
+      - record: job:ceems_gpu_memory_usage:avg_ratio
+        labels:
+          type: visiblevram
+        expr: avg by (job) (({{.GPUMetricPrefix}}gpu_used_visible_ram{job="{{.GPUJob}}"} * 100 / {{.GPUMetricPrefix}}gpu_total_visible_ram{job="{{.GPUJob}}"} > 0))
+            
       # Total power usage (Watts) by GPUs on all hosts aggregated per Prometheus job
-      # AMD GPU power is in micro Watts and we need to convert it to Watts here
       - record: job:ceems_gpu_power_watts:pue
-        expr: sum by (job)({{.PUE}} * gpu_power_usage{job="{{.GPUJob}}"} / 1e6)
+        expr: sum by (job)({{.PUE}} * {{.GPUMetricPrefix}}gpu_package_power{job="{{.GPUJob}}"})
 
 {{- $numproviders := len .Providers -}}
 {{- if gt $numproviders 0 }}

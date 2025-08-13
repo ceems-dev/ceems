@@ -1,15 +1,15 @@
 ---
-# Recording rules for compute unit host power usage reported by IPMI DCMI.
+# Recording rules for compute unit host power usage reported by HWMon.
 #
 # The following rules estimate the power usage of compute units and their equivalent
-# emissions when IPMI DCMI power usage is available on the nodes.
+# emissions when HWMon power usage sensors are available on the nodes.
 #
-# On some servers (with GPUs) and/or BMCs, the power reported by IPMI DCMI might contain
-# power usage by GPUs as well. In that case we need to deduce the GPU power usage from
-# power usage reported by IPMI DCMI to estimate the host power usage. Depending on the
-# GPU type and exporter used to export GPU metrics, different rules must be used. They
-# are included in the file as comments and depending on your server, use the
-# appropriate rule for `instance:ceems_ipmi_dcmi_power_current_watts:pue`
+# HWMon organize the hardware into different chips and reports the power usage of
+# different chip components. Depending on the server type, we should only include
+# the chip that report the host power usage excluding any GPUs.
+#
+# DEFAULT RULES TAKE POWER SUMMED OVER ALL CHIPS AND SENSORS. RULES NEEDS TO BE APPROPRIATELY
+# MODIFIED BASED ON AVAILABLE CHIPS.
 #
 # Optional placeholders to replace:
 #
@@ -25,33 +25,15 @@
 # exporter docs (https://ceems-dev.github.io/ceems/docs/components/ceems-exporter#emissions-collector).
 #
 groups:
-  - name: ipmi-power-usage-rules
+  - name: hwmon-power-usage-rules
     # interval: <eval_interval>
     rules:
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
-      - record: instance:ceems_ipmi_dcmi_power_current_watts:pue
+      # To use selective chip components, replace .* in the rule by chassis regex, eg, "Chip_1|Chip_2"
+      - record: instance:ceems_hwmon_power_current_watts:pue
         labels:
-          ceemspowersources: ipmi-rapl
-        expr: ceems_ipmi_dcmi_power_current_watts # * <pue>
-
-      # # On some servers and BMCs, the power usage reported by IPMI DCMI might contain the power consumption
-      # # of the GPUs too (if they are present). If that is the case, we need to remove the GPU power usage
-      # # from the power usage reported by IPMI DCMI to get host only power usage.
-      # # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
-      # #
-      # # The following rule must be used when NVIDIA GPUs power usage is included in IPMI DCMI power usage.
-      # - record: instance:ceems_ipmi_dcmi_power_current_watts:pue
-      #   expr: (ceems_ipmi_dcmi_power_current_watts - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT, "hostname", "$1", "Hostname","(.*)")))) # * <pue>
-      # #
-      # # The following rule must be used when AMD GPUs power usage is included in IPMI DCMI power usage.
-      # # and AMD device metric exporter is used and metric labels are prefixed by `amd_`.
-      # - record: instance:ceems_ipmi_dcmi_power_current_watts:pue
-      #   expr: (ceems_ipmi_dcmi_power_current_watts - on (hostname) group_left () sum by (hostname) (sum by (hostname,serial_number) (amd_gpu_package_power))) # * <pue>
-      # #
-      # # The following rule must be used when AMD GPUs power usage is included in IPMI DCMI power usage.
-      # # and AMD SMI exporter is used.
-      # - record: instance:ceems_ipmi_dcmi_power_current_watts:pue
-      #   expr: (ceems_ipmi_dcmi_power_current_watts - on (hostname) group_left () sum by (hostname) (label_replace(amd_gpu_power, "hostname", "$1", "instance", "([^:]+):\\d+") / 1e6)) # * <pue>
+          ceemspowersources: hwmon-rapl
+        expr: sum without (sensor) (ceems_hwmon_power_current_watts{chip=~".*"}) # * <pue>
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -84,9 +66,9 @@ groups:
       #
       - record: uuid:ceems_host_power_watts:pue
         labels:
-          ceemspowersources: ipmi-rapl
+          ceemspowersources: hwmon-rapl
         expr: |2
-            0.9 * instance:ceems_ipmi_dcmi_power_current_watts:pue # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
+            0.9 * instance:ceems_hwmon_power_current_watts:pue # Assumption 90% Power usage by CPU, CPU memory and other peripherals.
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL Package / (RAPL Package + RAPL DRAM)) -> Total CPU Power
                   (
                       (
@@ -102,7 +84,7 @@ groups:
                       0
                   or
                     sum by (instance) (
-                      instance:ceems_ipmi_dcmi_power_current_watts:pue / instance:ceems_ipmi_dcmi_power_current_watts:pue
+                      instance:ceems_hwmon_power_current_watts:pue / instance:ceems_hwmon_power_current_watts:pue
                     )
                 )
               * on (instance) group_right () # Total CPU Power * (Compute CPU Time / Total CPU Time) -> Compute Unit CPU Power
@@ -122,7 +104,7 @@ groups:
                     ceems_compute_unit_cpu_user_seconds_total * 0
                 )
             +
-                  0.9 * instance:ceems_ipmi_dcmi_power_current_watts:pue
+                  0.9 * instance:ceems_hwmon_power_current_watts:pue
                 * on (instance) group_left () # 0.9 * Total Power * (RAPL DRAM / (RAPL Package + RAPL DRAM)) -> Total CPU Memory Power
                   (
                       (
@@ -137,7 +119,7 @@ groups:
                     >
                       0
                   or
-                    sum by (instance) (instance:ceems_ipmi_dcmi_power_current_watts:pue * 0)
+                    sum by (instance) (instance:ceems_hwmon_power_current_watts:pue * 0)
                 )
               * on (instance) group_right () # Total CPU Memory Power * (Compute Unit Memory / Total Memory) -> Compute Unit CPU Memory Power
                 (
@@ -152,7 +134,7 @@ groups:
                     ceems_compute_unit_memory_used_bytes * 0
                 )
             +
-                0.1 * instance:ceems_ipmi_dcmi_power_current_watts:pue # Total Misc Power Usage
+                0.1 * instance:ceems_hwmon_power_current_watts:pue # Total Misc Power Usage
               * on (instance) group_right () # Total Misc Power usage / Number of Compute Units -> Misc Power Usage by Compute Unit
                 (
                     ceems_compute_unit_memory_used_bytes
@@ -174,7 +156,7 @@ groups:
               label_replace(
                 ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"},
                 "ceemspowersources",
-                "ipmi-rapl",
+                "hwmon-rapl",
                 "instance",
                 "(.*)"
               )
@@ -183,8 +165,8 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         labels:
-          ceemspowersources: ipmi-rapl
-        expr: sum by (job) (instance:ceems_ipmi_dcmi_power_current_watts:pue)
+          ceemspowersources: hwmon-rapl
+        expr: sum by (job) (instance:ceems_hwmon_power_current_watts:pue)
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
@@ -196,7 +178,7 @@ groups:
               label_replace(
                 ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"},
                 "ceemspowersources",
-                "ipmi-rapl",
+                "hwmon-rapl",
                 "instance",
                 "(.*)"
               )

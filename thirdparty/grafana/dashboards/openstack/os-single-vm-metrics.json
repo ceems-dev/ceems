@@ -991,7 +991,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_sm_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_sm_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "SM Activity on GPU: {{gpu}}",
@@ -1004,7 +1004,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_sm_active:ratio{uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_sm_active:ratio{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Average SM Activity on all GPUs",
@@ -1017,7 +1017,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_sm_occupancy:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_sm_occupancy:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "SM Occupancy GPU: {{gpu}}",
@@ -1030,7 +1030,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_sm_occupancy:ratio{uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_sm_occupancy:ratio{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Average SM Occupancy on all GPUs",
@@ -1135,7 +1135,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_gr_engine_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_gr_engine_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Graphics Engine Activity on GPU: {{gpu}}",
@@ -1148,7 +1148,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_gr_engine_active:ratio{uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_gr_engine_active:ratio{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Average Graphics Engine Activity on all GPUs",
@@ -1161,7 +1161,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_pipe_tensor_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_pipe_tensor_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Tensor Pipe Activity on GPU: {{gpu}}",
@@ -1174,7 +1174,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_pipe_tensor_active:ratio{uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_pipe_tensor_active:ratio{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Average Tensor Pipe Activity on all GPUs",
@@ -1279,7 +1279,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_pipe_fp64_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_pipe_fp64_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "FP64 Activity on GPU: {{gpu}}",
@@ -1292,7 +1292,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_pipe_fp32_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_pipe_fp32_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "FP32 Activity on GPU: {{gpu}}",
@@ -1305,7 +1305,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_pipe_fp16_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_pipe_fp16_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "FP16 Activity on GPU: {{gpu}}",
@@ -1318,7 +1318,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_pipe_fp64_active:ratio{uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_pipe_fp64_active:ratio{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Average FP64 Engine Activity on all GPUs",
@@ -1331,7 +1331,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_pipe_fp32_active:ratio{uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_pipe_fp32_active:ratio{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Average FP32 Engine Activity on all GPUs",
@@ -1344,7 +1344,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_pipe_fp16_active:ratio{uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_pipe_fp16_active:ratio{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Average FP16 Engine Activity on all GPUs",
@@ -1449,7 +1449,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_dram_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_dram_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "GPU: {{gpu}}",
@@ -1462,7 +1462,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_dram_active:ratio{uuid=\"${uuid}\"})",
+              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_dram_active:ratio{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Average Memory BW Utilization on all GPUs",
@@ -1567,7 +1567,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_gpu_nvlink_tx_bytes:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
+              "expr": "sum without (instance,hostname) (uuid:ceems_gpu_prof_nvlink_tx_bytes:sum{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Transmitted on GPU: {{gpu}}",
@@ -1580,7 +1580,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname,gpuuuid) (uuid:ceems_gpu_nvlink_tx_bytes:ratio{uuid=\"${uuid}\"})",
+              "expr": "sum without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_nvlink_tx_bytes:sum{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Total Transmitted Bandwidth on all GPUs",
@@ -1593,7 +1593,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_gpu_nvlink_rx_bytes:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
+              "expr": "sum without (instance,hostname) (uuid:ceems_gpu_prof_nvlink_rx_bytes:sum{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Received on GPU: {{gpu}}",
@@ -1606,7 +1606,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname,gpuuuid) (uuid:ceems_gpu_nvlink_rx_bytes:ratio{uuid=\"${uuid}\"})",
+              "expr": "sum without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_nvlink_rx_bytes:sum{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Total Received Bandwidth on all GPUs",
@@ -1711,7 +1711,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_gpu_pcie_tx_bytes:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
+              "expr": "sum without (instance,hostname) (uuid:ceems_gpu_prof_pcie_tx_bytes:sum{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Transmitted on GPU: {{gpu}}",
@@ -1724,7 +1724,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname,gpuuuid) (uuid:ceems_gpu_pcie_tx_bytes:ratio{uuid=\"${uuid}\"})",
+              "expr": "sum without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_pcie_tx_bytes:sum{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Total Transmitted Bandwidth on all GPUs",
@@ -1737,7 +1737,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_gpu_pcie_rx_bytes:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
+              "expr": "sum without (instance,hostname) (uuid:ceems_gpu_prof_pcie_rx_bytes:sum{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Received on GPU: {{gpu}}",
@@ -1750,7 +1750,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname,gpuuuid) (uuid:ceems_gpu_pcie_rx_bytes:ratio{uuid=\"${uuid}\"})",
+              "expr": "sum without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_pcie_rx_bytes:sum{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "TOtal Received Bandwidth on all GPUs",

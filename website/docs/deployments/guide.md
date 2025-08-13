@@ -400,27 +400,6 @@ scrape_configs:
     basic_auth:
       username: ceems
       password: <BASIC_AUTH_PLAIN_TEXT_PASSWORD>
-    # This relabel_config must be added to all
-    # scrape jobs that have DCGM targets
-    metric_relabel_configs:
-      - source_labels:
-          - modelName
-          - UUID
-        target_label: gpuuuid
-        regex: NVIDIA(.*);(.*)
-        replacement: $2
-        action: replace
-      - source_labels:
-          - modelName
-          - GPU_I_ID
-        target_label: gpuiid
-        regex: NVIDIA(.*);(.*)
-        replacement: $2
-        action: replace
-      - regex: UUID
-        action: labeldrop
-      - regex: GPU_I_ID
-        action: labeldrop
     static_configs:
       - targets:
         - compute-gpu-0:9010
@@ -440,7 +419,7 @@ scrape_configs:
         - service-0:9010
 ```
 
-:::important[IMPORTANT]
+<!-- :::important[IMPORTANT]
 
 All the Prometheus scrape jobs that have DCGM exporter targets must include a
 `metric_relabel_configs` as follows:
@@ -470,7 +449,7 @@ metric_relabel_configs:
 For the case of AMD exporters, a similar relabel config must be applied and it
 can be consulted from [Prometheus config section](../configuration/prometheus.md).
 
-:::
+::: -->
 
 This is only basic configuration and more options can be found in the
 [Prometheus](https://prometheus.io/docs/prometheus/latest/configuration/configuration)
@@ -493,9 +472,11 @@ Recording rules can be created using `ceems_tool` using the following command:
 
 :::important[IMPORTANT]
 
-When [Redfish Collector](../components/ceems-exporter.md#energy-related-collectors) is enabled
-on CEEMS exporters and if Redfish server has multiple chassis defined, the above command will ask
-for the user input on which chassis must be used in estimated power consumption. As different chassis
+When [Redfish Collector](../components/ceems-exporter.md#energy-related-collectors)
+or [HWMon Collector](../components/ceems-exporter.md#hwmon-collector) is enabled
+on CEEMS exporters and if Redfish server has multiple chassis or hwmon has multiple chips defined,
+the above command will ask for the user input on which chassis/chip must be used in estimated
+power consumption. As different chassis/chip
 can report power consumption of different components, operators must choose a chassis that reports
 power consumption of host.
 

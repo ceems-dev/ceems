@@ -1,0 +1,72 @@
+---
+# Recording rules for compute unit host CPU and memory usage
+#
+# The rules estimate the compute unit's CPU and CPU memory usage
+# metrics
+#
+# Optional placeholders to replace:
+#
+# <eval_interval>: Evaluation interval
+#
+# By default rate interval of 1m is used. For scrape intervals more than 30s, use a bigger
+# rate interval.
+#
+groups:
+  - name: host-cpu-mem-usage-rules
+    # interval: <eval_interval>
+    rules:
+      # CPU usage (%) of compute unit. It is percentage of CPU cycles spent by the compute unit.
+      - record: uuid:ceems_cpu_usage:ratio_irate
+        expr: |2
+          (
+              irate(ceems_compute_unit_cpu_user_seconds_total[1m])
+            +
+              irate(ceems_compute_unit_cpu_system_seconds_total[1m])
+          ) * 100
+          /
+            (ceems_compute_unit_cpus > 0)
+
+      # CPU memory usage (%) of compute unit. It is percentage of CPU memory used by compute unit relative to
+      # the available memory to the compute unit.
+      - record: uuid:ceems_cpu_memory_usage:ratio
+        expr: |2
+          ceems_compute_unit_memory_used_bytes * 100
+          /
+          (ceems_compute_unit_memory_total_bytes > 0)
+
+  # The following recording rules estimate the average CPU, CPU memory usages and
+  # total host power (excluding GPUs) and its equivalent emissions aggregared for all hosts 
+  # per Prometheus job.
+  - name: host-agg-cpu-usage-rules
+    # interval: <eval_interval>
+    rules:
+      # Average CPU usage (%) of all hosts in a Prometheus job. It is percentage of CPU cycles spent by the host.
+      - record: job:ceems_cpu_usage:avg_ratio_irate
+        expr: |2
+          avg by (job) (
+            (
+                  sum by (job, instance) (
+                    irate(ceems_cpu_seconds_total{mode!~"idle|iowait|steal"}[1m])
+                  )
+                *
+                  100
+              / on (instance) group_left ()
+                ((ceems_cpu_count > 0) / ceems_cpu_per_core_count)
+            )
+          )
+
+      # Average CPU usage (%) of all hosts in a Prometheus job. It is percentage of CPU memory used by host relative to
+      # the available memory to the host.
+      - record: job:ceems_cpu_memory_usage:avg_ratio
+        expr: |2
+          avg by (job) (
+              (
+                (
+                    1
+                  -
+                    (ceems_meminfo_MemAvailable_bytes / ceems_meminfo_MemTotal_bytes)
+                )
+              )
+            )
+          *
+            100

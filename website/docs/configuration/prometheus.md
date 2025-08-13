@@ -4,6 +4,14 @@ sidebar_position: 6
 
 # Prometheus
 
+:::important[IMPORTANT]
+
+From version `v0.11.0`, this configuration is not anymore necessary and if recording
+rules are generated [`ceems_tool`](../usage/ceems-tool.md), the relabeling will be
+handled directly in the rules.
+
+:::
+
 In order to use the dashboards provided in the repository, minor
 [`metric_relabel_configs`](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#metric_relabel_configs)
 configuration must be provided for all target groups that have NVIDIA GPUs where

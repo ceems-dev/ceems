@@ -4,6 +4,10 @@ global:
   scrape_interval: 500ms
   evaluation_interval: 1s
 
+
+rule_files:
+  - ../../../etc/prometheus/rules/*.rules
+
 # scrape configuration
 scrape_configs:
   # Only CPU hosts with IPMI available
@@ -12,6 +16,7 @@ scrape_configs:
       - targets: ["localhost:9010"]
         labels:
           instance: compute-ipmi-0:9010
+          hostname: compute-ipmi-0
 
   # Only CPU hosts whith only RAPL available
   - job_name: cpu-only-rapl
@@ -19,6 +24,7 @@ scrape_configs:
       - targets: ["localhost:9011"]
         labels:
           instance: compute-rapl-0:9011
+          hostname: compute-rapl-0
 
   # Only CPU hosts with Redfish available with ONE CHASSIS
   - job_name: cpu-only-redfish
@@ -30,6 +36,7 @@ scrape_configs:
       - targets: ["localhost:9012"]
         labels:
           instance: compute-redfish-0:9012
+          hostname: compute-redfish-0
   
   # CPU and NVIDIA GPU hosts with Redfish available with TWO CHASSIS
   - job_name: cpu-redfish-nvidia-gpu
@@ -37,6 +44,7 @@ scrape_configs:
       - targets: ["localhost:9013"]
         labels:
           instance: compute-redfish-0:9013
+          hostname: compute-redfish-0
 
   # NVIDIA DCGM job for above hosts
   - job_name: nvidia-gpu
@@ -44,6 +52,7 @@ scrape_configs:
       - targets: ["localhost:9400"]
         labels:
           instance: compute-redfish-0:9400
+          Hostname: compute-redfish-0
 
   # CPU and AMD GPUs with Cray available
   - job_name: cpu-cray-amd-gpu
@@ -51,6 +60,7 @@ scrape_configs:
       - targets: ["localhost:9014"]
         labels:
           instance: compute-cray-0:9014
+          hostname: compute-cray-0
 
   # AMD SMI job for above hosts
   - job_name: amd-smi-gpu
@@ -59,19 +69,29 @@ scrape_configs:
         labels:
           instance: compute-cray-0:9500
 
+  # CPU and AMD GPUs with Hwmon available
+  - job_name: cpu-hwmon-amd-gpu
+    static_configs:
+      - targets: ["localhost:9015"]
+        labels:
+          instance: compute-hwmon-0:9015
+          hostname: compute-hwmon-0
+
   # AMD Device metrics job for above hosts
   - job_name: amd-device-metrics-gpu
     static_configs:
       - targets: ["localhost:9600"]
         labels:
-          instance: compute-cray-0:9600
+          instance: compute-hwmon-0:9600
+          hostname: compute-hwmon-0
 
   # CPU and NVIDIA GPU hosts with IPMI available and including GPU power
   - job_name: cpu-ipmi-nvidia-gpu
     static_configs:
-      - targets: ["localhost:9015"]
+      - targets: ["localhost:9016"]
         labels:
-          instance: compute-ipmi-nvidia-0:9015
+          instance: compute-ipmi-nvidia-0:9016
+          hostname: compute-ipmi-nvidia-0
 
   # NVIDIA DCGM job for above hosts
   - job_name: ipmi-nvidia-gpu
@@ -79,10 +99,12 @@ scrape_configs:
       - targets: ["localhost:9400"]
         labels:
           instance: compute-ipmi-nvidia-0:9400
+          Hostname: compute-ipmi-nvidia-0
 
   # Emissions job
   - job_name: emissions
     static_configs:
-      - targets: ["localhost:9016"]
+      - targets: ["localhost:9017"]
         labels:
-          instance: compute-emissions:9016
+          instance: compute-emissions:9017
+          hostname: compute-emissions
