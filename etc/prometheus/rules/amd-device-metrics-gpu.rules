@@ -1,0 +1,230 @@
+---
+# Recording rules for AMD GPUs using device metrics exporter.
+# These rules are generated assuming the prefix `amd_` used for
+# devices metrics exporter config.
+#
+# These rules provide AMD GPU metrics fetched from 
+# device metrics exporter (https://instinct.docs.amd.com/projects/device-metrics-exporter/en/latest/index.html)
+# for each compute unit.
+#
+# We leverage these rules to include PUE (Power Usage Effectiveness) in the Power
+# estimation as well.
+#
+# Optional placeholders to replace:
+#
+# <pue>: PUE value
+# <eval_interval>: Evaluation interval
+#
+# By default emissions are estimated using OWID for France. In order to change
+# them replace `owid` with appropriate emissions provider supported by CEEMS exporter
+# and replace `country_code` with appropriate country code. More details in CEEMS
+# exporter docs (https://ceems-dev.github.io/ceems/docs/components/ceems-exporter#emissions-collector).
+#
+groups:
+  - name: amd-dev-exporter-gpu-usage-rules
+    # interval: <eval_interval>
+    rules:
+      # GPU Usage (%) by compute unit
+      - record: uuid:ceems_gpu_usage:ratio
+        expr: |2
+            label_replace(label_replace(amd_gpu_gfx_activity, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)")
+            * on (gpuuuid,gpuiid,hostname) group_right ()
+            ceems_compute_unit_gpu_index_flag
+
+      # GPU Memory Usage (%) by compute unit
+      - record: uuid:ceems_gpu_memory_usage:ratio
+        labels:
+          type: vram
+        expr: |2
+          (
+              label_replace(label_replace(amd_gpu_used_vram, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)") * 100
+            /
+              label_replace(label_replace(amd_gpu_total_vram, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)") > 0
+          )
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_memory_usage:ratio
+        labels:
+          type: gtt
+        expr: |2
+          (
+              label_replace(label_replace(amd_gpu_used_gtt, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)") * 100
+            /
+              label_replace(label_replace(amd_gpu_total_gtt, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)") > 0
+          )
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_memory_usage:ratio
+        labels:
+          type: visiblevram
+        expr: |2
+          (
+              label_replace(label_replace(amd_gpu_used_visible_vram, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)") * 100
+            /
+              label_replace(label_replace(amd_gpu_total_visible_vram, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)") > 0
+          )
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      # Average GPU Usage (%) for all hosts aggregated per Prometheus job
+      - record: job:ceems_gpu_usage:avg
+        expr: avg by (job) (amd_gpu_gfx_activity)
+
+      # Average GPU memory usage (%) for all hosts aggregated per Prometheus job
+      - record: job:ceems_gpu_memory_usage:avg_ratio
+        labels:
+          type: vram
+        expr: avg by (job) ((amd_gpu_used_vram * 100 / amd_gpu_total_vram > 0))
+      
+      - record: job:ceems_gpu_memory_usage:avg_ratio
+        labels:
+          type: gtt
+        expr: avg by (job) ((amd_gpu_used_gtt * 100 / amd_gpu_total_gtt > 0))
+
+      - record: job:ceems_gpu_memory_usage:avg_ratio
+        labels:
+          type: visiblevram
+        expr: avg by (job) ((amd_gpu_used_visible_ram * 100 / amd_gpu_total_visible_ram > 0))
+
+  - name: amd-dev-exporter-gpu-power-usage-rules
+    # interval: <eval_interval>
+    rules:
+      # Total power (Watts) consumed by the GPU by accounting Power Usage Effectiveness (PUE) value.
+      - record: dev:gpu_power_usage_watts:pue
+        labels:
+          ceemspowersources: amd-dev-metrics
+        expr: label_replace(label_replace(amd_gpu_package_power, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)") # * <pue>
+
+      # For AMD device metrics exporter, gpu_partition 0 is the one that has non zero power usage and
+      # rest of partitions will report zero. So, we need to always consider partition 0 to get real usage
+      # of GPU. In the relabel config we change
+      - record: uuid:ceems_gpu_power_watts:pue
+        labels:
+          ceemspowersources: amd-dev-metrics
+        expr: |2
+          (
+              ceems_compute_unit_gpu_sm_count
+            / on (gpuuuid,hostname) group_left ()
+              (sum by (gpuuuid,hostname) (ceems_compute_unit_gpu_sm_count) > 0)
+          )
+            * on (gpuuuid,hostname) group_left()
+              dev:gpu_power_usage_watts:pue{gpuiid="0"}
+          * on (gpuuuid,gpuiid,hostname,uuid) group_right()
+          ceems_compute_unit_gpu_index_flag
+
+      # Total equivalent emissions rate (g/s) from GPU due to the power consumed by the compute unit's GPUs.
+      # The equivalent emissions are estimated using emission factor from owid for country FR
+      - record: uuid:ceems_gpu_emissions_g_s:pue
+        expr: |2
+          (
+              label_replace(uuid:ceems_gpu_power_watts:pue / 3.6e+06, "provider", "owid", "instance", "(.*)")
+            * on (ceemspowersources) group_left ()
+              label_replace(
+                ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"},
+                "ceemspowersources",
+                "amd-dev-metrics",
+                "instance",
+                "(.*)"
+              )
+          )
+
+      # Total power usage (Watts) by GPUs on all hosts aggregated per Prometheus job
+      - record: job:ceems_gpu_power_watts:pue
+        labels:
+          ceemspowersources: amd-dev-metrics
+        expr: sum by (job)(dev:gpu_power_usage_watts:pue)
+
+      # Total equivalent emissions rate (g/s) due to the power consumed by GPUs on all ths hosts
+      # in a Prometheus job accounting PUE value.
+      - record: job:ceems_gpu_emissions_g_s:pue
+        expr: |2
+          (
+              label_replace(job:ceems_gpu_power_watts:pue / 3.6e+06, "provider", "owid", "instance", "(.*)")
+            * on (ceemspowersources) group_left ()
+              label_replace(
+                ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"},
+                "ceemspowersources",
+                "amd-dev-metrics",
+                "instance",
+                "(.*)"
+              )
+          )
+
+  # Profiling metrics
+  - name: amd-dev-exporter-gpu-profiling-rules
+    # interval: <eval_interval>
+    rules:
+      - record: uuid:ceems_gpu_prof_sm_active:ratio
+        expr: |2
+          label_replace(label_replace(amd_gpu_prof_sm_active, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)")
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_tensor_active_percent:ratio
+        expr: |2
+          label_replace(label_replace(amd_gpu_prof_tensor_active_percent, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)")
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_occupancy_percent:ratio
+        expr: |2
+          label_replace(label_replace(amd_gpu_prof_occupancy_percent, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)")
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_total_16_ops:sum
+        expr: |2
+          label_replace(label_replace(amd_gpu_prof_total_16_ops, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)")
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_total_32_ops:sum
+        expr: |2
+          label_replace(label_replace(amd_gpu_prof_total_32_ops, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)")
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_total_64_ops:sum
+        expr: |2
+          label_replace(label_replace(amd_gpu_prof_total_64_ops, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)")
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_write_size:sum
+        expr: |2
+          label_replace(label_replace(amd_gpu_prof_write_size, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)")
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_fetch_size:sum
+        expr: |2
+          label_replace(label_replace(amd_gpu_prof_fetch_size, "gpuuuid", "$1", "serial_number", "(.*)"), "gpuiid", "$1", "gpu_partition_id", "(.*)")
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      # Average usage over all hosts aggregated by Prometheus job
+      - record: job:ceems_gpu_prof_sm_active:ratio
+        expr: avg by (job) (amd_gpu_prof_sm_active)
+
+      - record: job:ceems_gpu_prof_tensor_active_percent:ratio
+        expr: avg by (job) (amd_gpu_prof_tensor_active_percent)
+
+      - record: job:ceems_gpu_prof_occupancy_percent:ratio
+        expr: avg by (job) (amd_gpu_prof_occupancy_percent)
+
+      - record: job:ceems_gpu_prof_total_16_ops:sum
+        expr: avg by (job) (amd_gpu_prof_total_16_ops)
+
+      - record: job:ceems_gpu_prof_total_32_ops:sum
+        expr: avg by (job) (amd_gpu_prof_total_32_ops)
+
+      - record: job:ceems_gpu_prof_total_64_ops:sum
+        expr: avg by (job) (amd_gpu_prof_total_64_ops)
+
+      - record: job:ceems_gpu_prof_write_size:sum
+        expr: avg by (job) (amd_gpu_prof_write_size)
+
+      - record: job:ceems_gpu_prof_fetch_size:sum
+        expr: avg by (job) (amd_gpu_prof_fetch_size)

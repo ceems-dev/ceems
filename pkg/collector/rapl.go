@@ -42,17 +42,30 @@ type raplCountersSecurityCtxData struct {
 }
 
 func init() {
-	RegisterCollector(raplCollectorSubsystem, defaultEnabled, NewRaplCollector)
+	RegisterCollector(raplCollectorSubsystem, defaultDisabled, NewRaplCollector)
 }
 
-var raplZoneLabel = CEEMSExporterApp.Flag(
-	"collector.rapl.enable-zone-label",
-	"Enables RAPL zone labels (default: disabled)",
-).Default("false").Bool()
+var (
+	raplZoneLabel = CEEMSExporterApp.Flag(
+		"collector.rapl.enable-zone-label",
+		"Enables RAPL zone labels (default: disabled)",
+	).Default("false").Bool()
+
+	// Only used in demo instances and tests.
+	raplSysPath = CEEMSExporterApp.Flag(
+		"collector.rapl.path.sysfs",
+		"sysfs mountpoint for RAPL collector",
+	).Hidden().Default("").String()
+)
 
 // NewRaplCollector returns a new Collector exposing RAPL metrics.
 func NewRaplCollector(logger *slog.Logger) (Collector, error) {
-	fs, err := sysfs.NewFS(*sysPath)
+	sysFSPath := *sysPath
+	if *raplSysPath != "" {
+		sysFSPath = *raplSysPath
+	}
+
+	fs, err := sysfs.NewFS(sysFSPath)
 	if err != nil {
 		return nil, err
 	}

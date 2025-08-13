@@ -675,6 +675,13 @@ an error. In that case, do not enable the collector.
 
 ### RAPL collector
 
+:::important[IMPORTANT]
+
+Starting from `v0.11.0`, the RAPL collector is disabled by default and must
+be explicitly enabled using `--collector.rapl` CLI flag.
+
+:::
+
 For kernels that are `<5.3`, there is no special configuration to be done. If the
 kernel version is `>=5.3`, RAPL metrics are only available for `root`. Three approaches
 can be envisioned here:

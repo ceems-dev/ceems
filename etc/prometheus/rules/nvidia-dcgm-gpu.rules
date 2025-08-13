@@ -1,0 +1,264 @@
+---
+# Recording rules for NVIDIA GPUs using DCGM exporter.
+# Rules assume that all the profiling metrics are enabled.
+#
+# These rules provide NVIDIA GPU metrics fetched from 
+# DCGM exporter (https://docs.nvidia.com/datacenter/dcgm/latest/gpu-telemetry/dcgm-exporter.html)
+# for each compute unit.
+#
+# We leverage these rules to include PUE (Power Usage Effectiveness) in the Power
+# estimation as well.
+#
+# Optional placeholders to replace:
+#
+# <pue>: PUE value
+# <eval_interval>: Evaluation interval
+#
+# By default emissions are estimated using OWID for France. In order to change
+# them replace `owid` with appropriate emissions provider supported by CEEMS exporter
+# and replace `country_code` with appropriate country code. More details in CEEMS
+# exporter docs (https://ceems-dev.github.io/ceems/docs/components/ceems-exporter#emissions-collector).
+#
+groups:
+  - name: nvidia-dcgm-gpu-usage-rules
+    # interval: <eval_interval>
+    rules:
+      # GPU Usage (%) by compute unit
+      # Prefer DCGM_FI_PROF_GR_ENGINE_ACTIVE to DCGM_FI_DEV_GPU_UTIL
+      # when available
+      # Ref: https://github.com/NVIDIA/DCGM/issues/64#issuecomment-1400811885
+      # Ref: https://github.com/NVIDIA/DCGM/issues/80#issuecomment-1537603016
+      - record: uuid:ceems_gpu_usage:ratio
+        expr: |2
+            label_replace(label_replace(label_replace(DCGM_FI_PROF_GR_ENGINE_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+            * on (gpuuuid,gpuiid,hostname) group_right ()
+            ceems_compute_unit_gpu_index_flag
+
+      # GPU Memory Usage (%) by compute unit
+      - record: uuid:ceems_gpu_memory_usage:ratio
+        expr: |2
+          (
+              label_replace(label_replace(label_replace(DCGM_FI_DEV_FB_USED, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+            /
+              (
+                  label_replace(label_replace(label_replace(DCGM_FI_DEV_FB_USED, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") + 
+                  label_replace(label_replace(label_replace(DCGM_FI_DEV_FB_FREE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+              )
+          )
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      # Average GPU Usage (%) for all hosts aggregated per Prometheus job
+      - record: job:ceems_gpu_usage:avg
+        expr: avg by (job) (DCGM_FI_DEV_GPU_UTIL)
+
+      # Average GPU memory usage (%) for all hosts aggregated per Prometheus job
+      - record: job:ceems_gpu_memory_usage:avg_ratio
+        expr: |2
+          avg by (job) (
+            (
+                DCGM_FI_DEV_FB_USED * 100
+              /
+                (DCGM_FI_DEV_FB_USED + DCGM_FI_DEV_FB_FREE)
+            )
+          )
+      
+  - name: nvidia-dcgm-gpu-power-usage-rules
+    # interval: <eval_interval>
+    rules:
+      # Total power (Watts) consumed by the GPU by accounting Power Usage Effectiveness (PUE) value.
+      - record: dev:DCGM_FI_DEV_POWER_USAGE_INSTANT:pue
+        labels:
+          ceemspowersources: nvidia-dcgm
+        expr: label_replace(label_replace(label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") # * <pue>
+
+      # When profiling metrics are available, we split the total power consumed by physical
+      # GPU among all MIG instances based on "effective" SM usage on each MIG instance. This
+      # is estimated as TotalPower * number of SMs * Mean SM usage * SM Occupancy / sum(number of SMs * Mean SM usage * SM Occupancy)
+      #
+      # When profiling metrics are not available, we split the total power based on number of SMs
+      # available in that instance compared to total number of SMs being used in the physical GPU
+      - record: uuid:ceems_gpu_power_watts:pue
+        labels:
+          ceemspowersources: nvidia-dcgm
+        expr: |2
+            (
+              (
+                (
+                      label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+                    * on (gpuuuid,gpuiid,hostname)
+                      label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_OCCUPANCY, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+                  * on (gpuuuid, gpuiid,hostname) group_right ()
+                    ceems_compute_unit_gpu_sm_count
+                )
+              )
+            / on (gpuuuid,hostname) group_left ()
+              (
+                sum by (gpuuuid,hostname) (
+                    (
+                          label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+                        * on (gpuuuid,gpuiid,hostname)
+                          label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_OCCUPANCY, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+                      * on (gpuuuid,gpuiid,hostname) group_right ()
+                        ceems_compute_unit_gpu_sm_count
+                    )
+                  >
+                    0
+                )
+              )
+            )
+              * on (gpuuuid,gpuiid,hostname) group_left ()
+                dev:DCGM_FI_DEV_POWER_USAGE_INSTANT:pue
+            * on (gpuuuid,gpuiid,hostname,uuid) group_right ()
+              ceems_compute_unit_gpu_index_flag
+
+      # Total equivalent emissions rate (g/s) from GPU due to the power consumed by the compute unit's GPUs.
+      # The equivalent emissions are estimated using emission factor from owid for country FR
+      - record: uuid:ceems_gpu_emissions_g_s:pue
+        expr: |2
+          (
+              label_replace(uuid:ceems_gpu_power_watts:pue / 3.6e+06, "provider", "owid", "instance", "(.*)")
+            * on (ceemspowersources) group_left ()
+              label_replace(
+                ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"},
+                "ceemspowersources",
+                "nvidia-dcgm",
+                "instance",
+                "(.*)"
+              )
+          )
+
+      # Total power usage (Watts) by GPUs on all hosts aggregated per Prometheus job
+      - record: job:ceems_gpu_power_watts:pue
+        labels:
+          ceemspowersources: nvidia-dcgm
+        expr: sum by (job)(dev:DCGM_FI_DEV_POWER_USAGE_INSTANT:pue)
+
+      # Total equivalent emissions rate (g/s) due to the power consumed by GPUs on all ths hosts
+      # in a Prometheus job accounting PUE value.
+      - record: job:ceems_gpu_emissions_g_s:pue
+        expr: |2
+          (
+              label_replace(job:ceems_gpu_power_watts:pue / 3.6e+06, "provider", "owid", "instance", "(.*)")
+            * on (ceemspowersources) group_left ()
+              label_replace(
+                ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"},
+                "ceemspowersources",
+                "nvidia-dcgm",
+                "instance",
+                "(.*)"
+              )
+          )
+
+  # Profiling metrics
+  - name: nvidia-dcgm-gpu-profiling-rules
+    # interval: <eval_interval>
+    rules:
+      - record: uuid:ceems_gpu_prof_sm_active:ratio
+        expr: |2
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_sm_occupancy:ratio
+        expr: |2
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_OCCUPANCY, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_gr_engine_active:ratio
+        expr: |2
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_GR_ENGINE_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_pipe_tensor_active:ratio
+        expr: |2
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_PIPE_TENSOR_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_pipe_fp64_active:ratio
+        expr: |2
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_PIPE_FP64_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_pipe_fp32_active:ratio
+        expr: |2
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_PIPE_FP32_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_pipe_fp16_active:ratio
+        expr: |2
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_PIPE_FP16_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_dram_active:ratio
+        expr: |2
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_DRAM_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_nvlink_tx_bytes:rate
+        expr: |2
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_NVLINK_TX_BYTES, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_nvlink_rx_bytes:rate
+        expr: |2
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_NVLINK_RX_BYTES, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_pcie_tx_bytes:rate
+        expr: |2
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_PCIE_TX_BYTES, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      - record: uuid:ceems_gpu_prof_pcie_rx_bytes:rate
+        expr: |2
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_PCIE_RX_BYTES, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+          * on (gpuuuid,gpuiid,hostname) group_right ()
+          ceems_compute_unit_gpu_index_flag
+
+      # Average usage for all hosts aggregated by Prometheus job
+      - record: job:ceems_gpu_prof_sm_active:ratio
+        expr: avg by (job) (DCGM_FI_PROF_SM_ACTIVE) * 100
+
+      - record: job:ceems_gpu_prof_sm_occupancy:ratio
+        expr: avg by (job) (DCGM_FI_PROF_SM_OCCUPANCY) * 100
+
+      - record: job:ceems_gpu_prof_gr_engine_active:ratio
+        expr: avg by (job) (DCGM_FI_PROF_GR_ENGINE_ACTIVE) * 100
+
+      - record: job:ceems_gpu_prof_pipe_tensor_active:ratio
+        expr: avg by (job) (DCGM_FI_PROF_PIPE_TENSOR_ACTIVE) * 100
+
+      - record: job:ceems_gpu_prof_pipe_fp64_active:ratio
+        expr: avg by (job) (DCGM_FI_PROF_PIPE_FP64_ACTIVE) * 100
+
+      - record: job:ceems_gpu_prof_pipe_fp32_active:ratio
+        expr: avg by (job) (DCGM_FI_PROF_PIPE_FP32_ACTIVE) * 100
+
+      - record: job:ceems_gpu_prof_pipe_fp16_active:ratio
+        expr: avg by (job) (DCGM_FI_PROF_PIPE_FP16_ACTIVE) * 100
+
+      - record: job:ceems_gpu_prof_dram_active:ratio
+        expr: avg by (job) (DCGM_FI_PROF_DRAM_ACTIVE) * 100
+
+      - record: job:ceems_gpu_prof_nvlink_tx_bytes:rate
+        expr: avg by (job) (DCGM_FI_PROF_NVLINK_TX_BYTES)
+
+      - record: job:ceems_gpu_prof_nvlink_rx_bytes:rate
+        expr: avg by (job) (DCGM_FI_PROF_NVLINK_RX_BYTES)
+
+      - record: job:ceems_gpu_prof_pcie_tx_bytes:rate
+        expr: avg by (job) (DCGM_FI_PROF_PCIE_TX_BYTES)
+
+      - record: job:ceems_gpu_prof_pcie_rx_bytes:rate
+        expr: avg by (job) (DCGM_FI_PROF_PCIE_RX_BYTES)

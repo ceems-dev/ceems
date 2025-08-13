@@ -20,6 +20,12 @@ import (
 
 const crayPMCCollectorSubsystem = "cray_pm_counters"
 
+// Only used in demo instances and tests.
+var crayPMCSysPath = CEEMSExporterApp.Flag(
+	"collector.cray_pm_counters.path.sysfs",
+	"sysfs mountpoint for Cray PMC collector",
+).Hidden().Default("").String()
+
 // Currently supported PM counters domains.
 var (
 	pmcDomainRegex = regexp.MustCompile("((?:cpu|memory|accel)[0-9]*?)*?_*?(energy|power|temp)_*?(cap)*?")
@@ -41,7 +47,12 @@ func init() {
 
 // NewCrayPMCCollector returns a new Collector exposing Cray's `pm_counters` metrics.
 func NewCrayPMCCollector(logger *slog.Logger) (Collector, error) {
-	fs, err := sysfs.NewFS(*sysPath)
+	sysFSPath := *sysPath
+	if *crayPMCSysPath != "" {
+		sysFSPath = *crayPMCSysPath
+	}
+
+	fs, err := sysfs.NewFS(sysFSPath)
 	if err != nil {
 		return nil, err
 	}

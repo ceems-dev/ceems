@@ -72,7 +72,10 @@ the `--emission-factor` CLI flag. However, it is not possible to set both `--cou
 
 If the [Redfish Collector](../configuration/ceems-exporter.md#redfish-collector) is being used and it has
 multiple chassis, the above will ask for user input on which chassis must be included in the
-recording rules. Operators must choose the chassis that reports the host power usage.
+recording rules. Operators must choose the chassis that reports the host power usage. Similarly, if
+[HWMon Collector](../configuration/ceems-exporter.md#hwmon-collector) is enabled and there are power
+metrics available for multiple components, the operator must choose the component that reports the
+host power usage.
 
 :::
 
