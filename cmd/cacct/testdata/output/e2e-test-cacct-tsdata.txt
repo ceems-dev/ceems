@@ -20,6 +20,7 @@
 	{
 		"fingerprint": "554b56cadf9dea4b",
 		"labels": {
+			"__name__": "cpu_usage",
 			"instance": "localhost:9090",
 			"uuid": "147973"
 		}

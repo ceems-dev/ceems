@@ -6,13 +6,13 @@
 cleanInstall() {
     printf "\033[32m Post Install of an clean install\033[0m\n"
     # Step 3 (clean install), setup setgid bit on cacct
-    chmod g+s /usr/local/bin/cacct
+    chmod u+s /usr/local/bin/cacct
 }
 
 upgrade() {
     printf "\033[32m Post Install of an upgrade\033[0m\n"
     # Step 3(upgrade), setup setgid bit on cacct
-    chmod g+s /usr/local/bin/cacct
+    chmod u+s /usr/local/bin/cacct
 }
 
 # Step 2, check if this is a clean install or an upgrade

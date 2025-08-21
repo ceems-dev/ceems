@@ -8,7 +8,9 @@ import (
 	"os/user"
 	"path/filepath"
 	"slices"
+	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/alecthomas/kingpin/v2"
@@ -301,7 +303,8 @@ func (c *Config) UnmarshalYAML(unmarshal func(any) error) error {
 
 	type plain Config
 
-	if err := unmarshal((*plain)(c)); err != nil {
+	err := unmarshal((*plain)(c))
+	if err != nil {
 		return err
 	}
 
@@ -322,14 +325,16 @@ func (w *WebConfig) UnmarshalYAML(unmarshal func(any) error) error {
 
 	type plain WebConfig
 
-	if err := unmarshal((*plain)(w)); err != nil {
+	err := unmarshal((*plain)(w))
+	if err != nil {
 		return err
 	}
 
 	// The UnmarshalYAML method of HTTPClientConfig is not being called because it's not a pointer.
 	// We cannot make it a pointer as the parser panics for inlined pointer structs.
 	// Thus we just do its validation here.
-	if err := w.HTTPClientConfig.Validate(); err != nil {
+	err = w.HTTPClientConfig.Validate()
+	if err != nil {
 		return err
 	}
 
@@ -398,7 +403,8 @@ func main() {
 		"markdown", "Produce markdown output (default: false).",
 	).Default("false").BoolVar(&mdOut)
 
-	if _, err := cacctApp.Parse(os.Args[1:]); err != nil {
+	_, err := cacctApp.Parse(os.Args[1:])
+	if err != nil {
 		kingpin.Fatalf("failed to parse CLI flags: %v", err)
 	}
 
@@ -444,23 +450,24 @@ func main() {
 	// Always add started and ended ts fields as we will need them for TSDB data retrieval
 	fields = append(fields, []string{"started_at_ts", "ended_at_ts"}...)
 
-	// Ensure --job flag is passed when asking for metric data
-	// This is to avoid fetching metrics of too many jobs when only
-	// period is set
-	if tsData && len(jobs) == 0 {
-		kingpin.Fatalf("explicit job IDs must be passed using --job when --ts is enabled")
-	}
-
 	// Convert start and end times to time.Time
 	var start, end time.Time
 
-	var err error
-	if start, err = parseTime(startTime); err != nil {
+	start, err = parseTime(startTime)
+	if err != nil {
 		kingpin.Fatalf("failed to parse --starttime flag: %v", err)
 	}
 
-	if end, err = parseTime(endTime); err != nil {
+	end, err = parseTime(endTime)
+	if err != nil {
 		kingpin.Fatalf("failed to parse --endtime flag: %v", err)
+	}
+
+	// Ensure to limit period to 1 week asking for metric data
+	// This is to avoid fetching metrics of too many jobs when only
+	// period is set
+	if tsData && end.Sub(start) > 7*24*time.Hour {
+		kingpin.Fatalf("limit period between --starttime and --endtime to 7 days when --ts is enabled")
 	}
 
 	// Get current user and add user's config dir to slice of config
@@ -474,18 +481,56 @@ func main() {
 	}
 
 	// Check if currentUser is only user in userNames and if so, set userNames to nil
-	if len(userNames) == 1 && userNames[0] == currentUser {
+	if len(userNames) == 1 && userNames[0] == currentUser.Username {
 		userNames = nil
 	}
 
+	// By this time, user input is validated. Time to read config file
+	// to get HTTP config to connect to CEEMS API server.
+	// Either setuid or setgid bits must be applied on the app so that
+	// the config file can be read as the owner of this app
+	config, err := readConfig()
+	if err != nil {
+		os.Exit(checkErr(fmt.Errorf("failed to read config file: %w", err)))
+	}
+
+	// Now time to drop privileges so that rest of app will be run as regular user
+	// who invoked it. It is necessary so to be able to create directories and files
+	// to user's space.
+	// The condition ensures that it will be executed only in production and not in e2e
+	// test cases
+	if mockCurrentUser == "" && mockConfigPath == "" {
+		// Convert UID anf GID to int
+		uid, err := strconv.Atoi(currentUser.Uid)
+		if err != nil {
+			os.Exit(checkErr(fmt.Errorf("failed to get current user uid: %w", err)))
+		}
+
+		gid, err := strconv.Atoi(currentUser.Gid)
+		if err != nil {
+			os.Exit(checkErr(fmt.Errorf("failed to get current user gid: %w", err)))
+		}
+
+		// Set UID and GID to current user
+		err = syscall.Setuid(uid)
+		if err != nil {
+			os.Exit(checkErr(fmt.Errorf("failed to set current user uid: %w", err)))
+		}
+
+		err = syscall.Setgid(gid)
+		if err != nil {
+			os.Exit(checkErr(fmt.Errorf("failed to set current user gid: %w", err)))
+		}
+	}
+
 	// Get stats
-	units, usages, err := stats(currentUser, start, end, accounts, jobs, userNames, fields, tsData, tsDataOut)
+	units, usages, err := stats(config, currentUser.Username, start, end, accounts, jobs, userNames, fields, tsData, tsDataOut)
 	if err != nil {
 		os.Exit(checkErr(err))
 	}
 
 	// Print stats as table
-	t := newTable(currentUser, userNames, units, usages)
+	t := newTable(currentUser.Username, userNames, units, usages)
 
 	// Based on request rendering format
 	switch {
@@ -642,14 +687,17 @@ func readConfig() (*Config, error) {
 	for _, configPath := range configPaths {
 		for _, file := range []string{"config.yml", "config.yaml", "cacct.yml", "cacct.yaml"} {
 			configFile := filepath.Join(configPath, file)
-			if _, err := os.Stat(configFile); err == nil {
+
+			_, err := os.Stat(configFile)
+			if err == nil {
 				// Read config file
 				cfg, err := os.ReadFile(configFile)
 				if err != nil {
 					return nil, err
 				}
 
-				if err = yaml.Unmarshal(cfg, &config); err != nil {
+				err = yaml.Unmarshal(cfg, &config)
+				if err != nil {
 					return nil, err
 				}
 
@@ -663,32 +711,34 @@ func readConfig() (*Config, error) {
 
 // getCurrentUser returns the actual user executing the cacct. If --current-user
 // CLI flag is passed, that user will be returned as current user.
-func getCurrentUser(mockUserName string, mockConfigPath string) (string, error) {
+func getCurrentUser(mockUserName string, mockConfigPath string) (*user.User, error) {
 	// Get current user is who is executing cacct
-	var currentUser string
+	var currentUser *user.User
 
-	if u, err := user.Current(); err != nil {
-		return "", fmt.Errorf("failed to get current user: %w", err)
+	// Get effective UID as cacct is a setuid binary
+	u, err := user.Current()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get current user: %w", err)
 	} else {
 		// Check if mockUserName is set. This will be always empty string
 		// for production builds as we do not compile flags for production
 		// builds
 		if mockUserName != "" {
-			currentUser = mockUserName
+			currentUser = &user.User{Username: mockUserName}
 
 			// If mockConfigPath is set as well, add to configPaths
 			if mockConfigPath != "" {
 				configPaths = append(configPaths, mockConfigPath)
 			}
 		} else {
-			currentUser = u.Name
+			currentUser = u
 		}
 	}
 
 	// Add user HOME to configPaths
 	userConfigDir, err := os.UserConfigDir()
 	if err != nil {
-		return "", fmt.Errorf("failed to get config file: %w", err)
+		return nil, fmt.Errorf("failed to get config file: %w", err)
 	}
 
 	configPaths = append(configPaths, filepath.Join(userConfigDir, "ceems"))
@@ -698,17 +748,20 @@ func getCurrentUser(mockUserName string, mockConfigPath string) (string, error) 
 
 func parseTime(s string) (time.Time, error) {
 	// First attempt is to parse as YYYY-MM-DDTHH:MM:SS
-	if t, err := time.Parse("2006-01-02T15:04:05", s); err == nil {
+	t, err := time.Parse("2006-01-02T15:04:05", s)
+	if err == nil {
 		return t.In(time.Local), nil
 	}
 
 	// Second attempt is to parse as YYYY-MM-DDTHH:MM
-	if t, err := time.Parse("2006-01-02T15:04", s); err == nil {
+	t, err = time.Parse("2006-01-02T15:04", s)
+	if err == nil {
 		return t.In(time.Local), nil
 	}
 
 	// Third attempt is to parse as YYYY-MM-DD
-	if t, err := time.Parse("2006-01-02", s); err == nil {
+	t, err = time.Parse("2006-01-02", s)
+	if err == nil {
 		return t.In(time.Local), nil
 	}
 

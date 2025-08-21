@@ -59,8 +59,8 @@ test () {
 			systemctl is-active --quiet "${app}.service" && echo "${app}" is running
 	done
 
-	# Test if cacct has setgid bit on it
-	[ -g "/usr/local/bin/cacct" ] && printf "cacct has setgid set\n"
+	# Test if cacct has setuid bit on it
+	[ -u "/usr/local/bin/cacct" ] && printf "cacct has setuid set\n" || printf "cacct does not have setuid set\n"
 }
 
 if [ ${build} -ne 0 ]

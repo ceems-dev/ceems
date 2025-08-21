@@ -1,1 +1,1 @@
-cacct: error: explicit job IDs must be passed using --job when --ts is enabled
+cacct: error: limit period between --starttime and --endtime to 7 days when --ts is enabled

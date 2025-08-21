@@ -25,6 +25,7 @@ const (
 
 // stats returns units and usage structs by making requests to CEEMS API server.
 func stats(
+	config *Config,
 	currentUser string,
 	start time.Time,
 	end time.Time,
@@ -35,15 +36,6 @@ func stats(
 	tsData bool,
 	tsDataOut string,
 ) ([]models.Unit, []models.Usage, error) {
-	// By this time, user input is validated. Time to read config file
-	// to get HTTP config to connect to CEEMS API server.
-	// Either setuid or setgid bits must be applied on the app so that
-	// the config file can be read as the owner of this app
-	config, err := readConfig()
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to read config file: %w", err)
-	}
-
 	// Add user header to HTTP config
 	userHeaders := http_config.Header{
 		Values: []string{currentUser},
@@ -143,7 +135,8 @@ func stats(
 			return units, usage, nil
 		}
 
-		if err := tsdbData(ctx, config, units, tsDataOut); err != nil {
+		err := tsdbData(ctx, config, units, tsDataOut)
+		if err != nil {
 			fmt.Fprintln(os.Stderr, "failed to fetch time series data", err)
 		}
 	}
@@ -163,7 +156,8 @@ func makeRequest[T any](ctx context.Context, reqURL string, urlValues url.Values
 	req.URL.RawQuery = urlValues.Encode()
 
 	// Make request
-	if resp, err := client.Do(req); err != nil {
+	resp, err := client.Do(req)
+	if err != nil {
 		return nil, err
 	} else {
 		defer resp.Body.Close()
@@ -181,7 +175,9 @@ func makeRequest[T any](ctx context.Context, reqURL string, urlValues url.Values
 
 		// Unpack into data
 		var data Response[T]
-		if err = json.Unmarshal(body, &data); err != nil {
+
+		err = json.Unmarshal(body, &data)
+		if err != nil {
 			return nil, err
 		}
 
