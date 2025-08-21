@@ -113,6 +113,7 @@ func (c *infinibandCollector) Update(ch chan<- prometheus.Metric) error {
 			[]string{"device", "board_id", "firmware_version", "hca_type"},
 			nil,
 		)
+
 		infoValue := 1.0
 		ch <- prometheus.MustNewConstMetric(infoDesc, prometheus.GaugeValue, infoValue, device.Name, device.BoardID, device.FirmwareVersion, device.HCAType)
 

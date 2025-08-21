@@ -204,6 +204,7 @@ func main() {
 	case tsdbUpdaterConfigCmd.FullCommand():
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 		defer cancel()
+
 		os.Exit(checkErr(GenerateTSDBUpdaterConfig(ctx, promServerURL, start, end, httpRoundTripper)))
 
 	case tsdbRecRulesCmd.FullCommand():
@@ -214,11 +215,13 @@ func main() {
 
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 		defer cancel()
+
 		os.Exit(checkErr(CreatePromRecordingRules(ctx, promServerURL, start, end, pueValue, emissionFactorValue, countryCode, evalInterval, outDir, disableProviders, httpRoundTripper)))
 
 	case tsdbRelabelConfigCmd.FullCommand():
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 		defer cancel()
+
 		os.Exit(checkErr(CreatePromRelabelConfig(ctx, promServerURL, start, end, httpRoundTripper)))
 	}
 }
@@ -270,7 +273,8 @@ func CheckWebConfig(files ...string) int {
 	failed := false
 
 	for _, f := range files {
-		if err := web.Validate(f); err != nil {
+		err := web.Validate(f)
+		if err != nil {
 			fmt.Fprintln(os.Stderr, f, "FAILED:", err)
 
 			failed = true
@@ -330,7 +334,9 @@ func config(ctx context.Context, api v1.API) (*Config, error) {
 
 	// Unmarshall config
 	var config Config
-	if err := yaml.Unmarshal([]byte(c.YAML), &config); err != nil {
+
+	err = yaml.Unmarshal([]byte(c.YAML), &config)
+	if err != nil {
 		return nil, err
 	}
 
@@ -394,14 +400,16 @@ func parseTimes(start, end string) (time.Time, time.Time, error) {
 }
 
 func parseTime(s string) (time.Time, error) {
-	if t, err := strconv.ParseFloat(s, 64); err == nil {
+	t, err := strconv.ParseFloat(s, 64)
+	if err == nil {
 		s, ns := math.Modf(t)
 
 		return time.Unix(int64(s), int64(ns*float64(time.Second))).UTC(), nil
 	}
 
-	if t, err := time.Parse(time.RFC3339Nano, s); err == nil {
-		return t, nil
+	tt, err := time.Parse(time.RFC3339Nano, s)
+	if err == nil {
+		return tt, nil
 	}
 
 	return time.Time{}, fmt.Errorf("cannot parse %q to a valid timestamp", s)

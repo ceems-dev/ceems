@@ -120,7 +120,8 @@ func New(kubeconfigPath string, kubeletSocket string, logger *slog.Logger) (*Cli
 	}
 
 	// If kubelet socket is mounted, create a pod resource client
-	if _, err := os.Stat(kubeletSocket); err == nil {
+	_, err = os.Stat(kubeletSocket)
+	if err == nil {
 		conn, err := ConnectToServer(kubeletSocket)
 		if err != nil {
 			return nil, err
@@ -161,7 +162,8 @@ func (c *Client) NewPodInformer(resyncPeriod time.Duration) error {
 
 	// Create a new instance of pod informer
 	c.PodInformer = c.informerFactory.Core().V1().Pods()
-	if _, err := c.PodInformer.Informer().AddEventHandler(
+
+	_, err := c.PodInformer.Informer().AddEventHandler(
 		// Your custom resource event handlers.
 		cache.ResourceEventHandlerFuncs{
 			// Called on creation
@@ -171,7 +173,8 @@ func (c *Client) NewPodInformer(resyncPeriod time.Duration) error {
 			// Called on resource deletion.
 			DeleteFunc: c.podDelete,
 		},
-	); err != nil {
+	)
+	if err != nil {
 		return err
 	}
 
@@ -201,12 +204,14 @@ func (c *Client) Pods() []*v1.Pod {
 	var pods []*v1.Pod
 
 	podMu.Lock()
+
 	for _, pod := range c.pods {
 		pods = append(pods, pod)
 	}
 
 	// Reset pods map
 	c.pods = make(map[string]*v1.Pod)
+
 	podMu.Unlock()
 
 	return pods
@@ -303,7 +308,9 @@ func (c *Client) Exec(ctx context.Context, ns string, pod string, container stri
 	}
 
 	scheme := runtime.NewScheme()
-	if err := v1.AddToScheme(scheme); err != nil {
+
+	err := v1.AddToScheme(scheme)
+	if err != nil {
 		return nil, nil, fmt.Errorf("failed to add to scheme: %w", err)
 	}
 
@@ -345,7 +352,9 @@ func (c *Client) ConfigMap(ctx context.Context, ns string, name string) (map[str
 func (c *Client) podAdd(obj any) {
 	if pod, ok := obj.(*v1.Pod); ok {
 		podMu.Lock()
+
 		c.pods[string(pod.UID)] = pod
+
 		podMu.Unlock()
 	}
 }
@@ -354,7 +363,9 @@ func (c *Client) podAdd(obj any) {
 func (c *Client) podUpdate(_, newObj any) {
 	if pod, ok := newObj.(*v1.Pod); ok {
 		podMu.Lock()
+
 		c.pods[string(pod.UID)] = pod
+
 		podMu.Unlock()
 	}
 }
@@ -363,7 +374,9 @@ func (c *Client) podUpdate(_, newObj any) {
 func (c *Client) podDelete(obj any) {
 	if pod, ok := obj.(*v1.Pod); ok {
 		podMu.Lock()
+
 		c.pods[string(pod.UID)] = pod
+
 		podMu.Unlock()
 	}
 }

@@ -107,19 +107,22 @@ func (c *CEEMSLBAppConfig) UnmarshalYAML(unmarshal func(any) error) error {
 
 	type plain CEEMSLBAppConfig
 
-	if err := unmarshal((*plain)(c)); err != nil {
+	err := unmarshal((*plain)(c))
+	if err != nil {
 		return err
 	}
 
 	// Validate backend servers config
-	if err := c.Validate(); err != nil {
+	err = c.Validate()
+	if err != nil {
 		return err
 	}
 
 	// The UnmarshalYAML method of HTTPClientConfig is not being called because it's not a pointer.
 	// We cannot make it a pointer as the parser panics for inlined pointer structs.
 	// Thus we just do its validation here.
-	if err := c.Server.Web.HTTPClientConfig.Validate(); err != nil {
+	err = c.Server.Web.HTTPClientConfig.Validate()
+	if err != nil {
 		return err
 	}
 
@@ -263,12 +266,15 @@ func (lb *CEEMSLoadBalancer) Main() error {
 	}
 
 	// Check if DB path and file exists in config and add them to ReadPaths
-	if _, err := os.Stat(config.Server.Data.Path); err == nil {
+	_, err = os.Stat(config.Server.Data.Path)
+	if err == nil {
 		securityCfg.ReadPaths = append(securityCfg.ReadPaths, config.Server.Data.Path)
 
 		// Now check if DB file exists
 		dbFile := filepath.Join(config.Server.Data.Path, ceems_api_base.CEEMSDBName)
-		if _, err := os.Stat(dbFile); err == nil {
+
+		_, err := os.Stat(dbFile)
+		if err == nil {
 			securityCfg.ReadPaths = append(securityCfg.ReadPaths, dbFile)
 		}
 	}
@@ -283,7 +289,8 @@ func (lb *CEEMSLoadBalancer) Main() error {
 
 	// Drop all unnecessary privileges
 	if dropPrivs {
-		if err := securityManager.DropPrivileges(disableCapAwareness); err != nil {
+		err := securityManager.DropPrivileges(disableCapAwareness)
+		if err != nil {
 			logger.Error("Failed to drop privileges", "err", err)
 
 			return err
@@ -372,13 +379,15 @@ func (lb *CEEMSLoadBalancer) Main() error {
 
 		go func() {
 			defer wg.Done()
+
 			monitor(ctx, managers[lbType], logger.With("backend_type", lbType))
 		}()
 
 		// Initializing the server in a goroutine so that
 		// it won't block the graceful shutdown handling below
 		go func() {
-			if err := lbs[lbType].Start(ctx); err != nil {
+			err := lbs[lbType].Start(ctx)
+			if err != nil {
 				logger.Error("Failed to start load balancer", "backend_type", lbType, "err", err)
 			}
 		}()
@@ -400,13 +409,15 @@ func (lb *CEEMSLoadBalancer) Main() error {
 	defer cancel()
 
 	for _, lbType := range lbTypes {
-		if err := lbs[lbType].Shutdown(shutDownCtx); err != nil {
+		err := lbs[lbType].Shutdown(shutDownCtx)
+		if err != nil {
 			logger.Error("Failed to gracefully shutdown LB server", "backend_type", lbType, "err", err)
 		}
 	}
 
 	// Restore file permissions by removing any ACLs added
-	if err := securityManager.DeleteACLEntries(); err != nil {
+	err = securityManager.DeleteACLEntries()
+	if err != nil {
 		logger.Error("Failed to remove ACL entries", "err", err)
 	}
 
@@ -502,11 +513,13 @@ func isAlive(ctx context.Context, aliveChannel chan bool, u *url.URL, logger *sl
 	conn, err := d.DialContext(ctx, "tcp", u.Host)
 	if err != nil {
 		logger.Debug("Backend unreachable", "backend", u.Redacted(), "err", err)
+
 		aliveChannel <- false
 
 		return
 	}
 
 	_ = conn.Close()
+
 	aliveChannel <- true
 }

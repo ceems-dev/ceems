@@ -80,9 +80,8 @@ type DateTime struct {
 func (t *DateTime) UnmarshalYAML(unmarshal func(any) error) error {
 	var tmp string
 
-	var err error
-
-	if err = unmarshal(&tmp); err != nil {
+	err := unmarshal(&tmp)
+	if err != nil {
 		return err
 	}
 
@@ -95,17 +94,20 @@ func (t *DateTime) UnmarshalYAML(unmarshal func(any) error) error {
 		tt, _ = time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
 	} else {
 		// First attempt to parse as YYYY-MM-DD
-		if tt, err = time.Parse("2006-01-02", tmp); err == nil {
+		tt, err = time.Parse("2006-01-02", tmp)
+		if err == nil {
 			goto outside
 		}
 
 		// Second attempt to parse as YYYY-MM-DDTHH:MM
-		if tt, err = time.Parse("2006-01-02T15:04", tmp); err == nil {
+		tt, err = time.Parse("2006-01-02T15:04", tmp)
+		if err == nil {
 			goto outside
 		}
 
 		// Final attempt to parse as YYYY-MM-DDTHH:MM:SS
-		if tt, err = time.Parse("2006-01-02T15:04:05", tmp); err == nil {
+		tt, err = time.Parse("2006-01-02T15:04:05", tmp)
+		if err == nil {
 			goto outside
 		}
 
@@ -137,7 +139,8 @@ func (c *AdminConfig) UnmarshalYAML(unmarshal func(any) error) error {
 
 	type plain AdminConfig
 
-	if err := unmarshal((*plain)(c)); err != nil {
+	err := unmarshal((*plain)(c))
+	if err != nil {
 		return err
 	}
 
@@ -190,7 +193,8 @@ func (c *DataConfig) UnmarshalYAML(unmarshal func(any) error) error {
 
 	type plain DataConfig
 
-	if err := unmarshal((*plain)(c)); err != nil {
+	err := unmarshal((*plain)(c))
+	if err != nil {
 		return err
 	}
 
@@ -306,8 +310,12 @@ func New(c *Config) (*stats, error) {
 	// Get file paths
 	dbPath := filepath.Join(c.Data.Path, base.CEEMSDBName)
 
+	// Make a timeout context
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	// Setup DB
-	db, dbConn, err := setupDB(dbPath)
+	db, dbConn, err := setupDB(ctx, dbPath)
 	if err != nil {
 		c.Logger.Error("DB setup failed", "err", err)
 
@@ -321,7 +329,8 @@ func New(c *Config) (*stats, error) {
 	}
 
 	// Perform DB migrations
-	if err = migrator.ApplyMigrations(db); err != nil {
+	err = migrator.ApplyMigrations(db)
+	if err != nil {
 		return nil, err
 	}
 
@@ -331,7 +340,8 @@ func New(c *Config) (*stats, error) {
 
 	var emptyDB bool
 
-	if err = db.QueryRow("SELECT MAX(last_updated_at) FROM " + base.UsageDBTableName).Scan(&lastUpdatedAt); err == nil {
+	err = db.QueryRow("SELECT MAX(last_updated_at) FROM " + base.UsageDBTableName).Scan(&lastUpdatedAt) //nolint:noctx
+	if err == nil {
 		// Parse date time string
 		c.Data.LastUpdate.Time, err = time.Parse(base.DatetimeLayout, lastUpdatedAt)
 		if err != nil {
@@ -436,7 +446,8 @@ func (s *stats) Collect(ctx context.Context) error {
 		if nextUpdateTime.Compare(currentTime) == -1 {
 			s.logger.Debug("Incremental DB update step", "from", s.storage.lastUpdateTime, "to", nextUpdateTime)
 
-			if err := s.collect(ctx, s.storage.lastUpdateTime, nextUpdateTime); err != nil {
+			err := s.collect(ctx, s.storage.lastUpdateTime, nextUpdateTime)
+			if err != nil {
 				s.logger.Error("Failed incremental update", "from", s.storage.lastUpdateTime, "to", nextUpdateTime, "err", err)
 
 				return err
@@ -510,7 +521,8 @@ func (s *stats) collect(ctx context.Context, startTime, endTime time.Time) error
 	units = s.updater.Update(ctx, startTime, endTime, units)
 
 	// Update admin users list from Grafana
-	if err := s.updateAdminUsers(ctx); err != nil {
+	err = s.updateAdminUsers(ctx)
+	if err != nil {
 		s.logger.Error("Failed to update admin users from Grafana", "err", err)
 	}
 
@@ -525,7 +537,8 @@ func (s *stats) collect(ctx context.Context, startTime, endTime time.Time) error
 	if !s.storage.skipDeleteOldUnits {
 		s.logger.Debug("Cleaning up old entries in DB")
 
-		if err = s.purgeExpiredUnits(ctx, tx); err != nil {
+		err = s.purgeExpiredUnits(ctx, tx)
+		if err != nil {
 			s.logger.Error("Failed to clean up old entries", "err", err)
 		} else {
 			s.logger.Debug("Cleaned up old entries in DB")
@@ -535,7 +548,8 @@ func (s *stats) collect(ctx context.Context, startTime, endTime time.Time) error
 	// Insert data into DB
 	s.logger.Debug("Executing SQL statements")
 
-	if err := s.execStatements(ctx, tx, startTime, endTime, units, users, projects); err != nil {
+	err = s.execStatements(ctx, tx, startTime, endTime, units, users, projects)
+	if err != nil {
 		s.logger.Debug("Failed to execute SQL statements", "err", err)
 
 		return fmt.Errorf("failed to execute SQL statements: %w", err)
@@ -544,7 +558,8 @@ func (s *stats) collect(ctx context.Context, startTime, endTime time.Time) error
 	}
 
 	// Commit changes
-	if err = tx.Commit(); err != nil {
+	err = tx.Commit()
+	if err != nil {
 		return fmt.Errorf("failed to commit SQL transcation: %w", err)
 	}
 
@@ -571,13 +586,17 @@ func (s *stats) purgeExpiredUnits(ctx context.Context, tx *sql.Tx) error {
 		base.UnitsDBTableName,
 		int(s.storage.retentionPeriod.Hours()/24),
 	) // #nosec
-	if _, err := tx.ExecContext(ctx, deleteUnitsQuery); err != nil {
+
+	_, err := tx.ExecContext(ctx, deleteUnitsQuery)
+	if err != nil {
 		return err
 	}
 
 	// Get changes
 	var unitsDeleted int
-	if err := tx.QueryRowContext(ctx, "SELECT changes()").Scan(&unitsDeleted); err == nil {
+
+	err = tx.QueryRowContext(ctx, "SELECT changes()").Scan(&unitsDeleted)
+	if err == nil {
 		s.logger.Debug("DB update", "units_deleted", unitsDeleted)
 	}
 
@@ -587,13 +606,17 @@ func (s *stats) purgeExpiredUnits(ctx context.Context, tx *sql.Tx) error {
 		base.UsageDBTableName,
 		int(s.storage.retentionPeriod.Hours()/24),
 	) // #nosec
-	if _, err := tx.ExecContext(ctx, deleteUsageQuery); err != nil {
+
+	_, err = tx.ExecContext(ctx, deleteUsageQuery)
+	if err != nil {
 		return err
 	}
 
 	// Get changes
 	var usageDeleted int
-	if err := tx.QueryRowContext(ctx, "SELECT changes()").Scan(&usageDeleted); err == nil {
+
+	err = tx.QueryRowContext(ctx, "SELECT changes()").Scan(&usageDeleted)
+	if err == nil {
 		s.logger.Debug("DB update", "usage_deleted", usageDeleted)
 	}
 
@@ -641,7 +664,7 @@ func (s *stats) execStatements(
 
 			// s.logger.Debug("Inserting unit", "id", unit.Jobid)
 			// Use named parameters to not to repeat the values
-			if _, err = stmts[base.UnitsDBTableName].ExecContext(
+			_, err = stmts[base.UnitsDBTableName].ExecContext(
 				ctx,
 				sql.Named(base.UnitsDBTableStructFieldColNameMap["ResourceManager"], unit.ResourceManager),
 				sql.Named(base.UnitsDBTableStructFieldColNameMap["ClusterID"], cluster.Cluster.ID),
@@ -676,7 +699,8 @@ func (s *stats) execStatements(
 				sql.Named(base.UnitsDBTableStructFieldColNameMap["Ignore"], unit.Ignore),
 				sql.Named(base.UnitsDBTableStructFieldColNameMap["NumUpdates"], 1),
 				sql.Named(base.UnitsDBTableStructFieldColNameMap["LastUpdatedAt"], currentTime.Format(base.DatetimeLayout)),
-			); err != nil {
+			)
+			if err != nil {
 				s.logger.Error("Failed to insert unit in DB", "cluster_id", cluster.Cluster.ID, "uuid", unit.UUID, "err", err)
 			}
 
@@ -689,7 +713,7 @@ func (s *stats) execStatements(
 
 			// Update Usage table
 			// Use named parameters to not to repeat the values
-			if _, err = stmts[base.UsageDBTableName].ExecContext(
+			_, err = stmts[base.UsageDBTableName].ExecContext(
 				ctx,
 				sql.Named(base.UsageDBTableStructFieldColNameMap["ResourceManager"], unit.ResourceManager),
 				sql.Named(base.UsageDBTableStructFieldColNameMap["ClusterID"], cluster.Cluster.ID),
@@ -712,13 +736,14 @@ func (s *stats) execStatements(
 				sql.Named(base.UsageDBTableStructFieldColNameMap["TotalIngressStats"], unit.TotalIngressStats),
 				sql.Named(base.UsageDBTableStructFieldColNameMap["TotalEgressStats"], unit.TotalEgressStats),
 				sql.Named(base.UsageDBTableStructFieldColNameMap["NumUpdates"], 1),
-			); err != nil {
+			)
+			if err != nil {
 				s.logger.Error("Failed to update usage table in DB", "cluster_id", cluster.Cluster.ID, "uuid", unit.UUID, "err", err)
 			}
 
 			// Update DailyUsage table
 			// Use named parameters to not to repeat the values
-			if _, err = stmts[base.DailyUsageDBTableName].ExecContext(
+			_, err = stmts[base.DailyUsageDBTableName].ExecContext(
 				ctx,
 				sql.Named(base.UsageDBTableStructFieldColNameMap["ResourceManager"], unit.ResourceManager),
 				sql.Named(base.UsageDBTableStructFieldColNameMap["ClusterID"], cluster.Cluster.ID),
@@ -741,7 +766,8 @@ func (s *stats) execStatements(
 				sql.Named(base.UsageDBTableStructFieldColNameMap["TotalIngressStats"], unit.TotalIngressStats),
 				sql.Named(base.UsageDBTableStructFieldColNameMap["TotalEgressStats"], unit.TotalEgressStats),
 				sql.Named(base.UsageDBTableStructFieldColNameMap["NumUpdates"], 1),
-			); err != nil {
+			)
+			if err != nil {
 				s.logger.Error("Failed to update daily_usage table in DB", "cluster_id", cluster.Cluster.ID, "uuid", unit.UUID, "err", err)
 			}
 		}
@@ -750,7 +776,7 @@ func (s *stats) execStatements(
 	// Update users
 	for _, cluster := range clusterUsers {
 		for _, user := range cluster.Users {
-			if _, err = stmts[base.UsersDBTableName].ExecContext(
+			_, err = stmts[base.UsersDBTableName].ExecContext(
 				ctx,
 				sql.Named(base.UsersDBTableStructFieldColNameMap["ClusterID"], cluster.Cluster.ID),
 				sql.Named(base.UsersDBTableStructFieldColNameMap["ResourceManager"], cluster.Cluster.Manager),
@@ -759,7 +785,8 @@ func (s *stats) execStatements(
 				sql.Named(base.UsersDBTableStructFieldColNameMap["Projects"], user.Projects),
 				sql.Named(base.UsersDBTableStructFieldColNameMap["Tags"], user.Tags),
 				sql.Named(base.UsersDBTableStructFieldColNameMap["LastUpdatedAt"], user.LastUpdatedAt),
-			); err != nil {
+			)
+			if err != nil {
 				s.logger.Error("Failed to insert user in DB", "cluster_id", cluster.Cluster.ID, "user", user.Name, "err", err)
 			}
 		}
@@ -768,7 +795,7 @@ func (s *stats) execStatements(
 	// Update projects
 	for _, cluster := range clusterProjects {
 		for _, project := range cluster.Projects {
-			if _, err = stmts[base.ProjectsDBTableName].ExecContext(
+			_, err = stmts[base.ProjectsDBTableName].ExecContext(
 				ctx,
 				sql.Named(base.ProjectsDBTableStructFieldColNameMap["ClusterID"], cluster.Cluster.ID),
 				sql.Named(base.ProjectsDBTableStructFieldColNameMap["ResourceManager"], cluster.Cluster.Manager),
@@ -777,7 +804,8 @@ func (s *stats) execStatements(
 				sql.Named(base.ProjectsDBTableStructFieldColNameMap["Users"], project.Users),
 				sql.Named(base.ProjectsDBTableStructFieldColNameMap["Tags"], project.Tags),
 				sql.Named(base.ProjectsDBTableStructFieldColNameMap["LastUpdatedAt"], project.LastUpdatedAt),
-			); err != nil {
+			)
+			if err != nil {
 				s.logger.Error("Failed to insert project in DB", "cluster_id", cluster.Cluster.ID, "project", project.Name, "err", err)
 			}
 		}
@@ -786,7 +814,7 @@ func (s *stats) execStatements(
 	// Update admin users table
 	for _, source := range AdminUsersSources {
 		for _, user := range s.admin.users[source] {
-			if _, err = stmts[base.AdminUsersDBTableName].ExecContext(
+			_, err = stmts[base.AdminUsersDBTableName].ExecContext(
 				ctx,
 				sql.Named(base.AdminUsersDBTableStructFieldColNameMap["ClusterID"], "all"),
 				sql.Named(base.AdminUsersDBTableStructFieldColNameMap["ResourceManager"], ""),
@@ -795,7 +823,8 @@ func (s *stats) execStatements(
 				sql.Named(base.AdminUsersDBTableStructFieldColNameMap["Projects"], models.List{}),
 				sql.Named(base.AdminUsersDBTableStructFieldColNameMap["Tags"], models.List{source}),
 				sql.Named(base.AdminUsersDBTableStructFieldColNameMap["LastUpdatedAt"], currentTime.Format(base.DatetimeLayout)),
-			); err != nil {
+			)
+			if err != nil {
 				s.logger.Error("Failed to update admin_users table in DB", "source", source, "err", err)
 			}
 		}
@@ -813,18 +842,16 @@ func (s *stats) execStatements(
 // Based on https://gist.github.com/bbengfort/452a9d5e74a63d88e5a34a580d6cb6d3
 // Ref: https://github.com/rotationalio/ensign/pull/529/files
 func (s *stats) backup(ctx context.Context, backupDBPath string) error {
-	var backupDBFile *os.File
-
-	var err error
 	// Create a backup DB file
-	if backupDBFile, err = os.Create(backupDBPath); err != nil {
+	backupDBFile, err := os.Create(backupDBPath)
+	if err != nil {
 		return err
 	}
 
 	backupDBFile.Close()
 
 	// Open a second sqlite3 database at the backup location
-	destDB, destConn, err := openDBConnection(backupDBPath)
+	destDB, destConn, err := openDBConnection(ctx, backupDBPath)
 	if err != nil {
 		return err
 	}
@@ -837,7 +864,8 @@ func (s *stats) backup(ctx context.Context, backupDBPath string) error {
 	// NOTE: backup.Finish() MUST be called to prevent panics.
 	var backup *sqlite3.SQLiteBackup
 
-	if backup, err = destConn.Backup(sqlite3Main, s.dbConn, sqlite3Main); err != nil {
+	backup, err = destConn.Backup(sqlite3Main, s.dbConn, sqlite3Main)
+	if err != nil {
 		return err
 	}
 
@@ -855,8 +883,10 @@ func (s *stats) backup(ctx context.Context, backupDBPath string) error {
 		default:
 			// Backing up a smaller number of pages per step is the most effective way of
 			// doing online backups and also allow write transactions to make progress.
-			if isDone, err = backup.Step(pagesPerStep); err != nil {
-				if finishErr := backup.Finish(); finishErr != nil {
+			isDone, err = backup.Step(pagesPerStep)
+			if err != nil {
+				finishErr := backup.Finish()
+				if finishErr != nil {
 					return fmt.Errorf("errors: %w, %w", err, finishErr)
 				}
 
@@ -877,7 +907,8 @@ func (s *stats) backup(ctx context.Context, backupDBPath string) error {
 func (s *stats) vacuum(ctx context.Context) error {
 	s.logger.Debug("Starting to vacuum DB")
 
-	if _, err := s.db.ExecContext(ctx, "VACUUM"); err != nil {
+	_, err := s.db.ExecContext(ctx, "VACUUM")
+	if err != nil {
 		return err
 	}
 
@@ -890,7 +921,8 @@ func (s *stats) createBackup(ctx context.Context) error {
 	defer common.TimeTrack(time.Now(), "DB backup", s.logger)
 
 	// First vacuum DB to reduce size
-	if err := s.vacuum(ctx); err != nil {
+	err := s.vacuum(ctx)
+	if err != nil {
 		s.logger.Warn("Failed to vacuum DB", "err", err)
 	} else {
 		s.logger.Debug("DB vacuumed")
@@ -905,12 +937,14 @@ func (s *stats) createBackup(ctx context.Context) error {
 	)
 
 	backupDBFilePath := filepath.Join(filepath.Dir(s.storage.dbPath), backupDBFileName)
-	if err := s.backup(ctx, backupDBFilePath); err != nil {
+
+	err = s.backup(ctx, backupDBFilePath)
+	if err != nil {
 		return err
 	}
 
 	// If back is successful, move it to dbBackupPath
-	err := os.Rename(backupDBFilePath, filepath.Join(s.storage.dbBackupPath, backupDBFileName))
+	err = os.Rename(backupDBFilePath, filepath.Join(s.storage.dbBackupPath, backupDBFileName))
 	if err != nil {
 		return fmt.Errorf("failed to move backup DB file: %w", err)
 	}

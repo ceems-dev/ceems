@@ -46,7 +46,8 @@ func queryLB(address, clusterID string) error {
 		return err
 	}
 
-	if err := resp.Body.Close(); err != nil {
+	err = resp.Body.Close()
+	if err != nil {
 		return err
 	}
 
@@ -109,8 +110,10 @@ ceems_lb:
 
 	// Query LB
 	for i := range 10 {
-		if err := queryLB("localhost:9040", "default"); err == nil {
-			if err := queryLB("localhost:9040", "default"); err == nil {
+		err := queryLB("localhost:9040", "default")
+		if err == nil {
+			err := queryLB("localhost:9040", "default")
+			if err == nil {
 				break
 			}
 		}

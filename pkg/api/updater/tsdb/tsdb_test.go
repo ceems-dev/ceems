@@ -46,7 +46,8 @@ func mockTSDBServer() *httptest.Server {
 		},
 	}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))
@@ -94,7 +95,8 @@ queries:
 
 	var extraConfig yaml.Node
 
-	if err := yaml.Unmarshal([]byte(config), &extraConfig); err != nil {
+	err := yaml.Unmarshal([]byte(config), &extraConfig)
+	if err != nil {
 		return updater.Instance{}, fmt.Errorf("failed to unmarshall config: %w\n", err)
 	}
 

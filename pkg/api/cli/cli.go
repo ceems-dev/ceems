@@ -48,12 +48,14 @@ func (c *CEEMSAPIAppConfig) SetDirectory(dir string) {
 // Validate validates the config.
 func (c *CEEMSAPIAppConfig) Validate() error {
 	// Validate Data config
-	if err := c.Server.Data.Validate(); err != nil {
+	err := c.Server.Data.Validate()
+	if err != nil {
 		return err
 	}
 
 	// Validate Admin config
-	if err := c.Server.Admin.Validate(); err != nil {
+	err = c.Server.Admin.Validate()
+	if err != nil {
 		return err
 	}
 
@@ -242,12 +244,14 @@ func (b *CEEMSServer) Main() error {
 	config.Server.Data.SkipDeleteOldUnits = skipDeleteOldUnits
 
 	// Return error if backup interval of less than 1 day is used
-	if err := config.Validate(); err != nil && !disableChecks {
+	err = config.Validate()
+	if err != nil && !disableChecks {
 		return err
 	}
 
 	// Setup data directories
-	if config, err = createDirs(config); err != nil {
+	config, err = createDirs(config)
+	if err != nil {
 		return err
 	}
 
@@ -263,7 +267,8 @@ func (b *CEEMSServer) Main() error {
 	runtime.GOMAXPROCS(maxProcs)
 	logger.Debug("Go MAXPROCS", "procs", runtime.GOMAXPROCS(0))
 
-	if user, err := user.Current(); err == nil && user.Uid == "0" {
+	user, err := user.Current()
+	if err == nil && user.Uid == "0" {
 		logger.Info("CEEMS API server is running as root user. Privileges will be dropped and process will be run as unprivileged user")
 	}
 
@@ -306,7 +311,9 @@ func (b *CEEMSServer) Main() error {
 
 	// If there is already a DB file, we should add it to ReadWritePaths
 	dbFile := filepath.Join(config.Server.Data.Path, base.CEEMSDBName)
-	if _, err := os.Stat(dbFile); err == nil {
+
+	_, err = os.Stat(dbFile)
+	if err == nil {
 		securityCfg.ReadWritePaths = append(securityCfg.ReadWritePaths, dbFile)
 	}
 
@@ -320,7 +327,8 @@ func (b *CEEMSServer) Main() error {
 
 	// Drop all unnecessary privileges
 	if dropPrivs {
-		if err := securityManager.DropPrivileges(disableCapAwareness); err != nil {
+		err := securityManager.DropPrivileges(disableCapAwareness)
+		if err != nil {
 			logger.Error("Failed to drop privileges", "err", err)
 
 			return err
@@ -410,7 +418,8 @@ func (b *CEEMSServer) Main() error {
 			// starts instead of waiting for ticker to tick.
 			logger.Info("Updating CEEMS DB", "interval", config.Server.Data.UpdateInterval)
 
-			if err := collector.Collect(ctx); err != nil {
+			err := collector.Collect(ctx)
+			if err != nil {
 				logger.Error("Failed to fetch data", "err", err)
 			}
 
@@ -443,7 +452,8 @@ func (b *CEEMSServer) Main() error {
 					// first tick to run it.
 					logger.Info("Backing up CEEMS DB", "interval", config.Server.Data.BackupInterval)
 
-					if err := collector.Backup(ctx); err != nil {
+					err := collector.Backup(ctx)
+					if err != nil {
 						logger.Error("Failed to backup DB", "err", err)
 					}
 				case <-ctx.Done():
@@ -458,7 +468,8 @@ func (b *CEEMSServer) Main() error {
 	// Initializing the server in a goroutine so that
 	// it won't block the graceful shutdown handling below.
 	go func() {
-		if err := apiServer.Start(ctx); err != nil {
+		err := apiServer.Start(ctx)
+		if err != nil {
 			logger.Error("Failed to start server", "err", err)
 		}
 	}()
@@ -477,7 +488,8 @@ func (b *CEEMSServer) Main() error {
 	wg.Wait()
 
 	// Close DB only after all DB go routines are done.
-	if err := collector.Stop(); err != nil {
+	err = collector.Stop()
+	if err != nil {
 		logger.Error("Failed to close DB connection", "err", err)
 	}
 
@@ -490,12 +502,14 @@ func (b *CEEMSServer) Main() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if err := apiServer.Shutdown(ctx); err != nil {
+	err = apiServer.Shutdown(ctx)
+	if err != nil {
 		logger.Error("Failed to gracefully shutdown server", "err", err)
 	}
 
 	// Restore file permissions by removing any ACLs added
-	if err := securityManager.DeleteACLEntries(); err != nil {
+	err = securityManager.DeleteACLEntries()
+	if err != nil {
 		logger.Error("Failed to remove ACL entries", "err", err)
 	}
 
@@ -515,7 +529,8 @@ func createDirs(config *CEEMSAPIAppConfig) (*CEEMSAPIAppConfig, error) {
 	}
 
 	if config.Server.Data.BackupPath != "" {
-		if config.Server.Data.BackupPath, err = filepath.Abs(config.Server.Data.BackupPath); err != nil {
+		config.Server.Data.BackupPath, err = filepath.Abs(config.Server.Data.BackupPath)
+		if err != nil {
 			return nil, fmt.Errorf(
 				"failed to get absolute path for data.backup_path=%s: %w",
 				config.Server.Data.BackupPath,
@@ -525,15 +540,19 @@ func createDirs(config *CEEMSAPIAppConfig) (*CEEMSAPIAppConfig, error) {
 	}
 
 	// Check if config.Data.Path/config.Data.BackupPath exists and create one if it does not.
-	if _, err := os.Stat(config.Server.Data.Path); os.IsNotExist(err) {
-		if err := os.MkdirAll(config.Server.Data.Path, 0o750); err != nil {
+	_, err = os.Stat(config.Server.Data.Path)
+	if os.IsNotExist(err) {
+		err := os.MkdirAll(config.Server.Data.Path, 0o750)
+		if err != nil {
 			return nil, fmt.Errorf("failed to create data directory: %w", err)
 		}
 	}
 
 	if config.Server.Data.BackupPath != "" {
-		if _, err := os.Stat(config.Server.Data.BackupPath); os.IsNotExist(err) {
-			if err := os.MkdirAll(config.Server.Data.BackupPath, 0o750); err != nil {
+		_, err := os.Stat(config.Server.Data.BackupPath)
+		if os.IsNotExist(err) {
+			err := os.MkdirAll(config.Server.Data.BackupPath, 0o750)
+			if err != nil {
 				return nil, fmt.Errorf("failed to create backup data directory: %w", err)
 			}
 		}

@@ -55,17 +55,14 @@ func New(webURL string, config config_util.HTTPClientConfig, logger *slog.Logger
 	}
 
 	// Parse Grafana web Url
-	var grafanaURL *url.URL
-
-	var grafanaClient *http.Client
-
-	var err error
-	if grafanaURL, err = url.Parse(webURL); err != nil {
+	grafanaURL, err := url.Parse(webURL)
+	if err != nil {
 		return nil, errors.Unwrap(err)
 	}
 
 	// If skip verify is set to true for TSDB add it to client
-	if grafanaClient, err = config_util.NewClientFromConfig(config, "grafana"); err != nil {
+	grafanaClient, err := config_util.NewClientFromConfig(config, "grafana")
+	if err != nil {
 		return nil, err
 	}
 

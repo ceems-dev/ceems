@@ -378,25 +378,19 @@ func lookupCgroupRoots(rootDir string, name string) ([]string, error) {
 	var foundCgroupRoots []string
 
 	// Walk through all cgroups and get cgroup paths
-	if err := filepath.WalkDir(rootDir, func(p string, info fs.DirEntry, err error) error {
+	err := filepath.WalkDir(rootDir, func(p string, info fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 
-		// Ignore paths that are not directories
 		if !info.IsDir() {
 			return nil
 		}
 
-		// Check if name is in path
-		// Once we add the directory to foundCgroupRoots, we need to
-		// skip all the sub directories of this directory.
-		// We are lookin only for leaf folders
 		if strings.Contains(p, name) {
-			// Get relative path of cgroup
 			rel, err := filepath.Rel(rootDir, p)
 			if err != nil {
-				return nil //nolint:nilerr
+				return err
 			}
 
 			foundCgroupRoots = append(foundCgroupRoots, rel)
@@ -405,7 +399,8 @@ func lookupCgroupRoots(rootDir string, name string) ([]string, error) {
 		}
 
 		return nil
-	}); err != nil {
+	})
+	if err != nil {
 		return nil, err
 	}
 
@@ -442,7 +437,8 @@ func perfEventsAvailable() error {
 	//
 	// Even with paranoid set to -1, we still need CAP_PERFMON to be
 	// able to open perf events for ANY process on the host.
-	if paranoid, err := fs.SysctlInts("kernel.perf_event_paranoid"); err == nil {
+	paranoid, err := fs.SysctlInts("kernel.perf_event_paranoid")
+	if err == nil {
 		if len(paranoid) == 1 && paranoid[0] > 2 {
 			return fmt.Errorf(
 				"perf_event_open syscall is not possible with perf_event_paranoid=%d. Set it to value 2",

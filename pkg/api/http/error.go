@@ -96,7 +96,9 @@ func errorResponse[T any](w http.ResponseWriter, apiErr *apiError, logger *slog.
 		Error:     apiErr.err.Error(),
 		Data:      data,
 	}
-	if err := json.NewEncoder(w).Encode(&response); err != nil {
+
+	err := json.NewEncoder(w).Encode(&response)
+	if err != nil {
 		logger.Error("Failed to encode response", "err", err)
 		w.Write([]byte("KO"))
 	}

@@ -18,7 +18,8 @@ const (
 )
 
 func TestCEEMSLBExecutable(t *testing.T) {
-	if _, err := os.Stat(binary); err != nil {
+	_, err := os.Stat(binary)
+	if err != nil {
 		t.Skipf("ceems_lb binary not available, try to run `make build` first: %s", err)
 	}
 
@@ -31,7 +32,8 @@ func TestCEEMSLBExecutable(t *testing.T) {
 	err = os.Link(configPath, tmpConfigPath)
 	require.NoError(t, err)
 
-	lb := exec.Command(
+	lb := exec.CommandContext(
+		t.Context(),
 		binary, "--path.data", tmpDir,
 		"--config.path", tmpConfigPath,
 		"--web.listen-address", address,
@@ -41,7 +43,8 @@ func TestCEEMSLBExecutable(t *testing.T) {
 }
 
 func runCommandAndTests(cmd *exec.Cmd) error {
-	if err := cmd.Start(); err != nil {
+	err := cmd.Start()
+	if err != nil {
 		return fmt.Errorf("failed to start command: %w", err)
 	}
 

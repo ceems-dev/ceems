@@ -72,7 +72,8 @@ func lenLoop(i uint32) int {
 
 // ServiceRootHandler handles root of redfish API.
 func ServiceRootHandler(w http.ResponseWriter, r *http.Request) {
-	if data, err := assetsFS.ReadFile("assets/redfish/service_root.json"); err == nil {
+	data, err := assetsFS.ReadFile("assets/redfish/service_root.json")
+	if err == nil {
 		w.Write(data)
 
 		return
@@ -84,7 +85,8 @@ func ServiceRootHandler(w http.ResponseWriter, r *http.Request) {
 
 // ChassisRootHandler handles chassis collections of redfish API.
 func ChassisRootHandler(w http.ResponseWriter, r *http.Request) {
-	if data, err := assetsFS.ReadFile("assets/redfish/chassis_collection.json"); err == nil {
+	data, err := assetsFS.ReadFile("assets/redfish/chassis_collection.json")
+	if err == nil {
 		w.Write(data)
 
 		return
@@ -97,7 +99,9 @@ func ChassisRootHandler(w http.ResponseWriter, r *http.Request) {
 // ChassisHandler handles a given chassis of redfish API.
 func ChassisHandler(w http.ResponseWriter, r *http.Request) {
 	chassisID := strings.ReplaceAll(strings.ToLower(r.PathValue("chassisID")), "-", "_")
-	if data, err := assetsFS.ReadFile(fmt.Sprintf("assets/redfish/%s.json", chassisID)); err == nil {
+
+	data, err := assetsFS.ReadFile(fmt.Sprintf("assets/redfish/%s.json", chassisID))
+	if err == nil {
 		w.Write(data)
 
 		return
@@ -110,7 +114,9 @@ func ChassisHandler(w http.ResponseWriter, r *http.Request) {
 // ChassisPowerHandler handles chassis power of redfish API.
 func ChassisPowerHandler(w http.ResponseWriter, r *http.Request) {
 	chassisID := strings.ReplaceAll(strings.ToLower(r.PathValue("chassisID")), "-", "_")
-	if data, err := assetsFS.ReadFile(fmt.Sprintf("assets/redfish/%s_power.json", chassisID)); err == nil {
+
+	data, err := assetsFS.ReadFile(fmt.Sprintf("assets/redfish/%s_power.json", chassisID))
+	if err == nil {
 		w.Write(data)
 
 		return
@@ -122,7 +128,8 @@ func ChassisPowerHandler(w http.ResponseWriter, r *http.Request) {
 
 // PyroConfigHandler handles pyroscope config.
 func PyroConfigHandler(w http.ResponseWriter, r *http.Request) {
-	if data, err := assetsFS.ReadFile("assets/pyroscope/config.yml"); err == nil {
+	data, err := assetsFS.ReadFile("assets/pyroscope/config.yml")
+	if err == nil {
 		w.Write(data)
 
 		return
@@ -135,15 +142,20 @@ func PyroConfigHandler(w http.ResponseWriter, r *http.Request) {
 // ProfilesHandler handles pyroscope profiles.
 func ProfilesHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse request
-	if body, err := io.ReadAll(r.Body); err == nil {
+	body, err := io.ReadAll(r.Body)
+	if err == nil {
 		reqData := querierv1.SelectMergeStacktracesRequest{}
-		if err := proto.Unmarshal(body, &reqData); err == nil {
+
+		err := proto.Unmarshal(body, &reqData)
+		if err == nil {
 			RespData := &querierv1.SelectMergeStacktracesResponse{
 				Flamegraph: &querierv1.FlameGraph{
 					Names: []string{reqData.GetLabelSelector()},
 				},
 			}
-			if body, err := proto.Marshal(RespData); err == nil {
+
+			body, err := proto.Marshal(RespData)
+			if err == nil {
 				w.Write(body)
 
 				return
@@ -166,7 +178,8 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 		query = r.URL.Query()["query"][0]
 	case http.MethodPost:
 		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
-		if err := r.ParseForm(); err != nil {
+		err := r.ParseForm()
+		if err != nil {
 			http.Error(w, "ParseForm error", http.StatusInternalServerError)
 
 			return
@@ -306,7 +319,9 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 			"result":     results,
 		},
 	}
-	if err := json.NewEncoder(w).Encode(&response); err != nil {
+
+	err := json.NewEncoder(w).Encode(&response)
+	if err != nil {
 		w.Write([]byte("KO"))
 	}
 }
@@ -321,7 +336,8 @@ func QueryRangeHandler(w http.ResponseWriter, r *http.Request) {
 		query = r.URL.Query()["query"][0]
 	case http.MethodPost:
 		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
-		if err := r.ParseForm(); err != nil {
+		err := r.ParseForm()
+		if err != nil {
 			http.Error(w, "ParseForm error", http.StatusInternalServerError)
 
 			return
@@ -478,7 +494,9 @@ func QueryRangeHandler(w http.ResponseWriter, r *http.Request) {
 			"result":     results,
 		},
 	}
-	if err := json.NewEncoder(w).Encode(&response); err != nil {
+
+	err := json.NewEncoder(w).Encode(&response)
+	if err != nil {
 		w.Write([]byte("KO"))
 	}
 }
@@ -491,7 +509,9 @@ func ConfigHandler(w http.ResponseWriter, r *http.Request) {
 			"yaml": "global:\n  scrape_interval: 15s\n  scrape_timeout: 10s\n  scrape_protocols:\n  - OpenMetricsText1.0.0\n  - OpenMetricsText0.0.1\n  - PrometheusText0.0.4\n  evaluation_interval: 10s\n  external_labels:\n    environment: prometheus-demo\nalerting:\n  alertmanagers:\n  - follow_redirects: true\n    enable_http2: true\n    scheme: http\n    timeout: 10s\n    api_version: v2\n    static_configs:\n    - targets:\n      - demo.do.prometheus.io:9093\nrule_files:\n- /etc/prometheus/rules/*.rules\nscrape_configs:\n- job_name: prometheus\n  honor_timestamps: true\n  track_timestamps_staleness: false\n  scrape_interval: 15s\n  scrape_timeout: 10s\n  scrape_protocols:\n  - OpenMetricsText1.0.0\n  - OpenMetricsText0.0.1\n  - PrometheusText0.0.4\n  metrics_path: /metrics\n  scheme: http\n  enable_compression: true\n  follow_redirects: true\n  enable_http2: true\n  static_configs:\n  - targets:\n    - demo.do.prometheus.io:9090\n- job_name: random\n  honor_timestamps: true\n  track_timestamps_staleness: false\n  scrape_interval: 15s\n  scrape_timeout: 10s\n  scrape_protocols:\n  - OpenMetricsText1.0.0\n  - OpenMetricsText0.0.1\n  - PrometheusText0.0.4\n  metrics_path: /metrics\n  scheme: http\n  enable_compression: true\n  follow_redirects: true\n  enable_http2: true\n  file_sd_configs:\n  - files:\n    - /etc/prometheus/file_sd/random.yml\n    refresh_interval: 5m\n- job_name: caddy\n  honor_timestamps: true\n  track_timestamps_staleness: false\n  scrape_interval: 15s\n  scrape_timeout: 10s\n  scrape_protocols:\n  - OpenMetricsText1.0.0\n  - OpenMetricsText0.0.1\n  - PrometheusText0.0.4\n  metrics_path: /metrics\n  scheme: http\n  enable_compression: true\n  follow_redirects: true\n  enable_http2: true\n  static_configs:\n  - targets:\n    - localhost:2019\n- job_name: grafana\n  honor_timestamps: true\n  track_timestamps_staleness: false\n  scrape_interval: 15s\n  scrape_timeout: 10s\n  scrape_protocols:\n  - OpenMetricsText1.0.0\n  - OpenMetricsText0.0.1\n  - PrometheusText0.0.4\n  metrics_path: /metrics\n  scheme: http\n  enable_compression: true\n  follow_redirects: true\n  enable_http2: true\n  static_configs:\n  - targets:\n    - demo.do.prometheus.io:3000\n- job_name: node\n  honor_timestamps: true\n  track_timestamps_staleness: false\n  scrape_interval: 15s\n  scrape_timeout: 10s\n  scrape_protocols:\n  - OpenMetricsText1.0.0\n  - OpenMetricsText0.0.1\n  - PrometheusText0.0.4\n  metrics_path: /metrics\n  scheme: http\n  enable_compression: true\n  follow_redirects: true\n  enable_http2: true\n  file_sd_configs:\n  - files:\n    - /etc/prometheus/file_sd/node.yml\n    refresh_interval: 5m\n- job_name: alertmanager\n  honor_timestamps: true\n  track_timestamps_staleness: false\n  scrape_interval: 15s\n  scrape_timeout: 10s\n  scrape_protocols:\n  - OpenMetricsText1.0.0\n  - OpenMetricsText0.0.1\n  - PrometheusText0.0.4\n  metrics_path: /metrics\n  scheme: http\n  enable_compression: true\n  follow_redirects: true\n  enable_http2: true\n  file_sd_configs:\n  - files:\n    - /etc/prometheus/file_sd/alertmanager.yml\n    refresh_interval: 5m\n- job_name: cadvisor\n  honor_timestamps: true\n  track_timestamps_staleness: true\n  scrape_interval: 15s\n  scrape_timeout: 10s\n  scrape_protocols:\n  - OpenMetricsText1.0.0\n  - OpenMetricsText0.0.1\n  - PrometheusText0.0.4\n  metrics_path: /metrics\n  scheme: http\n  enable_compression: true\n  follow_redirects: true\n  enable_http2: true\n  file_sd_configs:\n  - files:\n    - /etc/prometheus/file_sd/cadvisor.yml\n    refresh_interval: 5m\n- job_name: blackbox\n  honor_timestamps: true\n  track_timestamps_staleness: false\n  params:\n    module:\n    - http_2xx\n  scrape_interval: 15s\n  scrape_timeout: 10s\n  scrape_protocols:\n  - OpenMetricsText1.0.0\n  - OpenMetricsText0.0.1\n  - PrometheusText0.0.4\n  metrics_path: /probe\n  scheme: http\n  enable_compression: true\n  follow_redirects: true\n  enable_http2: true\n  relabel_configs:\n  - source_labels: [__address__]\n    separator: ;\n    regex: (.*)\n    target_label: __param_target\n    replacement: $1\n    action: replace\n  - source_labels: [__param_target]\n    separator: ;\n    regex: (.*)\n    target_label: instance\n    replacement: $1\n    action: replace\n  - separator: ;\n    regex: (.*)\n    target_label: __address__\n    replacement: 127.0.0.1:9115\n    action: replace\n  static_configs:\n  - targets:\n    - http://localhost:9100\n",
 		},
 	}
-	if err := json.NewEncoder(w).Encode(&response); err != nil {
+
+	err := json.NewEncoder(w).Encode(&response)
+	if err != nil {
 		w.Write([]byte("KO"))
 	}
 }
@@ -506,7 +526,9 @@ func FlagsHandler(w http.ResponseWriter, r *http.Request) {
 			"query.timeout":        "2m",
 		},
 	}
-	if err := json.NewEncoder(w).Encode(&response); err != nil {
+
+	err := json.NewEncoder(w).Encode(&response)
+	if err != nil {
 		w.Write([]byte("KO"))
 	}
 }
@@ -529,7 +551,9 @@ func RuntimeInfoHandler(w http.ResponseWriter, r *http.Request) {
 			"storageRetention":    "10y",
 		},
 	}
-	if err := json.NewEncoder(w).Encode(&response); err != nil {
+
+	err := json.NewEncoder(w).Encode(&response)
+	if err != nil {
 		w.Write([]byte("KO"))
 	}
 }
@@ -540,7 +564,9 @@ func LabelNamesHandler(w http.ResponseWriter, r *http.Request) {
 		Status: "success",
 		Data:   []string{"job", "instance", "__name__"},
 	}
-	if err := json.NewEncoder(w).Encode(&response); err != nil {
+
+	err := json.NewEncoder(w).Encode(&response)
+	if err != nil {
 		w.Write([]byte("KO"))
 	}
 }
@@ -554,7 +580,8 @@ func ServersHandler(w http.ResponseWriter, r *http.Request) {
 		fileName = "servers"
 	}
 
-	if data, err := assetsFS.ReadFile(fmt.Sprintf("assets/openstack/compute/%s.json", fileName)); err == nil {
+	data, err := assetsFS.ReadFile(fmt.Sprintf("assets/openstack/compute/%s.json", fileName))
+	if err == nil {
 		w.Write(data)
 
 		return
@@ -570,7 +597,8 @@ func TokensHandler(w http.ResponseWriter, r *http.Request) {
 
 	var t map[string]any
 
-	if err := decoder.Decode(&t); err != nil {
+	err := decoder.Decode(&t)
+	if err != nil {
 		w.Write([]byte("KO"))
 
 		return
@@ -582,7 +610,8 @@ func TokensHandler(w http.ResponseWriter, r *http.Request) {
 
 // UsersHandler handles OS users.
 func UsersHandler(w http.ResponseWriter, r *http.Request) {
-	if data, err := assetsFS.ReadFile("assets/openstack/identity/users.json"); err == nil {
+	data, err := assetsFS.ReadFile("assets/openstack/identity/users.json")
+	if err == nil {
 		w.Write(data)
 
 		return
@@ -595,7 +624,9 @@ func UsersHandler(w http.ResponseWriter, r *http.Request) {
 // ProjectsHandler handles OS projects.
 func ProjectsHandler(w http.ResponseWriter, r *http.Request) {
 	userID := r.PathValue("id")
-	if data, err := assetsFS.ReadFile(fmt.Sprintf("assets/openstack/identity/%s.json", userID)); err == nil {
+
+	data, err := assetsFS.ReadFile(fmt.Sprintf("assets/openstack/identity/%s.json", userID))
+	if err == nil {
 		w.Write(data)
 
 		return
@@ -607,7 +638,8 @@ func ProjectsHandler(w http.ResponseWriter, r *http.Request) {
 
 // PodsListHandler handles k8s pods.
 func PodsListHandler(w http.ResponseWriter, r *http.Request) {
-	if data, err := assetsFS.ReadFile("assets/k8s/pods-metadata.json"); err == nil {
+	data, err := assetsFS.ReadFile("assets/k8s/pods-metadata.json")
+	if err == nil {
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("Content-Type", "application/vnd.kubernetes.protobuf")
 		w.Write(data)
@@ -621,7 +653,8 @@ func PodsListHandler(w http.ResponseWriter, r *http.Request) {
 
 // RoleBindingsListHandler handles k8s rolebindings.
 func RoleBindingsListHandler(w http.ResponseWriter, r *http.Request) {
-	if data, err := assetsFS.ReadFile("assets/k8s/rolebindings.json"); err == nil {
+	data, err := assetsFS.ReadFile("assets/k8s/rolebindings.json")
+	if err == nil {
 		w.Header().Add("Content-Type", "application/json")
 		w.Header().Add("Content-Type", "application/vnd.kubernetes.protobuf")
 		w.Write(data)
@@ -651,8 +684,10 @@ func redfishProxyTarget(ctx context.Context, i, portNum int, tls bool) {
 		ReadHeaderTimeout: 3 * time.Second,
 		Handler:           redfishMux,
 	}
+
 	defer func() {
-		if err := server.Shutdown(ctx); err != nil {
+		err := server.Shutdown(ctx)
+		if err != nil {
 			log.Println("Failed to shutdown fake Redfish target", err)
 		}
 	}()
@@ -689,8 +724,10 @@ func redfishServer(ctx context.Context) {
 		ReadHeaderTimeout: 3 * time.Second,
 		Handler:           redfishMux,
 	}
+
 	defer func() {
-		if err := server.Shutdown(ctx); err != nil {
+		err := server.Shutdown(ctx)
+		if err != nil {
 			log.Println("Failed to shutdown fake Redfish server", err)
 		}
 	}()
@@ -719,8 +756,10 @@ func pyroServer(ctx context.Context) {
 		ReadHeaderTimeout: 3 * time.Second,
 		Handler:           pyroMux,
 	}
+
 	defer func() {
-		if err := server.Shutdown(ctx); err != nil {
+		err := server.Shutdown(ctx)
+		if err != nil {
 			log.Println("Failed to shutdown fake Pyroscope server", err)
 		}
 	}()
@@ -753,8 +792,10 @@ func promServer(ctx context.Context) {
 		ReadHeaderTimeout: 3 * time.Second,
 		Handler:           promMux,
 	}
+
 	defer func() {
-		if err := server.Shutdown(ctx); err != nil {
+		err := server.Shutdown(ctx)
+		if err != nil {
 			log.Println("Failed to shutdown fake Prometheus server", err)
 		}
 	}()
@@ -782,8 +823,10 @@ func osNovaServer(ctx context.Context) {
 		ReadHeaderTimeout: 3 * time.Second,
 		Handler:           osNovaMux,
 	}
+
 	defer func() {
-		if err := server.Shutdown(ctx); err != nil {
+		err := server.Shutdown(ctx)
+		if err != nil {
 			log.Println("Failed to shutdown fake Openstack compute API server", err)
 		}
 	}()
@@ -813,8 +856,10 @@ func osKSServer(ctx context.Context) {
 		ReadHeaderTimeout: 3 * time.Second,
 		Handler:           osKSMux,
 	}
+
 	defer func() {
-		if err := server.Shutdown(ctx); err != nil {
+		err := server.Shutdown(ctx)
+		if err != nil {
 			log.Println("Failed to shutdown fake Openstack identity API server", err)
 		}
 	}()
@@ -843,8 +888,10 @@ func k8sAPIServer(ctx context.Context) {
 		ReadHeaderTimeout: 3 * time.Second,
 		Handler:           k8sAPIMux,
 	}
+
 	defer func() {
-		if err := server.Shutdown(ctx); err != nil {
+		err := server.Shutdown(ctx)
+		if err != nil {
 			log.Println("Failed to shutdown fake k8s API server", err)
 		}
 	}()
@@ -871,7 +918,8 @@ func kubeletSocketServer(_ context.Context) {
 		log.Println("To close connection CTRL+C :-)")
 
 		// Make socket dir
-		if err := os.MkdirAll(vendorSocketDir, 0o700); err != nil {
+		err := os.MkdirAll(vendorSocketDir, 0o700)
+		if err != nil {
 			log.Fatal(err)
 		}
 

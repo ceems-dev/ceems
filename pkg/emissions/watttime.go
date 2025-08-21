@@ -95,7 +95,8 @@ func NewWattTimeProvider(logger *slog.Logger) (Provider, error) {
 
 	// Try few times before giving up
 	for range 5 {
-		if err = updateToken(url, w.auth); err == nil {
+		err = updateToken(url, w.auth)
+		if err == nil {
 			break
 		}
 
@@ -154,7 +155,9 @@ func (s *wtProvider) update() {
 				s.logger.Error("Failed to retrieve emission factor from Watt Time provider", "err", err)
 			} else {
 				wtFactorMu.Lock()
+
 				s.lastEmissionFactor = currentEmissionFactor
+
 				wtFactorMu.Unlock()
 			}
 
@@ -172,7 +175,9 @@ func (s *wtProvider) update() {
 
 func (s *wtProvider) emissionFactors() EmissionFactors {
 	wtFactorMu.RLock()
+
 	emissionFactors := s.lastEmissionFactor
+
 	wtFactorMu.RUnlock()
 
 	return emissionFactors
@@ -181,7 +186,8 @@ func (s *wtProvider) emissionFactors() EmissionFactors {
 // fetchWTEmissionFactor makes request to Watt time API to fetch factor for the given region.
 func fetchWTEmissionFactor(baseURL string, auth *auth, region string) (EmissionFactors, error) {
 	// Update token if necessary
-	if err := updateToken(baseURL, auth); err != nil {
+	err := updateToken(baseURL, auth)
+	if err != nil {
 		return nil, fmt.Errorf("failed to update api token of watt time provider: %w", err)
 	}
 

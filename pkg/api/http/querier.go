@@ -93,13 +93,15 @@ func scanRows[T any](rows *sql.Rows, numRows int) ([]T, error) {
 	indexes := structset.CachedFieldIndexes(reflect.TypeOf(&value).Elem())
 
 	// Get columns
-	if columns, err = rows.Columns(); err != nil {
+	columns, err = rows.Columns()
+	if err != nil {
 		return nil, fmt.Errorf("cannot fetch columns: %w", err)
 	}
 
 	// Scan each row
 	for rows.Next() {
-		if err := structset.ScanRow(rows, columns, indexes, &value); err != nil {
+		err := structset.ScanRow(rows, columns, indexes, &value)
+		if err != nil {
 			scanErrs++
 		}
 
@@ -120,7 +122,8 @@ func scanRows[T any](rows *sql.Rows, numRows int) ([]T, error) {
 
 	// Ref: http://go-database-sql.org/errors.html
 	// Get all the errors during iteration
-	if errRows := rows.Err(); errRows != nil {
+	errRows := rows.Err()
+	if errRows != nil {
 		err = errors.Join(err, errRows)
 	}
 
@@ -136,7 +139,7 @@ func countRows(ctx context.Context, dbConn *sql.DB, query Query) (int, error) {
 	// Prepare SQL statements
 	countQuery := queryRegexp.ReplaceAllString(queryString, "SELECT COUNT(*) FROM $2")
 
-	countStmt, err := dbConn.Prepare(countQuery)
+	countStmt, err := dbConn.PrepareContext(ctx, countQuery)
 	if err != nil {
 		return 0, err
 	}
@@ -166,7 +169,8 @@ func countRows(ctx context.Context, dbConn *sql.DB, query Query) (int, error) {
 	for countRows.Next() {
 		irow++
 
-		if err := countRows.Scan(&numRows); err != nil {
+		err := countRows.Scan(&numRows)
+		if err != nil {
 			continue
 		}
 	}
@@ -183,7 +187,8 @@ func Querier[T any](ctx context.Context, dbConn *sql.DB, query Query, logger *sl
 	// If requested model is units, get number of rows
 	switch any(*new(T)).(type) {
 	case models.Unit:
-		if numRows, err = countRows(ctx, dbConn, query); err != nil {
+		numRows, err = countRows(ctx, dbConn, query)
+		if err != nil {
 			logger.Error("Failed to get rows count", "err", err)
 
 			return nil, err
@@ -195,7 +200,7 @@ func Querier[T any](ctx context.Context, dbConn *sql.DB, query Query, logger *sl
 	// Get query string and params
 	queryString, queryParams := query.get()
 
-	queryStmt, err := dbConn.Prepare(queryString)
+	queryStmt, err := dbConn.PrepareContext(ctx, queryString)
 	if err != nil {
 		logger.Error("Failed prepare query statement",
 			"query", queryString, "queryParams", strings.Join(queryParams, ","), "err", err,

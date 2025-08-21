@@ -183,7 +183,8 @@ func (t *Client) Settings(ctx context.Context) *Settings {
 	}
 
 	// Update settings and lastUpdate time
-	if settings, err := t.fetchSettings(ctx); err == nil {
+	settings, err := t.fetchSettings(ctx)
+	if err == nil {
 		t.lastUpdate = time.Now()
 		t.settingsCache = settings
 	}
@@ -342,7 +343,9 @@ func (t *Client) fetchSettings(ctx context.Context) (*Settings, error) {
 
 	// Unmarhsall config into struct
 	var config Config
-	if err := yaml.Unmarshal([]byte(c.YAML), &config); err != nil {
+
+	err = yaml.Unmarshal([]byte(c.YAML), &config)
+	if err != nil {
 		return nil, err
 	}
 
@@ -364,23 +367,25 @@ func (t *Client) fetchSettings(ctx context.Context) (*Settings, error) {
 	settings.EvaluationInterval = time.Duration(config.Global.EvaluationInterval)
 
 	// Get query timeout and max samples from flags
-	if v, err := strconv.ParseInt(flags["query.max-samples"], 10, 64); err != nil {
+	v, err := strconv.ParseInt(flags["query.max-samples"], 10, 64)
+	if err != nil {
 		settings.QueryMaxSamples = v
 	}
 
-	if queryTimeout, err := model.ParseDuration(flags["query.timeout"]); err == nil {
+	queryTimeout, err := model.ParseDuration(flags["query.timeout"])
+	if err == nil {
 		settings.QueryTimeout = time.Duration(queryTimeout)
 	}
 
-	if queryTimeout, err := model.ParseDuration(flags["query.lookback-delta"]); err == nil {
-		settings.QueryLookbackDelta = time.Duration(queryTimeout)
+	lookbackDelta, err := model.ParseDuration(flags["query.lookback-delta"])
+	if err == nil {
+		settings.QueryLookbackDelta = time.Duration(lookbackDelta)
 	}
-
-	var retentionPeriod model.Duration
 
 	// If storageRetention is set to duration ONLY, we can consider it as
 	// retention period
-	if retentionPeriod, err = model.ParseDuration(info.StorageRetention); err != nil {
+	retentionPeriod, err := model.ParseDuration(info.StorageRetention)
+	if err != nil {
 		// If storageRetention is set to size or time and size, we need to get
 		// "actual" retention period
 		for retentionString := range strings.SplitSeq(info.StorageRetention, "or") {

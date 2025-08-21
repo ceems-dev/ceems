@@ -190,13 +190,15 @@ func mockOSComputeAPIServer() *httptest.Server {
 				fileName = "servers"
 			}
 
-			if data, err := os.ReadFile(fmt.Sprintf("../../testdata/openstack/compute/%s.json", fileName)); err == nil {
+			data, err := os.ReadFile(fmt.Sprintf("../../testdata/openstack/compute/%s.json", fileName))
+			if err == nil {
 				w.Write(data)
 
 				return
 			}
 		} else if strings.Contains(r.URL.Path, "flavors") {
-			if data, err := os.ReadFile("../../testdata/openstack/compute/flavors.json"); err == nil {
+			data, err := os.ReadFile("../../testdata/openstack/compute/flavors.json")
+			if err == nil {
 				w.Write(data)
 
 				return
@@ -219,7 +221,8 @@ func mockOSIdentityAPIServer() *httptest.Server {
 				return
 			}
 
-			if data, err := os.ReadFile("../../testdata/openstack/identity/users.json"); err == nil {
+			data, err := os.ReadFile("../../testdata/openstack/identity/users.json")
+			if err == nil {
 				w.Write(data)
 
 				return
@@ -234,7 +237,9 @@ func mockOSIdentityAPIServer() *httptest.Server {
 			pathParts := strings.Split(r.URL.Path, "/")
 
 			userID := pathParts[len(pathParts)-2]
-			if data, err := os.ReadFile(fmt.Sprintf("../../testdata/openstack/identity/%s.json", userID)); err == nil {
+
+			data, err := os.ReadFile(fmt.Sprintf("../../testdata/openstack/identity/%s.json", userID))
+			if err == nil {
 				w.Write(data)
 
 				return
@@ -244,7 +249,8 @@ func mockOSIdentityAPIServer() *httptest.Server {
 
 			var t map[string]any
 
-			if err := decoder.Decode(&t); err != nil {
+			err := decoder.Decode(&t)
+			if err != nil {
 				w.Write([]byte("KO"))
 
 				return
@@ -281,7 +287,8 @@ auth:
 
 	var extraConfig yaml.Node
 
-	if err := yaml.Unmarshal([]byte(cfg), &extraConfig); err == nil {
+	err := yaml.Unmarshal([]byte(cfg), &extraConfig)
+	if err == nil {
 		return extraConfig, nil
 	} else {
 		return yaml.Node{}, err

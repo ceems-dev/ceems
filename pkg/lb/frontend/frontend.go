@@ -98,7 +98,8 @@ func New(c *Config) (LoadBalancer, error) {
 	defer cancel()
 
 	// Validate LB
-	if err := lb.validate(ctx); err != nil {
+	err = lb.validate(ctx)
+	if err != nil {
 		return nil, fmt.Errorf("failed to valiate load balancer frontend: %w", err)
 	}
 
@@ -115,7 +116,8 @@ func (lb *loadBalancer) Start(_ context.Context) error {
 	lb.logger.Info("Starting "+base.CEEMSLoadBalancerAppName, "listening", lb.server.Addr)
 
 	// Listen for requests
-	if err := web.ListenAndServe(lb.server, lb.webConfig, lb.logger); err != nil &&
+	err := web.ListenAndServe(lb.server, lb.webConfig, lb.logger)
+	if err != nil &&
 		!errors.Is(err, http.ErrServerClosed) {
 		lb.logger.Error("Failed to Listen and Serve HTTP server", "err", err)
 
@@ -129,7 +131,8 @@ func (lb *loadBalancer) Start(_ context.Context) error {
 func (lb *loadBalancer) Shutdown(ctx context.Context) error {
 	// Close DB connection only if DB file is provided
 	if lb.amw.ceems.db != nil {
-		if err := lb.amw.ceems.db.Close(); err != nil {
+		err := lb.amw.ceems.db.Close()
+		if err != nil {
 			lb.logger.Error("Failed to close DB connection", "err", err)
 
 			return err
@@ -137,7 +140,8 @@ func (lb *loadBalancer) Shutdown(ctx context.Context) error {
 	}
 
 	// Shutdown the server
-	if err := lb.server.Shutdown(ctx); err != nil {
+	err := lb.server.Shutdown(ctx)
+	if err != nil {
 		lb.logger.Error("Failed to shutdown HTTP server", "err", err)
 
 		return err
@@ -247,7 +251,8 @@ func (lb *loadBalancer) validate(ctx context.Context) error {
 
 		var cluster models.Cluster
 		for rows.Next() {
-			if err := rows.Scan(&cluster.ID, &cluster.Manager); err != nil {
+			err := rows.Scan(&cluster.ID, &cluster.Manager)
+			if err != nil {
 				continue
 			}
 
@@ -256,7 +261,8 @@ func (lb *loadBalancer) validate(ctx context.Context) error {
 
 		// Ref: http://go-database-sql.org/errors.html
 		// Get all the errors during iteration
-		if err := rows.Err(); err != nil {
+		err = rows.Err()
+		if err != nil {
 			lb.logger.Error("Errors during scanning rows", "err", err)
 		}
 

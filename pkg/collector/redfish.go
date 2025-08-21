@@ -73,11 +73,10 @@ func (c *redfishClientConfig) UnmarshalYAML(unmarshal func(any) error) error {
 
 	type plain redfishClientConfig
 
-	if err := unmarshal((*plain)(c)); err != nil {
+	err := unmarshal((*plain)(c))
+	if err != nil {
 		return err
 	}
-
-	var err error
 
 	// If BMC Hostname is not provided, attempt to discover it using OpenIPMI interface
 	if c.Hostname == "" {
@@ -94,8 +93,15 @@ func (c *redfishClientConfig) UnmarshalYAML(unmarshal func(any) error) error {
 			return fmt.Errorf("failed to get BMC LAN IP: %w", err)
 		}
 
+		// Make a timeout context
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
 		// Attempt to get BMC hostname from IP
-		if hostname, err := net.LookupAddr(*bmcIP); err == nil {
+		var ns *net.Resolver
+
+		hostname, err := ns.LookupAddr(ctx, *bmcIP)
+		if err == nil {
 			c.Hostname = hostname[0]
 		} else {
 			c.Hostname = *bmcIP
@@ -142,7 +148,8 @@ type redfishConfig struct {
 func (c *redfishConfig) UnmarshalYAML(unmarshal func(any) error) error {
 	type plain redfishConfig
 
-	if err := unmarshal((*plain)(c)); err != nil {
+	err := unmarshal((*plain)(c))
+	if err != nil {
 		return err
 	}
 
@@ -274,7 +281,8 @@ func NewRedfishCollector(logger *slog.Logger) (Collector, error) {
 	}
 
 	// Connect to Redfish server
-	if err := collector.connect(); err != nil {
+	err = collector.connect()
+	if err != nil {
 		logger.Error("Failed to connect to Redfish server", "err", err)
 
 		return nil, err
@@ -366,7 +374,8 @@ func (c *redfishCollector) powerReadings() map[string]map[string]float64 {
 
 				// When this happens this scrape is lost and it will return cached values
 				// but the next scrape should be good as we created new client
-				if err := c.connect(); err != nil {
+				err := c.connect()
+				if err != nil {
 					c.logger.Error("Failed to create new redfish client", "err", err)
 				}
 			}

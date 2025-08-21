@@ -112,7 +112,8 @@ func New(cluster models.Cluster, logger *slog.Logger) (resource.Fetcher, error) 
 	}
 
 	// Make a HTTP client for Openstack from client config
-	if openstackManager.client, err = config_util.NewClientFromConfig(cluster.Web.HTTPClientConfig, "openstack"); err != nil {
+	openstackManager.client, err = config_util.NewClientFromConfig(cluster.Web.HTTPClientConfig, "openstack")
+	if err != nil {
 		logger.Error("Failed to create HTTP client for Openstack cluster", "id", cluster.ID, "err", err)
 
 		return nil, err
@@ -120,7 +121,9 @@ func New(cluster models.Cluster, logger *slog.Logger) (resource.Fetcher, error) 
 
 	// Fetch compute and identity API URLs and auth config from extra_config
 	osConfig := &openstackConfig{}
-	if err := cluster.Extra.Decode(osConfig); err != nil {
+
+	err = cluster.Extra.Decode(osConfig)
+	if err != nil {
 		logger.Error("Failed to decode extra_config for Openstack cluster", "id", cluster.ID, "err", err)
 
 		return nil, err
@@ -145,21 +148,24 @@ func New(cluster models.Cluster, logger *slog.Logger) (resource.Fetcher, error) 
 	// Convert auth to bytes to embed into requests later
 	osConfig.addAuthKey()
 
-	if openstackManager.auth, err = json.Marshal(common.ConvertMapI2MapS(osConfig.AuthConfig)); err != nil {
+	openstackManager.auth, err = json.Marshal(common.ConvertMapI2MapS(osConfig.AuthConfig))
+	if err != nil {
 		logger.Error("Failed to marshal auth object for Openstack cluster", "id", cluster.ID, "err", err)
 
 		return nil, errors.Unwrap(err)
 	}
 
 	// Request first API token from keystone
-	if err := openstackManager.rotateToken(context.Background()); err != nil {
+	err = openstackManager.rotateToken(context.Background())
+	if err != nil {
 		logger.Error("Failed to request API token for Openstack cluster", "id", cluster.ID, "err", err)
 
 		return nil, errors.Unwrap(err)
 	}
 
 	// Get initial users and projects
-	if err = openstackManager.updateUsersProjects(context.Background(), time.Now()); err != nil {
+	err = openstackManager.updateUsersProjects(context.Background(), time.Now())
+	if err != nil {
 		logger.Error("Failed to update users and projects for Openstack cluster", "id", cluster.ID, "err", err)
 
 		return nil, err
@@ -197,7 +203,8 @@ func (o *openstackManager) FetchUsersProjects(
 	if time.Since(o.userProjectsLastUpdateTime) > o.userProjectsCacheTTL {
 		o.logger.Debug("Updating users and projects for Openstack cluster", "id", o.cluster.ID)
 
-		if err := o.updateUsersProjects(ctx, current); err != nil {
+		err := o.updateUsersProjects(ctx, current)
+		if err != nil {
 			o.logger.Error("Failed to update users and projects data for Openstack cluster", "id", o.cluster.ID, "err", err)
 
 			return nil, nil, err
@@ -235,7 +242,8 @@ func (o *openstackManager) userProjects(id string) *url.URL {
 func (o *openstackManager) addTokenHeader(ctx context.Context, req *http.Request) (*http.Request, error) {
 	// Check if token is still valid. If not rotate token
 	if time.Now().After(o.apiTokenExpiry) {
-		if err := o.rotateToken(ctx); err != nil {
+		err := o.rotateToken(ctx)
+		if err != nil {
 			return nil, err
 		}
 	}

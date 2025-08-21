@@ -30,7 +30,7 @@ import (
 
 var noOpLogger = slog.New(slog.DiscardHandler)
 
-func setupClusterIDsDB(d string) error {
+func setupClusterIDsDB(ctx context.Context, d string) error {
 	dbPath := filepath.Join(d, "ceems.db")
 
 	db, err := sql.Open("sqlite3", dbPath)
@@ -52,7 +52,7 @@ INSERT INTO units VALUES(3, 'os-1', 'openstack');
 INSERT INTO units VALUES(4, 'slurm-1', 'slurm');
 COMMIT;`
 
-	_, err = db.Exec(stmts)
+	_, err = db.ExecContext(ctx, stmts)
 	if err != nil {
 		return fmt.Errorf("failed to insert mock data into DB: %w", err)
 	}
@@ -86,15 +86,18 @@ func dummyTSDBServer(clusterID string) *httptest.Server {
 	}
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasSuffix(r.URL.Path, "config") {
-			if err := json.NewEncoder(w).Encode(&expectedConfig); err != nil {
+			err := json.NewEncoder(w).Encode(&expectedConfig)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		} else if strings.HasSuffix(r.URL.Path, "flags") {
-			if err := json.NewEncoder(w).Encode(&expectedFlags); err != nil {
+			err := json.NewEncoder(w).Encode(&expectedFlags)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		} else if strings.HasSuffix(r.URL.Path, "runtimeinfo") {
-			if err := json.NewEncoder(w).Encode(&expectedRuntimeInfo); err != nil {
+			err := json.NewEncoder(w).Encode(&expectedRuntimeInfo)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		} else {
@@ -107,7 +110,7 @@ func dummyTSDBServer(clusterID string) *httptest.Server {
 
 func TestNewFrontend(t *testing.T) {
 	tmpDir := t.TempDir()
-	err := setupClusterIDsDB(tmpDir)
+	err := setupClusterIDsDB(t.Context(), tmpDir)
 	require.NoError(t, err, "failed to setup test DB")
 
 	clusterID := "slurm-0"
@@ -367,7 +370,7 @@ func TestNewFrontendTwoGroups(t *testing.T) {
 
 func TestValidateClusterIDsWithDBPass(t *testing.T) {
 	tmpDir := t.TempDir()
-	err := setupClusterIDsDB(tmpDir)
+	err := setupClusterIDsDB(t.Context(), tmpDir)
 	require.NoError(t, err, "failed to setup test DB")
 
 	// Backends for group 1
@@ -399,7 +402,7 @@ func TestValidateClusterIDsWithDBPass(t *testing.T) {
 
 func TestValidateClusterIDsWithDBFail(t *testing.T) {
 	tmpDir := t.TempDir()
-	err := setupClusterIDsDB(tmpDir)
+	err := setupClusterIDsDB(t.Context(), tmpDir)
 	require.NoError(t, err, "failed to setup test DB")
 
 	// Backends for group 1
@@ -444,7 +447,8 @@ func TestValidateClusterIDsWithAPIPass(t *testing.T) {
 	}
 
 	ceemsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))
@@ -484,7 +488,8 @@ func TestValidateClusterIDsWithAPIFail(t *testing.T) {
 	}
 
 	ceemsServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))

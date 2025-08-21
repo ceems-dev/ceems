@@ -60,7 +60,8 @@ func TestCEEMSExporterMain(t *testing.T) {
 
 	// Query exporter
 	for i := range 10 {
-		if err := queryExporter("localhost:9010"); err == nil {
+		err := queryExporter("localhost:9010")
+		if err == nil {
 			break
 		}
 

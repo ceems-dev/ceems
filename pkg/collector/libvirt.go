@@ -210,7 +210,8 @@ func NewLibvirtCollector(logger *slog.Logger) (Collector, error) {
 	}
 
 	// Attempt to get GPU devices
-	if err := gpuSMI.Discover(); err != nil {
+	err = gpuSMI.Discover()
+	if err != nil {
 		// If we failed to fetch GPUs that are from supported
 		// vendor, return with error
 		logger.Error("Error fetching GPU devices", "err", err)
@@ -320,7 +321,8 @@ func (c *libvirtCollector) Update(ch chan<- prometheus.Metric) error {
 		defer wg.Done()
 
 		// Update cgroup metrics
-		if err := c.cgroupCollector.Update(ch, cgroups); err != nil {
+		err := c.cgroupCollector.Update(ch, cgroups)
+		if err != nil {
 			c.logger.Error("Failed to update cgroup stats", "err", err)
 		}
 
@@ -337,7 +339,8 @@ func (c *libvirtCollector) Update(ch chan<- prometheus.Metric) error {
 			defer wg.Done()
 
 			// Update ebpf metrics
-			if err := c.ebpfCollector.Update(ch, cgroups, libvirtCollectorSubsystem); err != nil {
+			err := c.ebpfCollector.Update(ch, cgroups, libvirtCollectorSubsystem)
+			if err != nil {
 				c.logger.Error("Failed to update IO and/or network stats", "err", err)
 			}
 		}()
@@ -350,7 +353,8 @@ func (c *libvirtCollector) Update(ch chan<- prometheus.Metric) error {
 			defer wg.Done()
 
 			// Update RDMA metrics
-			if err := c.rdmaCollector.Update(ch, cgroups, libvirtCollectorSubsystem); err != nil {
+			err := c.rdmaCollector.Update(ch, cgroups, libvirtCollectorSubsystem)
+			if err != nil {
 				c.logger.Error("Failed to update RDMA stats", "err", err)
 			}
 		}()
@@ -368,27 +372,31 @@ func (c *libvirtCollector) Stop(ctx context.Context) error {
 
 	// Stop all sub collectors
 	// Stop cgroupCollector
-	if err := c.cgroupCollector.Stop(ctx); err != nil {
+	err := c.cgroupCollector.Stop(ctx)
+	if err != nil {
 		c.logger.Error("Failed to stop cgroup collector", "err", err)
 	}
 
 	// Stop perfCollector
 	if perfCollectorEnabled() {
-		if err := c.perfCollector.Stop(ctx); err != nil {
+		err := c.perfCollector.Stop(ctx)
+		if err != nil {
 			c.logger.Error("Failed to stop perf collector", "err", err)
 		}
 	}
 
 	// Stop ebpfCollector
 	if ebpfCollectorEnabled() {
-		if err := c.ebpfCollector.Stop(ctx); err != nil {
+		err := c.ebpfCollector.Stop(ctx)
+		if err != nil {
 			c.logger.Error("Failed to stop ebpf collector", "err", err)
 		}
 	}
 
 	// Stop rdmaCollector
 	if rdmaCollectorEnabled() {
-		if err := c.rdmaCollector.Stop(ctx); err != nil {
+		err := c.rdmaCollector.Stop(ctx)
+		if err != nil {
 			c.logger.Error("Failed to stop RDMA collector", "err", err)
 		}
 	}
@@ -495,7 +503,8 @@ func (c *libvirtCollector) instanceProperties(instanceID string) *instanceProper
 	}
 
 	if securityCtx, ok := c.securityContexts[libvirtReadXMLCtx]; ok {
-		if err := securityCtx.Exec(dataPtr); err != nil {
+		err := securityCtx.Exec(dataPtr)
+		if err != nil {
 			c.logger.Error(
 				"Failed to run inside security contxt", "instance_id", instanceID, "err", err,
 			)
@@ -549,7 +558,8 @@ func (c *libvirtCollector) updateDeviceInstances(cgroups []cgroup) {
 
 	// If vGPU is activated on atleast one GPU, update mdevs
 	if c.vGPUActivated {
-		if err := c.gpuSMI.UpdateGPUMdevs(); err != nil {
+		err := c.gpuSMI.UpdateGPUMdevs()
+		if err != nil {
 			c.logger.Error("Failed to update GPU mdevs", "err", err)
 		}
 	}
@@ -631,7 +641,8 @@ func readLibvirtXMLFile(data any) error {
 	xmlFilePath := filepath.Join(d.xmlPath, d.instanceID+".xml")
 
 	// If file does not exist return error
-	if _, err := os.Stat(xmlFilePath); err != nil {
+	_, err := os.Stat(xmlFilePath)
+	if err != nil {
 		return err
 	}
 
@@ -643,7 +654,9 @@ func readLibvirtXMLFile(data any) error {
 
 	// Read XML byte array into domain
 	var domain Domain
-	if err := xml.Unmarshal(xmlByteArray, &domain); err != nil {
+
+	err = xml.Unmarshal(xmlByteArray, &domain)
+	if err != nil {
 		return err
 	}
 
@@ -694,6 +707,7 @@ func readLibvirtXMLFile(data any) error {
 				}
 			}
 		}
+
 	outer_loop:
 	}
 

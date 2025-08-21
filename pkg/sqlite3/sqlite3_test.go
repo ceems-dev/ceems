@@ -4,6 +4,7 @@
 package sqlite3
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"io"
@@ -45,10 +46,11 @@ func TestOpenMany(t *testing.T) {
 	for i := range expectedConnections {
 		db, err := sql.Open(DriverName, filepath.Join(tmpdir, fmt.Sprintf("test-%d.db", i+1)))
 		require.NoError(t, err, "could not open connection to database")
-		require.NoError(t, db.Ping(), "could not ping database to establish a connection")
+		require.NoError(t, db.PingContext(t.Context()), "could not ping database to establish a connection")
 		closers[i] = db
 
 		var ok bool
+
 		conns[i], ok = GetLastConn()
 		require.True(t, ok, "expected new connection")
 	}
@@ -261,7 +263,7 @@ func TestAvgMetricMapAgg(t *testing.T) {
 	assert.Equal(t, expectedMap, aggMap)
 }
 
-func setupDB(tmpDir string, aggMetric bool, units []models.Unit) (models.MetricMap, models.MetricMap, error) {
+func setupDB(ctx context.Context, tmpDir string, aggMetric bool, units []models.Unit) (models.MetricMap, models.MetricMap, error) {
 	dbPath := filepath.Join(tmpDir, "test.db")
 
 	db, err := sql.Open(DriverName, dbPath)
@@ -280,7 +282,7 @@ CREATE TABLE units (
 );
 CREATE UNIQUE INDEX uq_cluster_id_uuid_start ON units (uuid);`
 
-	_, err = db.Exec(stmts)
+	_, err = db.ExecContext(ctx, stmts)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create table in DB: %w", err)
 	}
@@ -290,18 +292,20 @@ INSERT INTO units (uuid,total_time_seconds,avg_cpu_usage) VALUES(:uuid,:total_ti
   total_time_seconds = add_metric_map(total_time_seconds, :total_time_seconds),
   avg_cpu_usage = avg_metric_map(avg_cpu_usage, :avg_cpu_usage, CAST(json_extract(total_time_seconds, '$.alloc_cputime') AS REAL), CAST(json_extract(:total_time_seconds, '$.alloc_cputime') AS REAL))`
 
-	sqlStmt, err := db.Prepare(updateStmt)
+	sqlStmt, err := db.PrepareContext(ctx, updateStmt)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to prepare statement for table %w", err)
 	}
 	defer sqlStmt.Close()
 
 	for _, unit := range units {
-		if _, err := sqlStmt.Exec(
+		_, err := sqlStmt.ExecContext(
+			ctx,
 			sql.Named("uuid", unit.UUID),
 			sql.Named("total_time_seconds", unit.TotalTime),
 			sql.Named("avg_cpu_usage", unit.AveCPUUsage),
-		); err != nil {
+		)
+		if err != nil {
 			return nil, nil, fmt.Errorf("failed to insert data for table %w", err)
 		}
 	}
@@ -309,10 +313,10 @@ INSERT INTO units (uuid,total_time_seconds,avg_cpu_usage) VALUES(:uuid,:total_ti
 	// Make units query
 	var cpuUsage, totalTimes models.MetricMap
 	if aggMetric {
-		_ = db.QueryRow("SELECT avg_metric_map_agg(avg_cpu_usage, CAST(json_extract(total_time_seconds, '$.alloc_cputime') AS REAL)) AS avg_cpu_usage, sum_metric_map_agg(total_time_seconds) AS total_time_seconds FROM units").
+		_ = db.QueryRowContext(ctx, "SELECT avg_metric_map_agg(avg_cpu_usage, CAST(json_extract(total_time_seconds, '$.alloc_cputime') AS REAL)) AS avg_cpu_usage, sum_metric_map_agg(total_time_seconds) AS total_time_seconds FROM units").
 			Scan(&cpuUsage, &totalTimes)
 	} else {
-		_ = db.QueryRow("SELECT avg_cpu_usage, total_time_seconds FROM units").Scan(&cpuUsage, &totalTimes)
+		_ = db.QueryRowContext(ctx, "SELECT avg_cpu_usage, total_time_seconds FROM units").Scan(&cpuUsage, &totalTimes)
 	}
 
 	return cpuUsage, totalTimes, nil
@@ -478,7 +482,7 @@ func TestCustomFuncsInDB(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		gotCPUUsage, gotTotalTimes, err := setupDB(t.TempDir(), test.aggMetric, test.units)
+		gotCPUUsage, gotTotalTimes, err := setupDB(t.Context(), t.TempDir(), test.aggMetric, test.units)
 		require.NoError(t, err)
 		assert.Equal(t, test.expectedCPUUsage, gotCPUUsage, test.name)
 		assert.Equal(t, test.expectedTotalTimes, gotTotalTimes, test.name)

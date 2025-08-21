@@ -12,7 +12,9 @@ type JSONRFC3339MilliNoZ time.Time
 
 func (jt *JSONRFC3339MilliNoZ) UnmarshalJSON(data []byte) error {
 	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
+
+	err := json.Unmarshal(data, &s)
+	if err != nil {
 		return err
 	}
 
@@ -129,6 +131,7 @@ func (r *Server) UnmarshalJSON(b []byte) error {
 
 	var s struct {
 		tmp
+
 		LaunchedAt   JSONRFC3339MilliNoZ `json:"OS-SRV-USG:launched_at"`
 		TerminatedAt JSONRFC3339MilliNoZ `json:"OS-SRV-USG:terminated_at"`
 	}
@@ -266,6 +269,7 @@ func (r *Flavor) UnmarshalJSON(b []byte) error {
 
 	var s struct {
 		tmp
+
 		Swap any `json:"swap"`
 	}
 

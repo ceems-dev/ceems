@@ -85,12 +85,14 @@ func rewriteRequestURL(logger *slog.Logger, req *http.Request, targets map[strin
 	remoteIPs = req.Header[http.CanonicalHeaderKey(realIPHeaderName)]
 
 	// Add remoteAddr only when not on testing
-	if ip, _, err := net.SplitHostPort(req.RemoteAddr); err == nil && os.Getenv("__IS_TESTING") == "" {
+	ip, _, err := net.SplitHostPort(req.RemoteAddr)
+	if err == nil && os.Getenv("__IS_TESTING") == "" {
 		remoteIPs = append(remoteIPs, ip)
 	}
 
 	// Check if target is already in map
 	targetsMapMu.RLock()
+
 	for _, ip := range remoteIPs {
 		if target, ok = targets[ip]; ok {
 			// Unlock map and go to rewrite_req
@@ -99,6 +101,7 @@ func rewriteRequestURL(logger *slog.Logger, req *http.Request, targets map[strin
 			goto rewrite_req
 		}
 	}
+
 	targetsMapMu.RUnlock()
 
 	// If target is not found in map, check header
@@ -114,9 +117,11 @@ func rewriteRequestURL(logger *slog.Logger, req *http.Request, targets map[strin
 
 		// Add this to targets map
 		targetsMapMu.Lock()
+
 		for _, ip := range remoteIPs {
 			targets[ip] = target
 		}
+
 		targetsMapMu.Unlock()
 
 		goto rewrite_req

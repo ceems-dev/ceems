@@ -35,7 +35,8 @@ var (
 
 func (o *openstackManager) activeInstances(ctx context.Context, start time.Time, end time.Time) ([]models.Unit, error) {
 	// Check if service is online
-	if err := o.ping("compute"); err != nil {
+	err := o.ping("compute")
+	if err != nil {
 		return nil, err
 	}
 
@@ -60,14 +61,18 @@ func (o *openstackManager) activeInstances(ctx context.Context, start time.Time,
 		servers, err := o.fetchInstances(ctx, start, end, false)
 		if err != nil {
 			errsLock.Lock()
+
 			allErrs = errors.Join(allErrs, fmt.Errorf("failed to fetch active instances: %w", err))
+
 			errsLock.Unlock()
 
 			return
 		}
 
 		serversLock.Lock()
+
 		allServers = append(allServers, servers...)
+
 		serversLock.Unlock()
 	}()
 
@@ -79,14 +84,18 @@ func (o *openstackManager) activeInstances(ctx context.Context, start time.Time,
 		servers, err := o.fetchInstances(ctx, start, end, true)
 		if err != nil {
 			errsLock.Lock()
+
 			allErrs = errors.Join(allErrs, fmt.Errorf("failed to fetch active instances: %w", err))
+
 			errsLock.Unlock()
 
 			return
 		}
 
 		serversLock.Lock()
+
 		allServers = append(allServers, servers...)
+
 		serversLock.Unlock()
 	}()
 

@@ -198,7 +198,8 @@ func KernelStringToNumeric(ver string) int64 {
 func KernelVersion() (int64, error) {
 	var versionStrings []string
 
-	if versionSig, err := os.ReadFile(procFilePath("version_signature")); err == nil {
+	versionSig, err := os.ReadFile(procFilePath("version_signature"))
+	if err == nil {
 		versionStrings = strings.Fields(string(versionSig))
 	}
 
@@ -208,7 +209,7 @@ func KernelVersion() (int64, error) {
 
 	var uname unix.Utsname
 
-	err := unix.Uname(&uname)
+	err = unix.Uname(&uname)
 	if err != nil {
 		return 0, err
 	}

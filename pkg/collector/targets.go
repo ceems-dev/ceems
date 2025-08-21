@@ -182,7 +182,8 @@ func (d *targetDiscoverer) discover() ([]Target, error) {
 	// else execute function natively
 	if len(d.targetEnvVars) > 0 {
 		if securityCtx, ok := d.securityContexts[profilingTargetFilterCtx]; ok {
-			if err := securityCtx.Exec(dataPtr); err != nil {
+			err := securityCtx.Exec(dataPtr)
+			if err != nil {
 				return nil, err
 			}
 		} else {
@@ -306,7 +307,8 @@ func TargetsHandlerFor(discoverer Discoverer, opts promhttp.HandlerOpts) http.Ha
 
 // httpEncode encodes response to http.ResponseWriter.
 func httpEncode(rsp http.ResponseWriter, response []Target) {
-	if err := json.NewEncoder(rsp).Encode(&response); err != nil {
+	err := json.NewEncoder(rsp).Encode(&response)
+	if err != nil {
 		rsp.Write([]byte("KO"))
 	}
 }

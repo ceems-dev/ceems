@@ -27,7 +27,8 @@ func TestNewK8sCollector(t *testing.T) {
 
 	// Test k8s API server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if data, err := os.ReadFile("testdata/k8s/pods-metadata.json"); err == nil {
+		data, err := os.ReadFile("testdata/k8s/pods-metadata.json")
+		if err == nil {
 			w.Header().Add("Content-Type", "application/json")
 			w.Header().Add("Content-Type", "application/vnd.kubernetes.protobuf")
 			w.Write(data)
@@ -70,6 +71,7 @@ users:
 	require.NoError(t, err)
 
 	var podResourcesResp podresourcesapi.ListPodResourcesResponse
+
 	err = json.Unmarshal(podResourceContent, &podResourcesResp)
 	require.NoError(t, err)
 
@@ -135,6 +137,7 @@ func TestK8sPodDevices(t *testing.T) {
 	require.NoError(t, err)
 
 	var podResourcesResp podresourcesapi.ListPodResourcesResponse
+
 	err = json.Unmarshal(content, &podResourcesResp)
 	require.NoError(t, err)
 
@@ -143,6 +146,7 @@ func TestK8sPodDevices(t *testing.T) {
 	require.NoError(t, err)
 
 	var podsMetadata v1.PodList
+
 	err = json.Unmarshal(content, &podsMetadata)
 	require.NoError(t, err)
 

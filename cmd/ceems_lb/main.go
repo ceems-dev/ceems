@@ -19,7 +19,8 @@ func main() {
 	}
 
 	// Main entrypoint of the app
-	if err := CEEMSLoadBalancer.Main(); err != nil {
+	err = CEEMSLoadBalancer.Main()
+	if err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}

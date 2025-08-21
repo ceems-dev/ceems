@@ -64,7 +64,8 @@ func (c *SessionConfig) UnmarshalYAML(unmarshal func(any) error) error {
 
 	type plain SessionConfig
 
-	if err := unmarshal((*plain)(c)); err != nil {
+	err := unmarshal((*plain)(c))
+	if err != nil {
 		return err
 	}
 
@@ -72,7 +73,8 @@ func (c *SessionConfig) UnmarshalYAML(unmarshal func(any) error) error {
 	c.Demangle = strings.TrimSpace(strings.ToLower(c.Demangle))
 
 	// Validate config
-	if err := c.Validate(); err != nil {
+	err = c.Validate()
+	if err != nil {
 		return err
 	}
 
@@ -105,12 +107,14 @@ func (c *PyroscopeConfig) UnmarshalYAML(unmarshal func(any) error) error {
 
 	type plain PyroscopeConfig
 
-	if err := unmarshal((*plain)(c)); err != nil {
+	err := unmarshal((*plain)(c))
+	if err != nil {
 		return err
 	}
 
 	// Validate config
-	if err := c.Validate(); err != nil {
+	err = c.Validate()
+	if err != nil {
 		return err
 	}
 
@@ -120,7 +124,8 @@ func (c *PyroscopeConfig) UnmarshalYAML(unmarshal func(any) error) error {
 // Validate validates the config.
 func (c *PyroscopeConfig) Validate() error {
 	// Check if URL is valid
-	if _, err := url.Parse(c.URL); err != nil {
+	_, err := url.Parse(c.URL)
+	if err != nil {
 		return fmt.Errorf("invalid pyroscope URL: %w", err)
 	}
 

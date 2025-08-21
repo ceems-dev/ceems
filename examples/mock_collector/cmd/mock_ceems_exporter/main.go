@@ -19,7 +19,8 @@ func main() {
 	}
 
 	// Main entrypoint of the app
-	if err := ceemsExporterApp.Main(); err != nil {
+	err = ceemsExporterApp.Main()
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %s\n", err)
 		os.Exit(1)
 	}

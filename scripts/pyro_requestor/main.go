@@ -79,7 +79,9 @@ func main() {
 	if resp.StatusCode == http.StatusOK {
 		// Unpack into data
 		respData := &querierv1.SelectMergeStacktracesResponse{}
-		if err = proto.Unmarshal(body, respData); err != nil {
+
+		err = proto.Unmarshal(body, respData)
+		if err != nil {
 			log.Fatalln("failed to umarshal proto response body", err)
 		}
 

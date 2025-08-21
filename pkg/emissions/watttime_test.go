@@ -103,7 +103,9 @@ func TestNewWTProvider(t *testing.T) {
 			expected := wtTokenResponse{
 				Token: "token",
 			}
-			if err := json.NewEncoder(w).Encode(&expected); err != nil {
+
+			err := json.NewEncoder(w).Encode(&expected)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		} else {
@@ -118,7 +120,8 @@ func TestNewWTProvider(t *testing.T) {
 				},
 			}
 
-			if err := json.NewEncoder(w).Encode(&expected); err != nil {
+			err := json.NewEncoder(w).Encode(&expected)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		}
@@ -142,7 +145,8 @@ func TestNewWTProviderFail(t *testing.T) {
 	expected := dummyResponse
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))
@@ -174,7 +178,8 @@ func TestWTAPIRequest(t *testing.T) {
 			},
 		}
 
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))
@@ -196,7 +201,8 @@ func TestWTAPIRequestFail(t *testing.T) {
 	expected := dummyResponse
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))
@@ -218,7 +224,9 @@ func TestWTAPILogin(t *testing.T) {
 		expected := wtTokenResponse{
 			Token: "token",
 		}
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))
@@ -244,7 +252,9 @@ func TestWTTokenUpdate(t *testing.T) {
 		expected := wtTokenResponse{
 			Token: fmt.Sprintf("token-%d", reqIdx),
 		}
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 

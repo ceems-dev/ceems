@@ -49,7 +49,9 @@ func (i *ipmiClient) SensorRecords() ([]*FullSensorRecord, error) {
 		}
 
 		sensorRecord := &FullSensorRecord{}
-		if err := sensorRecord.DecodeFromBytes(resp.Data[:]); err != nil {
+
+		err = sensorRecord.DecodeFromBytes(resp.Data[:])
+		if err != nil {
 			errs = errors.Join(errs, fmt.Errorf("failed to decode sensor record %d: %w", recordID, err))
 
 			continue

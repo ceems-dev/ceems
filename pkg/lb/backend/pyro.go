@@ -81,6 +81,7 @@ func (b *pyroServer) SetAlive(alive bool) {
 // IsAlive returns if backend Pyroscope server is alive.
 func (b *pyroServer) IsAlive() bool {
 	b.mux.RLock()
+
 	alive := b.alive
 	defer b.mux.RUnlock()
 

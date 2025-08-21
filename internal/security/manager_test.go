@@ -27,23 +27,30 @@ func skipUnprivileged(t *testing.T) {
 func testConfig(tmpDir string) (*Config, error) {
 	// Make test directories
 	testDir := filepath.Join(tmpDir, "l1", "l2", "l3")
-	if err := os.MkdirAll(testDir, 0o700); err != nil {
+
+	err := os.MkdirAll(testDir, 0o700)
+	if err != nil {
 		return nil, err
 	}
 
 	// Add rx on tmpDir/l1/l2
-	if err := os.Chmod(filepath.Join(tmpDir, "l1", "l2"), 0o705); err != nil {
+	err = os.Chmod(filepath.Join(tmpDir, "l1", "l2"), 0o705)
+	if err != nil {
 		return nil, err
 	}
 
 	// Create a file in testDir
 	testReadFile := filepath.Join(testDir, "testRead")
-	if err := os.WriteFile(testReadFile, []byte("hello"), 0o700); err != nil { //nolint:gosec
+
+	err = os.WriteFile(testReadFile, []byte("hello"), 0o700) //nolint:gosec
+	if err != nil {
 		return nil, err
 	}
 
 	testWriteFile := filepath.Join(testDir, "testWrite")
-	if err := os.WriteFile(testWriteFile, []byte("hello"), 0o700); err != nil { //nolint:gosec
+
+	err = os.WriteFile(testWriteFile, []byte("hello"), 0o700) //nolint:gosec
+	if err != nil {
 		return nil, err
 	}
 

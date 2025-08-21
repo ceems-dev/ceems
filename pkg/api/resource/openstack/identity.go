@@ -48,7 +48,8 @@ func (o *openstackManager) rotateToken(ctx context.Context) error {
 // updateUsersProjects updates users and projects of a given Openstack cluster.
 func (o *openstackManager) updateUsersProjects(ctx context.Context, current time.Time) error {
 	// Fetch current users and projects
-	if userProjectsCache, err := o.usersProjectsAssoc(ctx, current); err != nil {
+	userProjectsCache, err := o.usersProjectsAssoc(ctx, current)
+	if err != nil {
 		return err
 	} else {
 		o.userProjectsCache = userProjectsCache
@@ -117,7 +118,8 @@ func (o *openstackManager) fetchUserProjects(ctx context.Context, userID string)
 // fetchUsers fetches a list of users or specific user from Openstack cluster.
 func (o *openstackManager) usersProjectsAssoc(ctx context.Context, current time.Time) (userProjectsCache, error) {
 	// Check if service is online
-	if err := o.ping("identity"); err != nil {
+	err := o.ping("identity")
+	if err != nil {
 		return userProjectsCache{}, err
 	}
 
@@ -160,8 +162,10 @@ func (o *openstackManager) usersProjectsAssoc(ctx context.Context, current time.
 				projects, err := o.fetchUserProjects(ctx, id)
 
 				projectLock.Lock()
+
 				userProjects[id] = projects
 				allErrs = errors.Join(allErrs, err)
+
 				projectLock.Unlock()
 			}(userID)
 		}

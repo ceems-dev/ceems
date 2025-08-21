@@ -42,6 +42,7 @@ func TestMeminfoCollector(t *testing.T) {
 func TestMemInfo(t *testing.T) {
 	file, err := os.Open("testdata/proc/meminfo")
 	require.NoError(t, err)
+
 	defer file.Close()
 
 	memInfo, err := parseMemInfo(file)

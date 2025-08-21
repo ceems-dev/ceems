@@ -34,10 +34,8 @@ type Generic map[string]any
 
 // Value implements Valuer interface.
 func (g Generic) Value() (driver.Value, error) {
-	var generic []byte
-
-	var err error
-	if generic, err = json.Marshal(g); err != nil {
+	generic, err := json.Marshal(g)
+	if err != nil {
 		return nil, err
 	}
 
@@ -68,7 +66,8 @@ func (g *Generic) Scan(v any) error {
 
 	d.UseNumber()
 
-	if err := d.Decode(&tmp); err != nil {
+	err := d.Decode(&tmp)
+	if err != nil {
 		return err
 	}
 
@@ -76,7 +75,8 @@ func (g *Generic) Scan(v any) error {
 	for k := range tmp {
 		switch tmpt := tmp[k].(type) {
 		case json.Number:
-			if i, err := tmpt.Int64(); err == nil {
+			i, err := tmpt.Int64()
+			if err == nil {
 				tmp[k] = i
 			}
 		}
@@ -154,10 +154,8 @@ func (m MetricMap) Values(format string) []any {
 
 // Value implements Valuer interface.
 func (m MetricMap) Value() (driver.Value, error) {
-	var generic []byte
-
-	var err error
-	if generic, err = json.Marshal(m); err != nil {
+	generic, err := json.Marshal(m)
+	if err != nil {
 		return nil, err
 	}
 
@@ -185,7 +183,9 @@ func (m *MetricMap) Scan(v any) error {
 	// Ref: Improvable, see https://groups.google.com/g/golang-nuts/c/TDuGDJAIuVM?pli=1
 	// Decode into a tmp var
 	var tmp map[string]JSONFloat
-	if err := d.Decode(&tmp); err != nil {
+
+	err := d.Decode(&tmp)
+	if err != nil {
 		return err
 	}
 
@@ -199,10 +199,8 @@ type JSONFloat float64
 
 // Value implements Valuer interface.
 func (j JSONFloat) Value() (driver.Value, error) {
-	var generic []byte
-
-	var err error
-	if generic, err = json.Marshal(j); err != nil {
+	generic, err := json.Marshal(j)
+	if err != nil {
 		return nil, err
 	}
 
@@ -240,7 +238,9 @@ func (j *JSONFloat) Scan(v any) error {
 	// Ref: Improvable, see https://groups.google.com/g/golang-nuts/c/TDuGDJAIuVM?pli=1
 	// Decode into a tmp var
 	var tmp JSONFloat
-	if err := d.Decode(&tmp); err != nil {
+
+	err := d.Decode(&tmp)
+	if err != nil {
 		return err
 	}
 
@@ -279,7 +279,9 @@ func (j *JSONFloat) UnmarshalJSON(v []byte) error {
 	}
 	// just a regular float value
 	var fv float64
-	if err := json.Unmarshal(v, &fv); err != nil {
+
+	err := json.Unmarshal(v, &fv)
+	if err != nil {
 		return err
 	}
 
@@ -294,10 +296,8 @@ type List []any
 
 // Value implements Valuer interface.
 func (l List) Value() (driver.Value, error) {
-	var list []byte
-
-	var err error
-	if list, err = json.Marshal(l); err != nil {
+	list, err := json.Marshal(l)
+	if err != nil {
 		return nil, err
 	}
 
@@ -328,7 +328,8 @@ func (l *List) Scan(v any) error {
 
 	d.UseNumber()
 
-	if err := d.Decode(&tmp); err != nil {
+	err := d.Decode(&tmp)
+	if err != nil {
 		return err
 	}
 
@@ -336,7 +337,8 @@ func (l *List) Scan(v any) error {
 	for k := range tmp {
 		switch tmpt := tmp[k].(type) {
 		case json.Number:
-			if i, err := tmpt.Int64(); err == nil {
+			i, err := tmpt.Int64()
+			if err == nil {
 				tmp[k] = i
 			}
 		}
@@ -365,7 +367,9 @@ func (c *WebConfig) UnmarshalYAML(unmarshal func(any) error) error {
 	*c = WebConfig{
 		HTTPClientConfig: config.DefaultHTTPClientConfig,
 	}
-	if err := unmarshal((*plain)(c)); err != nil {
+
+	err := unmarshal((*plain)(c))
+	if err != nil {
 		return err
 	}
 	// The UnmarshalYAML method of HTTPClientConfig is not being called because it's not a pointer.

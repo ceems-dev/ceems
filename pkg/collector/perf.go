@@ -169,7 +169,8 @@ func NewPerfCollector(logger *slog.Logger, cgManager *cgroupManager) (*perfColle
 	}
 
 	// Check if perf_event_paranoid allows to read perf events
-	if err := perfEventsAvailable(); err != nil {
+	err := perfEventsAvailable()
+	if err != nil {
 		logger.Error("Perf events are not available", "err", err)
 
 		return nil, err
@@ -564,7 +565,8 @@ func (c *perfCollector) Update(ch chan<- prometheus.Metric, cgroups []cgroup, ma
 
 	// Remove all profilers that have already finished
 	// Ignore all errors
-	if err := c.closeProfilers(activePIDs); err != nil {
+	err = c.closeProfilers(activePIDs)
+	if err != nil {
 		c.logger.Error("failed to close profilers counters", "err", err)
 	}
 
@@ -576,15 +578,18 @@ func (c *perfCollector) Update(ch chan<- prometheus.Metric, cgroups []cgroup, ma
 	for _, cgroup := range cgroups {
 		uuid := cgroup.uuid
 
-		if err := c.updateHardwareCounters(uuid, cgroup.procs, ch); err != nil {
+		err := c.updateHardwareCounters(uuid, cgroup.procs, ch)
+		if err != nil {
 			c.logger.Error("failed to update hardware counters", "uuid", uuid, "err", err)
 		}
 
-		if err := c.updateSoftwareCounters(uuid, cgroup.procs, ch); err != nil {
+		err = c.updateSoftwareCounters(uuid, cgroup.procs, ch)
+		if err != nil {
 			c.logger.Error("failed to update software counters", "uuid", uuid, "err", err)
 		}
 
-		if err := c.updateCacheCounters(uuid, cgroup.procs, ch); err != nil {
+		err = c.updateCacheCounters(uuid, cgroup.procs, ch)
+		if err != nil {
 			c.logger.Error("failed to update cache counters", "uuid", uuid, "err", err)
 		}
 	}
@@ -597,7 +602,8 @@ func (c *perfCollector) Stop(_ context.Context) error {
 	c.logger.Debug("Stopping", "sub_collector", perfCollectorSubsystem)
 
 	// Close all profilers
-	if err := c.closeProfilers([]int{}); err != nil {
+	err := c.closeProfilers([]int{})
+	if err != nil {
 		c.logger.Error("failed to close profilers counters", "err", err)
 	}
 
@@ -737,7 +743,9 @@ func (c *perfCollector) updateHardwareCounters(
 
 		if hwProfiler, ok := c.perfHwProfilers[pid]; ok {
 			hwProfile := &perf.HardwareProfile{}
-			if err := (*hwProfiler).Profile(hwProfile); err != nil {
+
+			err := (*hwProfiler).Profile(hwProfile)
+			if err != nil {
 				errs = errors.Join(errs, fmt.Errorf("%w: %d", err, pid))
 
 				continue
@@ -827,7 +835,9 @@ func (c *perfCollector) updateSoftwareCounters(
 
 		if swProfiler, ok := c.perfSwProfilers[pid]; ok {
 			swProfile := &perf.SoftwareProfile{}
-			if err := (*swProfiler).Profile(swProfile); err != nil {
+
+			err := (*swProfiler).Profile(swProfile)
+			if err != nil {
 				errs = errors.Join(errs, fmt.Errorf("%w: %d", err, pid))
 
 				continue
@@ -944,7 +954,9 @@ func (c *perfCollector) updateCacheCounters(cgroupID string, procs []procfs.Proc
 
 		if cacheProfiler, ok := c.perfCacheProfilers[pid]; ok {
 			cacheProfile := &perf.CacheProfile{}
-			if err := (*cacheProfiler).Profile(cacheProfile); err != nil {
+
+			err := (*cacheProfiler).Profile(cacheProfile)
+			if err != nil {
 				errs = errors.Join(errs, fmt.Errorf("%w: %d", err, pid))
 
 				continue
@@ -982,7 +994,8 @@ func (c *perfCollector) filterProcs(cgroups []cgroup) ([]cgroup, error) {
 
 	// Use security context as reading procs env vars is a privileged action
 	if securityCtx, ok := c.securityContexts[perfProcFilterCtx]; ok {
-		if err := securityCtx.Exec(dataPtr); err != nil {
+		err := securityCtx.Exec(dataPtr)
+		if err != nil {
 			return nil, err
 		}
 	} else {
@@ -1016,7 +1029,8 @@ func (c *perfCollector) newProfilers(cgroups []cgroup) []int {
 
 	// Start new profilers within security context
 	if securityCtx, ok := c.securityContexts[perfOpenProfilersCtx]; ok {
-		if err := securityCtx.Exec(dataPtr); err == nil {
+		err := securityCtx.Exec(dataPtr)
+		if err == nil {
 			return dataPtr.activePIDs
 		}
 	}
@@ -1042,7 +1056,8 @@ func (c *perfCollector) closeProfilers(activePIDs []int) error {
 
 	// Start new profilers within security context
 	if securityCtx, ok := c.securityContexts[perfCloseProfilersCtx]; ok {
-		if err := securityCtx.Exec(dataPtr); err != nil {
+		err := securityCtx.Exec(dataPtr)
+		if err != nil {
 			return err
 		}
 	}
@@ -1076,7 +1091,8 @@ func openProfilers(data any) error {
 
 			if d.perfHwProfilersEnabled {
 				if _, ok := d.perfHwProfilers[pid]; !ok {
-					if hwProfiler, err := newHwProfiler(pid, d.perfHwProfilerTypes); err != nil {
+					hwProfiler, err := newHwProfiler(pid, d.perfHwProfilerTypes)
+					if err != nil {
 						d.logger.Error("failed to start hardware profiler", "pid", pid, "cmd", strings.Join(cmdLine, " "), "err", err)
 					} else {
 						d.perfHwProfilers[pid] = hwProfiler
@@ -1086,7 +1102,8 @@ func openProfilers(data any) error {
 
 			if d.perfSwProfilersEnabled {
 				if _, ok := d.perfSwProfilers[pid]; !ok {
-					if swProfiler, err := newSwProfiler(pid, d.perfSwProfilerTypes); err != nil {
+					swProfiler, err := newSwProfiler(pid, d.perfSwProfilerTypes)
+					if err != nil {
 						d.logger.Error("failed to start software profiler", "pid", pid, "cmd", strings.Join(cmdLine, " "), "err", err)
 					} else {
 						d.perfSwProfilers[pid] = swProfiler
@@ -1096,7 +1113,8 @@ func openProfilers(data any) error {
 
 			if d.perfCacheProfilersEnabled {
 				if _, ok := d.perfCacheProfilers[pid]; !ok {
-					if cacheProfiler, err := newCacheProfiler(pid, d.perfCacheProfilerTypes); err != nil {
+					cacheProfiler, err := newCacheProfiler(pid, d.perfCacheProfilerTypes)
+					if err != nil {
 						d.logger.Error("failed to start cache profiler", "pid", pid, "cmd", strings.Join(cmdLine, " "), "err", err)
 					} else {
 						d.perfCacheProfilers[pid] = cacheProfiler
@@ -1123,7 +1141,8 @@ func newHwProfiler(pid int, profilerTypes perf.HardwareProfilerType) (*perf.Hard
 		return nil, err
 	}
 
-	if err := hwProf.Start(); err != nil {
+	err = hwProf.Start()
+	if err != nil {
 		return nil, err
 	}
 
@@ -1141,7 +1160,8 @@ func newSwProfiler(pid int, profilerTypes perf.SoftwareProfilerType) (*perf.Soft
 		return nil, err
 	}
 
-	if err := swProf.Start(); err != nil {
+	err = swProf.Start()
+	if err != nil {
 		return nil, err
 	}
 
@@ -1159,7 +1179,8 @@ func newCacheProfiler(pid int, profilerTypes perf.CacheProfilerType) (*perf.Cach
 		return nil, err
 	}
 
-	if err := cacheProf.Start(); err != nil {
+	err = cacheProf.Start()
+	if err != nil {
 		return nil, err
 	}
 
@@ -1180,7 +1201,8 @@ func closeProfilers(data any) error {
 	if d.perfHwProfilersEnabled {
 		for pid, hwProfiler := range d.perfHwProfilers {
 			if !slices.Contains(d.activePIDs, pid) {
-				if err := closeHwProfiler(hwProfiler); err != nil {
+				err := closeHwProfiler(hwProfiler)
+				if err != nil {
 					d.logger.Error("failed to shutdown hardware profiler", "err", err)
 				}
 
@@ -1193,7 +1215,8 @@ func closeProfilers(data any) error {
 	if d.perfSwProfilersEnabled {
 		for pid, swProfiler := range d.perfSwProfilers {
 			if !slices.Contains(d.activePIDs, pid) {
-				if err := closeSwProfiler(swProfiler); err != nil {
+				err := closeSwProfiler(swProfiler)
+				if err != nil {
 					d.logger.Error("failed to shutdown software profiler", "err", err)
 				}
 
@@ -1206,7 +1229,8 @@ func closeProfilers(data any) error {
 	if d.perfCacheProfilersEnabled {
 		for pid, cacheProfiler := range d.perfCacheProfilers {
 			if !slices.Contains(d.activePIDs, pid) {
-				if err := closeCacheProfiler(cacheProfiler); err != nil {
+				err := closeCacheProfiler(cacheProfiler)
+				if err != nil {
 					d.logger.Error("failed to shutdown cache profiler", "err", err)
 				}
 
@@ -1221,11 +1245,13 @@ func closeProfilers(data any) error {
 
 // closeHwProfiler stops and closes a hardware profiler.
 func closeHwProfiler(profiler *perf.HardwareProfiler) error {
-	if err := (*profiler).Stop(); err != nil {
+	err := (*profiler).Stop()
+	if err != nil {
 		return err
 	}
 
-	if err := (*profiler).Close(); err != nil {
+	err = (*profiler).Close()
+	if err != nil {
 		return err
 	}
 
@@ -1234,11 +1260,13 @@ func closeHwProfiler(profiler *perf.HardwareProfiler) error {
 
 // closeSwProfiler stops and closes a software profiler.
 func closeSwProfiler(profiler *perf.SoftwareProfiler) error {
-	if err := (*profiler).Stop(); err != nil {
+	err := (*profiler).Stop()
+	if err != nil {
 		return err
 	}
 
-	if err := (*profiler).Close(); err != nil {
+	err = (*profiler).Close()
+	if err != nil {
 		return err
 	}
 
@@ -1247,11 +1275,13 @@ func closeSwProfiler(profiler *perf.SoftwareProfiler) error {
 
 // closeCacheProfiler stops and closes a cache profiler.
 func closeCacheProfiler(profiler *perf.CacheProfiler) error {
-	if err := (*profiler).Stop(); err != nil {
+	err := (*profiler).Stop()
+	if err != nil {
 		return err
 	}
 
-	if err := (*profiler).Close(); err != nil {
+	err = (*profiler).Close()
+	if err != nil {
 		return err
 	}
 

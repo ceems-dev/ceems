@@ -47,11 +47,13 @@ func (m *Migrator) ApplyMigrations(db *sql.DB) error {
 
 	m.logger.Info("Applying DB migrations")
 
-	if err = migrator.Up(); err != nil && !errors.Is(err, migrate.ErrNoChange) {
+	err = migrator.Up()
+	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		return fmt.Errorf("unable to apply migrations %w", err)
 	}
 
-	if version, dirty, err := migrator.Version(); err != nil {
+	version, dirty, err := migrator.Version()
+	if err != nil {
 		m.logger.Error("Failed to get DB migration version", "err", err)
 	} else {
 		m.logger.Debug("Current DB migration version", "version", version, "dirty", dirty)

@@ -39,7 +39,8 @@ func queryServer(address string) error {
 		return err
 	}
 
-	if err := resp.Body.Close(); err != nil {
+	err = resp.Body.Close()
+	if err != nil {
 		return err
 	}
 
@@ -73,6 +74,7 @@ func TestCEEMSConfigNestedDataDirs(t *testing.T) {
 
 	// Setup data directories
 	var err error
+
 	config, err = createDirs(config)
 	require.NoError(t, err, "failed to create data directories")
 
@@ -141,7 +143,8 @@ ceems_api_server:
 
 	// Query exporter
 	for i := range 10 {
-		if err := queryServer("localhost:9020"); err == nil {
+		err := queryServer("localhost:9020")
+		if err == nil {
 			break
 		}
 

@@ -69,7 +69,8 @@ func NewManager(c *Config, logger *slog.Logger) (*Manager, error) {
 	if err != nil {
 		errs = errors.Join(errs, err)
 
-		if manager.runAsUser, err = user.LookupId(c.RunAsUser); err != nil {
+		manager.runAsUser, err = user.LookupId(c.RunAsUser)
+		if err != nil {
 			errs = errors.Join(errs, err)
 
 			return nil, fmt.Errorf("could not lookup %s: %w", c.RunAsUser, errs)
@@ -201,7 +202,8 @@ func (m *Manager) DropPrivileges(enableEffective bool) error {
 		// Get if the current process has any capabilities at all
 		// by comparing against a new capability set
 		// If no capabilities found, nothing to do, return
-		if isPriv, err := existing.Cf(cap.NewSet()); err == nil && isPriv == 0 {
+		isPriv, err := existing.Cf(cap.NewSet())
+		if err == nil && isPriv == 0 {
 			return nil
 		}
 
@@ -212,19 +214,22 @@ func (m *Manager) DropPrivileges(enableEffective bool) error {
 
 	// Here we set a bunch of linux specific security stuff.
 	// Add ACL entries to all relevant paths
-	if err := m.addACLEntries(); err != nil {
+	err := m.addACLEntries()
+	if err != nil {
 		return err
 	}
 
 	// Now change the user from root to runAsUser
-	if err := m.changeUser(); err != nil {
+	err = m.changeUser()
+	if err != nil {
 		return err
 	}
 
 	// Ensure ReadPaths and ReadWritePaths are accessible for runAsUser.
 	// This can happen when any of the parent directories do not have rx
 	// on others which might prevent runAsUser to access these paths.
-	if err := m.pathsReachable(); err != nil {
+	err = m.pathsReachable()
+	if err != nil {
 		return err
 	}
 
@@ -254,7 +259,8 @@ func (m *Manager) DeleteACLEntries() error {
 	}
 
 	if securityCtx, ok := m.securityContexts[deleteACLCtx]; ok {
-		if err := securityCtx.Exec(dataPtr); err != nil {
+		err := securityCtx.Exec(dataPtr)
+		if err != nil {
 			return fmt.Errorf("failed to remove ACLs in a security context: %w", err)
 		}
 	} else {
@@ -271,17 +277,20 @@ func (m *Manager) addACLEntries() error {
 		a := &acls.ACL{}
 
 		// Load the existing ACL entries of the PosixACLAccess type
-		if err := a.Load(acl.path, acls.PosixACLAccess); err != nil {
+		err := a.Load(acl.path, acls.PosixACLAccess)
+		if err != nil {
 			return fmt.Errorf("failed to load acl entries: %w", err)
 		}
 
 		// Add entry to new ACL
-		if err := a.AddEntry(acl.entry); err != nil {
+		err = a.AddEntry(acl.entry)
+		if err != nil {
 			return fmt.Errorf("failed to add acl entry %s err: %w", acl.entry, err)
 		}
 
 		// Apply entry to new ACL
-		if err := a.Apply(acl.path, acls.PosixACLAccess); err != nil {
+		err = a.Apply(acl.path, acls.PosixACLAccess)
+		if err != nil {
 			return fmt.Errorf("failed to apply acl entries %s to path %s err: %w", a, acl.path, err)
 		}
 
@@ -331,7 +340,8 @@ func (m *Manager) changeUser() error {
 func (m *Manager) pathsReachable() error {
 	// Stat path to check if they are reachable
 	for _, a := range m.acls {
-		if _, err := os.Stat(a.path); err != nil {
+		_, err := os.Stat(a.path)
+		if err != nil {
 			return fmt.Errorf("could not reach path %s after changing user to %s", a.path, m.runAsUser.Username)
 		}
 	}
@@ -349,7 +359,8 @@ func GetDefaultRunAsUser() (string, error) {
 	if syscall.Geteuid() == 0 {
 		return "nobody", nil
 	} else {
-		if currentUser, err := user.Current(); err != nil {
+		currentUser, err := user.Current()
+		if err != nil {
 			return "", fmt.Errorf("failed to get current user: %w", err)
 		} else {
 			return currentUser.Username, nil
@@ -367,23 +378,27 @@ func setCapabilities(caps []cap.Value, enableEffective bool) error {
 
 	// Permitted makes the permission possible to get, effective makes it 'active'
 	for _, c := range caps {
-		if err := newcaps.SetFlag(cap.Permitted, true, c); err != nil {
+		err := newcaps.SetFlag(cap.Permitted, true, c)
+		if err != nil {
 			return fmt.Errorf("error setting permitted setcap: %w", err)
 		}
 
 		// Only enable effective set before performing a privileged operation
-		if err := newcaps.SetFlag(cap.Effective, enableEffective, c); err != nil {
+		err = newcaps.SetFlag(cap.Effective, enableEffective, c)
+		if err != nil {
 			return fmt.Errorf("error setting effective setcap: %w", err)
 		}
 
 		// We do not want these capabilities to be inherited by subprocesses
-		if err := newcaps.SetFlag(cap.Inheritable, false, c); err != nil {
+		err = newcaps.SetFlag(cap.Inheritable, false, c)
+		if err != nil {
 			return fmt.Errorf("error setting inheritable setcap: %w", err)
 		}
 	}
 
 	// Apply the new capabilities to the current process (incl. all threads)
-	if err := newcaps.SetProc(); err != nil {
+	err := newcaps.SetProc()
+	if err != nil {
 		return fmt.Errorf("error setting new process capabilities %s via setcap: %w", newcaps.String(), err)
 	}
 
@@ -466,7 +481,8 @@ func deleteACLEntries(data any) error {
 		a := &acls.ACL{}
 
 		// Load ACL entries from a given path object
-		if err := a.Load(acl.path, acls.PosixACLAccess); err != nil {
+		err := a.Load(acl.path, acls.PosixACLAccess)
+		if err != nil {
 			return err
 		}
 
@@ -474,7 +490,8 @@ func deleteACLEntries(data any) error {
 		a.DeleteEntry(acl.entry)
 
 		// Apply entry to new ACL
-		if err := a.Apply(acl.path, acls.PosixACLAccess); err != nil {
+		err = a.Apply(acl.path, acls.PosixACLAccess)
+		if err != nil {
 			return err
 		}
 	}

@@ -57,7 +57,8 @@ func (t *Target) UnmarshalYAML(unmarshal func(any) error) error {
 		URL       string   `yaml:"url"`
 	}
 
-	if err := unmarshal(&tmp); err != nil {
+	err := unmarshal(&tmp)
+	if err != nil {
 		return err
 	}
 
@@ -108,7 +109,8 @@ func (r *ProxyConfig) UnmarshalYAML(unmarshal func(any) error) error {
 
 	type plain ProxyConfig
 
-	if err := unmarshal((*plain)(r)); err != nil {
+	err := unmarshal((*plain)(r))
+	if err != nil {
 		return err
 	}
 
@@ -118,8 +120,6 @@ func (r *ProxyConfig) UnmarshalYAML(unmarshal func(any) error) error {
 			InsecureSkipVerify: r.Insecure,
 		}
 	}
-
-	var err error
 
 	// Compile regex
 	r.allowedAPIResourcesRegexp, err = regexp.Compile(strings.Join(r.AllowedAPIResources, "|"))
@@ -142,7 +142,8 @@ type Redfish struct {
 func (r *Redfish) UnmarshalYAML(unmarshal func(any) error) error {
 	type plain Redfish
 
-	if err := unmarshal((*plain)(r)); err != nil {
+	err := unmarshal((*plain)(r))
+	if err != nil {
 		return err
 	}
 
@@ -221,7 +222,8 @@ func main() {
 	app.UsageWriter(os.Stdout)
 	app.HelpFlag.Short('h')
 
-	if _, err := app.Parse(os.Args[1:]); err != nil {
+	_, err := app.Parse(os.Args[1:])
+	if err != nil {
 		panic(err)
 	}
 
@@ -267,8 +269,6 @@ func main() {
 
 	// If webConfigFile is set, get absolute path
 	var webConfigFilePath string
-
-	var err error
 	if webConfigFile != "" {
 		webConfigFilePath, err = filepath.Abs(webConfigFile)
 		if err != nil {
@@ -303,7 +303,8 @@ func main() {
 	// Initializing the server in a goroutine so that
 	// it won't block the graceful shutdown handling below.
 	go func() {
-		if err := server.Start(); err != nil {
+		err := server.Start()
+		if err != nil {
 			logger.Error("Failed to start server", "err", err)
 		}
 	}()
@@ -320,7 +321,8 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if err := server.Shutdown(ctx); err != nil {
+	err = server.Shutdown(ctx)
+	if err != nil {
 		logger.Error("Failed to gracefully shutdown server", "err", err)
 	}
 

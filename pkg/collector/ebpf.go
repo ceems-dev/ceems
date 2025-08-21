@@ -209,7 +209,8 @@ func NewEbpfCollector(logger *slog.Logger, cgManager *cgroupManager) (*ebpfColle
 	}
 
 	// Remove resource limits for kernels <5.11.
-	if err := rlimit.RemoveMemlock(); err != nil {
+	err = rlimit.RemoveMemlock()
+	if err != nil {
 		return nil, fmt.Errorf("error removing memlock: %w", err)
 	}
 
@@ -285,7 +286,8 @@ func NewEbpfCollector(logger *slog.Logger, cgManager *cgroupManager) (*ebpfColle
 		}
 	}
 
-	if err := configMap.Update(uint32(0), config, ebpf.UpdateAny); err != nil {
+	err = configMap.Update(uint32(0), config, ebpf.UpdateAny)
+	if err != nil {
 		return nil, fmt.Errorf("failed to update bpf config: %w", err)
 	}
 
@@ -309,7 +311,8 @@ func NewEbpfCollector(logger *slog.Logger, cgManager *cgroupManager) (*ebpfColle
 					continue
 				}
 
-				if links[kernFuncName], err = link.Kprobe(kernFuncName, prog, nil); err != nil {
+				links[kernFuncName], err = link.Kprobe(kernFuncName, prog, nil)
+				if err != nil {
 					logger.Error("Failed to open kprobe", "func", kernFuncName, "err", err)
 				}
 
@@ -327,7 +330,8 @@ func NewEbpfCollector(logger *slog.Logger, cgManager *cgroupManager) (*ebpfColle
 					continue
 				}
 
-				if links[kernFuncName], err = link.Kretprobe(kernFuncName, prog, nil); err != nil {
+				links[kernFuncName], err = link.Kretprobe(kernFuncName, prog, nil)
+				if err != nil {
 					logger.Error("Failed to open kretprobe", "func", kernFuncName, "err", err)
 				}
 
@@ -338,10 +342,12 @@ func NewEbpfCollector(logger *slog.Logger, cgManager *cgroupManager) (*ebpfColle
 		// fentry/* programs
 		if strings.HasPrefix(name, "fentry") {
 			kernFuncName := strings.TrimPrefix(name, "fentry_")
-			if links[kernFuncName], err = link.AttachTracing(link.TracingOptions{
+
+			links[kernFuncName], err = link.AttachTracing(link.TracingOptions{
 				Program:    prog,
 				AttachType: ebpf.AttachTraceFEntry,
-			}); err != nil {
+			})
+			if err != nil {
 				logger.Error("Failed to open fentry", "func", kernFuncName, "err", err)
 			}
 
@@ -351,10 +357,12 @@ func NewEbpfCollector(logger *slog.Logger, cgManager *cgroupManager) (*ebpfColle
 		// fexit/* programs
 		if strings.HasPrefix(name, "fexit") {
 			kernFuncName := strings.TrimPrefix(name, "fexit_")
-			if links[kernFuncName], err = link.AttachTracing(link.TracingOptions{
+
+			links[kernFuncName], err = link.AttachTracing(link.TracingOptions{
 				Program:    prog,
 				AttachType: ebpf.AttachTraceFExit,
-			}); err != nil {
+			})
+			if err != nil {
 				logger.Error("Failed to open fexit", "func", kernFuncName, "err", err)
 			}
 
@@ -545,7 +553,8 @@ func (c *ebpfCollector) Update(ch chan<- prometheus.Metric, cgroups []cgroup, ma
 		go func() {
 			defer wg.Done()
 
-			if err := c.updateVFSWrite(ch, aggMetrics); err != nil {
+			err := c.updateVFSWrite(ch, aggMetrics)
+			if err != nil {
 				c.logger.Error("Failed to update VFS write stats", "err", err)
 			}
 		}()
@@ -553,7 +562,8 @@ func (c *ebpfCollector) Update(ch chan<- prometheus.Metric, cgroups []cgroup, ma
 		go func() {
 			defer wg.Done()
 
-			if err := c.updateVFSRead(ch, aggMetrics); err != nil {
+			err := c.updateVFSRead(ch, aggMetrics)
+			if err != nil {
 				c.logger.Error("Failed to update VFS read stats", "err", err)
 			}
 		}()
@@ -561,7 +571,8 @@ func (c *ebpfCollector) Update(ch chan<- prometheus.Metric, cgroups []cgroup, ma
 		go func() {
 			defer wg.Done()
 
-			if err := c.updateVFSOpen(ch, aggMetrics); err != nil {
+			err := c.updateVFSOpen(ch, aggMetrics)
+			if err != nil {
 				c.logger.Error("Failed to update VFS open stats", "err", err)
 			}
 		}()
@@ -569,7 +580,8 @@ func (c *ebpfCollector) Update(ch chan<- prometheus.Metric, cgroups []cgroup, ma
 		go func() {
 			defer wg.Done()
 
-			if err := c.updateVFSCreate(ch, aggMetrics); err != nil {
+			err := c.updateVFSCreate(ch, aggMetrics)
+			if err != nil {
 				c.logger.Error("Failed to update VFS create stats", "err", err)
 			}
 		}()
@@ -577,7 +589,8 @@ func (c *ebpfCollector) Update(ch chan<- prometheus.Metric, cgroups []cgroup, ma
 		go func() {
 			defer wg.Done()
 
-			if err := c.updateVFSUnlink(ch, aggMetrics); err != nil {
+			err := c.updateVFSUnlink(ch, aggMetrics)
+			if err != nil {
 				c.logger.Error("Failed to update VFS unlink stats", "err", err)
 			}
 		}()
@@ -589,7 +602,8 @@ func (c *ebpfCollector) Update(ch chan<- prometheus.Metric, cgroups []cgroup, ma
 		go func() {
 			defer wg.Done()
 
-			if err := c.updateNetEgress(ch, aggMetrics); err != nil {
+			err := c.updateNetEgress(ch, aggMetrics)
+			if err != nil {
 				c.logger.Error("Failed to update network egress stats", "err", err)
 			}
 		}()
@@ -597,7 +611,8 @@ func (c *ebpfCollector) Update(ch chan<- prometheus.Metric, cgroups []cgroup, ma
 		go func() {
 			defer wg.Done()
 
-			if err := c.updateNetIngress(ch, aggMetrics); err != nil {
+			err := c.updateNetIngress(ch, aggMetrics)
+			if err != nil {
 				c.logger.Error("Failed to update network ingress stats", "err", err)
 			}
 		}()
@@ -605,7 +620,8 @@ func (c *ebpfCollector) Update(ch chan<- prometheus.Metric, cgroups []cgroup, ma
 		go func() {
 			defer wg.Done()
 
-			if err := c.updateNetRetrans(ch, aggMetrics); err != nil {
+			err := c.updateNetRetrans(ch, aggMetrics)
+			if err != nil {
 				c.logger.Error("Failed to update network retransmission stats", "err", err)
 			}
 		}()
@@ -623,7 +639,8 @@ func (c *ebpfCollector) Stop(_ context.Context) error {
 
 	// Close all probes
 	for name, link := range c.links {
-		if err := link.Close(); err != nil {
+		err := link.Close()
+		if err != nil {
 			c.logger.Error("Failed to close link", "func", name, "err", err)
 		}
 	}
@@ -658,7 +675,9 @@ func (c *ebpfCollector) updateVFSWrite(ch chan<- prometheus.Metric, aggMetrics *
 	// Update metrics to the channel
 	for key, value := range aggMetric {
 		ch <- prometheus.MustNewConstMetric(c.vfsWriteRequests, prometheus.CounterValue, float64(value.Calls), c.cgroupManager.name, c.hostname, key.UUID, key.Mount)
+
 		ch <- prometheus.MustNewConstMetric(c.vfsWriteBytes, prometheus.CounterValue, float64(value.Bytes), c.cgroupManager.name, c.hostname, key.UUID, key.Mount)
+
 		ch <- prometheus.MustNewConstMetric(c.vfsWriteErrors, prometheus.CounterValue, float64(value.Errors), c.cgroupManager.name, c.hostname, key.UUID, key.Mount)
 	}
 
@@ -682,7 +701,9 @@ func (c *ebpfCollector) updateVFSRead(ch chan<- prometheus.Metric, aggMetrics *a
 	// Update metrics to the channel
 	for key, value := range aggMetric {
 		ch <- prometheus.MustNewConstMetric(c.vfsReadRequests, prometheus.CounterValue, float64(value.Calls), c.cgroupManager.name, c.hostname, key.UUID, key.Mount)
+
 		ch <- prometheus.MustNewConstMetric(c.vfsReadBytes, prometheus.CounterValue, float64(value.Bytes), c.cgroupManager.name, c.hostname, key.UUID, key.Mount)
+
 		ch <- prometheus.MustNewConstMetric(c.vfsReadErrors, prometheus.CounterValue, float64(value.Errors), c.cgroupManager.name, c.hostname, key.UUID, key.Mount)
 	}
 
@@ -706,6 +727,7 @@ func (c *ebpfCollector) updateVFSOpen(ch chan<- prometheus.Metric, aggMetrics *a
 	// Update metrics to the channel
 	for uuid, value := range aggMetric {
 		ch <- prometheus.MustNewConstMetric(c.vfsOpenRequests, prometheus.CounterValue, float64(value.Calls), c.cgroupManager.name, c.hostname, uuid)
+
 		ch <- prometheus.MustNewConstMetric(c.vfsOpenErrors, prometheus.CounterValue, float64(value.Errors), c.cgroupManager.name, c.hostname, uuid)
 	}
 
@@ -729,6 +751,7 @@ func (c *ebpfCollector) updateVFSCreate(ch chan<- prometheus.Metric, aggMetrics 
 	// Update metrics to the channel
 	for uuid, value := range aggMetric {
 		ch <- prometheus.MustNewConstMetric(c.vfsCreateRequests, prometheus.CounterValue, float64(value.Calls), c.cgroupManager.name, c.hostname, uuid)
+
 		ch <- prometheus.MustNewConstMetric(c.vfsCreateErrors, prometheus.CounterValue, float64(value.Errors), c.cgroupManager.name, c.hostname, uuid)
 	}
 
@@ -752,6 +775,7 @@ func (c *ebpfCollector) updateVFSUnlink(ch chan<- prometheus.Metric, aggMetrics 
 	// Update metrics to the channel
 	for uuid, value := range aggMetric {
 		ch <- prometheus.MustNewConstMetric(c.vfsUnlinkRequests, prometheus.CounterValue, float64(value.Calls), c.cgroupManager.name, c.hostname, uuid)
+
 		ch <- prometheus.MustNewConstMetric(c.vfsUnlinkErrors, prometheus.CounterValue, float64(value.Errors), c.cgroupManager.name, c.hostname, uuid)
 	}
 
@@ -775,6 +799,7 @@ func (c *ebpfCollector) updateNetIngress(ch chan<- prometheus.Metric, aggMetrics
 	// Update metrics to the channel
 	for key, value := range aggMetric {
 		ch <- prometheus.MustNewConstMetric(c.netIngressPackets, prometheus.CounterValue, float64(value.Packets), c.cgroupManager.name, c.hostname, key.UUID, key.Proto, key.Family)
+
 		ch <- prometheus.MustNewConstMetric(c.netIngressBytes, prometheus.CounterValue, float64(value.Bytes), c.cgroupManager.name, c.hostname, key.UUID, key.Proto, key.Family)
 	}
 
@@ -798,6 +823,7 @@ func (c *ebpfCollector) updateNetEgress(ch chan<- prometheus.Metric, aggMetrics 
 	// Update metrics to the channel
 	for key, value := range aggMetric {
 		ch <- prometheus.MustNewConstMetric(c.netEgressPackets, prometheus.CounterValue, float64(value.Packets), c.cgroupManager.name, c.hostname, key.UUID, key.Proto, key.Family)
+
 		ch <- prometheus.MustNewConstMetric(c.netEgressBytes, prometheus.CounterValue, float64(value.Bytes), c.cgroupManager.name, c.hostname, key.UUID, key.Proto, key.Family)
 	}
 
@@ -821,6 +847,7 @@ func (c *ebpfCollector) updateNetRetrans(ch chan<- prometheus.Metric, aggMetrics
 	// Update metrics to the channel
 	for key, value := range aggMetric {
 		ch <- prometheus.MustNewConstMetric(c.netRetransPackets, prometheus.CounterValue, float64(value.Packets), c.cgroupManager.name, c.hostname, key.UUID, key.Proto, key.Family)
+
 		ch <- prometheus.MustNewConstMetric(c.netRetransBytes, prometheus.CounterValue, float64(value.Bytes), c.cgroupManager.name, c.hostname, key.UUID, key.Proto, key.Family)
 	}
 
@@ -839,7 +866,8 @@ func (c *ebpfCollector) readMaps() (*aggMetrics, error) {
 
 	// Start new profilers within security context
 	if securityCtx, ok := c.securityContexts[ebpfReadBPFMapsCtx]; ok {
-		if err := securityCtx.Exec(dataPtr); err == nil {
+		err := securityCtx.Exec(dataPtr)
+		if err == nil {
 			return dataPtr.aggMetrics, nil
 		} else {
 			return nil, err
@@ -868,7 +896,8 @@ func (c *ebpfCollector) discoverCgroups(cgroups []cgroup) {
 
 			// Get inode of the cgroup path if not already present in the cache
 			if _, ok := c.cgroupPathIDCache[path]; !ok {
-				if inode, err := inode(path); err == nil {
+				inode, err := inode(path)
+				if err == nil {
 					c.cgroupPathIDCache[path] = inode
 					c.cgroupIDUUIDCache[inode] = uuid
 				}

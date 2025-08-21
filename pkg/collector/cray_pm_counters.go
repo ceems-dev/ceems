@@ -115,19 +115,23 @@ func (c *crayPMCCollector) Update(ch chan<- prometheus.Metric) error {
 
 	// Update metrics
 	for _, domain := range domains {
-		if val, err := domain.GetEnergyJoules(); err == nil && val > 0 {
+		val, err := domain.GetEnergyJoules()
+		if err == nil && val > 0 {
 			ch <- prometheus.MustNewConstMetric(c.joulesMetricDesc, prometheus.GaugeValue, float64(val), c.hostname, domain.Name)
 		}
 
-		if val, err := domain.GetPowerWatts(); err == nil && val > 0 {
+		val, err = domain.GetPowerWatts()
+		if err == nil && val > 0 {
 			ch <- prometheus.MustNewConstMetric(c.wattsMetricDesc, prometheus.GaugeValue, float64(val), c.hostname, domain.Name)
 		}
 
-		if val, err := domain.GetPowerLimitWatts(); err == nil && val > 0 {
+		val, err = domain.GetPowerLimitWatts()
+		if err == nil && val > 0 {
 			ch <- prometheus.MustNewConstMetric(c.wattsLimitMetricDesc, prometheus.GaugeValue, float64(val), c.hostname, domain.Name)
 		}
 
-		if val, err := domain.GetTempCelsius(); err == nil && val > 0 {
+		val, err = domain.GetTempCelsius()
+		if err == nil && val > 0 {
 			ch <- prometheus.MustNewConstMetric(c.tempMetricDesc, prometheus.GaugeValue, float64(val), c.hostname, domain.Name)
 		}
 	}

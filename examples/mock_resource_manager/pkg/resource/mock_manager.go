@@ -31,7 +31,8 @@ func init() {
 
 // Do all basic checks here.
 func preflightChecks(logger *slog.Logger) error {
-	if _, err := os.Stat(*macctPath); err != nil {
+	_, err := os.Stat(*macctPath)
+	if err != nil {
 		logger.Error("Failed to open executable", "path", *macctPath, "err", err)
 
 		return err

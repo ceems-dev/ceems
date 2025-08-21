@@ -195,7 +195,8 @@ func NewSlurmCollector(logger *slog.Logger) (Collector, error) {
 	}
 
 	// Attempt to get GPU devices
-	if err := gpuSMI.Discover(); err != nil {
+	err = gpuSMI.Discover()
+	if err != nil {
 		// If we failed to fetch GPUs that are from supported
 		// vendor, return with error
 		logger.Error("Error fetching GPU devices", "err", err)
@@ -223,9 +224,11 @@ func NewSlurmCollector(logger *slog.Logger) (Collector, error) {
 
 	var mpsEnabled bool
 
-	if _, err := os.Stat(*slurmGresConfigFile); err == nil {
+	_, err = os.Stat(*slurmGresConfigFile)
+	if err == nil {
 		// Read gres.conf file and split file by lines
-		if out, err := os.ReadFile(*slurmGresConfigFile); err == nil {
+		out, err := os.ReadFile(*slurmGresConfigFile)
+		if err == nil {
 			// If Name=shard is in the line, sharding is enabled
 			gpuSMI.Devices, shardEnabled = updateGPUAvailableShares(string(out), "shard", hostname, gpuSMI.Devices)
 			if shardEnabled {
@@ -331,7 +334,8 @@ func (c *slurmCollector) Update(ch chan<- prometheus.Metric) error {
 		defer wg.Done()
 
 		// Update cgroup metrics
-		if err := c.cgroupCollector.Update(ch, cgroups); err != nil {
+		err := c.cgroupCollector.Update(ch, cgroups)
+		if err != nil {
 			c.logger.Error("Failed to update cgroup stats", "err", err)
 		}
 
@@ -348,7 +352,8 @@ func (c *slurmCollector) Update(ch chan<- prometheus.Metric) error {
 			defer wg.Done()
 
 			// Update perf metrics
-			if err := c.perfCollector.Update(ch, cgroups, slurmCollectorSubsystem); err != nil {
+			err := c.perfCollector.Update(ch, cgroups, slurmCollectorSubsystem)
+			if err != nil {
 				c.logger.Error("Failed to update perf stats", "err", err)
 			}
 		}()
@@ -361,7 +366,8 @@ func (c *slurmCollector) Update(ch chan<- prometheus.Metric) error {
 			defer wg.Done()
 
 			// Update ebpf metrics
-			if err := c.ebpfCollector.Update(ch, cgroups, slurmCollectorSubsystem); err != nil {
+			err := c.ebpfCollector.Update(ch, cgroups, slurmCollectorSubsystem)
+			if err != nil {
 				c.logger.Error("Failed to update IO and/or network stats", "err", err)
 			}
 		}()
@@ -374,7 +380,8 @@ func (c *slurmCollector) Update(ch chan<- prometheus.Metric) error {
 			defer wg.Done()
 
 			// Update RDMA metrics
-			if err := c.rdmaCollector.Update(ch, cgroups, slurmCollectorSubsystem); err != nil {
+			err := c.rdmaCollector.Update(ch, cgroups, slurmCollectorSubsystem)
+			if err != nil {
 				c.logger.Error("Failed to update RDMA stats", "err", err)
 			}
 		}()
@@ -392,27 +399,31 @@ func (c *slurmCollector) Stop(ctx context.Context) error {
 
 	// Stop all sub collectors
 	// Stop cgroupCollector
-	if err := c.cgroupCollector.Stop(ctx); err != nil {
+	err := c.cgroupCollector.Stop(ctx)
+	if err != nil {
 		c.logger.Error("Failed to stop cgroup collector", "err", err)
 	}
 
 	// Stop perfCollector
 	if perfCollectorEnabled() {
-		if err := c.perfCollector.Stop(ctx); err != nil {
+		err := c.perfCollector.Stop(ctx)
+		if err != nil {
 			c.logger.Error("Failed to stop perf collector", "err", err)
 		}
 	}
 
 	// Stop ebpfCollector
 	if ebpfCollectorEnabled() {
-		if err := c.ebpfCollector.Stop(ctx); err != nil {
+		err := c.ebpfCollector.Stop(ctx)
+		if err != nil {
 			c.logger.Error("Failed to stop ebpf collector", "err", err)
 		}
 	}
 
 	// Stop rdmaCollector
 	if rdmaCollectorEnabled() {
-		if err := c.rdmaCollector.Stop(ctx); err != nil {
+		err := c.rdmaCollector.Stop(ctx)
+		if err != nil {
 			c.logger.Error("Failed to stop RDMA collector", "err", err)
 		}
 	}
@@ -706,7 +717,8 @@ func (c *slurmCollector) jobGRESResources(uuid string, procs []procfs.Proc) *gre
 	}
 
 	if securityCtx, ok := c.securityContexts[slurmReadProcCtx]; ok {
-		if err := securityCtx.Exec(dataPtr); err != nil {
+		err := securityCtx.Exec(dataPtr)
+		if err != nil {
 			c.logger.Error(
 				"Failed to run inside security contxt", "jobid", uuid, "err", err,
 			)
@@ -822,7 +834,8 @@ func readProcEnvirons(data any) error {
 	}
 
 	// Convert numShares to uint64
-	if val, err := strconv.ParseUint(numShares, 10, 64); err == nil {
+	val, err := strconv.ParseUint(numShares, 10, 64)
+	if err == nil {
 		d.gres.numShares = val
 	}
 
@@ -888,13 +901,17 @@ func updateGPUAvailableShares(content string, gresType string, hostname string, 
 							case strings.Contains(dp, "dev/nvidia") && !strings.Contains(dp, "dev/nvidia-caps"):
 								// For physical GPUs, it will be /dev/nvidia0, /dev/nvidia[0-3], etc
 								minorString := strings.Split(dp, "dev/nvidia")[1]
-								if val, err := parseRange(strings.TrimSuffix(strings.TrimPrefix(minorString, "["), "]")); err == nil {
+
+								val, err := parseRange(strings.TrimSuffix(strings.TrimPrefix(minorString, "["), "]"))
+								if err == nil {
 									minors = val
 								}
 							case strings.Contains(dp, "dev/nvidia-caps/nvidia-cap"):
 								// For MIG backed shards, it will be File=/dev/nvidia-caps/nvidia-cap21
 								migMinorString := strings.Split(dp, "dev/nvidia-caps/nvidia-cap")[1]
-								if val, err := parseRange(strings.TrimSuffix(strings.TrimPrefix(migMinorString, "["), "]")); err == nil {
+
+								val, err := parseRange(strings.TrimSuffix(strings.TrimPrefix(migMinorString, "["), "]"))
+								if err == nil {
 									for _, v := range val {
 										minorString, gpuInstID, computeInstID := migInstanceIDFromDevMinor(v)
 										minors = append(minors, minorString)
@@ -910,7 +927,8 @@ func updateGPUAvailableShares(content string, gresType string, hostname string, 
 				// Get num shards for this device
 				if strings.Contains(d, "count") {
 					if p := strings.Split(d, "="); len(p) >= 2 {
-						if v, err := strconv.ParseUint(p[1], 10, 64); err == nil {
+						v, err := strconv.ParseUint(p[1], 10, 64)
+						if err == nil {
 							count = v
 						}
 					}
@@ -972,7 +990,8 @@ func migInstanceIDFromDevMinor(migMinor string) (string, uint64, uint64) {
 
 	var computeInstID uint64
 
-	if b, err := os.ReadFile(procFilePath("driver/nvidia-caps/mig-minors")); err == nil {
+	b, err := os.ReadFile(procFilePath("driver/nvidia-caps/mig-minors"))
+	if err == nil {
 		for line := range strings.SplitSeq(string(b), "\n") {
 			if path := strings.Split(line, " "); len(path) >= 2 && path[1] == migMinor {
 				for p := range strings.SplitSeq(path[0], "/") {
@@ -981,13 +1000,15 @@ func migInstanceIDFromDevMinor(migMinor string) (string, uint64, uint64) {
 					}
 
 					if strings.Contains(p, "gi") {
-						if v, err := strconv.ParseUint(strings.Split(p, "gi")[1], 10, 64); err == nil {
+						v, err := strconv.ParseUint(strings.Split(p, "gi")[1], 10, 64)
+						if err == nil {
 							gpuInstID = v
 						}
 					}
 
 					if strings.Contains(p, "ci") {
-						if v, err := strconv.ParseUint(strings.Split(p, "ci")[1], 10, 64); err == nil {
+						v, err := strconv.ParseUint(strings.Split(p, "ci")[1], 10, 64)
+						if err == nil {
 							computeInstID = v
 						}
 					}

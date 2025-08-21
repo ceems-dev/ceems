@@ -123,15 +123,25 @@ func (c *cpuCollector) Update(ch chan<- prometheus.Metric) error {
 	// Acquire a lock to read the stats.
 	c.cpuStatsMutex.Lock()
 	defer c.cpuStatsMutex.Unlock()
+
 	ch <- prometheus.MustNewConstMetric(c.ncpus, prometheus.GaugeValue, float64(ncpus), c.hostname)
+
 	ch <- prometheus.MustNewConstMetric(c.ncpusPerCore, prometheus.GaugeValue, float64(c.cpusPerCore), c.hostname)
+
 	ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue, c.cpuStats.User, c.hostname, "user")
+
 	ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue, c.cpuStats.Nice, c.hostname, "nice")
+
 	ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue, c.cpuStats.System, c.hostname, "system")
+
 	ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue, c.cpuStats.Idle, c.hostname, "idle")
+
 	ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue, c.cpuStats.Iowait, c.hostname, "iowait")
+
 	ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue, c.cpuStats.IRQ, c.hostname, "irq")
+
 	ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue, c.cpuStats.SoftIRQ, c.hostname, "softirq")
+
 	ch <- prometheus.MustNewConstMetric(c.cpu, prometheus.CounterValue, c.cpuStats.Steal, c.hostname, "steal")
 
 	return nil

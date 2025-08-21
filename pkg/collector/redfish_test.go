@@ -49,7 +49,8 @@ func testRedfishServer() *httptest.Server {
 	// Test redfish server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/redfish/v1/" {
-			if data, err := os.ReadFile("testdata/redfish/service_root.json"); err == nil {
+			data, err := os.ReadFile("testdata/redfish/service_root.json")
+			if err == nil {
 				w.Write(data)
 
 				return
@@ -73,7 +74,8 @@ func testRedfishServer() *httptest.Server {
 				return
 			}
 
-			if data, err := os.ReadFile("testdata/redfish/chassis_collection.json"); err == nil {
+			data, err := os.ReadFile("testdata/redfish/chassis_collection.json")
+			if err == nil {
 				w.Write(data)
 
 				return
@@ -85,7 +87,8 @@ func testRedfishServer() *httptest.Server {
 				return
 			}
 
-			if data, err := os.ReadFile("testdata/redfish/chassis_1.json"); err == nil {
+			data, err := os.ReadFile("testdata/redfish/chassis_1.json")
+			if err == nil {
 				w.Write(data)
 
 				return
@@ -97,7 +100,8 @@ func testRedfishServer() *httptest.Server {
 				return
 			}
 
-			if data, err := os.ReadFile("testdata/redfish/chassis_1_power.json"); err == nil {
+			data, err := os.ReadFile("testdata/redfish/chassis_1_power.json")
+			if err == nil {
 				w.Write(data)
 
 				return
@@ -109,7 +113,8 @@ func testRedfishServer() *httptest.Server {
 				return
 			}
 
-			if data, err := os.ReadFile("testdata/redfish/chassis_2.json"); err == nil {
+			data, err := os.ReadFile("testdata/redfish/chassis_2.json")
+			if err == nil {
 				w.Write(data)
 
 				return
@@ -121,7 +126,8 @@ func testRedfishServer() *httptest.Server {
 				return
 			}
 
-			if data, err := os.ReadFile("testdata/redfish/chassis_2_power.json"); err == nil {
+			data, err := os.ReadFile("testdata/redfish/chassis_2_power.json")
+			if err == nil {
 				w.Write(data)
 
 				return

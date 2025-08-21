@@ -20,6 +20,7 @@ type roundRobin struct {
 func (s *roundRobin) Rotate(id string) backend.Server {
 	s.mux.Lock()
 	defer s.mux.Unlock()
+
 	s.current = (s.current + 1) % s.Size(id)
 
 	return s.backends[id][s.current]

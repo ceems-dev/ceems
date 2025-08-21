@@ -95,7 +95,8 @@ func NewRDMACollector(logger *slog.Logger, cgManager *cgroupManager) (*rdmaColle
 	if *rdmaCmd != "" {
 		rdmaCmdPath = *rdmaCmd
 	} else {
-		if rdmaCmdPath, err = exec.LookPath("rdma"); err != nil {
+		rdmaCmdPath, err = exec.LookPath("rdma")
+		if err != nil {
 			logger.Error("rdma command not found. Not all RDMA metrics will be reported.", "err", err)
 		}
 	}
@@ -245,7 +246,8 @@ func (c *rdmaCollector) Update(ch chan<- prometheus.Metric, cgroups []cgroup, ma
 	}
 
 	// Check QP modes and attempt to enable PID if not already done
-	if err := c.perPIDCounters(true); err != nil {
+	err := c.perPIDCounters(true)
+	if err != nil {
 		c.logger.Error("Failed to enable Per-PID QP stats", "err", err)
 	}
 
@@ -296,7 +298,8 @@ func (c *rdmaCollector) perPIDCounters(enable bool) error {
 			}
 
 			// If command didnt return error, we successfully enabled/disabled mode
-			if err := securityCtx.Exec(dataPtr); err != nil {
+			err := securityCtx.Exec(dataPtr)
+			if err != nil {
 				allErrs = errors.Join(allErrs, err)
 			} else {
 				c.qpModes[link] = enable
@@ -334,6 +337,7 @@ func (c *rdmaCollector) update(ch chan<- prometheus.Metric, cgroups []cgroup) {
 
 		for uuid, mr := range mrs {
 			ch <- prometheus.MustNewConstMetric(c.metricDescs["mrs_active"], prometheus.GaugeValue, float64(mr.num), c.cgroupManager.name, c.hostname, mr.dev, "", uuid)
+
 			ch <- prometheus.MustNewConstMetric(c.metricDescs["mrs_len_active"], prometheus.GaugeValue, float64(mr.len), c.cgroupManager.name, c.hostname, mr.dev, "", uuid)
 		}
 	}(procCgroup)
@@ -353,6 +357,7 @@ func (c *rdmaCollector) update(ch chan<- prometheus.Metric, cgroups []cgroup) {
 
 		for uuid, cq := range cqs {
 			ch <- prometheus.MustNewConstMetric(c.metricDescs["cqs_active"], prometheus.GaugeValue, float64(cq.num), c.cgroupManager.name, c.hostname, cq.dev, "", uuid)
+
 			ch <- prometheus.MustNewConstMetric(c.metricDescs["cqe_len_active"], prometheus.GaugeValue, float64(cq.len), c.cgroupManager.name, c.hostname, cq.dev, "", uuid)
 		}
 	}(procCgroup)
@@ -408,6 +413,7 @@ func (c *rdmaCollector) update(ch chan<- prometheus.Metric, cgroups []cgroup) {
 					} else {
 						vType = prometheus.CounterValue
 					}
+
 					ch <- prometheus.MustNewConstMetric(c.metricDescs[n], vType, float64(v), c.cgroupManager.name, c.hostname, device, port)
 				}
 			}
@@ -459,7 +465,8 @@ func (c *rdmaCollector) devMR(procCgroup map[string]string) (map[string]*mr, err
 			if pidMatch := pidRegex.FindStringSubmatch(line); len(pidMatch) > 1 {
 				if uuid, ok := procCgroup[pidMatch[1]]; ok {
 					if mrLenMatch := mrlenRegex.FindStringSubmatch(line); len(mrLenMatch) > 1 {
-						if l, err := strconv.ParseUint(mrLenMatch[1], 10, 64); err == nil {
+						l, err := strconv.ParseUint(mrLenMatch[1], 10, 64)
+						if err == nil {
 							if _, ok := mrs[uuid]; ok {
 								mrs[uuid].num++
 								mrs[uuid].len += l
@@ -500,7 +507,8 @@ func (c *rdmaCollector) devCQ(procCgroup map[string]string) (map[string]*cq, err
 			if pidMatch := pidRegex.FindStringSubmatch(line); len(pidMatch) > 1 {
 				if uuid, ok := procCgroup[pidMatch[1]]; ok {
 					if cqeMatch := cqeRegex.FindStringSubmatch(line); len(cqeMatch) > 1 {
-						if l, err := strconv.ParseUint(cqeMatch[1], 10, 64); err == nil {
+						l, err := strconv.ParseUint(cqeMatch[1], 10, 64)
+						if err == nil {
 							if _, ok := cqs[uuid]; ok {
 								cqs[uuid].num++
 								cqs[uuid].len += l
@@ -572,7 +580,8 @@ func (c *rdmaCollector) linkQP(procCgroup map[string]string) (map[string]*qp, er
 						if uuid, ok := procCgroup[pidMatch[1]]; ok {
 							counterRegex := regexp.MustCompile(fmt.Sprintf(`.+?%s\s*([\d]+)`, hwCounter))
 							if counterMatch := counterRegex.FindStringSubmatch(line); len(counterMatch) > 1 {
-								if v, err := strconv.ParseUint(counterMatch[1], 10, 64); err == nil {
+								v, err := strconv.ParseUint(counterMatch[1], 10, 64)
+								if err == nil {
 									if _, ok := qps[uuid]; !ok {
 										link := strings.Split(linkMatch[1], "/")
 										qps[uuid] = &qp{1, link[0], link[1], make(map[string]uint64)}

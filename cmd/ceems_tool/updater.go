@@ -181,7 +181,9 @@ func GenerateTSDBUpdaterConfig(ctx context.Context, serverURL *url.URL, start st
 
 	// Render the CPU rules template
 	buf := &bytes.Buffer{}
-	if err := tmpl.ExecuteTemplate(buf, "queries.yml", tmplData); err != nil {
+
+	err = tmpl.ExecuteTemplate(buf, "queries.yml", tmplData)
+	if err != nil {
 		return err
 	}
 

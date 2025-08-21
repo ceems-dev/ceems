@@ -23,7 +23,7 @@ var (
 
 // Execute command and return stdout/stderr.
 func Execute(cmd string, args []string, env []string) ([]byte, error) {
-	execCmd := exec.Command(cmd, args...)
+	execCmd := exec.Command(cmd, args...) //nolint:noctx
 
 	// If env is not nil pointer, add env vars into subprocess cmd
 	if env != nil {
@@ -49,7 +49,7 @@ func Execute(cmd string, args []string, env []string) ([]byte, error) {
 
 // ExecuteAs executes a command as a given UID and GID and return stdout/stderr.
 func ExecuteAs(cmd string, args []string, uid int, gid int, env []string) ([]byte, error) {
-	execCmd := exec.Command(cmd, args...)
+	execCmd := exec.Command(cmd, args...) //nolint:noctx
 
 	// Check bounds on uid and gid before converting into int32
 	uidInt32, err := convertToUint(uid)
@@ -165,6 +165,7 @@ func ExecuteWithTimeout(cmd string, args []string, timeout int, env []string) ([
 
 	if timeout > 0 {
 		var cancel context.CancelFunc
+
 		ctx, cancel = context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 		defer cancel()
 	}
@@ -209,6 +210,7 @@ func ExecuteAsWithTimeout(
 
 	if timeout > 0 {
 		var cancel context.CancelFunc
+
 		ctx, cancel = context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 		defer cancel()
 	}

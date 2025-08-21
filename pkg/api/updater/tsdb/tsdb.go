@@ -139,8 +139,9 @@ func (c *tsdbConfig) validate() error {
 
 // Embed TSDB struct into our TSDBUpdater struct.
 type tsdbUpdater struct {
-	config *tsdbConfig
 	*tsdb.Client
+
+	config *tsdbConfig
 }
 
 // Mutex lock.
@@ -159,7 +160,9 @@ func init() {
 func New(instance updater.Instance, logger *slog.Logger) (updater.Updater, error) {
 	// Make TSDB config from instances extra config
 	var c tsdbConfig
-	if err := instance.Extra.Decode(&c); err != nil {
+
+	err := instance.Extra.Decode(&c)
+	if err != nil {
 		logger.Error("Failed to setup TSDB updater", "id", instance.ID, "err", err)
 
 		return nil, err
@@ -169,7 +172,8 @@ func New(instance updater.Instance, logger *slog.Logger) (updater.Updater, error
 	config := c.defaults()
 
 	// Validate config
-	if err := config.validate(); err != nil {
+	err = config.validate()
+	if err != nil {
 		logger.Error("Failed to validate TSDB updater config", "instance_id", instance.ID, "err", err)
 
 		return nil, err
@@ -190,8 +194,8 @@ func New(instance updater.Instance, logger *slog.Logger) (updater.Updater, error
 	logger.Info("TSDB updater setup successful", "id", instance.ID)
 
 	return &tsdbUpdater{
-		config,
 		tsdb,
+		config,
 	}, nil
 }
 
@@ -214,7 +218,8 @@ func (t *tsdbUpdater) queryBuilder(name string, queryTemplate string, data map[s
 	tmpl := template.Must(template.New(name).Parse(queryTemplate))
 	builder := &strings.Builder{}
 
-	if err := tmpl.Execute(builder, data); err != nil {
+	err := tmpl.Execute(builder, data)
+	if err != nil {
 		return "", err
 	}
 
@@ -282,7 +287,8 @@ func (t *tsdbUpdater) fetchAggMetrics(
 					return
 				}
 
-				if aggMetric, err = t.Query(ctx, tsdbQuery, queryTime); err != nil {
+				aggMetric, err = t.Query(ctx, tsdbQuery, queryTime)
+				if err != nil {
 					t.Logger.Error(
 						"Failed to fetch metrics from TSDB", "metric", n, "duration",
 						duration, "scrape_int", settings.ScrapeInterval,
@@ -290,11 +296,13 @@ func (t *tsdbUpdater) fetchAggMetrics(
 					)
 				} else {
 					metricLock.Lock()
+
 					if aggMetrics[n] == nil {
 						aggMetrics[n] = make(map[string]tsdb.Metric)
 					}
 
 					aggMetrics[n][sn] = aggMetric
+
 					metricLock.Unlock()
 				}
 			}(metricName, subMetricName, query)
@@ -561,7 +569,8 @@ func (t *tsdbUpdater) update(
 	}
 
 	// Finally delete time series
-	if err := t.deleteTimeSeries(ctx, startTime, endTime, uuidsToDelete); err != nil {
+	err := t.deleteTimeSeries(ctx, startTime, endTime, uuidsToDelete)
+	if err != nil {
 		t.Logger.Error("Failed to delete time series in TSDB", "err", err)
 	}
 
