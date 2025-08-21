@@ -41,7 +41,8 @@ func tsdbData(ctx context.Context, config *Config, units []models.Unit, outDir s
 	}
 
 	// Create outDir for saving CSV files
-	if err := os.MkdirAll(outDir, 0o700); err != nil {
+	err = os.MkdirAll(outDir, 0o700)
+	if err != nil {
 		return fmt.Errorf("failed to create directory for saving CSV files: %w", err)
 	}
 
@@ -50,11 +51,11 @@ func tsdbData(ctx context.Context, config *Config, units []models.Unit, outDir s
 
 	// Fetch time series of each metric in separate go routine
 	for _, unit := range units {
-		for _, query := range config.TSDB.Queries {
+		for queryID, query := range config.TSDB.Queries {
 			wg.Add(1)
 
 			// Fetch metrics from TSDB and write to CSV files
-			go fetchData(ctx, fmt.Sprintf(query, unit.UUID), unit.StartedAtTS, unit.EndedAtTS, outDir, tsdb, &wg)
+			go fetchData(ctx, queryID, fmt.Sprintf(query, unit.UUID), unit.StartedAtTS, unit.EndedAtTS, outDir, tsdb, &wg)
 		}
 	}
 
@@ -70,7 +71,7 @@ func tsdbData(ctx context.Context, config *Config, units []models.Unit, outDir s
 }
 
 // fetchData retrieves time series data from TSDB.
-func fetchData(ctx context.Context, query string, start int64, end int64, outDir string, tsdb *tsdb.Client, wg *sync.WaitGroup) {
+func fetchData(ctx context.Context, queryID string, query string, start int64, end int64, outDir string, tsdb *tsdb.Client, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	// Make a range query
@@ -89,10 +90,18 @@ func fetchData(ctx context.Context, query string, start int64, end int64, outDir
 			// Get fingerprint
 			fp := result.Metric.Fingerprint().String()
 
+			// Get labels
+			labels := result.Metric
+
+			// Replace series name in labels with queryID
+			// This is more readable one and also allows us
+			// to protect Prometheus series names
+			labels["__name__"] = model.LabelValue(queryID)
+
 			// Add metadata of query
 			md = append(md, queryMetadata{
 				Fingerprint: fp,
-				Labels:      result.Metric,
+				Labels:      labels,
 			})
 
 			// Create file name based on fingerprint
@@ -108,13 +117,15 @@ func fetchData(ctx context.Context, query string, start int64, end int64, outDir
 			defer f.Close()
 
 			// Write header
-			if err := writer.Write([]string{"timestamp", "value"}); err != nil {
+			err = writer.Write([]string{"timestamp", "value"})
+			if err != nil {
 				fmt.Fprintln(os.Stderr, "failed to write header:", err, "file:", csvFilepath)
 			}
 
 			// Write records
 			for _, value := range result.Values {
-				if err := writer.Write([]string{value.Timestamp.String(), value.Value.String()}); err != nil {
+				err := writer.Write([]string{value.Timestamp.String(), value.Value.String()})
+				if err != nil {
 					fmt.Fprintln(os.Stderr, "failed to write data:", err, "file:", csvFilepath)
 				}
 			}
@@ -137,18 +148,30 @@ func fetchData(ctx context.Context, query string, start int64, end int64, outDir
 
 // writeMetadata dumps the metadata.json file to outDir.
 func writeMetadata(mds []queryMetadata, outDir string) {
+	metadataFilepath := filepath.Join(outDir, "metadata.json")
+
+	// Read existing metadata
+	content, err := os.ReadFile(metadataFilepath)
+	if err == nil {
+		var existingMD []queryMetadata
+
+		err := json.Unmarshal(content, &existingMD)
+		if err == nil {
+			mds = append(mds, existingMD...)
+		}
+	}
+
 	// Dump metadata json
 	buffer := new(bytes.Buffer)
 	encoder := json.NewEncoder(buffer)
 	encoder.SetIndent("", "\t")
 
-	if err := encoder.Encode(mds); err != nil {
+	err = encoder.Encode(mds)
+	if err != nil {
 		fmt.Fprintln(os.Stderr, "failed to encode metadata", "err:", err)
 
 		return
 	}
-
-	metadataFilepath := filepath.Join(outDir, "metadata.json")
 
 	file, err := os.OpenFile(metadataFilepath, os.O_RDWR|os.O_CREATE, 0o600)
 	if err != nil {
@@ -159,7 +182,8 @@ func writeMetadata(mds []queryMetadata, outDir string) {
 
 	defer file.Close()
 
-	if _, err := file.Write(buffer.Bytes()); err != nil {
+	_, err = file.Write(buffer.Bytes())
+	if err != nil {
 		fmt.Fprintln(os.Stderr, "failed to write content to metadata.json file", "err:", err)
 
 		return
