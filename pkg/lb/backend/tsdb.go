@@ -128,6 +128,7 @@ func (b *tsdbServer) SetAlive(alive bool) {
 // IsAlive returns if backend TSDB server is alive.
 func (b *tsdbServer) IsAlive() bool {
 	b.mux.RLock()
+
 	alive := b.alive
 	defer b.mux.RUnlock()
 
@@ -208,13 +209,15 @@ func (b *tsdbServer) fetchRetentionPeriod() (time.Duration, error) {
 
 	// Make a range query
 	query := fmt.Sprintf(`up{instance="%s:%s"}`, b.url.Hostname(), b.url.Port())
-	if results, err := b.client.RangeQuery(
+
+	results, err := b.client.RangeQuery(
 		ctx,
 		query,
 		time.Now().Add(-queryPeriod).UTC(),
 		time.Now().UTC(),
 		queryPeriod/5000,
-	); err == nil {
+	)
+	if err == nil {
 		for _, result := range results {
 			if n, ok := result.Metric["__name__"]; ok && n == "up" {
 				// We are updating retention period only at a frequency set by

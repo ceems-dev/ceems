@@ -4,6 +4,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"os"
@@ -40,7 +41,7 @@ func makeDSN(filePath string, opts map[string]string) string {
 }
 
 // Open DB connection and return connection poiner.
-func openDBConnection(dbFilePath string) (*sql.DB, *ceems_sqlite3.Conn, error) {
+func openDBConnection(ctx context.Context, dbFilePath string) (*sql.DB, *ceems_sqlite3.Conn, error) {
 	var db *sql.DB
 
 	var dbConn *ceems_sqlite3.Conn
@@ -49,11 +50,13 @@ func openDBConnection(dbFilePath string) (*sql.DB, *ceems_sqlite3.Conn, error) {
 
 	var ok bool
 
-	if db, err = sql.Open(ceems_sqlite3.DriverName, makeDSN(dbFilePath, defaultOpts)); err != nil {
+	db, err = sql.Open(ceems_sqlite3.DriverName, makeDSN(dbFilePath, defaultOpts))
+	if err != nil {
 		return nil, nil, err
 	}
 
-	if err = db.Ping(); err != nil {
+	err = db.PingContext(ctx)
+	if err != nil {
 		return nil, nil, err
 	}
 
@@ -65,10 +68,11 @@ func openDBConnection(dbFilePath string) (*sql.DB, *ceems_sqlite3.Conn, error) {
 }
 
 // Setup DB and create table.
-func setupDB(dbFilePath string) (*sql.DB, *ceems_sqlite3.Conn, error) {
-	if _, err := os.Stat(dbFilePath); err == nil {
+func setupDB(ctx context.Context, dbFilePath string) (*sql.DB, *ceems_sqlite3.Conn, error) {
+	_, err := os.Stat(dbFilePath)
+	if err == nil {
 		// Open the created SQLite File
-		db, dbConn, err := openDBConnection(dbFilePath)
+		db, dbConn, err := openDBConnection(ctx, dbFilePath)
 		if err != nil {
 			return nil, nil, fmt.Errorf("failed to open DB file: %w", err)
 		}
@@ -85,12 +89,13 @@ func setupDB(dbFilePath string) (*sql.DB, *ceems_sqlite3.Conn, error) {
 	file.Close()
 
 	// Set strict permissions
-	if err := os.Chmod(dbFilePath, 0o640); err != nil {
+	err = os.Chmod(dbFilePath, 0o640)
+	if err != nil {
 		return nil, nil, fmt.Errorf("failed to harden permissions on DB file: %w", err)
 	}
 
 	// Open the created SQLite File
-	db, dbConn, err := openDBConnection(dbFilePath)
+	db, dbConn, err := openDBConnection(ctx, dbFilePath)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to open DB connection: %w", err)
 	}

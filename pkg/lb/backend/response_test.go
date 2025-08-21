@@ -35,7 +35,8 @@ func TestPromReverseProxyModifyResponse(t *testing.T) {
 
 			w.WriteHeader(http.StatusOK)
 
-			if err := json.NewEncoder(w).Encode(&resp); err != nil {
+			err := json.NewEncoder(w).Encode(&resp)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		} else if strings.HasSuffix(r.URL.Path, "series") {
@@ -58,7 +59,8 @@ func TestPromReverseProxyModifyResponse(t *testing.T) {
 
 			w.WriteHeader(http.StatusOK)
 
-			if err := json.NewEncoder(w).Encode(&resp); err != nil {
+			err := json.NewEncoder(w).Encode(&resp)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		} else if strings.HasSuffix(r.URL.Path, "labels") {
@@ -70,7 +72,8 @@ func TestPromReverseProxyModifyResponse(t *testing.T) {
 
 			w.WriteHeader(http.StatusOK)
 
-			if err := json.NewEncoder(w).Encode(&resp); err != nil {
+			err := json.NewEncoder(w).Encode(&resp)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		} else if strings.HasSuffix(r.URL.Path, "values") {
@@ -82,7 +85,8 @@ func TestPromReverseProxyModifyResponse(t *testing.T) {
 
 			w.WriteHeader(http.StatusOK)
 
-			if err := json.NewEncoder(w).Encode(&resp); err != nil {
+			err := json.NewEncoder(w).Encode(&resp)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		}
@@ -116,6 +120,7 @@ func TestPromReverseProxyModifyResponse(t *testing.T) {
 		// Read response body
 		b, err := io.ReadAll(resp.Body)
 		require.NoError(t, err)
+
 		defer resp.Body.Close()
 
 		for _, label := range labelsToFilter {

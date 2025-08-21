@@ -76,7 +76,8 @@ func New(cluster models.Cluster, logger *slog.Logger) (resource.Fetcher, error) 
 		securityContexts: make(map[string]*security.SecurityContext),
 	}
 
-	if err := preflightChecks(&slurmScheduler); err != nil {
+	err := preflightChecks(&slurmScheduler)
+	if err != nil {
 		return nil, err
 	}
 
@@ -96,7 +97,8 @@ func (s *slurmScheduler) FetchUnits(
 
 	var err error
 	if s.fetchMode == cliMode {
-		if jobs, err = s.fetchFromSacct(ctx, start, end); err != nil {
+		jobs, err = s.fetchFromSacct(ctx, start, end)
+		if err != nil {
 			s.logger.Error("Failed to execute SLURM sacct command", "cluster_id", s.cluster.ID, "err", err)
 
 			return nil, err
@@ -120,7 +122,8 @@ func (s *slurmScheduler) FetchUsersProjects(
 
 	var err error
 	if s.fetchMode == cliMode {
-		if users, projects, err = s.fetchFromSacctMgr(ctx, current); err != nil {
+		users, projects, err = s.fetchFromSacctMgr(ctx, current)
+		if err != nil {
 			s.logger.Error("Failed to execute SLURM sacctmgr command", "cluster_id", s.cluster.ID, "err", err)
 
 			return nil, nil, err

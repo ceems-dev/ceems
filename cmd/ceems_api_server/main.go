@@ -24,7 +24,8 @@ func main() {
 	}
 
 	// Main entrypoint of the app
-	if err := CEEMSServer.Main(); err != nil {
+	err = CEEMSServer.Main()
+	if err != nil {
 		log.Println(err)
 		os.Exit(1)
 	}

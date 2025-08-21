@@ -152,7 +152,9 @@ func (s *emapsProvider) update() {
 				s.logger.Error("Failed to retrieve emission factor from Electricity maps provider", "err", err)
 			} else {
 				emapsFactorMu.Lock()
+
 				s.lastEmissionFactor = currentEmissionFactor
+
 				emapsFactorMu.Unlock()
 			}
 
@@ -170,7 +172,9 @@ func (s *emapsProvider) update() {
 
 func (s *emapsProvider) emissionFactors() EmissionFactors {
 	emapsFactorMu.RLock()
+
 	emissionFactors := s.lastEmissionFactor
+
 	emapsFactorMu.RUnlock()
 
 	return emissionFactors
@@ -210,7 +214,9 @@ func makeEMapsAPIRequest(
 			// Set emission factor only when returned value is non zero
 			if response.CarbonIntensity > 0 {
 				emapsZoneFactorMu.Lock()
+
 				emissionFactors[z] = EmissionFactor{n, float64(response.CarbonIntensity)}
+
 				emapsZoneFactorMu.Unlock()
 			}
 

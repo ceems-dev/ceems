@@ -81,10 +81,12 @@ func GenerateWebConfig(basicAuth bool, tls bool, hosts []string, validity time.D
 
 	// Encode to YAML with indent set to 2
 	var b bytes.Buffer
+
 	yamlEncoder := yaml.NewEncoder(&b)
 	yamlEncoder.SetIndent(2)
 
-	if err := yamlEncoder.Encode(&config); err != nil {
+	err = yamlEncoder.Encode(&config)
+	if err != nil {
 		fmt.Fprintln(os.Stderr, "error encoding web config", err)
 
 		return err
@@ -92,7 +94,9 @@ func GenerateWebConfig(basicAuth bool, tls bool, hosts []string, validity time.D
 
 	// Write to disk
 	configFile := filepath.Join(outDir, "web-config.yml")
-	if err := os.WriteFile(configFile, b.Bytes(), 0o600); err != nil {
+
+	err = os.WriteFile(configFile, b.Bytes(), 0o600)
+	if err != nil {
 		fmt.Fprintln(os.Stderr, "failed to write web config file:", err)
 
 		return err
@@ -108,7 +112,8 @@ func GenerateWebConfig(basicAuth bool, tls bool, hosts []string, validity time.D
 // tlsConfig returns a TLS config based on self signed TLS certificates.
 func tlsConfig(hosts []string, validity time.Duration, outDir string) (TLSConfig, error) {
 	// Make directory to store certificate files
-	if err := os.MkdirAll(outDir, 0o700); err != nil {
+	err := os.MkdirAll(outDir, 0o700)
+	if err != nil {
 		fmt.Fprintln(os.Stderr, "error creating output directory:", err)
 
 		return TLSConfig{}, err
@@ -116,7 +121,8 @@ func tlsConfig(hosts []string, validity time.Duration, outDir string) (TLSConfig
 
 	// Generate self signed certificates
 	// Nicked from https://go.dev/src/crypto/tls/generate_cert.go
-	if err := selfSignedTLS(hosts, validity, outDir); err != nil {
+	err = selfSignedTLS(hosts, validity, outDir)
+	if err != nil {
 		fmt.Fprintln(os.Stderr, "error generating self signed TLS certificate", err)
 
 		return TLSConfig{}, err
@@ -209,11 +215,13 @@ func selfSignedTLS(hosts []string, validity time.Duration, outDir string) error 
 		return err
 	}
 
-	if err := pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes}); err != nil {
+	err = pem.Encode(certOut, &pem.Block{Type: "CERTIFICATE", Bytes: derBytes})
+	if err != nil {
 		return err
 	}
 
-	if err := certOut.Close(); err != nil {
+	err = certOut.Close()
+	if err != nil {
 		return err
 	}
 
@@ -227,11 +235,13 @@ func selfSignedTLS(hosts []string, validity time.Duration, outDir string) error 
 		return err
 	}
 
-	if err := pem.Encode(keyOut, &pem.Block{Type: "PRIVATE KEY", Bytes: privBytes}); err != nil {
+	err = pem.Encode(keyOut, &pem.Block{Type: "PRIVATE KEY", Bytes: privBytes})
+	if err != nil {
 		return err
 	}
 
-	if err := keyOut.Close(); err != nil {
+	err = keyOut.Close()
+	if err != nil {
 		return err
 	}
 

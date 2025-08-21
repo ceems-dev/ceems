@@ -12,7 +12,8 @@ func init() {
 	}
 
 	// Unmarshal JSON file into struct
-	if err := json.Unmarshal(countryCodesContents, &CountryCodes); err != nil {
+	err = json.Unmarshal(countryCodesContents, &CountryCodes)
+	if err != nil {
 		return
 	}
 }

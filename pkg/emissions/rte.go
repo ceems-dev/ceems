@@ -96,7 +96,9 @@ func (s *rteProvider) update() {
 				s.logger.Error("Failed to retrieve emission factor from RTE provider", "err", err)
 			} else {
 				rteFactorMu.Lock()
+
 				s.lastEmissionFactor = currentEmissionFactor
+
 				rteFactorMu.Unlock()
 			}
 
@@ -114,7 +116,9 @@ func (s *rteProvider) update() {
 
 func (s *rteProvider) emissionFactors() EmissionFactors {
 	rteFactorMu.RLock()
+
 	emissionFactors := s.lastEmissionFactor
+
 	rteFactorMu.RUnlock()
 
 	return emissionFactors
@@ -175,6 +179,7 @@ func makeRTEAPIRequest(url string) (EmissionFactors, error) {
 	}
 
 	var fields []nationalRealTimeFieldsV2
+
 	fields = append(fields, data.Results...)
 	// Check size of fields as it can be zero sometimes
 	if len(fields) >= 1 {

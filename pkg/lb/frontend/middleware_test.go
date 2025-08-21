@@ -23,7 +23,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func setupTestDB(d string) (*sql.DB, error) {
+func setupTestDB(ctx context.Context, d string) (*sql.DB, error) {
 	dbPath := filepath.Join(d, "test.db")
 
 	db, err := sql.Open("sqlite3", dbPath)
@@ -104,7 +104,7 @@ INSERT INTO admin_users VALUES(5, 'all', 'adm5', '["grafana"]');
 INSERT INTO admin_users VALUES(6, 'all', 'adm6', '["grafana"]');
 COMMIT;`
 
-	_, err = db.Exec(stmts)
+	_, err = db.ExecContext(ctx, stmts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to insert mock data into DB: %w", err)
 	}
@@ -112,9 +112,9 @@ COMMIT;`
 	return db, nil
 }
 
-func setupMiddlewareWithDB(tmpDir string) (http.Handler, error) {
+func setupMiddlewareWithDB(ctx context.Context, tmpDir string) (http.Handler, error) {
 	// Setup test DB
-	db, err := setupTestDB(tmpDir)
+	db, err := setupTestDB(ctx, tmpDir)
 	if err != nil {
 		return nil, err
 	}
@@ -137,7 +137,7 @@ func setupMiddlewareWithDB(tmpDir string) (http.Handler, error) {
 
 func setupMiddlewareWithAPI(ctx context.Context, tmpDir string) (http.Handler, error) {
 	// Setup test DB
-	db, err := setupTestDB(tmpDir)
+	db, err := setupTestDB(ctx, tmpDir)
 	if err != nil {
 		return nil, err
 	}
@@ -196,7 +196,8 @@ func setupCEEMSAPI(ctx context.Context, db *sql.DB) *httptest.Server {
 				w.Write([]byte("fail"))
 			}
 		} else {
-			if admins, err := http_api.AdminUsers(ctx, db); err == nil {
+			admins, err := http_api.AdminUsers(ctx, db)
+			if err == nil {
 				// Write response
 				w.WriteHeader(http.StatusOK)
 
@@ -205,7 +206,8 @@ func setupCEEMSAPI(ctx context.Context, db *sql.DB) *httptest.Server {
 					Data:   admins,
 				}
 
-				if err = json.NewEncoder(w).Encode(&response); err != nil {
+				err = json.NewEncoder(w).Encode(&response)
+				if err != nil {
 					w.Write([]byte("KO"))
 				}
 			}
@@ -217,7 +219,7 @@ func setupCEEMSAPI(ctx context.Context, db *sql.DB) *httptest.Server {
 
 func TestMiddleware(t *testing.T) {
 	// Setup middleware handlers
-	handlerToTestDB, err := setupMiddlewareWithDB(t.TempDir())
+	handlerToTestDB, err := setupMiddlewareWithDB(t.Context(), t.TempDir())
 	require.NoError(t, err, "failed to setup middleware with DB")
 	handlerToTestAPI, err := setupMiddlewareWithAPI(t.Context(), t.TempDir())
 	require.NoError(t, err, "failed to setup middleware with API")
@@ -350,6 +352,7 @@ func TestMiddleware(t *testing.T) {
 
 		resDB := responseRecorderDB.Result()
 		defer resDB.Body.Close()
+
 		assert.Equal(t, test.code, resDB.StatusCode, "%s with DB", test.name)
 
 		// Tests with CEEMS API
@@ -359,6 +362,7 @@ func TestMiddleware(t *testing.T) {
 
 		resAPI := responseRecorderAPI.Result()
 		defer resAPI.Body.Close()
+
 		assert.Equal(t, test.code, resAPI.StatusCode, "%s with API", test.name)
 	}
 }

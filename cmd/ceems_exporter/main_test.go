@@ -21,7 +21,8 @@ const (
 )
 
 func TestFileDescriptorLeak(t *testing.T) {
-	if _, err := os.Stat(binary); err != nil {
+	_, err := os.Stat(binary)
+	if err != nil {
 		t.Skipf("ceems_exporter binary not available, try to run `make build` first: %s", err)
 	}
 
@@ -33,7 +34,8 @@ func TestFileDescriptorLeak(t *testing.T) {
 		)
 	}
 
-	if _, err := fs.Stat(); err != nil {
+	_, err = fs.Stat()
+	if err != nil {
 		t.Errorf("unable to read process stats: %s", err)
 	}
 
@@ -43,7 +45,8 @@ func TestFileDescriptorLeak(t *testing.T) {
 	procfsPath, err := filepath.Abs("../../pkg/collector/testdata/proc")
 	require.NoError(t, err)
 
-	exporter := exec.Command(
+	exporter := exec.CommandContext(
+		t.Context(),
 		binary,
 		"--web.listen-address", address,
 		"--path.cgroupfs", sysfsPath,
@@ -52,7 +55,8 @@ func TestFileDescriptorLeak(t *testing.T) {
 		// "--no-security.drop-privileges",
 	)
 	test := func(pid int) error {
-		if err := queryExporter(address); err != nil {
+		err := queryExporter(address)
+		if err != nil {
 			return err
 		}
 
@@ -67,7 +71,8 @@ func TestFileDescriptorLeak(t *testing.T) {
 		}
 
 		for range 5 {
-			if err := queryExporter(address); err != nil {
+			err := queryExporter(address)
+			if err != nil {
 				return err
 			}
 		}
@@ -102,7 +107,8 @@ func queryExporter(address string) error {
 		return err
 	}
 
-	if err := resp.Body.Close(); err != nil {
+	err = resp.Body.Close()
+	if err != nil {
 		return err
 	}
 
@@ -114,14 +120,16 @@ func queryExporter(address string) error {
 }
 
 func runCommandAndTests(cmd *exec.Cmd, address string, fn func(pid int) error) error {
-	if err := cmd.Start(); err != nil {
+	err := cmd.Start()
+	if err != nil {
 		return fmt.Errorf("failed to start command: %w", err)
 	}
 
 	time.Sleep(50 * time.Millisecond)
 
 	for i := range 10 {
-		if err := queryExporter(address); err == nil {
+		err := queryExporter(address)
+		if err == nil {
 			break
 		}
 
@@ -133,11 +141,12 @@ func runCommandAndTests(cmd *exec.Cmd, address string, fn func(pid int) error) e
 	}
 
 	errc := make(chan error)
+
 	go func(pid int) {
 		errc <- fn(pid)
 	}(cmd.Process.Pid)
 
-	err := <-errc
+	err = <-errc
 
 	if cmd.Process != nil {
 		cmd.Process.Kill()

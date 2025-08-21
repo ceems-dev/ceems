@@ -38,7 +38,8 @@ func parseTSDBRequest(p *ReqParams, r *http.Request) error {
 	}
 
 	// If failed to read body, skip verification and go to request proxy
-	if body, err = io.ReadAll(r.Body); err != nil {
+	body, err = io.ReadAll(r.Body)
+	if err != nil {
 		return fmt.Errorf("failed to read request body: %w", err)
 	}
 
@@ -47,7 +48,8 @@ func parseTSDBRequest(p *ReqParams, r *http.Request) error {
 	clonedReq.Body = io.NopCloser(bytes.NewReader(body))
 
 	// Get form values
-	if err = clonedReq.ParseForm(); err != nil {
+	err = clonedReq.ParseForm()
+	if err != nil {
 		return fmt.Errorf("failed to parse request form data: %w", err)
 	}
 
@@ -85,7 +87,8 @@ func parsePyroRequest(p *ReqParams, r *http.Request) error {
 	}
 
 	// If failed to read body, skip verification and go to request proxy
-	if body, err = io.ReadAll(r.Body); err != nil {
+	body, err = io.ReadAll(r.Body)
+	if err != nil {
 		return fmt.Errorf("failed to read request body: %w", err)
 	}
 
@@ -97,7 +100,9 @@ func parsePyroRequest(p *ReqParams, r *http.Request) error {
 	case strings.HasSuffix(r.URL.Path, "SelectMergeStacktraces"):
 		// Read body into request data
 		data := querierv1.SelectMergeStacktracesRequest{}
-		if err := proto.Unmarshal(body, &data); err != nil {
+
+		err := proto.Unmarshal(body, &data)
+		if err != nil {
 			return fmt.Errorf("failed to umarshall request body: %w", err)
 		}
 
@@ -108,7 +113,9 @@ func parsePyroRequest(p *ReqParams, r *http.Request) error {
 	case strings.HasSuffix(r.URL.Path, "LabelNames"):
 		// Read body into request data
 		data := typesv1.LabelNamesRequest{}
-		if err := proto.Unmarshal(body, &data); err != nil {
+
+		err := proto.Unmarshal(body, &data)
+		if err != nil {
 			return fmt.Errorf("failed to umarshall request body: %w", err)
 		}
 
@@ -121,7 +128,9 @@ func parsePyroRequest(p *ReqParams, r *http.Request) error {
 	case strings.HasSuffix(r.URL.Path, "LabelValues"):
 		// Read body into request data
 		data := typesv1.LabelValuesRequest{}
-		if err := proto.Unmarshal(body, &data); err != nil {
+
+		err := proto.Unmarshal(body, &data)
+		if err != nil {
 			return fmt.Errorf("failed to umarshall request body: %w", err)
 		}
 

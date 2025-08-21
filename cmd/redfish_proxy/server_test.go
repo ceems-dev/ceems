@@ -97,6 +97,7 @@ func TestNewRedfishProxyServerWithTargets(t *testing.T) {
 
 		resp, err := client.Do(req)
 		require.NoError(t, err)
+
 		defer resp.Body.Close()
 
 		bodyBytes, err := io.ReadAll(resp.Body)
@@ -174,6 +175,7 @@ func TestNewRedfishProxyServerWithWebConfig(t *testing.T) {
 
 		resp, err := client.Do(req)
 		require.NoError(t, err)
+
 		defer resp.Body.Close()
 
 		bodyBytes, err := io.ReadAll(resp.Body)
@@ -191,6 +193,7 @@ func TestNewRedfishProxyServerWithWebConfig(t *testing.T) {
 
 	resp, err := client.Do(req)
 	require.NoError(t, err)
+
 	defer resp.Body.Close()
 
 	// Check the body if it has same IP set
@@ -221,6 +224,7 @@ func TestNewRedfishProxyServerWithWebConfig(t *testing.T) {
 
 			resp, err := client.Do(req)
 			errs <- err
+
 			defer resp.Body.Close()
 
 			bodyBytes, err := io.ReadAll(resp.Body)

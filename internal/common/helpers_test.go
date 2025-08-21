@@ -444,7 +444,9 @@ func TestGrafanaClient(t *testing.T) {
 				Login: r.Header.Get("Authorization"),
 			},
 		}
-		if err := json.NewEncoder(w).Encode(&teamMembers); err != nil {
+
+		err := json.NewEncoder(w).Encode(&teamMembers)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))
@@ -465,6 +467,7 @@ func TestGrafanaClient(t *testing.T) {
 	var client *grafana.Grafana
 
 	var err error
+
 	client, err = NewGrafanaClient(config, slog.New(slog.DiscardHandler))
 	require.NoError(t, err, "failed to create Grafana client")
 

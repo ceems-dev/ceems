@@ -548,11 +548,13 @@ func prepareMockConfig(tmpDir string) (*Config, error) {
 	dataBackupDir := filepath.Join(tmpDir, "data-backup")
 
 	// Create data directory
-	if err := os.Mkdir(dataDir, 0o750); err != nil {
+	err := os.Mkdir(dataDir, 0o750)
+	if err != nil {
 		return nil, fmt.Errorf("Failed to create data directory: %w", err)
 	}
 
-	if err := os.Mkdir(dataBackupDir, 0o750); err != nil {
+	err = os.Mkdir(dataBackupDir, 0o750)
+	if err != nil {
 		return nil, fmt.Errorf("Failed to create data directory: %w", err)
 	}
 
@@ -583,7 +585,7 @@ func prepareMockConfig(tmpDir string) (*Config, error) {
 }
 
 func populateDBWithMockData(ctx context.Context, s *stats) error {
-	tx, err := s.db.Begin()
+	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
@@ -615,7 +617,7 @@ func TestNewUnitStatsDB(t *testing.T) {
 	require.NoError(t, err, "DB file not created")
 
 	// Insert a dummy entry into DB
-	_, err = s.db.Exec(`INSERT INTO usage(last_updated_at) VALUES ("2023-12-20T00:00:00")`)
+	_, err = s.db.ExecContext(t.Context(), `INSERT INTO usage(last_updated_at) VALUES ("2023-12-20T00:00:00")`)
 	require.NoError(t, err, "failed to insert dummy entry into DB")
 	s.Stop()
 
@@ -647,6 +649,7 @@ func TestUnitStatsDBEntries(t *testing.T) {
 
 	// Fetch units
 	var expectedUnits []models.ClusterUnits
+
 	expectedUnits = append(expectedUnits, mockUnitsOne...)
 	expectedUnits = append(expectedUnits, mockUnitsTwo...)
 	fetchedUnits, err := s.manager.FetchUnits(ctx, time.Now(), time.Now())
@@ -658,12 +661,14 @@ func TestUnitStatsDBEntries(t *testing.T) {
 	require.NoError(t, err, "failed to collect units data")
 
 	// Make units query
-	rows, err := s.db.Query(
+	rows, err := s.db.QueryContext(
+		t.Context(),
 		"SELECT uuid,username,project,total_time_seconds,avg_cpu_usage,avg_cpu_mem_usage,total_cpu_energy_usage_kwh,total_cpu_emissions_gms,avg_gpu_usage,avg_gpu_mem_usage,total_gpu_energy_usage_kwh,total_gpu_emissions_gms FROM units ORDER BY uuid",
 	)
 	require.NoError(t, err, "failed to make DB query")
 
 	defer rows.Close()
+
 	require.NoError(t, rows.Err())
 
 	var units []models.Unit
@@ -671,12 +676,13 @@ func TestUnitStatsDBEntries(t *testing.T) {
 	for rows.Next() {
 		var unit models.Unit
 
-		if err = rows.Scan(
+		err = rows.Scan(
 			&unit.UUID, &unit.User, &unit.Project, &unit.TotalTime,
 			&unit.AveCPUUsage,
 			&unit.AveCPUMemUsage, &unit.TotalCPUEnergyUsage,
 			&unit.TotalCPUEmissions, &unit.AveGPUUsage, &unit.AveGPUMemUsage,
-			&unit.TotalGPUEnergyUsage, &unit.TotalGPUEmissions); err != nil {
+			&unit.TotalGPUEnergyUsage, &unit.TotalGPUEmissions)
+		if err != nil {
 			t.Errorf("failed to scan row: %s", err)
 		}
 
@@ -684,6 +690,7 @@ func TestUnitStatsDBEntries(t *testing.T) {
 	}
 
 	var mockUpdatedUnits []models.ClusterUnits
+
 	mockUpdatedUnits = append(mockUpdatedUnits, mockUpdatedUnitsSlurm01...)
 	mockUpdatedUnits = append(mockUpdatedUnits, mockUpdatedUnitsSlurm1...)
 	mockUpdatedUnits = append(mockUpdatedUnits, mockUpdatedUnitsOS0...)
@@ -698,12 +705,14 @@ func TestUnitStatsDBEntries(t *testing.T) {
 	assert.ElementsMatch(t, units, expectedUpdatedUnits, "expected and got updated cluster units differ")
 
 	// Make usage query
-	rows, err = s.db.Query(
+	rows, err = s.db.QueryContext(
+		t.Context(),
 		"SELECT avg_cpu_usage,num_updates FROM usage WHERE username = 'foo1' AND cluster_id = 'slurm-0'",
 	)
 	require.NoError(t, err, "failed to make DB query")
 
 	defer rows.Close()
+
 	require.NoError(t, rows.Err())
 
 	// // For debugging
@@ -718,7 +727,8 @@ func TestUnitStatsDBEntries(t *testing.T) {
 
 	var numUpdates int64
 	for rows.Next() {
-		if err = rows.Scan(&cpuUsage, &numUpdates); err != nil {
+		err = rows.Scan(&cpuUsage, &numUpdates)
+		if err != nil {
 			t.Errorf("failed to scan row: %s", err)
 		}
 	}
@@ -727,17 +737,20 @@ func TestUnitStatsDBEntries(t *testing.T) {
 	assert.InEpsilon(t, 15, float64(cpuUsage["usage"]), 0, "expected cpuUsage = 15")
 
 	// Make projects query
-	rows, err = s.db.Query(
+	rows, err = s.db.QueryContext(
+		t.Context(),
 		"SELECT users FROM projects WHERE name = 'fooprj' AND cluster_id = 'slurm-0'",
 	)
 	require.NoError(t, err, "Failed to make DB query")
 
 	defer rows.Close()
+
 	require.NoError(t, rows.Err())
 
 	var users models.List
 	for rows.Next() {
-		if err = rows.Scan(&users); err != nil {
+		err = rows.Scan(&users)
+		if err != nil {
 			t.Errorf("failed to scan row: %s", err)
 		}
 	}
@@ -780,6 +793,7 @@ func TestUnitStatsDBEntriesHistorical(t *testing.T) {
 
 	// Fetch units
 	var expectedUnits []models.ClusterUnits
+
 	expectedUnits = append(expectedUnits, mockUnitsOne...)
 	expectedUnits = append(expectedUnits, mockUnitsTwo...)
 	fetchedUnits, err := s.manager.FetchUnits(ctx, time.Now(), time.Now())
@@ -791,12 +805,14 @@ func TestUnitStatsDBEntriesHistorical(t *testing.T) {
 	require.NoError(t, err, "Failed to collect units data")
 
 	// Make units query
-	rows, err := s.db.Query(
+	rows, err := s.db.QueryContext(
+		t.Context(),
 		"SELECT uuid,username,project,total_time_seconds,avg_cpu_usage,avg_cpu_mem_usage,total_cpu_energy_usage_kwh,total_cpu_emissions_gms,avg_gpu_usage,avg_gpu_mem_usage,total_gpu_energy_usage_kwh,total_gpu_emissions_gms FROM units ORDER BY uuid",
 	)
 	require.NoError(t, err, "Failed to make DB query")
 
 	defer rows.Close()
+
 	require.NoError(t, rows.Err())
 
 	var units []models.Unit
@@ -804,12 +820,13 @@ func TestUnitStatsDBEntriesHistorical(t *testing.T) {
 	for rows.Next() {
 		var unit models.Unit
 
-		if err = rows.Scan(
+		err = rows.Scan(
 			&unit.UUID, &unit.User, &unit.Project, &unit.TotalTime,
 			&unit.AveCPUUsage,
 			&unit.AveCPUMemUsage, &unit.TotalCPUEnergyUsage,
 			&unit.TotalCPUEmissions, &unit.AveGPUUsage, &unit.AveGPUMemUsage,
-			&unit.TotalGPUEnergyUsage, &unit.TotalGPUEmissions); err != nil {
+			&unit.TotalGPUEnergyUsage, &unit.TotalGPUEmissions)
+		if err != nil {
 			t.Errorf("failed to scan row: %s", err)
 		}
 
@@ -817,6 +834,7 @@ func TestUnitStatsDBEntriesHistorical(t *testing.T) {
 	}
 
 	var mockUpdatedUnits []models.ClusterUnits
+
 	mockUpdatedUnits = append(mockUpdatedUnits, mockUpdatedUnitsSlurm01...)
 	mockUpdatedUnits = append(mockUpdatedUnits, mockUpdatedUnitsSlurm1...)
 	mockUpdatedUnits = append(mockUpdatedUnits, mockUpdatedUnitsOS0...)
@@ -842,16 +860,17 @@ func TestUnitStatsDBLock(t *testing.T) {
 	// Make new stats DB
 	s, err := New(c)
 	defer s.Stop()
+
 	require.NoError(t, err, "Failed to create new stats")
 
 	// Beging exclusive transcation to lock DB
-	_, err = s.db.Exec("BEGIN EXCLUSIVE")
+	_, err = s.db.ExecContext(t.Context(), "BEGIN EXCLUSIVE")
 	require.NoError(t, err)
 
 	// Try to insert data. It should fail
 	err = s.Collect(t.Context())
 	require.Error(t, err, "expected error due to DB lock")
-	s.db.Exec("COMMIT")
+	s.db.ExecContext(t.Context(), "COMMIT")
 }
 
 func TestUnitStatsDBVacuum(t *testing.T) {
@@ -862,6 +881,7 @@ func TestUnitStatsDBVacuum(t *testing.T) {
 	// Make new stats DB
 	s, err := New(c)
 	defer s.Stop()
+
 	require.NoError(t, err, "Failed to create new stats")
 
 	// Populate DB with data
@@ -888,6 +908,7 @@ func TestUnitStatsDBBackup(t *testing.T) {
 	// Make new stats DB
 	s, err := New(c)
 	defer s.Stop()
+
 	require.NoError(t, err, "Failed to create new stats")
 
 	// Populate DB with data
@@ -913,15 +934,16 @@ func TestUnitStatsDBBackup(t *testing.T) {
 	// Check contents of backed up DB
 	var numRows int
 
-	db, _, err := openDBConnection(expectedBackupFile)
+	db, _, err := openDBConnection(t.Context(), expectedBackupFile)
 	if err != nil {
 		t.Errorf("Failed to create DB connection to backup DB: %s", err)
 	}
 
-	rows, err := db.Query("SELECT * FROM " + base.UnitsDBTableName) //nolint:gosec
+	rows, err := db.QueryContext(t.Context(), "SELECT * FROM "+base.UnitsDBTableName) //nolint:gosec
 	require.NoError(t, err)
 
 	defer rows.Close()
+
 	require.NoError(t, rows.Err())
 
 	for rows.Next() {
@@ -940,7 +962,8 @@ func TestAdminUsersDBUpdate(t *testing.T) {
 	t.Setenv("GRAFANA_API_TOKEN", "foo")
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))
@@ -953,6 +976,7 @@ func TestAdminUsersDBUpdate(t *testing.T) {
 	// Make new stats DB
 	s, err := New(c)
 	defer s.Stop()
+
 	require.NoError(t, err, "failed to create new stats")
 
 	// Make backup dir non existent
@@ -985,6 +1009,7 @@ func TestStatsDBBackup(t *testing.T) {
 	// Make new stats DB
 	s, err := New(c)
 	defer s.Stop()
+
 	require.NoError(t, err, "failed to create new stats")
 
 	// Make backup dir non existent
@@ -1008,6 +1033,7 @@ func TestUnitStatsDeleteOldUnits(t *testing.T) {
 	// Make new stats DB
 	s, err := New(c)
 	defer s.Stop()
+
 	require.NoError(t, err, "failed to create new stats")
 
 	// Add new row that should be deleted
@@ -1025,7 +1051,7 @@ func TestUnitStatsDeleteOldUnits(t *testing.T) {
 		},
 	}
 	ctx := t.Context()
-	tx, err := s.db.Begin()
+	tx, err := s.db.BeginTx(ctx, nil)
 	require.NoError(t, err)
 	// stmtMap, err := s.prepareStatements(ctx, tx)
 	// require.NoError(t, err)
@@ -1038,14 +1064,17 @@ func TestUnitStatsDeleteOldUnits(t *testing.T) {
 	tx.Commit()
 
 	// Query for deleted unit
-	result, err := s.db.Prepare(
+	result, err := s.db.PrepareContext(
+		t.Context(),
 		fmt.Sprintf("SELECT COUNT(uuid) FROM %s WHERE uuid = ?;", base.UnitsDBTableName),
 	)
 	require.NoError(t, err)
+
 	defer result.Close()
 
 	var numRows int
-	err = result.QueryRow(unitID).Scan(&numRows)
+
+	err = result.QueryRowContext(t.Context(), unitID).Scan(&numRows)
 	require.NoError(t, err, "failed to query DB")
 	assert.Equal(t, 0, numRows, "expected 0 rows after deletion")
 }

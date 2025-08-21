@@ -161,7 +161,8 @@ func NewK8sCollector(logger *slog.Logger) (Collector, error) {
 	}
 
 	// Attempt to get GPU devices
-	if err := gpuSMI.Discover(); err != nil {
+	err = gpuSMI.Discover()
+	if err != nil {
 		// If we failed to fetch GPUs that are from supported
 		// vendor, return with error
 		logger.Error("Error fetching GPU devices", "err", err)
@@ -283,7 +284,8 @@ func (c *k8sCollector) Update(ch chan<- prometheus.Metric) error {
 		defer wg.Done()
 
 		// Update cgroup metrics
-		if err := c.cgroupCollector.Update(ch, cgroups); err != nil {
+		err := c.cgroupCollector.Update(ch, cgroups)
+		if err != nil {
 			c.logger.Error("Failed to update cgroup stats", "err", err)
 		}
 
@@ -300,7 +302,8 @@ func (c *k8sCollector) Update(ch chan<- prometheus.Metric) error {
 			defer wg.Done()
 
 			// Update perf metrics
-			if err := c.perfCollector.Update(ch, cgroups, k8sCollectorSubsystem); err != nil {
+			err := c.perfCollector.Update(ch, cgroups, k8sCollectorSubsystem)
+			if err != nil {
 				c.logger.Error("Failed to update perf stats", "err", err)
 			}
 		}()
@@ -313,7 +316,8 @@ func (c *k8sCollector) Update(ch chan<- prometheus.Metric) error {
 			defer wg.Done()
 
 			// Update ebpf metrics
-			if err := c.ebpfCollector.Update(ch, cgroups, k8sCollectorSubsystem); err != nil {
+			err := c.ebpfCollector.Update(ch, cgroups, k8sCollectorSubsystem)
+			if err != nil {
 				c.logger.Error("Failed to update IO and/or network stats", "err", err)
 			}
 		}()
@@ -326,7 +330,8 @@ func (c *k8sCollector) Update(ch chan<- prometheus.Metric) error {
 			defer wg.Done()
 
 			// Update RDMA metrics
-			if err := c.rdmaCollector.Update(ch, cgroups, k8sCollectorSubsystem); err != nil {
+			err := c.rdmaCollector.Update(ch, cgroups, k8sCollectorSubsystem)
+			if err != nil {
 				c.logger.Error("Failed to update RDMA stats", "err", err)
 			}
 		}()
@@ -343,33 +348,38 @@ func (c *k8sCollector) Stop(ctx context.Context) error {
 	c.logger.Debug("Stopping", "collector", k8sCollectorSubsystem)
 
 	// Stop k8s client
-	if err := c.k8sClient.Close(); err != nil {
+	err := c.k8sClient.Close()
+	if err != nil {
 		c.logger.Error("Failed to stop k8s client", "err", err)
 	}
 
 	// Stop all sub collectors
 	// Stop cgroupCollector
-	if err := c.cgroupCollector.Stop(ctx); err != nil {
+	err = c.cgroupCollector.Stop(ctx)
+	if err != nil {
 		c.logger.Error("Failed to stop cgroup collector", "err", err)
 	}
 
 	// Stop perfCollector
 	if perfCollectorEnabled() {
-		if err := c.perfCollector.Stop(ctx); err != nil {
+		err := c.perfCollector.Stop(ctx)
+		if err != nil {
 			c.logger.Error("Failed to stop perf collector", "err", err)
 		}
 	}
 
 	// Stop ebpfCollector
 	if ebpfCollectorEnabled() {
-		if err := c.ebpfCollector.Stop(ctx); err != nil {
+		err := c.ebpfCollector.Stop(ctx)
+		if err != nil {
 			c.logger.Error("Failed to stop ebpf collector", "err", err)
 		}
 	}
 
 	// Stop rdmaCollector
 	if rdmaCollectorEnabled() {
-		if err := c.rdmaCollector.Stop(ctx); err != nil {
+		err := c.rdmaCollector.Stop(ctx)
+		if err != nil {
 			c.logger.Error("Failed to stop RDMA collector", "err", err)
 		}
 	}

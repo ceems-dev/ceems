@@ -32,6 +32,7 @@ type streamContext struct {
 
 type streamAndReply struct {
 	httpstream.Stream
+
 	replySent <-chan struct{}
 }
 
@@ -85,6 +86,7 @@ func CreateHTTPStreams(w http.ResponseWriter, req *http.Request, opts *remotecom
 	if opts.Stderr != nil {
 		expectedStreams++
 	}
+
 WaitForStreams:
 	for {
 		select {
@@ -93,15 +95,19 @@ WaitForStreams:
 			switch streamType {
 			case v1.StreamTypeError:
 				replyChan <- struct{}{}
+
 				ctx.writeStatus = v4WriteStatusFunc(stream)
 			case v1.StreamTypeStdout:
 				replyChan <- struct{}{}
+
 				ctx.stdoutStream = stream
 			case v1.StreamTypeStdin:
 				replyChan <- struct{}{}
+
 				ctx.stdinStream = stream
 			case v1.StreamTypeStderr:
 				replyChan <- struct{}{}
+
 				ctx.stderrStream = stream
 			default:
 				// add other stream ...
@@ -146,7 +152,8 @@ func CreateListener(addr string) (net.Listener, error) {
 		return nil, fmt.Errorf("failed to unlink socket file %q: %w", addr, err)
 	}
 
-	if err := os.MkdirAll(filepath.Dir(addr), 0o750); err != nil {
+	err = os.MkdirAll(filepath.Dir(addr), 0o750)
+	if err != nil {
 		return nil, fmt.Errorf("error creating socket directory %q: %w", filepath.Dir(addr), err)
 	}
 
@@ -156,16 +163,18 @@ func CreateListener(addr string) (net.Listener, error) {
 		return nil, fmt.Errorf("failed to create temporary file: %w", err)
 	}
 
-	if err := os.Remove(file.Name()); err != nil {
+	err = os.Remove(file.Name())
+	if err != nil {
 		return nil, fmt.Errorf("failed to remove temporary file: %w", err)
 	}
 
-	l, err := net.Listen("unix", file.Name())
+	l, err := net.Listen("unix", file.Name()) //nolint:noctx
 	if err != nil {
 		return nil, err
 	}
 
-	if err = os.Rename(file.Name(), addr); err != nil {
+	err = os.Rename(file.Name(), addr)
+	if err != nil {
 		return nil, fmt.Errorf("failed to move temporary file to addr %q: %w", addr, err)
 	}
 
@@ -175,7 +184,8 @@ func CreateListener(addr string) (net.Listener, error) {
 // FakeKubeletServer returns a mock API resource server.
 func FakeKubeletServer(socketDir string, listResp *podresourcesapi.ListPodResourcesResponse, getAllocatableResourcesResp *podresourcesapi.AllocatableResourcesResponse) (*FakeResourceServer, error) {
 	// Ensure socket directory exists
-	if err := os.MkdirAll(socketDir, os.ModeDir); err != nil {
+	err := os.MkdirAll(socketDir, os.ModeDir)
+	if err != nil {
 		return nil, err
 	}
 

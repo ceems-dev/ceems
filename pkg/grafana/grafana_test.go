@@ -48,7 +48,8 @@ func TestGrafanaTeamMembersQuerySuccess(t *testing.T) {
 	t.Setenv("GRAFANA_API_TOKEN", "foo")
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))
@@ -72,7 +73,8 @@ func TestGrafanaTeamMembersQueryFailNoTeamID(t *testing.T) {
 	t.Setenv("GRAFANA_API_TOKEN", "foo")
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))

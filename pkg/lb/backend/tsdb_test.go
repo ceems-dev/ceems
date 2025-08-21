@@ -54,7 +54,9 @@ func testTSDBServer(storageRetention string, emptyResponse bool, basicAuth bool)
 
 		if emptyResponse {
 			expected := "dummy"
-			if err := json.NewEncoder(w).Encode(&expected); err != nil {
+
+			err := json.NewEncoder(w).Encode(&expected)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 
@@ -62,11 +64,13 @@ func testTSDBServer(storageRetention string, emptyResponse bool, basicAuth bool)
 		}
 
 		if strings.HasSuffix(r.URL.Path, "runtimeinfo") {
-			if err := json.NewEncoder(w).Encode(&expectedRuntime); err != nil {
+			err := json.NewEncoder(w).Encode(&expectedRuntime)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		} else {
-			if err := json.NewEncoder(w).Encode(&expectedRange); err != nil {
+			err := json.NewEncoder(w).Encode(&expectedRange)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		}
@@ -178,6 +182,7 @@ func TestTSDBQueryWithLabelFilter(t *testing.T) {
 	require.NoError(t, err)
 
 	var tsdbResp tsdb.Response[tsdb.Data]
+
 	err = json.Unmarshal(body, &tsdbResp)
 	require.NoError(t, err)
 

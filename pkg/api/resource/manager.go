@@ -181,7 +181,8 @@ func New(logger *slog.Logger) (*Manager, error) {
 
 	// If we dont need to keep any privileges, drop any existing capabilities
 	if dropPrivs {
-		if err := security.DropCapabilities(); err != nil {
+		err := security.DropCapabilities()
+		if err != nil {
 			logger.Warn("Failed to drop capabilities", "err", err)
 		}
 	}
@@ -207,7 +208,9 @@ func (b Manager) FetchUnits(ctx context.Context, start time.Time, end time.Time)
 			units, err := f.FetchUnits(ctx, start, end)
 			if err != nil {
 				unitFetcherLock.Lock()
+
 				errs = errors.Join(errs, err)
+
 				unitFetcherLock.Unlock()
 				wg.Done()
 
@@ -215,7 +218,9 @@ func (b Manager) FetchUnits(ctx context.Context, start time.Time, end time.Time)
 			}
 
 			unitFetcherLock.Lock()
+
 			clusterUnits = append(clusterUnits, units...)
+
 			unitFetcherLock.Unlock()
 			wg.Done()
 		}(fetcher)
@@ -249,7 +254,9 @@ func (b Manager) FetchUsersProjects(
 			users, projects, err := f.FetchUsersProjects(ctx, currentTime)
 			if err != nil {
 				userFetcherLock.Lock()
+
 				errs = errors.Join(errs, err)
+
 				userFetcherLock.Unlock()
 				wg.Done()
 
@@ -257,8 +264,10 @@ func (b Manager) FetchUsersProjects(
 			}
 
 			userFetcherLock.Lock()
+
 			clusterUsers = append(clusterUsers, users...)
 			clusterProjects = append(clusterProjects, projects...)
+
 			userFetcherLock.Unlock()
 			wg.Done()
 		}(fetcher)

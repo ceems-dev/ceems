@@ -63,7 +63,8 @@ func NewRedfishProxyServer(c *Config) (*RedfishProxyServer, error) {
 func (s *RedfishProxyServer) Start() error {
 	s.logger.Info("Starting " + appName)
 
-	if err := web.ListenAndServe(s.server, s.webConfig, s.logger); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	err := web.ListenAndServe(s.server, s.webConfig, s.logger)
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		s.logger.Error("Failed to Listen and Serve HTTP server", "err", err)
 
 		return err
@@ -80,7 +81,8 @@ func (s *RedfishProxyServer) Shutdown(ctx context.Context) error {
 	// connections
 	// Do not return error here as we SHOULD ENSURE to close collectors
 	// that might release any system resources
-	if err := s.server.Shutdown(ctx); err != nil {
+	err := s.server.Shutdown(ctx)
+	if err != nil {
 		s.logger.Error("Failed to stop exporter's HTTP server")
 
 		return err

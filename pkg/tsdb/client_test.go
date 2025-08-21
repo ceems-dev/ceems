@@ -139,7 +139,8 @@ func testTSDBServer(emptyResponse bool) *httptest.Server {
 				Status: "error",
 			}
 
-			if err := json.NewEncoder(w).Encode(&expected); err != nil {
+			err := json.NewEncoder(w).Encode(&expected)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 
@@ -147,37 +148,44 @@ func testTSDBServer(emptyResponse bool) *httptest.Server {
 		}
 
 		if strings.HasSuffix(r.URL.Path, "config") {
-			if err := json.NewEncoder(w).Encode(&expectedConfig); err != nil {
+			err := json.NewEncoder(w).Encode(&expectedConfig)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		} else if strings.HasSuffix(r.URL.Path, "flags") {
-			if err := json.NewEncoder(w).Encode(&expectedFlags); err != nil {
+			err := json.NewEncoder(w).Encode(&expectedFlags)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		} else if strings.HasSuffix(r.URL.Path, "runtimeinfo") {
-			if err := json.NewEncoder(w).Encode(&expectedRuntimeInfo); err != nil {
+			err := json.NewEncoder(w).Encode(&expectedRuntimeInfo)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		} else if strings.HasSuffix(r.URL.Path, "series") {
-			if err := json.NewEncoder(w).Encode(&expectedSeries); err != nil {
+			err := json.NewEncoder(w).Encode(&expectedSeries)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		} else if strings.HasSuffix(r.URL.Path, "labels") {
-			if err := json.NewEncoder(w).Encode(&expectedLabels); err != nil {
+			err := json.NewEncoder(w).Encode(&expectedLabels)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		} else if strings.HasSuffix(r.URL.Path, "query") {
 			_ = r.ParseForm()
 			expectedQueryLookback, _ = model.ParseDuration(r.Form["lookback_delta"][0])
 
-			if err := json.NewEncoder(w).Encode(&expectedQuery); err != nil {
+			err := json.NewEncoder(w).Encode(&expectedQuery)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		} else if strings.HasSuffix(r.URL.Path, "query_range") {
 			_ = r.ParseForm()
 			expectedQueryRangeLookback, _ = model.ParseDuration(r.Form["lookback_delta"][0])
 
-			if err := json.NewEncoder(w).Encode(&expectedQueryRange); err != nil {
+			err := json.NewEncoder(w).Encode(&expectedQueryRange)
+			if err != nil {
 				w.Write([]byte("KO"))
 			}
 		}
@@ -423,7 +431,8 @@ func TestTSDBDeleteSuccess(t *testing.T) {
 	var err error
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err = r.ParseForm(); err != nil {
+		err = r.ParseForm()
+		if err != nil {
 			w.Write([]byte("KO"))
 
 			return
@@ -451,7 +460,8 @@ func TestTSDBDeleteFail(t *testing.T) {
 	var err error
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err = r.ParseForm(); err != nil {
+		err = r.ParseForm()
+		if err != nil {
 			w.Write([]byte("KO"))
 
 			return

@@ -34,16 +34,20 @@ func init() {
 	sql.Register(DriverName, &Driver{
 		sqlite3.SQLiteDriver{
 			ConnectHook: func(conn *sqlite3.SQLiteConn) error {
-				if err := conn.RegisterFunc("add_metric_map", addMetricMap, true); err != nil {
+				err := conn.RegisterFunc("add_metric_map", addMetricMap, true)
+				if err != nil {
 					return err
 				}
-				if err := conn.RegisterFunc("avg_metric_map", avgMetricMap, true); err != nil {
+				err = conn.RegisterFunc("avg_metric_map", avgMetricMap, true)
+				if err != nil {
 					return err
 				}
-				if err := conn.RegisterAggregator("sum_metric_map_agg", newSumMetricMap, true); err != nil {
+				err = conn.RegisterAggregator("sum_metric_map_agg", newSumMetricMap, true)
+				if err != nil {
 					return err
 				}
-				if err := conn.RegisterAggregator("avg_metric_map_agg", newAvgMetricMapAgg, true); err != nil {
+				err = conn.RegisterAggregator("avg_metric_map_agg", newAvgMetricMapAgg, true)
+				if err != nil {
 					return err
 				}
 
@@ -76,11 +80,8 @@ type Driver struct {
 // be fetched by the user using GetLastConn. The connection ensures it's cleaned up
 // when it's closed. This method is not used by the user, but rather by sql.Open.
 func (d *Driver) Open(dsn string) (driver.Conn, error) {
-	var inner driver.Conn
-
-	var err error
-
-	if inner, err = d.SQLiteDriver.Open(dsn); err != nil {
+	inner, err := d.SQLiteDriver.Open(dsn)
+	if err != nil {
 		return nil, err
 	}
 
@@ -94,9 +95,11 @@ func (d *Driver) Open(dsn string) (driver.Conn, error) {
 	}
 
 	mu.Lock()
+
 	seq++
 	conn := &Conn{cid: seq, SQLiteConn: sconn}
 	conns[conn.cid] = conn
+
 	mu.Unlock()
 
 	return conn, nil
@@ -105,8 +108,9 @@ func (d *Driver) Open(dsn string) (driver.Conn, error) {
 // Conn wraps a sqlite3.SQLiteConn and maintains an ID so that the connection can be
 // closed.
 type Conn struct {
-	cid uint64
 	*sqlite3.SQLiteConn
+
+	cid uint64
 }
 
 // Close the DB connection
@@ -162,11 +166,14 @@ func NumConns() int {
 func addMetricMap(existing, current string) string {
 	// Unmarshal strings into MetricMap type
 	var existingMetricMap, currentMetricMap models.MetricMap
-	if err := json.Unmarshal([]byte(existing), &existingMetricMap); err != nil {
+
+	err := json.Unmarshal([]byte(existing), &existingMetricMap)
+	if err != nil {
 		panic(err)
 	}
 
-	if err := json.Unmarshal([]byte(current), &currentMetricMap); err != nil {
+	err = json.Unmarshal([]byte(current), &currentMetricMap)
+	if err != nil {
 		panic(err)
 	}
 
@@ -197,11 +204,14 @@ func addMetricMap(existing, current string) string {
 func avgMetricMap(existing, current string, existingWeight, currentWeight float64) string {
 	// Unmarshal strings into MetricMap type
 	var existingMetricMap, currentMetricMap models.MetricMap
-	if err := json.Unmarshal([]byte(existing), &existingMetricMap); err != nil {
+
+	err := json.Unmarshal([]byte(existing), &existingMetricMap)
+	if err != nil {
 		panic(err)
 	}
 
-	if err := json.Unmarshal([]byte(current), &currentMetricMap); err != nil {
+	err = json.Unmarshal([]byte(current), &currentMetricMap)
+	if err != nil {
 		panic(err)
 	}
 
@@ -261,7 +271,8 @@ func (g *sumMetricMap) Step(m string) {
 		return
 	}
 
-	if err := json.Unmarshal([]byte(m), &g.currentMetricMap); err != nil {
+	err := json.Unmarshal([]byte(m), &g.currentMetricMap)
+	if err != nil {
 		panic(err)
 	}
 
@@ -305,7 +316,8 @@ func (g *avgMetricMapAgg) Step(m string, w float64) {
 		return
 	}
 
-	if err := json.Unmarshal([]byte(m), &g.currentMetricMap); err != nil {
+	err := json.Unmarshal([]byte(m), &g.currentMetricMap)
+	if err != nil {
 		panic(err)
 	}
 

@@ -164,6 +164,7 @@ func NewCEEMSCollector(logger *slog.Logger) (*CEEMSCollector, error) {
 // Describe implements the prometheus.Collector interface.
 func (n CEEMSCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- scrapeDurationDesc
+
 	ch <- scrapeSuccessDesc
 }
 
@@ -187,7 +188,8 @@ func (n CEEMSCollector) Close(ctx context.Context) error {
 	var errs error
 
 	for _, c := range n.Collectors {
-		if err := c.Stop(ctx); err != nil {
+		err := c.Stop(ctx)
+		if err != nil {
 			errs = errors.Join(errs, err)
 		}
 	}
@@ -216,7 +218,9 @@ func execute(name string, c Collector, ch chan<- prometheus.Metric, logger *slog
 
 		success = 1
 	}
+
 	ch <- prometheus.MustNewConstMetric(scrapeDurationDesc, prometheus.GaugeValue, duration.Seconds(), name, "")
+
 	ch <- prometheus.MustNewConstMetric(scrapeSuccessDesc, prometheus.GaugeValue, success, name)
 }
 

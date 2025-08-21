@@ -206,8 +206,6 @@ func TestInstancePropsCaching(t *testing.T) {
 		},
 	}
 
-	noOpLogger := noOpLogger
-
 	// Instantiate a new instance of gpuSMI struct
 	gpu, err := NewGPUSMI(nil, noOpLogger)
 	require.NoError(t, err)

@@ -117,7 +117,8 @@ func NewCEEMSExporterServer(c *Config) (*CEEMSExporterServer, error) {
 	// Register metrics collector with Prometheus
 	server.metricsHandler.metricsRegistry.MustRegister(version.NewCollector(CEEMSExporterAppName))
 
-	if err := server.metricsHandler.metricsRegistry.Register(server.collector); err != nil {
+	err := server.metricsHandler.metricsRegistry.Register(server.collector)
+	if err != nil {
 		return nil, fmt.Errorf("couldn't register compute resource collector: %w", err)
 	}
 
@@ -159,7 +160,8 @@ func NewCEEMSExporterServer(c *Config) (*CEEMSExporterServer, error) {
 func (s *CEEMSExporterServer) Start() error {
 	s.logger.Info("Starting " + CEEMSExporterAppName)
 
-	if err := web.ListenAndServe(s.server, s.webConfig, s.logger); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	err := web.ListenAndServe(s.server, s.webConfig, s.logger)
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		s.logger.Error("Failed to Listen and Serve HTTP server", "err", err)
 
 		return err
@@ -178,14 +180,16 @@ func (s *CEEMSExporterServer) Shutdown(ctx context.Context) error {
 	// connections
 	// Do not return error here as we SHOULD ENSURE to close collectors
 	// that might release any system resources
-	if err := s.server.Shutdown(ctx); err != nil {
+	err := s.server.Shutdown(ctx)
+	if err != nil {
 		s.logger.Error("Failed to stop exporter's HTTP server")
 
 		errs = errors.Join(errs, err)
 	}
 
 	// Now close all collectors that release any system resources
-	if err := s.collector.Close(ctx); err != nil {
+	err = s.collector.Close(ctx)
+	if err != nil {
 		s.logger.Error("Failed to stop collector(s)")
 
 		return errors.Join(errs, err)

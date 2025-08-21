@@ -65,7 +65,8 @@ func NewClient(c *Config) (Client, error) {
 	var devFile *os.File
 
 	for _, d := range ipmiDevs {
-		if f, err := os.Open(fmt.Sprintf(d, c.DevNum)); err == nil {
+		f, err := os.Open(fmt.Sprintf(d, c.DevNum))
+		if err == nil {
 			c.Logger.Debug("IPMI device found", "device", fmt.Sprintf(d, c.DevNum))
 
 			devFile = f
@@ -81,7 +82,9 @@ func NewClient(c *Config) (Client, error) {
 
 	// Setup event receiver
 	recvEvents := 1
-	if _, _, errno := syscall.Syscall(syscall.SYS_IOCTL, devFile.Fd(), IPMICTL_SET_GETS_EVENTS_CMD, uintptr(unsafe.Pointer(&recvEvents))); errno != 0 {
+
+	_, _, errno := syscall.Syscall(syscall.SYS_IOCTL, devFile.Fd(), IPMICTL_SET_GETS_EVENTS_CMD, uintptr(unsafe.Pointer(&recvEvents)))
+	if errno != 0 {
 		return nil, fmt.Errorf("failed to enable IPMI event receiver: %w", errno)
 	}
 
@@ -111,7 +114,8 @@ func (i *ipmiClient) Do(req *Request) (*Response, error) {
 	fd := i.devFile.Fd()
 
 	// Send request
-	if _, _, errno := syscall.Syscall(syscall.SYS_IOCTL, fd, IPMICTL_SEND_COMMAND, uintptr(unsafe.Pointer(req))); errno != 0 {
+	_, _, errno := syscall.Syscall(syscall.SYS_IOCTL, fd, IPMICTL_SEND_COMMAND, uintptr(unsafe.Pointer(req)))
+	if errno != 0 {
 		i.logger.Error("Failed to send IPMI request", "err", errno)
 
 		return nil, fmt.Errorf("failed to send IPMI request: %w", errno)
@@ -158,7 +162,8 @@ func (i *ipmiClient) Do(req *Request) (*Response, error) {
 	}
 
 	// Read data into recv struct
-	if _, _, errno := syscall.Syscall(syscall.SYS_IOCTL, fd, IPMICTL_RECEIVE_MSG_TRUNC, uintptr(unsafe.Pointer(&recv))); errno != 0 {
+	_, _, errno = syscall.Syscall(syscall.SYS_IOCTL, fd, IPMICTL_RECEIVE_MSG_TRUNC, uintptr(unsafe.Pointer(&recv)))
+	if errno != 0 {
 		i.logger.Error("Failed to read response from IPMI device interface", "err", errno)
 
 		return nil, fmt.Errorf("failed to read response from IPMI device interface: %w", errno)
@@ -176,7 +181,8 @@ func (i *ipmiClient) Do(req *Request) (*Response, error) {
 	// i.logger.Debug("IPMI response data", "data", resp.Data[0:resp.DataLen])
 
 	// Check completion code
-	if err := binary.Read(bytes.NewReader(resp.Data[0:1]), binary.BigEndian, &resp.Ccode); err == nil && resp.Ccode != 0 {
+	err = binary.Read(bytes.NewReader(resp.Data[0:1]), binary.BigEndian, &resp.Ccode)
+	if err == nil && resp.Ccode != 0 {
 		return nil, errors.New("received non zero completion code in IPMI response")
 	}
 

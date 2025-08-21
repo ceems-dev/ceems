@@ -37,6 +37,7 @@ func TestUnitsQuerier(t *testing.T) {
 
 	db, err := setupTestDB()
 	require.NoError(t, err, "failed to setup test DB")
+
 	defer db.Close()
 
 	// Query
@@ -174,6 +175,7 @@ func TestUnitsQuerier(t *testing.T) {
 func TestUsageQuerier(t *testing.T) {
 	db, err := setupTestDB()
 	require.NoError(t, err, "failed to setup test DB")
+
 	defer db.Close()
 
 	// Query
@@ -225,6 +227,7 @@ func TestUsageQuerier(t *testing.T) {
 func TestProjectQuerier(t *testing.T) {
 	db, err := setupTestDB()
 	require.NoError(t, err, "failed to setup test DB")
+
 	defer db.Close()
 
 	// Query
@@ -254,6 +257,7 @@ func TestProjectQuerier(t *testing.T) {
 func TestUserQuerier(t *testing.T) {
 	db, err := setupTestDB()
 	require.NoError(t, err, "failed to setup test DB")
+
 	defer db.Close()
 
 	// Query
@@ -283,6 +287,7 @@ func TestUserQuerier(t *testing.T) {
 func TestClusterQuerier(t *testing.T) {
 	db, err := setupTestDB()
 	require.NoError(t, err, "failed to setup test DB")
+
 	defer db.Close()
 
 	// Query
@@ -307,6 +312,7 @@ func TestClusterQuerier(t *testing.T) {
 func TestStatsQuerier(t *testing.T) {
 	db, err := setupTestDB()
 	require.NoError(t, err, "failed to setup test DB")
+
 	defer db.Close()
 
 	// Query
@@ -332,6 +338,7 @@ func TestStatsQuerier(t *testing.T) {
 func TestKeysQuerier(t *testing.T) {
 	db, err := setupTestDB()
 	require.NoError(t, err, "failed to setup test DB")
+
 	defer db.Close()
 
 	// Query

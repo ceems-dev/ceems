@@ -134,6 +134,7 @@ func TestCEEMSExporterServer(t *testing.T) {
 			// Make request
 			resp, err := http.Get(fmt.Sprintf("http://localhost:%d%s", p, req.path)) //nolint:noctx
 			require.NoError(t, err)
+
 			defer resp.Body.Close()
 
 			assert.Equal(t, req.respCode, resp.StatusCode, "name: %s path: %s", test.name, req.path)

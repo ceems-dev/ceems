@@ -153,7 +153,8 @@ func mockK8sAPIServer() *httptest.Server {
 	// Start test server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if strings.HasSuffix(r.URL.Path, "pods") {
-			if data, err := os.ReadFile("../../../collector/testdata/k8s/pods-metadata.json"); err == nil {
+			data, err := os.ReadFile("../../../collector/testdata/k8s/pods-metadata.json")
+			if err == nil {
 				w.Header().Add("Content-Type", "application/json")
 				w.Header().Add("Content-Type", "application/vnd.kubernetes.protobuf")
 				w.Write(data)
@@ -161,7 +162,8 @@ func mockK8sAPIServer() *httptest.Server {
 				return
 			}
 		} else if strings.HasSuffix(r.URL.Path, "rolebindings") {
-			if data, err := os.ReadFile("../../../collector/testdata/k8s/rolebindings.json"); err == nil {
+			data, err := os.ReadFile("../../../collector/testdata/k8s/rolebindings.json")
+			if err == nil {
 				w.Header().Add("Content-Type", "application/json")
 				w.Header().Add("Content-Type", "application/vnd.kubernetes.protobuf")
 				w.Write(data)
@@ -249,7 +251,8 @@ project_annotations:
 
 	var extraConfig yaml.Node
 
-	if err := yaml.Unmarshal([]byte(cfg), &extraConfig); err == nil {
+	err = yaml.Unmarshal([]byte(cfg), &extraConfig)
+	if err == nil {
 		return extraConfig, mainConfigFile, nil
 	} else {
 		return yaml.Node{}, mainConfigFile, err

@@ -13,7 +13,8 @@ func ceemsAPIRequest[T any](req *http.Request, client *http.Client) ([]T, error)
 	// Make request
 	// If request failed, forbid the query. It can happen when CEEMS API server
 	// goes offline and we should wait for it to come back online
-	if resp, err := client.Do(req); err != nil {
+	resp, err := client.Do(req)
+	if err != nil {
 		return nil, err
 	} else {
 		defer resp.Body.Close()
@@ -31,7 +32,9 @@ func ceemsAPIRequest[T any](req *http.Request, client *http.Client) ([]T, error)
 
 		// Unpack into data
 		var data ceems_api_http.Response[T]
-		if err = json.Unmarshal(body, &data); err != nil {
+
+		err = json.Unmarshal(body, &data)
+		if err != nil {
 			return nil, err
 		}
 

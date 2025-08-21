@@ -38,7 +38,9 @@ func PromResponseModifier(labelsToFilter []string) func(r *http.Response) error 
 		case strings.HasSuffix(r.Request.URL.Path, "query") || strings.HasSuffix(r.Request.URL.Path, "query_range"):
 			// Read response bytes into TSDB response
 			var tsdbResp tsdb.Response[tsdb.Data]
-			if err = json.Unmarshal(b, &tsdbResp); err != nil {
+
+			err = json.Unmarshal(b, &tsdbResp)
+			if err != nil {
 				return err
 			}
 
@@ -57,13 +59,16 @@ func PromResponseModifier(labelsToFilter []string) func(r *http.Response) error 
 			}
 
 			// Marshal into newBody
-			if newBody, err = json.Marshal(tsdbResp); err != nil {
+			newBody, err = json.Marshal(tsdbResp)
+			if err != nil {
 				return err
 			}
 		case strings.HasSuffix(r.Request.URL.Path, "series"):
 			// Read response bytes into TSDB response
 			var tsdbResp tsdb.Response[[]map[string]string]
-			if err = json.Unmarshal(b, &tsdbResp); err != nil {
+
+			err = json.Unmarshal(b, &tsdbResp)
+			if err != nil {
 				return err
 			}
 
@@ -82,13 +87,16 @@ func PromResponseModifier(labelsToFilter []string) func(r *http.Response) error 
 			}
 
 			// Marshal into newBody
-			if newBody, err = json.Marshal(tsdbResp); err != nil {
+			newBody, err = json.Marshal(tsdbResp)
+			if err != nil {
 				return err
 			}
 		case strings.HasSuffix(r.Request.URL.Path, "labels"):
 			// Read response bytes into TSDB response
 			var tsdbResp tsdb.Response[[]string]
-			if err = json.Unmarshal(b, &tsdbResp); err != nil {
+
+			err = json.Unmarshal(b, &tsdbResp)
+			if err != nil {
 				return err
 			}
 
@@ -112,7 +120,8 @@ func PromResponseModifier(labelsToFilter []string) func(r *http.Response) error 
 			tsdbResp.Data = newData
 
 			// Marshal into newBody
-			if newBody, err = json.Marshal(tsdbResp); err != nil {
+			newBody, err = json.Marshal(tsdbResp)
+			if err != nil {
 				return err
 			}
 		case strings.HasSuffix(r.Request.URL.Path, "values"):
@@ -134,7 +143,9 @@ func PromResponseModifier(labelsToFilter []string) func(r *http.Response) error 
 
 			// Read response bytes into TSDB response
 			var tsdbResp tsdb.Response[[]string]
-			if err = json.Unmarshal(b, &tsdbResp); err != nil {
+
+			err = json.Unmarshal(b, &tsdbResp)
+			if err != nil {
 				return err
 			}
 
@@ -142,7 +153,8 @@ func PromResponseModifier(labelsToFilter []string) func(r *http.Response) error 
 			tsdbResp.Data = nil
 
 			// Marshal into newBody
-			if newBody, err = json.Marshal(tsdbResp); err != nil {
+			newBody, err = json.Marshal(tsdbResp)
+			if err != nil {
 				return err
 			}
 		}

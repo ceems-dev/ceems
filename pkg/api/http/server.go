@@ -82,7 +82,8 @@ func (c *WebConfig) UnmarshalYAML(unmarshal func(any) error) error {
 
 	type plain WebConfig
 
-	if err := unmarshal((*plain)(c)); err != nil {
+	err := unmarshal((*plain)(c))
+	if err != nil {
 		return err
 	}
 
@@ -127,7 +128,7 @@ type CEEMSServer struct {
 	maxQueryPeriod time.Duration
 	queriers       queriers
 	usageCache     *ttlcache.Cache[uint64, []models.Usage] // Cache that stores usage query results
-	healthCheck    func(*sql.DB, *slog.Logger) bool
+	healthCheck    func(context.Context, *sql.DB, *slog.Logger) bool
 }
 
 // Response defines the response model of CEEMSAPIServer.
@@ -174,8 +175,9 @@ func init() {
 }
 
 // Ping DB for connection test.
-func getDBStatus(dbConn *sql.DB, logger *slog.Logger) bool {
-	if err := dbConn.Ping(); err != nil {
+func getDBStatus(ctx context.Context, dbConn *sql.DB, logger *slog.Logger) bool {
+	err := dbConn.PingContext(ctx)
+	if err != nil {
 		logger.Error("DB Ping failed", "err", err)
 
 		return false
@@ -285,7 +287,9 @@ func New(c *Config) (*CEEMSServer, error) {
 		filepath.Join(c.DB.Data.Path, base.CEEMSDBName),
 		"_mutex=no&mode=ro&_busy_timeout=5000",
 	)
-	if server.db, err = sql.Open(sqlite3.DriverName, dsn); err != nil {
+
+	server.db, err = sql.Open(sqlite3.DriverName, dsn)
+	if err != nil {
 		return nil, fmt.Errorf("failed to open DB: %w", err)
 	}
 
@@ -389,13 +393,15 @@ func (s *CEEMSServer) Start(_ context.Context) error {
 	}
 
 	// If externalURL is not set, ensure the server address is of good format.
-	if host, port, err := net.SplitHostPort(docs.SwaggerInfo.Host); err == nil && host == "" {
+	host, port, err := net.SplitHostPort(docs.SwaggerInfo.Host)
+	if err == nil && host == "" {
 		docs.SwaggerInfo.Host = "localhost:" + port
 	}
 
 	s.logger.Info("Starting " + base.CEEMSServerAppName)
 
-	if err := web.ListenAndServe(s.server, s.webConfig, s.logger); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	err = web.ListenAndServe(s.server, s.webConfig, s.logger)
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		s.logger.Error("Failed to Listen and Serve HTTP server", "err", err)
 
 		return err
@@ -407,14 +413,16 @@ func (s *CEEMSServer) Start(_ context.Context) error {
 // Shutdown server.
 func (s *CEEMSServer) Shutdown(ctx context.Context) error {
 	// Close DB connection
-	if err := s.db.Close(); err != nil {
+	err := s.db.Close()
+	if err != nil {
 		s.logger.Error("Failed to close DB connection", "err", err)
 
 		return err
 	}
 
 	// Shutdown the server
-	if err := s.server.Shutdown(ctx); err != nil {
+	err = s.server.Shutdown(ctx)
+	if err != nil {
 		s.logger.Error("Failed to shutdown HTTP server", "err", err)
 
 		return err
@@ -453,14 +461,15 @@ func (s *CEEMSServer) setWriteDeadline(deadline time.Duration, w http.ResponseWr
 	rc := http.NewResponseController(w)
 
 	// Set write deadline to this request
-	if err := rc.SetWriteDeadline(time.Now().Add(deadline)); err != nil {
+	err := rc.SetWriteDeadline(time.Now().Add(deadline))
+	if err != nil {
 		s.logger.Error("Failed to set write deadline", "err", err)
 	}
 }
 
 // Check status of server.
 func (s *CEEMSServer) health(w http.ResponseWriter, r *http.Request) {
-	if !s.healthCheck(s.db, s.logger) {
+	if !s.healthCheck(r.Context(), s.db, s.logger) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.WriteHeader(http.StatusServiceUnavailable)
 		w.Write([]byte("KO"))
@@ -513,7 +522,8 @@ func (s *CEEMSServer) timeLocation(l string) *time.Location {
 	if l == "" {
 		return s.dbConfig.Data.Timezone.Location
 	} else {
-		if loc, err := time.LoadLocation(l); err != nil {
+		loc, err := time.LoadLocation(l)
+		if err != nil {
 			return s.dbConfig.Data.Timezone.Location
 		} else {
 			return loc
@@ -530,7 +540,8 @@ func (s *CEEMSServer) getQueryWindow(r *http.Request, column string, running boo
 	// Get to and from query parameters and do checks on them
 	if f := q.Get("from"); f != "" {
 		// Return error response if from is not a timestamp
-		if ts, err := strconv.ParseInt(f, 10, 64); err != nil {
+		ts, err := strconv.ParseInt(f, 10, 64)
+		if err != nil {
 			s.logger.Error("Failed to parse from timestamp", "from", f, "err", err)
 
 			return Query{}, fmt.Errorf("query parameter 'from': %w", ErrMalformedTimeStamp)
@@ -541,7 +552,8 @@ func (s *CEEMSServer) getQueryWindow(r *http.Request, column string, running boo
 
 	if t := q.Get("to"); t != "" {
 		// Return error response if to is not a timestamp
-		if ts, err := strconv.ParseInt(t, 10, 64); err != nil {
+		ts, err := strconv.ParseInt(t, 10, 64)
+		if err != nil {
 			s.logger.Error("Failed to parse to timestamp", "to", t, "err", err)
 
 			return Query{}, fmt.Errorf("query parameter 'to': %w", ErrMalformedTimeStamp)
@@ -622,7 +634,8 @@ func (s *CEEMSServer) roundQueryWindow(r *http.Request) error {
 		)
 	} else {
 		// Return error response if from is not a timestamp
-		if ts, err := strconv.ParseInt(f, 10, 64); err != nil {
+		ts, err := strconv.ParseInt(f, 10, 64)
+		if err != nil {
 			s.logger.Error("Failed to parse from timestamp", "from", f, "err", err)
 
 			return fmt.Errorf("query parameter 'from': %w", ErrMalformedTimeStamp)
@@ -644,7 +657,8 @@ func (s *CEEMSServer) roundQueryWindow(r *http.Request) error {
 		)
 	} else {
 		// Return error response if from is not a timestamp
-		if ts, err := strconv.ParseInt(t, 10, 64); err != nil {
+		ts, err := strconv.ParseInt(t, 10, 64)
+		if err != nil {
 			s.logger.Error("Failed to parse from timestamp", "to", t, "err", err)
 
 			return fmt.Errorf("query parameter 'to': %w", ErrMalformedTimeStamp)
@@ -790,7 +804,8 @@ queryUnits:
 		response.Warnings = append(response.Warnings, err.Error())
 	}
 
-	if err = json.NewEncoder(w).Encode(&response); err != nil {
+	err = json.NewEncoder(w).Encode(&response)
+	if err != nil {
 		s.logger.Error("Failed to encode response", "err", err)
 		w.Write([]byte("KO"))
 	}
@@ -974,7 +989,9 @@ func (s *CEEMSServer) verifyUnitsOwnership(w http.ResponseWriter, r *http.Reques
 		response := Response[string]{
 			Status: "success",
 		}
-		if err := json.NewEncoder(w).Encode(&response); err != nil {
+
+		err := json.NewEncoder(w).Encode(&response)
+		if err != nil {
 			s.logger.Error("Failed to encode response", "err", err)
 			w.Write([]byte("KO"))
 		}
@@ -1044,7 +1061,8 @@ func (s *CEEMSServer) clustersAdmin(w http.ResponseWriter, r *http.Request) {
 		clusterIDsResponse.Warnings = append(clusterIDsResponse.Warnings, err.Error())
 	}
 
-	if err = json.NewEncoder(w).Encode(&clusterIDsResponse); err != nil {
+	err = json.NewEncoder(w).Encode(&clusterIDsResponse)
+	if err != nil {
 		s.logger.Error("Failed to encode response", "err", err)
 		w.Write([]byte("KO"))
 	}
@@ -1079,7 +1097,8 @@ func (s *CEEMSServer) adminUsersQuerier(w http.ResponseWriter, r *http.Request) 
 		usersResponse.Warnings = append(usersResponse.Warnings, err.Error())
 	}
 
-	if err = json.NewEncoder(w).Encode(&usersResponse); err != nil {
+	err = json.NewEncoder(w).Encode(&usersResponse)
+	if err != nil {
 		s.logger.Error("Failed to encode response", "err", err)
 		w.Write([]byte("KO"))
 	}
@@ -1131,7 +1150,8 @@ func (s *CEEMSServer) usersQuerier(users []string, w http.ResponseWriter, r *htt
 		usersResponse.Warnings = append(usersResponse.Warnings, err.Error())
 	}
 
-	if err = json.NewEncoder(w).Encode(&usersResponse); err != nil {
+	err = json.NewEncoder(w).Encode(&usersResponse)
+	if err != nil {
 		s.logger.Error("Failed to encode response", "err", err)
 		w.Write([]byte("KO"))
 	}
@@ -1277,7 +1297,8 @@ func (s *CEEMSServer) projectsQuerier(users []string, w http.ResponseWriter, r *
 		projectsResponse.Warnings = append(projectsResponse.Warnings, err.Error())
 	}
 
-	if err = json.NewEncoder(w).Encode(&projectsResponse); err != nil {
+	err = json.NewEncoder(w).Encode(&projectsResponse)
+	if err != nil {
 		s.logger.Error("Failed to encode response", "err", err)
 		w.Write([]byte("KO"))
 	}
@@ -1396,7 +1417,8 @@ func (s *CEEMSServer) aggQueryBuilder(
 	tmpl := template.Must(template.New(metric).Parse(aggUsageQueries[metric]))
 	query := &bytes.Buffer{}
 
-	if err := tmpl.Execute(query, data); err != nil {
+	err = tmpl.Execute(query, data)
+	if err != nil {
 		s.logger.Error("Failed to execute query template", "metric", metric, "err", err)
 
 		return ""
@@ -1427,7 +1449,8 @@ func (s *CEEMSServer) currentUsage(users []string, fields []string, w http.Respo
 	var err, qErrs error
 
 	// Round `to` and `from` query parameters to cacheTTL
-	if err := s.roundQueryWindow(r); err != nil {
+	err = s.roundQueryWindow(r)
+	if err != nil {
 		errorResponse[any](w, &apiError{errorBadData, err}, s.logger, nil)
 
 		return
@@ -1478,7 +1501,9 @@ func (s *CEEMSServer) currentUsage(users []string, fields []string, w http.Respo
 					queryParts[i] = query
 				} else {
 					mu.Lock()
+
 					qErrs = errors.Join(fmt.Errorf("failed to build query for %s", field), qErrs)
+
 					mu.Unlock()
 				}
 			}(iField, field)
@@ -1602,7 +1627,8 @@ writer:
 		usageResponse.Warnings = append(usageResponse.Warnings, err.Error())
 	}
 
-	if err = json.NewEncoder(w).Encode(&usageResponse); err != nil {
+	err = json.NewEncoder(w).Encode(&usageResponse)
+	if err != nil {
 		s.logger.Error("Failed to encode response", "err", err)
 		w.Write([]byte("KO"))
 	}
@@ -1648,7 +1674,8 @@ func (s *CEEMSServer) globalUsage(users []string, queriedFields []string, w http
 		usageResponse.Warnings = append(usageResponse.Warnings, err.Error())
 	}
 
-	if err = json.NewEncoder(w).Encode(&usageResponse); err != nil {
+	err = json.NewEncoder(w).Encode(&usageResponse)
+	if err != nil {
 		s.logger.Error("Failed to encode response", "err", err)
 		w.Write([]byte("KO"))
 	}
@@ -1917,7 +1944,8 @@ func (s *CEEMSServer) currentStats(users []string, w http.ResponseWriter, r *htt
 		projectsResponse.Warnings = append(projectsResponse.Warnings, err.Error())
 	}
 
-	if err = json.NewEncoder(w).Encode(&projectsResponse); err != nil {
+	err = json.NewEncoder(w).Encode(&projectsResponse)
+	if err != nil {
 		s.logger.Error("Failed to encode response", "err", err)
 		w.Write([]byte("KO"))
 	}
@@ -1971,7 +1999,8 @@ func (s *CEEMSServer) globalStats(users []string, w http.ResponseWriter, r *http
 		projectsResponse.Warnings = append(projectsResponse.Warnings, err.Error())
 	}
 
-	if err = json.NewEncoder(w).Encode(&projectsResponse); err != nil {
+	err = json.NewEncoder(w).Encode(&projectsResponse)
+	if err != nil {
 		s.logger.Error("Failed to encode response", "err", err)
 		w.Write([]byte("KO"))
 	}
@@ -2099,7 +2128,9 @@ func (s *CEEMSServer) demo(w http.ResponseWriter, r *http.Request) {
 			Status: "success",
 			Data:   units,
 		}
-		if err := json.NewEncoder(w).Encode(&unitsResponse); err != nil {
+
+		err := json.NewEncoder(w).Encode(&unitsResponse)
+		if err != nil {
 			s.logger.Error("Failed to encode response", "err", err)
 			w.Write([]byte("KO"))
 		}
@@ -2115,7 +2146,9 @@ func (s *CEEMSServer) demo(w http.ResponseWriter, r *http.Request) {
 			Status: "success",
 			Data:   usage,
 		}
-		if err := json.NewEncoder(w).Encode(&usageResponse); err != nil {
+
+		err := json.NewEncoder(w).Encode(&usageResponse)
+		if err != nil {
 			s.logger.Error("Failed to encode response", "err", err)
 			w.Write([]byte("KO"))
 		}
@@ -2124,7 +2157,8 @@ func (s *CEEMSServer) demo(w http.ResponseWriter, r *http.Request) {
 
 // convertTimeLocation converts time from source location to target location.
 func convertTimeLocation(sourceLoc *time.Location, targetLoc *time.Location, val string) string {
-	if t, err := time.ParseInLocation(base.DatetimezoneLayout, val, sourceLoc); err == nil {
+	t, err := time.ParseInLocation(base.DatetimezoneLayout, val, sourceLoc)
+	if err == nil {
 		return t.In(targetLoc).Format(base.DatetimezoneLayout)
 	}
 

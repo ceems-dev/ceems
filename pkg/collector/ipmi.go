@@ -268,7 +268,8 @@ func NewIPMICollector(logger *slog.Logger) (Collector, error) {
 	}
 
 	if *ipmiDcmiCmd == "" {
-		if cmdSlice, err = findIPMICmd(); err != nil {
+		cmdSlice, err = findIPMICmd()
+		if err != nil {
 			logger.Info("None of ipmitool,ipmiutil,ipmi-dcmi commands found. Using native implementation using OpenIPMI interface")
 
 			execMode = nativeMode
@@ -301,7 +302,8 @@ func NewIPMICollector(logger *slog.Logger) (Collector, error) {
 	// Eventually we drop all the privileges and use cap_setuid and cap_setgid to
 	// execute ipmi command in subprocess as root.
 	// So we set execMode as capabilityMode here too.
-	if _, err := osexec.Execute(cmdSlice[0], cmdSlice[1:], nil); err == nil {
+	_, err = osexec.Execute(cmdSlice[0], cmdSlice[1:], nil)
+	if err == nil {
 		execMode = capabilityMode
 
 		goto outside
@@ -310,7 +312,8 @@ func NewIPMICollector(logger *slog.Logger) (Collector, error) {
 	// If ipmiDcmiCmd failed to run and if sudo is not already present in command,
 	// add sudo to command and execute. If current user has sudo rights it will be a success
 	if cmdSlice[0] != sudoMode {
-		if _, err := osexec.ExecuteWithTimeout(sudoMode, cmdSlice, 1, nil); err == nil {
+		_, err := osexec.ExecuteWithTimeout(sudoMode, cmdSlice, 1, nil)
+		if err == nil {
 			execMode = sudoMode
 
 			goto outside
@@ -319,7 +322,8 @@ func NewIPMICollector(logger *slog.Logger) (Collector, error) {
 
 	// As last attempt, run the command as root user by forking subprocess
 	// as root. If there is setuid cap on the process, it will be a success
-	if _, err := osexec.ExecuteAs(cmdSlice[0], cmdSlice[1:], 0, 0, nil); err == nil {
+	_, err = osexec.ExecuteAs(cmdSlice[0], cmdSlice[1:], 0, 0, nil)
+	if err == nil {
 		execMode = capabilityMode
 
 		goto outside
@@ -496,7 +500,8 @@ func (c *impiCollector) Stop(_ context.Context) error {
 
 	// Close fd when native mode is being used
 	if c.execMode == nativeMode {
-		if err := c.client.Close(); err != nil {
+		err := c.client.Close()
+		if err != nil {
 			c.logger.Debug("Failed to close OpenIPMI device fd", "err", err)
 
 			return err
@@ -587,7 +592,9 @@ func (c *impiCollector) getIPMIReadings() (*ipmiReadings, error) {
 func (c *impiCollector) parseCapmcOutput(stdOut []byte) (map[string]float64, error) {
 	// Unmarshal JSON output
 	var data map[string]any
-	if err := json.Unmarshal(stdOut, &data); err != nil {
+
+	err := json.Unmarshal(stdOut, &data)
+	if err != nil {
 		return nil, fmt.Errorf("%s Power readings command failed", crayPowerCap)
 	}
 
@@ -631,8 +638,10 @@ func (c *impiCollector) parseIPMIOutput(stdOut []byte) (map[string]float64, erro
 	if value == "active" || value == "Active" || value == "activated" {
 		// Get power readings
 		for rType, regex := range ipmiDCMIPowerReadingRegexMap {
-			if reading, err := getValue(stdOut, regex); err == nil {
-				if readingValue, err := strconv.ParseFloat(reading, 64); err == nil {
+			reading, err := getValue(stdOut, regex)
+			if err == nil {
+				readingValue, err := strconv.ParseFloat(reading, 64)
+				if err == nil {
 					powerReadings["dcmi_"+rType] = readingValue
 				}
 			}
@@ -682,11 +691,13 @@ func (c *impiCollector) executeCmdInSecurityContext() ([]byte, error) {
 
 	// Read stdOut of command into data
 	if securityCtx, ok := c.securityContexts[ipmiExecCmdCtx]; ok {
-		if err := securityCtx.Exec(dataPtr); err != nil {
+		err := securityCtx.Exec(dataPtr)
+		if err != nil {
 			return nil, err
 		}
 	} else {
-		if err := security.ExecAsUser(dataPtr); err != nil {
+		err := security.ExecAsUser(dataPtr)
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -706,7 +717,8 @@ func (c *impiCollector) doRequestInSecurityContext() (*ipmiReadings, error) {
 	if securityCtx, ok := c.securityContexts[openIPMICtx]; ok {
 		// Always return readings as we might have partial result
 		// in readings
-		if err := securityCtx.Exec(dataPtr); err != nil {
+		err := securityCtx.Exec(dataPtr)
+		if err != nil {
 			return dataPtr.readings, err
 		}
 	} else {
@@ -758,12 +770,15 @@ func doIPMIRequests(data any) error {
 func findIPMICmd() ([]string, error) {
 	for _, cmd := range ipmiDcmiCmds {
 		cmdSlice := strings.Split(cmd, " ")
-		if _, err := exec.LookPath(cmdSlice[0]); err == nil {
+
+		_, err := exec.LookPath(cmdSlice[0])
+		if err == nil {
 			return cmdSlice, nil
 		}
 
 		// Check if binary exists in /sbin or /usr/sbin
-		if _, err := lookPath(cmdSlice[0]); err == nil {
+		_, err = lookPath(cmdSlice[0])
+		if err == nil {
 			return cmdSlice, nil
 		}
 	}

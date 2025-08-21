@@ -85,7 +85,9 @@ func (e FactorProviders) Collect() map[string]PayLoad {
 			}
 
 			emissionsMu.Lock()
+
 			emissionFactors[name] = PayLoad{Factor: factor, Name: e.ProviderNames[name]}
+
 			emissionsMu.Unlock()
 			wg.Done()
 		}(name, s)
@@ -107,11 +109,14 @@ func (e FactorProviders) Stop() error {
 		go func(name string, s Provider) {
 			defer wg.Done()
 
-			if err := s.Stop(); err != nil {
+			err := s.Stop()
+			if err != nil {
 				e.logger.Error("Failed to stop emission factor updater", "provider", name, "err", err)
 
 				errorsMu.Lock()
+
 				errs = errors.Join(errs, err)
+
 				errorsMu.Unlock()
 
 				return

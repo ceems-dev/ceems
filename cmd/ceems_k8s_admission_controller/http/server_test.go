@@ -71,6 +71,7 @@ func TestNewAdmissionControllerServer(t *testing.T) {
 		require.NoError(t, err, test.name)
 
 		defer resp.Body.Close()
+
 		assert.Equal(t, test.code, resp.StatusCode, test.name)
 	}
 

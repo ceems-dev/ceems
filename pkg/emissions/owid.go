@@ -68,7 +68,8 @@ func readOWIDData(contents []byte) (EmissionFactors, error) {
 		}
 
 		// Populate emissionFactors map
-		if val, err := strconv.ParseFloat(record[3], 64); err == nil {
+		val, err := strconv.ParseFloat(record[3], 64)
+		if err == nil {
 			emissionFactors[countryCode] = EmissionFactor{record[0], val}
 		}
 	}

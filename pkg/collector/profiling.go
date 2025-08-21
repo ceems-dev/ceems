@@ -48,7 +48,8 @@ func NewProfiler(c *profilerConfig) (Profiler, error) {
 	}
 
 	// Check if perf_event_paranoid allows to read perf events
-	if err := perfEventsAvailable(); err != nil {
+	err = perfEventsAvailable()
+	if err != nil {
 		c.logger.Error("Perf events are not available", "err", err)
 
 		return nil, err
@@ -164,7 +165,8 @@ func NewProfiler(c *profilerConfig) (Profiler, error) {
 		"cap_sys_resource",
 	}
 
-	if _, err = setupAppCaps(capabilities); err != nil {
+	_, err = setupAppCaps(capabilities)
+	if err != nil {
 		c.logger.Warn("Failed to parse capability name(s)", "err", err)
 	}
 
@@ -189,7 +191,8 @@ func (p *eBPFProfiler) Start(ctx context.Context) error {
 	p.logger.Debug("Starting profiling session")
 
 	// Start a new profiling session
-	if err := p.session.Start(); err != nil {
+	err := p.session.Start()
+	if err != nil {
 		p.logger.Error("Failed to start a profiling session", "err", err)
 
 		return err
@@ -197,8 +200,10 @@ func (p *eBPFProfiler) Start(ctx context.Context) error {
 
 	// Ingest profiles in a separate go routine
 	profiles := make(chan *pushv1.PushRequest, 512)
+
 	go func() {
-		if err := p.ingest(ctx, profiles); err != nil {
+		err := p.ingest(ctx, profiles)
+		if err != nil {
 			p.logger.Error("Failed to setup profiles ingest", "err", err)
 		}
 	}()
@@ -213,7 +218,8 @@ func (p *eBPFProfiler) Start(ctx context.Context) error {
 		case <-discoverTicker.C:
 			p.session.UpdateTargets(p.convertTargetOptions())
 		case <-collectTicker.C:
-			if err := p.collectProfiles(ctx, profiles); err != nil {
+			err := p.collectProfiles(ctx, profiles)
+			if err != nil {
 				p.logger.Error("Failed to collect profiles", "err", err)
 			}
 		case <-ctx.Done():
@@ -244,7 +250,9 @@ func (p *eBPFProfiler) collectProfiles(ctx context.Context, profiles chan *pushv
 		SampleRate:    int64(p.sessionOptions.SampleRate),
 		PerPIDProfile: true,
 	})
-	if err := pprof.Collect(builders, p.session); err != nil {
+
+	err := pprof.Collect(builders, p.session)
+	if err != nil {
 		return err
 	}
 
@@ -269,7 +277,9 @@ func (p *eBPFProfiler) collectProfiles(ctx context.Context, profiles chan *pushv
 
 		// Read profile sample into buffer
 		buf := bytes.NewBuffer(nil)
-		if _, err := builder.Write(buf); err != nil {
+
+		_, err := builder.Write(buf)
+		if err != nil {
 			p.logger.Error("Failed to write profile data into buffer. Dropping sample", "target", builder.Labels.String(), "err", err)
 
 			continue
@@ -310,7 +320,8 @@ func (p *eBPFProfiler) ingest(ctx context.Context, profiles chan *pushv1.PushReq
 	for {
 		it := <-profiles
 
-		if _, err := client.Push(ctx, connect.NewRequest(it)); err != nil {
+		_, err := client.Push(ctx, connect.NewRequest(it))
+		if err != nil {
 			p.logger.Error("Failed to push profile sample", "err", err)
 		}
 	}

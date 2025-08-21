@@ -35,7 +35,8 @@ func queryServer(address, port string) error {
 		return err
 	}
 
-	if err := resp.Body.Close(); err != nil {
+	err = resp.Body.Close()
+	if err != nil {
 		return err
 	}
 
@@ -162,7 +163,8 @@ redfish_config:
 
 	// Query exporter
 	for i := range 10 {
-		if err := queryServer("localhost:5000", port); err == nil {
+		err := queryServer("localhost:5000", port)
+		if err == nil {
 			break
 		}
 

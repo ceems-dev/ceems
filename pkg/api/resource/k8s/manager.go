@@ -94,7 +94,9 @@ func init() {
 func New(cluster models.Cluster, logger *slog.Logger) (resource.Fetcher, error) {
 	// Fetch any provided from extra_config
 	var c k8sConfig
-	if err := cluster.Extra.Decode(&c); err != nil {
+
+	err := cluster.Extra.Decode(&c)
+	if err != nil {
 		logger.Error("Failed to decode extra_config for k8s cluster", "id", cluster.ID, "err", err)
 
 		return nil, err
@@ -120,14 +122,16 @@ func New(cluster models.Cluster, logger *slog.Logger) (resource.Fetcher, error) 
 	mainConfig.SetDirectory(filepath.Dir(base.ConfigFilePath))
 
 	// Create a new pod informer
-	if err := client.NewPodInformer(time.Duration(mainConfig.Server.Data.UpdateInterval)); err != nil {
+	err = client.NewPodInformer(time.Duration(mainConfig.Server.Data.UpdateInterval))
+	if err != nil {
 		logger.Error("Failed to create k8s pod informer", "id", cluster.ID, "err", err)
 
 		return nil, err
 	}
 
 	// Start pod informer
-	if err := client.StartInformer(); err != nil {
+	err = client.StartInformer()
+	if err != nil {
 		logger.Error("Failed to start k8s pod informer", "id", cluster.ID, "err", err)
 
 		return nil, err
@@ -426,12 +430,14 @@ func (k *k8sManager) fetchUserNSs(ctx context.Context, current time.Time) ([]mod
 	currentTime := current.Format(base.DatetimezoneLayout)
 
 	// Check if the configmap is available to fetch users
-	if content, err := os.ReadFile(k.config.NSUsersListFile); err == nil {
+	content, err := os.ReadFile(k.config.NSUsersListFile)
+	if err == nil {
 		var usersDB struct {
 			NSUsers map[string][]string `yaml:"users"`
 		}
 
-		if err := yaml.Unmarshal(content, &usersDB); err == nil {
+		err := yaml.Unmarshal(content, &usersDB)
+		if err == nil {
 			nsUsers = usersDB.NSUsers
 
 			for ns, users := range usersDB.NSUsers {
@@ -443,7 +449,8 @@ func (k *k8sManager) fetchUserNSs(ctx context.Context, current time.Time) ([]mod
 	}
 
 	// Merge users and namespaces from RBAC
-	if rbacUsers, err := k.client.ListUsers(ctx, ""); err == nil {
+	rbacUsers, err := k.client.ListUsers(ctx, "")
+	if err == nil {
 		for ns, users := range rbacUsers {
 			for _, user := range users {
 				usersNSs[user] = append(usersNSs[user], ns)

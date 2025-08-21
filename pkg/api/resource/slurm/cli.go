@@ -62,7 +62,8 @@ func preflightsCLI(slurm *slurmScheduler) error {
 		slurm.cluster.CLI.Path = filepath.Dir(path)
 	} else {
 		// Check if slurm binary directory exists at the given path
-		if _, err := os.Stat(slurm.cluster.CLI.Path); err != nil {
+		_, err := os.Stat(slurm.cluster.CLI.Path)
+		if err != nil {
 			slurm.logger.Error("Failed to open SLURM bin dir", "path", slurm.cluster.CLI.Path, "err", err)
 
 			return err
@@ -82,7 +83,8 @@ func preflightsCLI(slurm *slurmScheduler) error {
 	}
 
 	// If current user is root or if current process has necessary caps setup security context
-	if currentUser, err := user.Current(); err == nil && currentUser.Uid == "0" || haveCaps {
+	currentUser, err := user.Current()
+	if err == nil && currentUser.Uid == "0" || haveCaps {
 		slurm.cmdExecMode = capabilityMode
 		slurm.logger.Info("Current user/process have enough privileges to execute SLURM commands", "user", currentUser.Username)
 
@@ -124,7 +126,8 @@ func preflightsCLI(slurm *slurmScheduler) error {
 	sacctPath := filepath.Join(slurm.cluster.CLI.Path, "sacct")
 
 	// Last attempt to run sacct with sudo
-	if _, err := internal_osexec.ExecuteWithTimeout("sudo", []string{sacctPath, "--help"}, 5, nil); err == nil {
+	_, err = internal_osexec.ExecuteWithTimeout("sudo", []string{sacctPath, "--help"}, 5, nil)
+	if err == nil {
 		slurm.cmdExecMode = sudoMode
 		slurm.logger.Info("sudo will be used to execute SLURM commands")
 
@@ -186,6 +189,7 @@ func parseSacctCmdOutput(sacctOutput string, start time.Time, end time.Time) ([]
 
 			// Attempt to convert strings to int and ignore any errors in conversion
 			var gidInt, uidInt int64
+
 			gidInt, _ = strconv.ParseInt(components[sacctFieldMap["gid"]], 10, 64)
 			uidInt, _ = strconv.ParseInt(components[sacctFieldMap["uid"]], 10, 64)
 			// elapsedSeconds, _ = strconv.ParseInt(components[sacctFieldMap["elapsedraw"]], 10, 64)
@@ -194,7 +198,8 @@ func parseSacctCmdOutput(sacctOutput string, start time.Time, end time.Time) ([]
 			eventTS := make(map[string]int64, 3)
 
 			for _, c := range []string{"submit", "start", "end"} {
-				if t, err := time.Parse(base.DatetimezoneLayout, components[sacctFieldMap[c]]); err == nil {
+				t, err := time.Parse(base.DatetimezoneLayout, components[sacctFieldMap[c]])
+				if err == nil {
 					components[sacctFieldMap[c]] = t.In(loc).Format(base.DatetimezoneLayout)
 				}
 
@@ -213,7 +218,8 @@ func parseSacctCmdOutput(sacctOutput string, start time.Time, end time.Time) ([]
 				matches := gresRegex.FindStringSubmatch(elem)
 
 				if len(matches) == 2 {
-					if val, err := strconv.ParseInt(matches[1], 10, 64); err == nil {
+					val, err := strconv.ParseInt(matches[1], 10, 64)
+					if err == nil {
 						ngpus = val
 					}
 				}
@@ -245,7 +251,8 @@ func parseSacctCmdOutput(sacctOutput string, start time.Time, end time.Time) ([]
 			var mem int64
 
 			if len(matches) >= 2 {
-				if memFloat, err := strconv.ParseFloat(matches[1], 64); err == nil {
+				memFloat, err := strconv.ParseFloat(matches[1], 64)
+				if err == nil {
 					if len(matches) == 3 {
 						if unitConv, ok := toBytes[matches[2]]; ok {
 							mem = int64(memFloat) * unitConv
@@ -297,6 +304,7 @@ func parseSacctCmdOutput(sacctOutput string, start time.Time, end time.Time) ([]
 
 			// Get cpuSeconds and gpuSeconds of the current interval
 			var cpuSeconds, gpuSeconds int64
+
 			cpuSeconds = ncpus * elapsedSeconds
 			gpuSeconds = ngpus * elapsedSeconds
 
@@ -370,8 +378,10 @@ func parseSacctCmdOutput(sacctOutput string, start time.Time, end time.Time) ([]
 			}
 
 			jobLock.Lock()
+
 			jobs[i] = jobStat
 			numJobs += 1
+
 			jobLock.Unlock()
 			wg.Done()
 		}(iline, line)
@@ -425,10 +435,12 @@ func parseSacctMgrCmdOutput(sacctMgrOutput string, currentTime string) ([]models
 
 			// Add user project association to map
 			assocLock.Lock()
+
 			userProjectMap[components[1]] = append(userProjectMap[components[1]], components[0])
 			projectUserMap[components[0]] = append(projectUserMap[components[0]], components[1])
 			users = append(users, components[1])
 			projects = append(projects, components[0])
+
 			assocLock.Unlock()
 			wg.Done()
 		}(line)
@@ -606,7 +618,8 @@ func executeInSecurityContext(
 	dataPtr *security.ExecSecurityCtxData,
 ) ([]byte, error) {
 	// Read stdOut of command into data
-	if err := securityCtx.Exec(dataPtr); err != nil {
+	err := securityCtx.Exec(dataPtr)
+	if err != nil {
 		return nil, err
 	}
 

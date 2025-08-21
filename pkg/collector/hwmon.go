@@ -90,7 +90,8 @@ func NewHwmonCollector(logger *slog.Logger) (Collector, error) {
 	}
 
 	// Discover monitors
-	if err := hwmonCollector.discoverMonitors(); err != nil {
+	err := hwmonCollector.discoverMonitors()
+	if err != nil {
 		logger.Error("Failed to discover power and/or energy hwmon", "err", err)
 
 		return nil, err
@@ -172,7 +173,8 @@ func (c *hwmonCollector) discoverMonitors() error {
 			continue
 		}
 
-		if mon, err := getHwmon(hwmonXPathName); err == nil && mon != nil {
+		mon, err := getHwmon(hwmonXPathName)
+		if err == nil && mon != nil {
 			c.monitors = append(c.monitors, mon)
 		}
 	}
@@ -197,7 +199,8 @@ func getHwmon(dir string) (*hwmon, error) {
 		return nil, err
 	}
 
-	if _, err := os.Stat(filepath.Join(dir, "device")); err == nil {
+	_, err = os.Stat(filepath.Join(dir, "device"))
+	if err == nil {
 		s, err := collectSensors(filepath.Join(dir, "device"))
 		if err != nil {
 			return nil, err
@@ -213,7 +216,8 @@ func getHwmon(dir string) (*hwmon, error) {
 
 	hwmon := &hwmon{dir: dir, name: hwmonName, sensors: sensors}
 
-	if hwmonChipName, err := hwmonHumanReadableChipName(dir); err == nil {
+	hwmonChipName, err := hwmonHumanReadableChipName(dir)
+	if err == nil {
 		hwmon.chipName = hwmonChipName
 	}
 
@@ -320,7 +324,8 @@ func parseSensorFilename(filename string) (bool, string, int, string) {
 		}
 
 		if match == "id" && len(matches[i]) > 0 {
-			if num, err := strconv.Atoi(matches[i]); err == nil {
+			num, err := strconv.Atoi(matches[i])
+			if err == nil {
 				sensorNum = num
 			} else {
 				return false, sensorType, sensorNum, sensorProperty
@@ -385,7 +390,8 @@ func readSensorValue(file string) float64 {
 		return 0
 	}
 
-	if parsedValue, err := strconv.ParseFloat(strings.Trim(string(raw), "\n"), 64); err == nil {
+	parsedValue, err := strconv.ParseFloat(strings.Trim(string(raw), "\n"), 64)
+	if err == nil {
 		return parsedValue
 	}
 

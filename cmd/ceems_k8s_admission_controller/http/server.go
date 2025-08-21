@@ -76,7 +76,8 @@ func NewAdmissionControllerServer(c *base.Config) (*AdmissionControllerServer, e
 func (s *AdmissionControllerServer) Start() error {
 	s.logger.Info("Starting " + base.AppName)
 
-	if err := web.ListenAndServe(s.server, s.webConfig, s.logger); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	err := web.ListenAndServe(s.server, s.webConfig, s.logger)
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		s.logger.Error("Failed to Listen and Serve HTTP server", "err", err)
 
 		return err
@@ -91,7 +92,8 @@ func (s *AdmissionControllerServer) Shutdown(ctx context.Context) error {
 
 	// First shutdown HTTP server to avoid accepting any incoming
 	// connections
-	if err := s.server.Shutdown(ctx); err != nil {
+	err := s.server.Shutdown(ctx)
+	if err != nil {
 		s.logger.Error("Failed to stop exporter's HTTP server")
 
 		return err

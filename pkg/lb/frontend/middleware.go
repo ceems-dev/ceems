@@ -183,10 +183,12 @@ func newAuthMiddleware(c *Config) (*authenticationMiddleware, error) {
 
 		// Set DB pointer only if file exists. Else sql.Open will create an empty
 		// file as if exists already
-		if _, err := os.Stat(dbAbsPath); err == nil {
+		_, err = os.Stat(dbAbsPath)
+		if err == nil {
 			dsn := fmt.Sprintf("file:%s?%s", dbAbsPath, "_mutex=no&mode=ro&_busy_timeout=5000")
 
-			if db, err = sql.Open("sqlite3", dsn); err != nil {
+			db, err = sql.Open("sqlite3", dsn)
+			if err != nil {
 				return nil, err
 			}
 		}
@@ -203,7 +205,8 @@ func newAuthMiddleware(c *Config) (*authenticationMiddleware, error) {
 		}
 
 		// Make a CEEMS API server client from client config
-		if ceemsClient, err = config.NewClientFromConfig(c.APIServer.Web.HTTPClientConfig, "ceems_api_server"); err != nil {
+		ceemsClient, err = config.NewClientFromConfig(c.APIServer.Web.HTTPClientConfig, "ceems_api_server")
+		if err != nil {
 			return nil, err
 		}
 
@@ -261,7 +264,9 @@ func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler 
 				ErrorType: "bad_request",
 				Error:     "invalid cluster ID. Set cluster ID using X-Ceems-Cluster-Id header in Prometheus datasource.",
 			}
-			if err := json.NewEncoder(w).Encode(&response); err != nil {
+
+			err := json.NewEncoder(w).Encode(&response)
+			if err != nil {
 				amw.logger.Error("Failed to encode response", "err", err)
 				w.Write([]byte("KO"))
 			}
@@ -295,7 +300,9 @@ func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler 
 				ErrorType: "unauthorized",
 				Error:     "no user header found. Make sure to set send_user_header = true in [dataproxy] section of Grafana configuration file.",
 			}
-			if err := json.NewEncoder(w).Encode(&response); err != nil {
+
+			err := json.NewEncoder(w).Encode(&response)
+			if err != nil {
 				amw.logger.Error("Failed to encode response", "err", err)
 				w.Write([]byte("KO"))
 			}
@@ -324,7 +331,9 @@ func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler 
 				ErrorType: "forbidden",
 				Error:     "user do not have permissions to this resource",
 			}
-			if err := json.NewEncoder(w).Encode(&response); err != nil {
+
+			err := json.NewEncoder(w).Encode(&response)
+			if err != nil {
 				amw.logger.Error("Failed to encode response", "err", err)
 				w.Write([]byte("KO"))
 			}
@@ -334,7 +343,8 @@ func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler 
 
 		// Clone request, parse query params and set them in request context
 		// This will ensure we set query params in request's context always
-		if err = amw.parseRequest(reqParams, r); err != nil {
+		err = amw.parseRequest(reqParams, r)
+		if err != nil {
 			amw.logger.Error("Failed to parse query in the request", "logged_user", loggedUser, "err", err)
 		}
 
@@ -360,7 +370,9 @@ func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler 
 				ErrorType: "forbidden",
 				Error:     "user do not have permissions to view unit metrics",
 			}
-			if err := json.NewEncoder(w).Encode(&response); err != nil {
+
+			err := json.NewEncoder(w).Encode(&response)
+			if err != nil {
 				amw.logger.Error("Failed to encode response", "err", err)
 				w.Write([]byte("KO"))
 			}
@@ -426,13 +438,15 @@ func (amw *authenticationMiddleware) isUserUnit(
 	// Make request
 	// If request failed, forbid the query. It can happen when CEEMS API server
 	// goes offline and we should wait for it to come back online
-	if resp, err := amw.ceems.client.Do(req); err != nil {
+	resp, err := amw.ceems.client.Do(req)
+	if err != nil {
 		amw.logger.Error("Failed to make request for unit ownership verification",
 			"user", user, "queried_uuids", strings.Join(uuids, ","), "err", err)
 
 		return false
 	} else if resp.StatusCode != http.StatusOK {
 		defer resp.Body.Close()
+
 		amw.logger.Error("Unauthorised query", "user", user,
 			"queried_uuids", strings.Join(uuids, ","), "status_code", resp.StatusCode)
 

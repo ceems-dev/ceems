@@ -48,7 +48,7 @@ pkill ceems_exporter || true
 pkill ceems_api_server || true
 pkill ceems_lb || true
 pkill redfish_proxy || true
-pkill ceems_k8s_admission_controller || true
+pkill ceems_k8s_admis || true
 
 if [[ "${scenario}" =~ ^"exporter" ]]
 then

@@ -33,7 +33,9 @@ func apiRequest[T any](req *http.Request, client *http.Client) (T, error) {
 
 	// Unpack into data
 	var data T
-	if err = json.Unmarshal(body, &data); err != nil {
+
+	err = json.Unmarshal(body, &data)
+	if err != nil {
 		return *new(T), err
 	}
 

@@ -73,7 +73,8 @@ func (h *admissionHandler) Serve(hook base.Hook) http.HandlerFunc {
 
 		var obj runtime.Object
 
-		if obj, gvk, err = h.decoder.Decode(body, nil, nil); err != nil {
+		obj, gvk, err = h.decoder.Decode(body, nil, nil)
+		if err != nil {
 			h.logger.Error("Failed to decode body into admission review", "err", err)
 
 			http.Error(w, fmt.Sprintf("could not deserialize request: %v", err), http.StatusBadRequest)
@@ -229,7 +230,8 @@ func (h *admissionHandler) Serve(hook base.Hook) http.HandlerFunc {
 		// Write response
 		w.WriteHeader(http.StatusOK)
 
-		if err = json.NewEncoder(w).Encode(&responseObj); err != nil {
+		err = json.NewEncoder(w).Encode(&responseObj)
+		if err != nil {
 			h.logger.Error("Failed to encode response", "path", r.URL.Path, "version", version, "uid", uid, "err", err)
 			http.Error(w, fmt.Sprintf("could not marshal JSON patch: %v", err), http.StatusInternalServerError)
 		}

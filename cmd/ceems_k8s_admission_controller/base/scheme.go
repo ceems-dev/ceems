@@ -20,23 +20,28 @@ func NewRuntimeScheme() (*runtime.Scheme, error) {
 	runtimeScheme := runtime.NewScheme()
 
 	// Add resources to runtime scheme
-	if err := corev1.AddToScheme(runtimeScheme); err != nil {
+	err := corev1.AddToScheme(runtimeScheme)
+	if err != nil {
 		return nil, fmt.Errorf("failed to add core resources to runtime scheme: %w", err)
 	}
 
-	if err := appsv1.AddToScheme(runtimeScheme); err != nil {
+	err = appsv1.AddToScheme(runtimeScheme)
+	if err != nil {
 		return nil, fmt.Errorf("failed to add apps resources to runtime scheme: %w", err)
 	}
 
-	if err := batchv1.AddToScheme(runtimeScheme); err != nil {
+	err = batchv1.AddToScheme(runtimeScheme)
+	if err != nil {
 		return nil, fmt.Errorf("failed to add batch resources to runtime scheme: %w", err)
 	}
 
-	if err := admissionv1beta1.AddToScheme(runtimeScheme); err != nil {
+	err = admissionv1beta1.AddToScheme(runtimeScheme)
+	if err != nil {
 		return nil, fmt.Errorf("failed to add v1beta1 admission resources to runtime scheme: %w", err)
 	}
 
-	if err := admissionv1.AddToScheme(runtimeScheme); err != nil {
+	err = admissionv1.AddToScheme(runtimeScheme)
+	if err != nil {
 		return nil, fmt.Errorf("failed to add v1 admission resources to runtime scheme: %w", err)
 	}
 

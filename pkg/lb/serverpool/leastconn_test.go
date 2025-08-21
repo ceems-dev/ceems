@@ -84,6 +84,7 @@ func TestLeastConnectionLB(t *testing.T) {
 		for _, id := range lcIDs {
 			dummyServer := httptest.NewServer(h)
 			defer dummyServer.Close()
+
 			backendURL, err := url.Parse(dummyServer.URL)
 			require.NoError(t, err)
 

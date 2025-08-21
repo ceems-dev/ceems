@@ -202,30 +202,33 @@ func (p *DeviceAttrsShared) UnmarshalXML(d *xml.Decoder, start xml.StartElement)
 		DecCount string   `xml:"decoder_count"`
 	}
 
-	if err := d.DecodeElement(&tmp, &start); err != nil {
+	err := d.DecodeElement(&tmp, &start)
+	if err != nil {
 		return err
 	}
-
-	var err error
 
 	p.XMLName = tmp.XMLName
 
 	// In case of errors set count to 1. This is especially important for
 	// SMCount as we compute SMFrac with it and if we set it zero, fractions
 	// will be NaN.
-	if p.SMCount, err = strconv.ParseUint(tmp.SMCount, 10, 64); err != nil {
+	p.SMCount, err = strconv.ParseUint(tmp.SMCount, 10, 64)
+	if err != nil {
 		p.SMCount = 1
 	}
 
-	if p.CECount, err = strconv.ParseUint(tmp.CECount, 10, 64); err != nil {
+	p.CECount, err = strconv.ParseUint(tmp.CECount, 10, 64)
+	if err != nil {
 		p.CECount = 1
 	}
 
-	if p.EncCount, err = strconv.ParseUint(tmp.EncCount, 10, 64); err != nil {
+	p.EncCount, err = strconv.ParseUint(tmp.EncCount, 10, 64)
+	if err != nil {
 		p.EncCount = 1
 	}
 
-	if p.DecCount, err = strconv.ParseUint(tmp.DecCount, 10, 64); err != nil {
+	p.DecCount, err = strconv.ParseUint(tmp.DecCount, 10, 64)
+	if err != nil {
 		p.DecCount = 1
 	}
 
@@ -266,22 +269,24 @@ func (p *MIGDevice) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		Bar1Memory    Memory      `xml:"bar1_memory_usage"`
 	}
 
-	if err := d.DecodeElement(&tmp, &start); err != nil {
+	err := d.DecodeElement(&tmp, &start)
+	if err != nil {
 		return err
 	}
 
-	var err error
-
 	// In case of errors return more intuitive error message.
-	if p.Index, err = strconv.ParseUint(tmp.Index, 10, 64); err != nil {
+	p.Index, err = strconv.ParseUint(tmp.Index, 10, 64)
+	if err != nil {
 		return fmt.Errorf("invalid mig index %s: %w", tmp.Index, err)
 	}
 
-	if p.GPUInstID, err = strconv.ParseUint(tmp.GPUInstID, 10, 64); err != nil {
+	p.GPUInstID, err = strconv.ParseUint(tmp.GPUInstID, 10, 64)
+	if err != nil {
 		return fmt.Errorf("invalid mig gpu instance id %s: %w", tmp.GPUInstID, err)
 	}
 
-	if p.ComputeInstID, err = strconv.ParseUint(tmp.ComputeInstID, 10, 64); err != nil {
+	p.ComputeInstID, err = strconv.ParseUint(tmp.ComputeInstID, 10, 64)
+	if err != nil {
 		return fmt.Errorf("invalid mig compute instance id %s: %w", tmp.ComputeInstID, err)
 	}
 
@@ -584,7 +589,8 @@ func NewGPUSMI(k8sClient *ceems_k8s.Client, logger *slog.Logger) (*GPUSMI, error
 		switch v.id {
 		case nvidia:
 			// Look up nvidia-smi command
-			if smiCmd, err := lookupSmiCmd(*nvidiaSmiPath, nvidiaSMIQueryCmd[0]); err == nil {
+			smiCmd, err := lookupSmiCmd(*nvidiaSmiPath, nvidiaSMIQueryCmd[0])
+			if err == nil {
 				vendors[iv].smiCmd = smiCmd
 				vendors[iv].smiQueryCmd = nvidiaSMIQueryCmd
 			}
@@ -594,11 +600,13 @@ func NewGPUSMI(k8sClient *ceems_k8s.Client, logger *slog.Logger) (*GPUSMI, error
 			// Always prefer amd-smi to rocm-smi. This is preferred way
 			// to query for AMD GPUs
 			// Ref: https://rocm.blogs.amd.com/software-tools-optimization/amd-smi-overview/README.html#transitioning-from-rocm-smi
-			if smiCmd, err := lookupSmiCmd(*amdSmiPath, amdSMIQueryCmd[0]); err == nil {
+			smiCmd, err := lookupSmiCmd(*amdSmiPath, amdSMIQueryCmd[0])
+			if err == nil {
 				vendors[iv].smiCmd = smiCmd
 				vendors[iv].smiQueryCmd = amdSMIQueryCmd
 			} else {
-				if smiCmd, err := lookupSmiCmd(*rocmSmiPath, rocmSMIQueryCmd[0]); err == nil {
+				smiCmd, err := lookupSmiCmd(*rocmSmiPath, rocmSMIQueryCmd[0])
+				if err == nil {
 					vendors[iv].smiCmd = smiCmd
 					vendors[iv].smiQueryCmd = rocmSMIQueryCmd
 				}
@@ -631,7 +639,8 @@ func NewGPUSMI(k8sClient *ceems_k8s.Client, logger *slog.Logger) (*GPUSMI, error
 				smiQueryCmd = amdSMIQueryCmd
 			}
 
-			if pods, err := k8sClient.ListPods(ctx, "", opts); err == nil && len(pods) > 0 {
+			pods, err := k8sClient.ListPods(ctx, "", opts)
+			if err == nil && len(pods) > 0 {
 				vendors[iv].k8sNS = pods[0].Namespace
 				vendors[iv].k8sPod = pods[0].Name
 
@@ -931,7 +940,8 @@ func (g *GPUSMI) amdGPUDevices(vendor vendor) ([]Device, error) {
 	// be a good starting point.
 	// A playground that is useful: https://goplay.tools/snippet/gvpJ3B5Resq
 	// This is taken from unit tests of upstream!!
-	if deviceProperties, err := parseAMDDevPropertiesFromPCIDevices(); err == nil {
+	deviceProperties, err := parseAMDDevPropertiesFromPCIDevices()
+	if err == nil {
 		for idev, dev := range devices {
 			// Ensure that we device properties corresponding to physical bus ID
 			if devProperties, ok := deviceProperties[strings.ToLower(dev.BusID.pathName)]; ok {
@@ -970,7 +980,8 @@ func (g *GPUSMI) execute(vendor vendor, cmd []string) ([]byte, error) {
 
 	// If smi command is found, always prefer to execute it natively
 	if vendor.smiCmd != "" {
-		if cmdOut, err := osexec.ExecuteContext(ctx, vendor.smiCmd, cmd[1:], nil); err == nil {
+		cmdOut, err := osexec.ExecuteContext(ctx, vendor.smiCmd, cmd[1:], nil)
+		if err == nil {
 			g.logger.Debug("GPU query command executed natively", "vendor", vendor.name, "cmd", strings.Join(cmd, " "))
 
 			return cmdOut, nil
@@ -979,7 +990,8 @@ func (g *GPUSMI) execute(vendor vendor, cmd []string) ([]byte, error) {
 
 	// If k8sclient is available, attempt to execute command inside container
 	if g.k8sClient != nil {
-		if stdout, _, err := g.k8sClient.Exec(ctx, vendor.k8sNS, vendor.k8sPod, vendor.k8sContainer, cmd); err == nil {
+		stdout, _, err := g.k8sClient.Exec(ctx, vendor.k8sNS, vendor.k8sPod, vendor.k8sContainer, cmd)
+		if err == nil {
 			g.logger.Debug("GPU query command executed inside pod", "vendor", vendor.name, "cmd", strings.Join(cmd, " "), "pod", fmt.Sprintf("%s/%s/%s", vendor.k8sNS, vendor.k8sPod, vendor.k8sContainer))
 
 			return stdout, nil
@@ -1006,17 +1018,20 @@ func detectVendors() ([]vendor, error) {
 		// PCI class 0x12 is for processing accelerators. MI300X GPUs seems to have this class ID.
 		// Check if class starts with "0x03" and if it does, it means it is a GPU device
 		// Ref: https://pcisig.com/sites/default/files/files/PCI_Code-ID_r_1_11__v24_Jan_2019.pdf
-		if classBytes, err := os.ReadFile(filepath.Join(devPath, "class")); err == nil {
+		classBytes, err := os.ReadFile(filepath.Join(devPath, "class"))
+		if err == nil {
 			if class := strings.TrimSpace(strings.Trim(string(classBytes), "\n")); !strings.HasPrefix(class, "0x03") && !strings.HasPrefix(class, "0x12") {
 				continue
 			}
 
-			if idBytes, err := os.ReadFile(filepath.Join(devPath, "vendor")); err == nil {
+			idBytes, err := os.ReadFile(filepath.Join(devPath, "vendor"))
+			if err == nil {
 				// Strip new lines and spaces
 				idString := strings.TrimSpace(strings.Trim(string(idBytes), "\n"))
 
 				// Let Go pick the base as vendor IDs will be prefixed by "0x"
-				if id, err := strconv.ParseUint(idString, 0, 16); err == nil {
+				id, err := strconv.ParseUint(idString, 0, 16)
+				if err == nil {
 					vendorIDs = append(vendorIDs, id)
 				}
 			}
@@ -1047,13 +1062,15 @@ func detectVendors() ([]vendor, error) {
 // to `nvidia-smi`/`rocm-smi` command on host.
 func lookupSmiCmd(customCmd string, fallbackCmd string) (string, error) {
 	if customCmd != "" {
-		if _, err := os.Stat(customCmd); err != nil {
+		_, err := os.Stat(customCmd)
+		if err != nil {
 			return "", err
 		}
 
 		return customCmd, nil
 	} else {
-		if _, err := exec.LookPath(fallbackCmd); err != nil {
+		_, err := exec.LookPath(fallbackCmd)
+		if err != nil {
 			return "", err
 		} else {
 			return fallbackCmd, nil
@@ -1070,7 +1087,9 @@ func parseNvidiaSmiOutput(cmdOutput []byte) ([]Device, error) {
 
 	// Read XML byte array into gpu
 	var nvidiaSMILog NVIDIASMILog
-	if err := xml.Unmarshal(cmdOutput, &nvidiaSMILog); err != nil {
+
+	err := xml.Unmarshal(cmdOutput, &nvidiaSMILog)
+	if err != nil {
 		return nil, fmt.Errorf("failed to parse nvidia-smi xml log %w", err)
 	}
 
@@ -1248,7 +1267,9 @@ func parseRocmSmioutput(cmdOutput []byte) ([]Device, error) {
 
 	// Unmarshall output into AMDSMILog struct
 	amdDevs := make(map[string]ROCMSMI)
-	if err := json.Unmarshal(cmdOutput, &amdDevs); err != nil {
+
+	err := json.Unmarshal(cmdOutput, &amdDevs)
+	if err != nil {
 		return nil, fmt.Errorf("failed to parse ROCM SMI output: %w", err)
 	}
 
@@ -1260,8 +1281,10 @@ func parseRocmSmioutput(cmdOutput []byte) ([]Device, error) {
 
 	// Sort cards slices based on index
 	slices.SortFunc(cardIDs, func(a, b string) int {
-		if aIndx, err := strconv.ParseInt(strings.TrimPrefix(a, "card"), 10, 64); err == nil {
-			if bIndx, err := strconv.ParseInt(strings.TrimPrefix(b, "card"), 10, 64); err == nil {
+		aIndx, err := strconv.ParseInt(strings.TrimPrefix(a, "card"), 10, 64)
+		if err == nil {
+			bIndx, err := strconv.ParseInt(strings.TrimPrefix(b, "card"), 10, 64)
+			if err == nil {
 				return cmp.Compare(aIndx, bIndx)
 			}
 		}
@@ -1393,7 +1416,9 @@ func parseAmdSmioutput(cmdOutput []byte) ([]Device, error) {
 
 	// Unmarshall output into AMDSMILog struct
 	var amdDevs []AMDGPU
-	if err := json.Unmarshal(cmdOutput, &amdDevs); err != nil {
+
+	err := json.Unmarshal(cmdOutput, &amdDevs)
+	if err != nil {
 		return nil, fmt.Errorf("failed to parse AMD SMI output: %w", err)
 	}
 
@@ -1563,7 +1588,8 @@ func parseAMDDevPropertiesFromPCIDevices() (map[string][]AMDNodeProperties, erro
 		}
 
 		// Convert render ID to uint64
-		if rID, err := strconv.ParseUint(id, 10, 64); err == nil {
+		rID, err := strconv.ParseUint(id, 10, 64)
+		if err == nil {
 			if val, ok := renderDevIDs[rID]; ok {
 				bdf := filepath.Base(path)
 				devicePluginDevIDs[bdf] = val

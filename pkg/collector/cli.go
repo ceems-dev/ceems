@@ -297,7 +297,8 @@ func (b *CEEMSExporter) Main() error {
 		return err
 	}
 
-	if user, err := user.Current(); err == nil && user.Uid == "0" {
+	user, err := user.Current()
+	if err == nil && user.Uid == "0" {
 		logger.Info("CEEMS Exporter is running as root user. Privileges will be dropped and process will be run as unprivileged user")
 	}
 
@@ -325,7 +326,8 @@ func (b *CEEMSExporter) Main() error {
 
 	// Drop all unnecessary privileges
 	if dropPrivs {
-		if err := securityManager.DropPrivileges(disableCapAwareness); err != nil {
+		err := securityManager.DropPrivileges(disableCapAwareness)
+		if err != nil {
 			logger.Error("Failed to drop privileges", "err", err)
 
 			return err
@@ -368,7 +370,8 @@ func (b *CEEMSExporter) Main() error {
 	// Start profiling session if enabled
 	if profiler.Enabled() {
 		go func() {
-			if err := profiler.Start(ctx); err != nil {
+			err := profiler.Start(ctx)
+			if err != nil {
 				logger.Error("Failed to start ebpf profiler", "err", err)
 			}
 		}()
@@ -385,7 +388,8 @@ func (b *CEEMSExporter) Main() error {
 	// Initializing the server in a goroutine so that
 	// it won't block the graceful shutdown handling below.
 	go func() {
-		if err := server.Start(); err != nil {
+		err := server.Start()
+		if err != nil {
 			logger.Error("Failed to start server", "err", err)
 		}
 	}()
@@ -407,14 +411,16 @@ func (b *CEEMSExporter) Main() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if err := server.Shutdown(ctx); err != nil {
+	err = server.Shutdown(ctx)
+	if err != nil {
 		logger.Error("Failed to gracefully shutdown server", "err", err)
 	}
 
 	// Restore file permissions by removing any ACLs added
 	// When dropPrivs is false, this is noop, so it is fine to leave it
 	// here
-	if err := securityManager.DeleteACLEntries(); err != nil {
+	err = securityManager.DeleteACLEntries()
+	if err != nil {
 		logger.Error("Failed to remove ACL entries", "err", err)
 	}
 

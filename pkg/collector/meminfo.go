@@ -82,6 +82,7 @@ func (c *meminfoCollector) Update(ch chan<- prometheus.Metric) error {
 		} else {
 			metricType = prometheus.GaugeValue
 		}
+
 		ch <- prometheus.MustNewConstMetric(
 			prometheus.NewDesc(
 				prometheus.BuildFQName(Namespace, memInfoSubsystem, k),

@@ -87,7 +87,8 @@ func (c *emissionsCollector) Stop(_ context.Context) error {
 	c.logger.Debug("Stopping", "collector", emissionsCollectorSubsystem)
 
 	// Stop all providers to release any system resources that are being used
-	if err := c.emissionFactorProviders.Stop(); err != nil {
+	err := c.emissionFactorProviders.Stop()
+	if err != nil {
 		c.logger.Error("Failed to stop emission factor providers", "err", err)
 
 		return err

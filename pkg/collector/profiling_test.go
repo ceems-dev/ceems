@@ -188,6 +188,7 @@ func (m *mockSession) Stop() {
 func (m *mockSession) Update(options ebpfspy.SessionOptions) error {
 	m.mtx.Lock()
 	defer m.mtx.Unlock()
+
 	m.options = options
 
 	return nil

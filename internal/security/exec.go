@@ -67,7 +67,8 @@ func (s *SecurityContext) Exec(data any) error {
 		return s.f(data)
 	}
 
-	if _, err := s.launcher.Launch(data); err != nil {
+	_, err := s.launcher.Launch(data)
+	if err != nil {
 		return err
 	}
 
@@ -81,15 +82,18 @@ func (s *SecurityContext) raiseCaps() error {
 		return nil
 	}
 
-	if err := s.capSet.SetFlag(cap.Permitted, true, s.caps...); err != nil {
+	err := s.capSet.SetFlag(cap.Permitted, true, s.caps...)
+	if err != nil {
 		return fmt.Errorf("raising: error setting permitted capabilities: %w", err)
 	}
 
-	if err := s.capSet.SetFlag(cap.Effective, true, s.caps...); err != nil {
+	err = s.capSet.SetFlag(cap.Effective, true, s.caps...)
+	if err != nil {
 		return fmt.Errorf("raising: error setting effective capabilities: %w", err)
 	}
 
-	if err := s.capSet.SetProc(); err != nil {
+	err = s.capSet.SetProc()
+	if err != nil {
 		return fmt.Errorf("raising: error setting capabilities: %w", err)
 	}
 
@@ -103,11 +107,13 @@ func (s *SecurityContext) dropCaps() error {
 		return nil
 	}
 
-	if err := s.capSet.SetFlag(cap.Effective, false, s.caps...); err != nil {
+	err := s.capSet.SetFlag(cap.Effective, false, s.caps...)
+	if err != nil {
 		return fmt.Errorf("dropping: error setting effective capabilities: %w", err)
 	}
 
-	if err := s.capSet.SetProc(); err != nil {
+	err = s.capSet.SetProc()
+	if err != nil {
 		return fmt.Errorf("dropping: error setting capabilities: %w", err)
 	}
 
@@ -123,17 +129,20 @@ func (s *SecurityContext) targetFunc(data any) error {
 	// the main function.
 	// Log an error so that operators will be aware that the reason
 	// for the error is lack of privileges.
-	if err := s.raiseCaps(); err != nil {
+	err := s.raiseCaps()
+	if err != nil {
 		s.logger.Error("Failed to raise capabilities", "name", s.Name, "caps", cap.GetProc().String(), "err", err)
 	}
 
 	s.logger.Debug("Executing in security context", "name", s.Name, "caps", cap.GetProc().String())
 
 	// Execute function
-	if err := s.f(data); err != nil {
+	err = s.f(data)
+	if err != nil {
 		// Attempt to drop capabilities and ignore any errors
-		if err := s.dropCaps(); err != nil {
-			s.logger.Warn("Failed to drop capabilities", "name", s.Name, "caps", cap.GetProc().String(), "err", err)
+		capsErr := s.dropCaps()
+		if capsErr != nil {
+			s.logger.Warn("Failed to drop capabilities", "name", s.Name, "caps", cap.GetProc().String(), "err", capsErr)
 		}
 
 		return err
@@ -142,7 +151,8 @@ func (s *SecurityContext) targetFunc(data any) error {
 	// Drop capabilities. This is not really needed as thread will be
 	// destroyed. But just in case...
 	// Ignore any errors
-	if err := s.dropCaps(); err != nil {
+	err = s.dropCaps()
+	if err != nil {
 		s.logger.Warn("Failed to drop capabilities", "name", s.Name, "caps", cap.GetProc().String(), "err", err)
 	}
 

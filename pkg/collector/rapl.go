@@ -73,7 +73,8 @@ func NewRaplCollector(logger *slog.Logger) (Collector, error) {
 	// Get kernel version
 	securityContexts := make(map[string]*security.SecurityContext)
 
-	if currentKernelVer, err := KernelVersion(); err == nil {
+	currentKernelVer, err := KernelVersion()
+	if err == nil {
 		// Startin from kernel 5.10, RAPL counters are read only by root.
 		// So we need CAP_DAC_READ_SEARCH capability to read them.
 		if currentKernelVer >= KernelStringToNumeric("5.10") {
@@ -154,7 +155,8 @@ func (c *raplCollector) Update(ch chan<- prometheus.Metric) error {
 	go func() {
 		defer wg.Done()
 
-		if err := c.updateLimits(zones, ch); err != nil {
+		err := c.updateLimits(zones, ch)
+		if err != nil {
 			c.logger.Error("Failed to update RAPL power limits", "err", err)
 		}
 	}()
@@ -164,7 +166,8 @@ func (c *raplCollector) Update(ch chan<- prometheus.Metric) error {
 	go func() {
 		defer wg.Done()
 
-		if err := c.updateEnergy(zones, ch); err != nil {
+		err := c.updateEnergy(zones, ch)
+		if err != nil {
 			c.logger.Error("Failed to update RAPL energy counters", "err", err)
 		}
 	}()
@@ -213,12 +216,14 @@ func (c *raplCollector) updateEnergy(zones []sysfs.RaplZone, ch chan<- prometheu
 	if len(c.securityContexts) > 0 {
 		// Start new profilers within security context
 		if securityCtx, ok := c.securityContexts[raplReadEnergyCounter]; ok {
-			if err := securityCtx.Exec(dataPtr); err != nil {
+			err := securityCtx.Exec(dataPtr)
+			if err != nil {
 				return err
 			}
 		}
 	} else {
-		if err := readCounters(dataPtr); err != nil {
+		err := readCounters(dataPtr)
+		if err != nil {
 			return err
 		}
 	}
@@ -327,12 +332,15 @@ func readPowerLimits(zones []sysfs.RaplZone) (map[sysfs.RaplZone]uint64, error) 
 
 		for c := range 2 {
 			timeWindowFile := filepath.Join(rz.Path, fmt.Sprintf("constraint_%d_time_window_us", c))
-			if _, err := os.Stat(timeWindowFile); err != nil {
+
+			_, err := os.Stat(timeWindowFile)
+			if err != nil {
 				continue
 			}
 
 			// Read time window in micro seconds
-			if constTimeWindow, err := readUintFromFile(timeWindowFile); err == nil {
+			constTimeWindow, err := readUintFromFile(timeWindowFile)
+			if err == nil {
 				if constTimeWindow > timeWindow {
 					timeWindow = constTimeWindow
 					longtermConstraint = c
@@ -342,7 +350,9 @@ func readPowerLimits(zones []sysfs.RaplZone) (map[sysfs.RaplZone]uint64, error) 
 
 		// Now read power_limit_uw for the selected constraint. Value is in micro watts.
 		powerLimitFile := filepath.Join(rz.Path, fmt.Sprintf("constraint_%d_power_limit_uw", longtermConstraint))
-		if powerLimit, err := readUintFromFile(powerLimitFile); err == nil {
+
+		powerLimit, err := readUintFromFile(powerLimitFile)
+		if err == nil {
 			powerLimits[rz] = powerLimit
 		}
 	}

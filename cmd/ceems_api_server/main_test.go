@@ -18,7 +18,8 @@ const (
 )
 
 func TestBatchjobStatsExecutable(t *testing.T) {
-	if _, err := os.Stat(binary); err != nil {
+	_, err := os.Stat(binary)
+	if err != nil {
 		t.Skipf("ceems_api_server binary not available, try to run `make build` first: %s", err)
 	}
 
@@ -31,7 +32,8 @@ func TestBatchjobStatsExecutable(t *testing.T) {
 	err = os.Link(sacctPath, tmpSacctPath)
 	require.NoError(t, err)
 
-	usagestats := exec.Command(
+	usagestats := exec.CommandContext(
+		t.Context(),
 		binary,
 		"--web.listen-address", address,
 		"--no-security.drop-privileges",
@@ -40,7 +42,8 @@ func TestBatchjobStatsExecutable(t *testing.T) {
 }
 
 func runCommandAndTests(cmd *exec.Cmd) error {
-	if err := cmd.Start(); err != nil {
+	err := cmd.Start()
+	if err != nil {
 		return fmt.Errorf("failed to start command: %w", err)
 	}
 

@@ -109,7 +109,8 @@ func TestNewEMapsProvider(t *testing.T) {
 	expected := eMapsZonesResponse{"FR": map[string]string{"zoneName": "France"}}
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))
@@ -130,7 +131,8 @@ func TestNewEMapsProviderFail(t *testing.T) {
 	expected := dummyResponse
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))
@@ -150,7 +152,8 @@ func TestEMapsAPIRequest(t *testing.T) {
 	expected := eMapsCarbonIntensityResponse{CarbonIntensity: expectedFactor}
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))
@@ -167,7 +170,8 @@ func TestEMapsAPIRequestFail(t *testing.T) {
 	expected := dummyResponse
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))
@@ -189,7 +193,9 @@ func TestEMapsAPIRequestZones(t *testing.T) {
 		zone := r.URL.Query()["zone"][0]
 
 		expected := eMapsCarbonIntensityResponse{CarbonIntensity: int(expectedFactors[zone].Factor)}
-		if err := json.NewEncoder(w).Encode(&expected); err != nil {
+
+		err := json.NewEncoder(w).Encode(&expected)
+		if err != nil {
 			w.Write([]byte("KO"))
 		}
 	}))

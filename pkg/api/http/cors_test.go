@@ -43,6 +43,7 @@ func TestCORSHandler(t *testing.T) {
 
 	resp, err := client.Do(req)
 	require.NoError(t, err, "client get failed with unexpected error")
+
 	defer resp.Body.Close()
 
 	AccessControlAllowOrigin := resp.Header.Get("Access-Control-Allow-Origin")
@@ -57,6 +58,7 @@ func TestCORSHandler(t *testing.T) {
 
 	resp, err = client.Do(req)
 	require.NoError(t, err, "client get failed with unexpected error")
+
 	defer resp.Body.Close()
 
 	AccessControlAllowOrigin = resp.Header.Get("Access-Control-Allow-Origin")

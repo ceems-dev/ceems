@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"path/filepath"
@@ -11,7 +12,7 @@ import (
 )
 
 // Same as the one in lb/frontend/middleware_test.go.
-func setupMockDB(d string) (*sql.DB, error) {
+func setupMockDB(ctx context.Context, d string) (*sql.DB, error) {
 	dbPath := filepath.Join(d, "test.db")
 
 	db, err := sql.Open("sqlite3", dbPath)
@@ -92,7 +93,7 @@ INSERT INTO admin_users VALUES(5, 'all', 'adm5', '["grafana"]');
 INSERT INTO admin_users VALUES(6, 'all', 'adm6', '["grafana"]');
 COMMIT;`
 
-	_, err = db.Exec(stmts)
+	_, err = db.ExecContext(ctx, stmts)
 	if err != nil {
 		return nil, fmt.Errorf("failed to insert mock data into DB: %w", err)
 	}
@@ -101,7 +102,7 @@ COMMIT;`
 }
 
 func TestVerifyOwnership(t *testing.T) {
-	db, err := setupMockDB(t.TempDir())
+	db, err := setupMockDB(t.Context(), t.TempDir())
 	require.NoError(t, err, "failed to setup test DB")
 
 	tests := []struct {
@@ -197,7 +198,7 @@ func TestVerifyOwnership(t *testing.T) {
 }
 
 func TestAdminUsers(t *testing.T) {
-	db, err := setupMockDB(t.TempDir())
+	db, err := setupMockDB(t.Context(), t.TempDir())
 	require.NoError(t, err, "failed to setup test DB")
 
 	// Expected users

@@ -316,7 +316,8 @@ func NewGrafanaClient(config *GrafanaWebConfig, logger *slog.Logger) (*grafana.G
 	}
 
 	if grafanaClient.Available() {
-		if err := grafanaClient.Ping(); err != nil {
+		err := grafanaClient.Ping()
+		if err != nil {
 			//lint:ignore ST1005 Grafana is a noun and need to capitalize!
 			return nil, fmt.Errorf( //nolint:staticcheck
 				"Grafana at %s is unreachable: %w",

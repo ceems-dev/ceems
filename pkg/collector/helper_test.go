@@ -74,6 +74,7 @@ func TestGokitLogger(t *testing.T) {
 		require.NoError(t, err)
 
 		var got logLine
+
 		err = json.Unmarshal(buf.Bytes(), &got)
 		require.NoError(t, err)
 
@@ -87,7 +88,7 @@ func TestGokitLogger(t *testing.T) {
 
 		err = json.Unmarshal(buf.Bytes(), &got)
 		require.NoError(t, err)
-		assert.Equal(t, logLine{strings.ToUpper(lvl), "message", "helper_test.go:85", 123, "first"}, got)
+		assert.Equal(t, logLine{strings.ToUpper(lvl), "message", "helper_test.go:86", 123, "first"}, got)
 	}
 }
 
