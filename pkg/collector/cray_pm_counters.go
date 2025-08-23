@@ -9,13 +9,13 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"path/filepath"
 	"regexp"
 	"slices"
 	"strconv"
 	"strings"
 
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/procfs/sysfs"
 )
 
 const crayPMCCollectorSubsystem = "cray_pm_counters"
@@ -32,7 +32,7 @@ var (
 )
 
 type crayPMCCollector struct {
-	fs                   sysfs.FS
+	sysFSPath            string
 	logger               *slog.Logger
 	hostname             string
 	joulesMetricDesc     *prometheus.Desc
@@ -50,11 +50,6 @@ func NewCrayPMCCollector(logger *slog.Logger) (Collector, error) {
 	sysFSPath := *sysPath
 	if *crayPMCSysPath != "" {
 		sysFSPath = *crayPMCSysPath
-	}
-
-	fs, err := sysfs.NewFS(sysFSPath)
-	if err != nil {
-		return nil, err
 	}
 
 	joulesMetricDesc := prometheus.NewDesc(
@@ -82,7 +77,7 @@ func NewCrayPMCCollector(logger *slog.Logger) (Collector, error) {
 	)
 
 	collector := crayPMCCollector{
-		fs:                   fs,
+		sysFSPath:            sysFSPath,
 		logger:               logger,
 		hostname:             hostname,
 		joulesMetricDesc:     joulesMetricDesc,
@@ -96,7 +91,7 @@ func NewCrayPMCCollector(logger *slog.Logger) (Collector, error) {
 
 // Update implements Collector and exposes `pm_counters` metrics.
 func (c *crayPMCCollector) Update(ch chan<- prometheus.Metric) error {
-	domains, err := GetCrayPMCDomains(c.fs)
+	domains, err := GetCrayPMCDomains(c.sysFSPath)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			c.logger.Debug("Platform doesn't have cray/pm_counters files present", "err", err)
@@ -174,8 +169,8 @@ func (pd PMCDomain) GetTempCelsius() (uint64, error) {
 
 // GetCrayPMCDomains returns a slice of Cray's `pm_counters` domains.
 // - https://cray-hpe.github.io/docs-csm/en-10/operations/power_management/user_access_to_compute_node_power_data/
-func GetCrayPMCDomains(fs sysfs.FS) ([]PMCDomain, error) {
-	pmcDir := sysFilePath("cray/pm_counters")
+func GetCrayPMCDomains(sysFSPath string) ([]PMCDomain, error) {
+	pmcDir := filepath.Join(sysFSPath, "cray/pm_counters")
 
 	files, err := os.ReadDir(pmcDir)
 	if err != nil {

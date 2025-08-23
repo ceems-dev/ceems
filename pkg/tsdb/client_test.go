@@ -361,7 +361,7 @@ func TestTSDBQuerySuccess(t *testing.T) {
 	require.NoError(t, err)
 	assert.True(t, tsdb.Available())
 
-	m, err := tsdb.Query(t.Context(), "foo", time.Now())
+	m, err := tsdb.Query(t.Context(), "foo", time.Now(), defaultQueryTimeout)
 	require.NoError(t, err)
 	assert.Equal(t, Metric{"1": 1.1, "2": 2.2}, m)
 	assert.Equal(t, 15*time.Second, time.Duration(expectedQueryLookback))
@@ -376,7 +376,7 @@ func TestTSDBQueryFail(t *testing.T) {
 	require.NoError(t, err)
 	assert.True(t, tsdb.Available())
 
-	_, err = tsdb.Query(t.Context(), "", time.Now())
+	_, err = tsdb.Query(t.Context(), "", time.Now(), defaultTimeout)
 	assert.Error(t, err)
 }
 
@@ -389,7 +389,7 @@ func TestTSDBQueryRangeSuccess(t *testing.T) {
 	require.NoError(t, err)
 	assert.True(t, tsdb.Available())
 
-	m, err := tsdb.RangeQuery(t.Context(), "", time.Now(), time.Now(), time.Minute)
+	m, err := tsdb.RangeQuery(t.Context(), "", time.Now(), time.Now(), time.Minute, 0*time.Second)
 	require.NoError(t, err)
 
 	expected := model.Matrix{
@@ -418,7 +418,7 @@ func TestTSDBQueryRangeFail(t *testing.T) {
 	require.NoError(t, err)
 	assert.True(t, tsdb.Available())
 
-	_, err = tsdb.RangeQuery(t.Context(), "", time.Now(), time.Now(), time.Minute)
+	_, err = tsdb.RangeQuery(t.Context(), "", time.Now(), time.Now(), time.Minute, -time.Second)
 	assert.Error(t, err)
 }
 

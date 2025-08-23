@@ -197,7 +197,12 @@ func (k *k8sManager) fetchPods(
 
 		// Always get elapsed time based on createdAt which gives
 		// a more stable value
-		elapsedTime := common.Timespan(end.Sub(createdAt)).Format("15:04:05")
+		var elapsedTime string
+		if end.Sub(createdAt) > 0 {
+			elapsedTime = common.Timespan(end.Sub(createdAt)).Format("15:04:05")
+		} else {
+			elapsedTime = common.Timespan(time.Now().In(loc).Sub(createdAt)).Format("15:04:05")
+		}
 
 		// Initialise vars
 		var startedAt, endedAt time.Time

@@ -247,7 +247,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum_over_time(job:ceems_host_emissions_g_s:pue{provider=\"${provider}\",country_code=\"${country_code}\"}[$__range:$__interval]) * $__interval_ms / 1e3",
+          "expr": "sum_over_time(job:ceems_host_emissions_g_s:pue{provider=\"${provider}\"}[$__range:$__interval]) * $__interval_ms / 1e3",
           "hide": false,
           "instant": true,
           "legendFormat": "{{job}}: host",
@@ -261,7 +261,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum_over_time(job:ceems_gpu_emissions_g_s:pue{provider=\"${provider}\",country_code=\"${country_code}\"}[$__range:$__interval]) * $__interval_ms / 1e3",
+          "expr": "sum_over_time(job:ceems_gpu_emissions_g_s:pue{provider=\"${provider}\"}[$__range:$__interval]) * $__interval_ms / 1e3",
           "hide": false,
           "instant": true,
           "legendFormat": "{{job}}: gpu",
@@ -512,7 +512,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(job:ceems_host_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\",country_code=\"${country_code}\"}) + sum(job:ceems_gpu_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\",country_code=\"${country_code}\"})",
+          "expr": "sum(job:ceems_host_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\"}) + sum(job:ceems_gpu_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\"})",
           "hide": false,
           "instant": false,
           "legendFormat": "Total Emissions Rate",
@@ -525,7 +525,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(job:ceems_host_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\",country_code=\"${country_code}\"})",
+          "expr": "sum(job:ceems_host_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\"})",
           "hide": false,
           "instant": false,
           "legendFormat": "Host Emissions Rate",
@@ -538,7 +538,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(job:ceems_gpu_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\",country_code=\"${country_code}\"})",
+          "expr": "sum(job:ceems_gpu_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\"})",
           "hide": false,
           "instant": false,
           "legendFormat": "GPU Emissions Rate",
@@ -960,7 +960,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(sum_over_time(job:ceems_host_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\",country_code=~\"${country_code}\"}[$__range:$__interval])) ",
+          "expr": "sum(sum_over_time(job:ceems_host_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\"}[$__range:$__interval])) ",
           "hide": false,
           "instant": true,
           "legendFormat": "Host",
@@ -974,7 +974,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(sum_over_time(job:ceems_gpu_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\",country_code=~\"${country_code}\"}[$__range:$__interval])) ",
+          "expr": "sum(sum_over_time(job:ceems_gpu_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\"}[$__range:$__interval])) ",
           "hide": false,
           "instant": true,
           "legendFormat": "GPU",
@@ -1199,7 +1199,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(sum_over_time(job:ceems_host_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\",country_code=\"${country_code}\"}[$__range:$__interval]) * $__interval_ms / 1000) +\n(sum(sum_over_time(job:ceems_gpu_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\",country_code=\"${country_code}\"}[$__range:$__interval]) or vector(0)) * $__interval_ms / 1000)",
+          "expr": "sum(sum_over_time(job:ceems_host_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\"}[$__range:$__interval]) * $__interval_ms / 1000) +\n(sum(sum_over_time(job:ceems_gpu_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\"}[$__range:$__interval]) or vector(0)) * $__interval_ms / 1000)",
           "hide": false,
           "instant": true,
           "legendFormat": "Total emissions",
@@ -1987,7 +1987,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "job:ceems_host_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\",country_code=\"${country_code}\"}",
+              "expr": "job:ceems_host_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\"}",
               "instant": false,
               "legendFormat": "Host Emissions Rate - {{job}}",
               "range": true,
@@ -1999,7 +1999,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "job:ceems_gpu_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\",country_code=\"${country_code}\"}",
+              "expr": "job:ceems_gpu_emissions_g_s:pue{job=~\"${job:pipe}\",provider=\"${provider}\"}",
               "hide": false,
               "instant": false,
               "legendFormat": "GPU Emissions Rate - {{job}}",
@@ -2012,7 +2012,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum(job:ceems_host_emissions_g_s:pue{provider=\"${provider}\",country_code=\"${country_code}\"})",
+              "expr": "sum(job:ceems_host_emissions_g_s:pue{provider=\"${provider}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Total Host Emissions Rate",
@@ -2025,7 +2025,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum(job:ceems_gpu_emissions_g_s:pue{provider=\"${provider}\",country_code=\"${country_code}\"})",
+              "expr": "sum(job:ceems_gpu_emissions_g_s:pue{provider=\"${provider}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Total GPU Emissions Rate",
@@ -2096,27 +2096,6 @@
         "refresh": 1,
         "regex": "/provider_name=\"(?<text>[^\"]+)|provider=\"(?<value>[^\"]+)/g",
         "type": "query"
-      },
-      {
-        "current": {},
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
-        },
-        "definition": "query_result(max_over_time(ceems_emissions_gCo2_kWh{provider=\"${provider}\"}[$__range:]))",
-        "description": "Emission factor for country",
-        "includeAll": false,
-        "label": "Country:",
-        "name": "country_code",
-        "options": [],
-        "query": {
-          "qryType": 3,
-          "query": "query_result(max_over_time(ceems_emissions_gCo2_kWh{provider=\"${provider}\"}[$__range:]))",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
-        },
-        "refresh": 1,
-        "regex": "/country=\"(?<text>[^\"]+)|country_code=\"(?<value>[^\"]+)/g",
-        "type": "query"
       }
     ]
   },
@@ -2137,6 +2116,6 @@
   "timezone": "",
   "title": "Cluster Status",
   "uid": "ceems-cluster-status",
-  "version": 2,
+  "version": 1,
   "weekStart": ""
 }

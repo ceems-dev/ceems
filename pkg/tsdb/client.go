@@ -88,6 +88,7 @@ const (
 	// Default intervals. Return them if we cannot fetch config.
 	defaultScrapeInterval     = time.Minute
 	defaultEvaluationInterval = time.Minute
+	defaultTimeout            = time.Minute
 	defaultLookbackDelta      = 5 * time.Minute
 	defaultQueryTimeout       = 2 * time.Minute
 	defaultQueryMaxSamples    = 50000000
@@ -223,7 +224,7 @@ func (t *Client) Labels(ctx context.Context, matchers []string, start time.Time,
 }
 
 // Query makes a Client query.
-func (t *Client) Query(ctx context.Context, query string, queryTime time.Time) (Metric, error) {
+func (t *Client) Query(ctx context.Context, query string, queryTime time.Time, timeout time.Duration) (Metric, error) {
 	// Get current scrape interval to use as lookback_delta
 	// This query parameter is undocumented on Prometheus. If we use
 	// default value of 5m, we tend to have metrics 5m **after** compute
@@ -233,8 +234,13 @@ func (t *Client) Query(ctx context.Context, query string, queryTime time.Time) (
 		period = scrapeInterval
 	}
 
+	// Set a valid timeout
+	if timeout <= 0 {
+		timeout = defaultTimeout
+	}
+
 	// Make API request to execute query
-	result, warnings, err := t.API.Query(ctx, query, queryTime, v1.WithLookbackDelta(period))
+	result, warnings, err := t.API.Query(ctx, query, queryTime, v1.WithLookbackDelta(period), v1.WithTimeout(timeout))
 	if err != nil {
 		return nil, err
 	}
@@ -272,6 +278,7 @@ func (t *Client) RangeQuery(
 	startTime time.Time,
 	endTime time.Time,
 	step time.Duration,
+	timeout time.Duration,
 ) (model.Matrix, error) {
 	// Get current scrape interval to use as lookback_delta
 	// This query parameter is undocumented on Prometheus. If we use
@@ -303,8 +310,13 @@ func (t *Client) RangeQuery(
 		queryRange.Step = period
 	}
 
+	// Set a valid timeout
+	if timeout <= 0 {
+		timeout = defaultTimeout
+	}
+
 	// Make API request to execute query
-	result, warnings, err := t.API.QueryRange(ctx, query, queryRange, v1.WithLookbackDelta(period))
+	result, warnings, err := t.API.QueryRange(ctx, query, queryRange, v1.WithLookbackDelta(period), v1.WithTimeout(timeout))
 	if err != nil {
 		return nil, err
 	}

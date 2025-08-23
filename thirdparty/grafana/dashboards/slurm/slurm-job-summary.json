@@ -2247,8 +2247,8 @@
       },
       {
         "current": {
-          "text": "rte",
-          "value": "rte"
+          "text": "owid",
+          "value": "owid"
         },
         "label": "Emission Factor Provider:",
         "name": "provider",

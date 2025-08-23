@@ -31,6 +31,11 @@ const (
 	defaultQueryMinSamples = 0.5
 )
 
+// Default timeout for query.
+var (
+	defaultQueryTimeout = model.Duration(time.Minute)
+)
+
 // Default queries.
 var (
 	defaultQueries = map[string]map[string]string{
@@ -86,6 +91,7 @@ type tsdbConfig struct {
 	QueryMaxSeries  int64                        `yaml:"query_max_series"`
 	QueryMinSamples float64                      `yaml:"query_min_samples"`
 	CutoffDuration  model.Duration               `yaml:"cutoff_duration"`
+	QueryTimeout    model.Duration               `yaml:"query_timeout"`
 	DeleteIgnore    bool                         `yaml:"delete_ignored"`
 	Queries         map[string]map[string]string `yaml:"queries"`
 	LabelsToDrop    []string                     `yaml:"labels_to_drop"`
@@ -99,6 +105,7 @@ func (c *tsdbConfig) defaults() *tsdbConfig {
 			QueryMaxSeries:  defaultQueryMaxSeries,
 			QueryMinSamples: defaultQueryMinSamples,
 			Queries:         defaultQueries,
+			QueryTimeout:    defaultQueryTimeout,
 		}
 	} else {
 		// When config is not nil, check for vital fields
@@ -108,6 +115,10 @@ func (c *tsdbConfig) defaults() *tsdbConfig {
 
 		if c.QueryMinSamples == 0 {
 			c.QueryMinSamples = defaultQueryMinSamples
+		}
+
+		if c.QueryTimeout == 0 {
+			c.QueryTimeout = defaultQueryTimeout
 		}
 
 		// If no queries are provided, use default
@@ -132,6 +143,10 @@ func (c *tsdbConfig) validate() error {
 
 	if c.QueryMinSamples <= 0 || c.QueryMinSamples > 1 {
 		return errors.New("query_min_samples must be between (0, 1]")
+	}
+
+	if c.QueryTimeout < 0 {
+		return errors.New("query_timeout must be a valid time duration")
 	}
 
 	return nil
@@ -287,7 +302,7 @@ func (t *tsdbUpdater) fetchAggMetrics(
 					return
 				}
 
-				aggMetric, err = t.Query(ctx, tsdbQuery, queryTime)
+				aggMetric, err = t.Query(ctx, tsdbQuery, queryTime, time.Duration(t.config.QueryTimeout))
 				if err != nil {
 					t.Logger.Error(
 						"Failed to fetch metrics from TSDB", "metric", n, "duration",

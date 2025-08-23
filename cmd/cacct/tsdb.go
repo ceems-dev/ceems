@@ -75,7 +75,7 @@ func fetchData(ctx context.Context, queryID string, query string, start int64, e
 	defer wg.Done()
 
 	// Make a range query
-	results, err := tsdb.RangeQuery(ctx, query, time.UnixMilli(start), time.UnixMilli(end), 10*time.Second)
+	results, err := tsdb.RangeQuery(ctx, query, time.UnixMilli(start), time.UnixMilli(end), 10*time.Second, time.Minute)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "failed to fetch time series for query", query, "err:", err)
 

@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/procfs/sysfs"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -45,10 +44,7 @@ func TestGetCrayPMCDomains(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	fs, err := sysfs.NewFS(*sysPath)
-	require.NoError(t, err)
-
-	domains, err := GetCrayPMCDomains(fs)
+	domains, err := GetCrayPMCDomains(*sysPath)
 	require.NoError(t, err)
 
 	expectedDomains := []PMCDomain{

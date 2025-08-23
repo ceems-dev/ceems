@@ -216,6 +216,7 @@ func (b *tsdbServer) fetchRetentionPeriod() (time.Duration, error) {
 		time.Now().Add(-queryPeriod).UTC(),
 		time.Now().UTC(),
 		queryPeriod/5000,
+		time.Minute,
 	)
 	if err == nil {
 		for _, result := range results {

@@ -1740,6 +1740,18 @@
                     "value": true
                   }
                 ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "to"
+                },
+                "properties": [
+                  {
+                    "id": "noValue",
+                    "value": "now"
+                  }
+                ]
               }
             ]
           },
@@ -1908,7 +1920,7 @@
                 },
                 {
                   "text": "to",
-                  "selector": "ended_at_ts == 0 ? ${__to} : ended_at_ts",
+                  "selector": "ended_at_ts == now ? ${__to} : ended_at_ts",
                   "type": "string"
                 }
               ],
@@ -2229,8 +2241,8 @@
       },
       {
         "current": {
-          "text": "rte",
-          "value": "rte"
+          "text": "owid",
+          "value": "owid"
         },
         "label": "Emission Factor Provider:",
         "name": "provider",
