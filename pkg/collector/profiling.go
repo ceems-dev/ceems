@@ -113,6 +113,17 @@ func NewProfiler(c *profilerConfig) (Profiler, error) {
 		cfg.Profiler.Pyroscope.URL = defaultPyroscopeURL
 	}
 
+	// Check anf get if file paths provided in HTTPClientConfig
+	readPaths, err := common.CheckHTTPClientConfigFiles(&cfg.Profiler.Pyroscope.HTTPClientConfig)
+	if err != nil {
+		c.logger.Error("Failed to check or get file paths in HTTP client config for Pyroscope", "err", err)
+
+		return nil, fmt.Errorf("failed to check or get file paths in http client config for pyroscope: %w", err)
+	}
+
+	// Setup app paths
+	setupAppPathPerms(readPaths, nil)
+
 	// Make a new targetFinder
 	targetOpts := sd.TargetsOptions{
 		TargetsOnly:        true,

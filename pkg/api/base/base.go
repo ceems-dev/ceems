@@ -87,3 +87,9 @@ const (
 
 // Username to be used for service account users.
 const ServiceAccountUser = "svc"
+
+// CEEMS API server read and read write paths.
+var (
+	AppReadPaths      []string
+	AppReadWritePaths []string
+)

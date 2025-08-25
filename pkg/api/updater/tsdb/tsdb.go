@@ -13,6 +13,8 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/ceems-dev/ceems/internal/common"
+	"github.com/ceems-dev/ceems/pkg/api/base"
 	"github.com/ceems-dev/ceems/pkg/api/helper"
 	"github.com/ceems-dev/ceems/pkg/api/models"
 	"github.com/ceems-dev/ceems/pkg/api/updater"
@@ -193,6 +195,17 @@ func New(instance updater.Instance, logger *slog.Logger) (updater.Updater, error
 
 		return nil, err
 	}
+
+	// Check HTTP client config
+	readPaths, err := common.CheckHTTPClientConfigFiles(&instance.Web.HTTPClientConfig)
+	if err != nil {
+		logger.Error("Failed to check or get file paths in HTTP client config for TSDB updater", "instance_id", instance.ID, "err", err)
+
+		return nil, err
+	}
+
+	// Setup app read paths
+	base.AppReadPaths = append(base.AppReadPaths, readPaths...)
 
 	// Create instances of TSDB
 	tsdb, err := tsdb.New(

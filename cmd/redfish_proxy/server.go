@@ -79,8 +79,6 @@ func (s *RedfishProxyServer) Shutdown(ctx context.Context) error {
 
 	// First shutdown HTTP server to avoid accepting any incoming
 	// connections
-	// Do not return error here as we SHOULD ENSURE to close collectors
-	// that might release any system resources
 	err := s.server.Shutdown(ctx)
 	if err != nil {
 		s.logger.Error("Failed to stop exporter's HTTP server")

@@ -299,7 +299,7 @@ func (b *CEEMSExporter) Main() error {
 
 	user, err := user.Current()
 	if err == nil && user.Uid == "0" {
-		logger.Info("CEEMS Exporter is running as root user. Privileges will be dropped and process will be run as unprivileged user")
+		logger.Info("CEEMS Exporter is running as root user. Privileges will be dropped and process will be run as unprivileged user", "new_user", runAsUser)
 	}
 
 	// Make security related config

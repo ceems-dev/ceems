@@ -235,12 +235,23 @@ func NewRedfishCollector(logger *slog.Logger) (Collector, error) {
 		endpoint = cfg.Client.url.String()
 	}
 
+	// Check anf get if file paths provided in HTTPClientConfig
+	readPaths, err := common.CheckHTTPClientConfigFiles(&cfg.Client.HTTPClientConfig)
+	if err != nil {
+		logger.Error("Failed to check or get file paths in HTTP client config for Redfish", "err", err)
+
+		return nil, fmt.Errorf("failed to check or get file paths in http client config for redfish: %w", err)
+	}
+
+	// Setup app paths
+	setupAppPathPerms(readPaths, nil)
+
 	// Make a HTTP client from client config
 	httpClient, err := config.NewClientFromConfig(cfg.Client.HTTPClientConfig, "redfish")
 	if err != nil {
 		logger.Error("Failed to create a HTTP client for Redfish", "err", err)
 
-		return nil, fmt.Errorf("failed to create a HTTP client for Redfish: %w", err)
+		return nil, fmt.Errorf("failed to create a http client for redfish: %w", err)
 	}
 
 	// Set a timeout here to not to block redfish collector whole

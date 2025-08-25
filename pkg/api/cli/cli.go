@@ -269,7 +269,7 @@ func (b *CEEMSServer) Main() error {
 
 	user, err := user.Current()
 	if err == nil && user.Uid == "0" {
-		logger.Info("CEEMS API server is running as root user. Privileges will be dropped and process will be run as unprivileged user")
+		logger.Info("CEEMS API server is running as root user. Privileges will be dropped and process will be run as unprivileged user", "new_user", runAsUser)
 	}
 
 	// Make security related config
@@ -315,24 +315,6 @@ func (b *CEEMSServer) Main() error {
 	_, err = os.Stat(dbFile)
 	if err == nil {
 		securityCfg.ReadWritePaths = append(securityCfg.ReadWritePaths, dbFile)
-	}
-
-	// Start a new manager
-	securityManager, err := security.NewManager(securityCfg, logger)
-	if err != nil {
-		logger.Error("Failed to create a new security manager", "err", err)
-
-		return err
-	}
-
-	// Drop all unnecessary privileges
-	if dropPrivs {
-		err := securityManager.DropPrivileges(disableCapAwareness)
-		if err != nil {
-			logger.Error("Failed to drop privileges", "err", err)
-
-			return err
-		}
 	}
 
 	// Create context that listens for the interrupt signal from the OS.
@@ -387,7 +369,7 @@ func (b *CEEMSServer) Main() error {
 	// Create server instance.
 	apiServer, err := ceems_http.New(serverConfig)
 	if err != nil {
-		logger.Error("Failed to create ceems_server server", "err", err)
+		logger.Error("Failed to create CEEMS API server", "err", err)
 
 		return err
 	}
@@ -395,9 +377,36 @@ func (b *CEEMSServer) Main() error {
 	// Create DB instance.
 	collector, err := ceems_db.New(dbConfig)
 	if err != nil {
-		logger.Error("Failed to create ceems_server DB", "err", err)
+		logger.Error("Failed to create CEEMS DB", "err", err)
 
 		return err
+	}
+
+	// Add any readPaths and readWritePaths to security config
+	if len(base.AppReadPaths) > 0 {
+		securityCfg.ReadPaths = append(securityCfg.ReadPaths, base.AppReadPaths...)
+	}
+
+	if len(base.AppReadWritePaths) > 0 {
+		securityCfg.ReadWritePaths = append(securityCfg.ReadWritePaths, base.AppReadWritePaths...)
+	}
+
+	// Start a new manager
+	securityManager, err := security.NewManager(securityCfg, logger)
+	if err != nil {
+		logger.Error("Failed to create a new security manager", "err", err)
+
+		return err
+	}
+
+	// Drop all unnecessary privileges
+	if dropPrivs {
+		err := securityManager.DropPrivileges(disableCapAwareness)
+		if err != nil {
+			logger.Error("Failed to drop privileges", "err", err)
+
+			return err
+		}
 	}
 
 	// Declare wait group and tickers.
@@ -454,10 +463,10 @@ func (b *CEEMSServer) Main() error {
 
 					err := collector.Backup(ctx)
 					if err != nil {
-						logger.Error("Failed to backup DB", "err", err)
+						logger.Error("Failed to backup CEEMS DB", "err", err)
 					}
 				case <-ctx.Done():
-					logger.Info("Received Interrupt. Stopping DB backup")
+					logger.Info("Received Interrupt. Stopping CEEMS DB backup")
 
 					return
 				}
@@ -470,7 +479,7 @@ func (b *CEEMSServer) Main() error {
 	go func() {
 		err := apiServer.Start(ctx)
 		if err != nil {
-			logger.Error("Failed to start server", "err", err)
+			logger.Error("Failed to start CEENS API server", "err", err)
 		}
 	}()
 
@@ -490,7 +499,7 @@ func (b *CEEMSServer) Main() error {
 	// Close DB only after all DB go routines are done.
 	err = collector.Stop()
 	if err != nil {
-		logger.Error("Failed to close DB connection", "err", err)
+		logger.Error("Failed to close CEEMS DB connection", "err", err)
 	}
 
 	// Restore default behavior on the interrupt signal and notify user of shutdown.

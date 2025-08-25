@@ -10,6 +10,7 @@ import (
 	"net"
 	"net/url"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -17,6 +18,7 @@ import (
 
 	"github.com/ceems-dev/ceems/pkg/grafana"
 	"github.com/google/uuid"
+	config_util "github.com/prometheus/common/config"
 	"github.com/zeebo/xxh3"
 	"gopkg.in/yaml.v3"
 )
@@ -369,4 +371,147 @@ func ComputeExternalURL(u, listenAddr string) (*url.URL, error) {
 	eu.Path = ppref
 
 	return eu, nil
+}
+
+// CheckHTTPClientConfigFiles verifies the existence of any files provided in the config
+// and returns all the paths provided in the config. These files paths will be passed
+// to security manager to add ACL rules by the app if and when needed.
+func CheckHTTPClientConfigFiles(config *config_util.HTTPClientConfig) ([]string, error) {
+	var readPaths []string
+
+	// If config is nil, return early
+	if config == nil {
+		return readPaths, nil
+	}
+
+	// Check if bearerTokenFile exists in the config
+	if config.BearerTokenFile != "" {
+		p, err := filepath.EvalSymlinks(config.BearerTokenFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve bearerTokenFile path %s: %w", config.BearerToken, err)
+		}
+
+		_, err = os.Stat(p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to stat bearerTokenFile %s: %w", config.BearerTokenFile, err)
+		}
+
+		readPaths = append(readPaths, p)
+	}
+
+	// Check if authorization.credentials_file exists in the config
+	if config.Authorization != nil && config.Authorization.CredentialsFile != "" {
+		p, err := filepath.EvalSymlinks(config.Authorization.CredentialsFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve authorization.credentials_file %s: %w", config.Authorization.CredentialsFile, err)
+		}
+
+		_, err = os.Stat(p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to stat authorization.credentials_file %s: %w", config.Authorization.CredentialsFile, err)
+		}
+
+		readPaths = append(readPaths, p)
+	}
+
+	// Check if basic_auth.username_file exists in the config
+	if config.BasicAuth != nil && config.BasicAuth.UsernameFile != "" {
+		p, err := filepath.EvalSymlinks(config.BasicAuth.UsernameFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve basic_auth.username_file %s: %w", config.BasicAuth.UsernameFile, err)
+		}
+
+		_, err = os.Stat(p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to stat basic_auth.username_file %s: %w", config.BasicAuth.UsernameFile, err)
+		}
+
+		readPaths = append(readPaths, p)
+	}
+
+	// Check if basic_auth.password_file exists in the config
+	if config.BasicAuth != nil && config.BasicAuth.PasswordFile != "" {
+		p, err := filepath.EvalSymlinks(config.BasicAuth.PasswordFile)
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve basic_auth.password_file %s: %w", config.BasicAuth.PasswordFile, err)
+		}
+
+		_, err = os.Stat(p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to stat basic_auth.password_file %s: %w", config.BasicAuth.PasswordFile, err)
+		}
+
+		readPaths = append(readPaths, p)
+	}
+
+	// Check if there are file paths in TLS config
+	if config.TLSConfig != (config_util.TLSConfig{}) {
+		// CA file
+		if config.TLSConfig.CAFile != "" {
+			p, err := filepath.EvalSymlinks(config.TLSConfig.CAFile)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve tls_config.ca_file %s: %w", config.TLSConfig.CAFile, err)
+			}
+
+			_, err = os.Stat(p)
+			if err != nil {
+				return nil, fmt.Errorf("failed to stat tls_config.ca_file %s: %w", config.TLSConfig.CAFile, err)
+			}
+
+			readPaths = append(readPaths, p)
+		}
+
+		// Cert file
+		if config.TLSConfig.CertFile != "" {
+			p, err := filepath.EvalSymlinks(config.TLSConfig.CertFile)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve tls_config.cert_file %s: %w", config.TLSConfig.CertFile, err)
+			}
+
+			_, err = os.Stat(p)
+			if err != nil {
+				return nil, fmt.Errorf("failed to stat tls_config.cert_file %s: %w", config.TLSConfig.CertFile, err)
+			}
+
+			readPaths = append(readPaths, p)
+		}
+
+		// Key file
+		if config.TLSConfig.KeyFile != "" {
+			p, err := filepath.EvalSymlinks(config.TLSConfig.KeyFile)
+			if err != nil {
+				return nil, fmt.Errorf("failed to resolve tls_config.key_file %s: %w", config.TLSConfig.KeyFile, err)
+			}
+
+			_, err = os.Stat(p)
+			if err != nil {
+				return nil, fmt.Errorf("failed to stat tls_config.key_file %s: %w", config.TLSConfig.KeyFile, err)
+			}
+
+			readPaths = append(readPaths, p)
+		}
+	}
+
+	// Check for header files
+	if config.HTTPHeaders != nil {
+		for headerName, headerValue := range config.HTTPHeaders.Headers {
+			if len(headerValue.Files) > 0 {
+				for _, file := range headerValue.Files {
+					p, err := filepath.EvalSymlinks(file)
+					if err != nil {
+						return nil, fmt.Errorf("failed to resolve header file path %s: %w", file, err)
+					}
+
+					_, err = os.Stat(p)
+					if err != nil {
+						return nil, fmt.Errorf("failed to stat header file value %s for header %s: %w", file, headerName, err)
+					}
+
+					readPaths = append(readPaths, p)
+				}
+			}
+		}
+	}
+
+	return readPaths, nil
 }

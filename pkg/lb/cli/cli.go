@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"os/user"
 	"path/filepath"
 	"runtime"
 	"slices"
@@ -257,6 +258,11 @@ func (lb *CEEMSLoadBalancer) Main() error {
 
 	runtime.GOMAXPROCS(maxProcs)
 	logger.Debug("Go MAXPROCS", "procs", runtime.GOMAXPROCS(0))
+
+	user, err := user.Current()
+	if err == nil && user.Uid == "0" {
+		logger.Info("CEEMS LB is running as root user. Privileges will be dropped and process will be run as unprivileged user", "new_user", runAsUser)
+	}
 
 	// We should STRONGLY advise in docs that CEEMS LB should not be started as root.
 	securityCfg := &security.Config{

@@ -120,13 +120,15 @@ func New(logger *slog.Logger) (*UnitUpdater, error) {
 
 	updaters := make(map[string]Updater)
 
-	var registeredUpdaters []string //nolint:prealloc
+	registeredUpdaters := make([]string, len(updaterFactories))
 
 	var err error
 
 	// Get all registered updaters
+	iupdater := 0
 	for updaterName := range updaterFactories {
-		registeredUpdaters = append(registeredUpdaters, updaterName)
+		registeredUpdaters[iupdater] = updaterName
+		iupdater++
 	}
 
 	// Get current config

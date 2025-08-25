@@ -524,3 +524,138 @@ func TestComputeExternalURL(t *testing.T) {
 		}
 	}
 }
+
+func TestCheckHTTPClientConfigFiles(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	testFiles := make(map[string]string)
+	for _, n := range []string{
+		"bearer_token_file",
+		"auth_credentials_file",
+		"basic_auth_username_file",
+		"basic_auth_password_file",
+		"tls_ca_file",
+		"tls_cert_file",
+		"tls_key_file",
+	} {
+		path := filepath.Join(tmpDir, n)
+		testFiles[n] = path
+		err := os.WriteFile(path, []byte(n), 0o700) //nolint:gosec
+		require.NoError(t, err)
+	}
+
+	tests := []struct {
+		name     string
+		input    *config.HTTPClientConfig
+		expected []string
+		err      bool
+	}{
+		{
+			name:     "nil config",
+			expected: []string{},
+		},
+		{
+			name:     "basic config with bearerTokenFile",
+			input:    &config.HTTPClientConfig{BearerTokenFile: testFiles["bearer_token_file"]},
+			expected: []string{testFiles["bearer_token_file"]},
+		},
+		{
+			name: "config with bearerTokenFile and authorization",
+			input: &config.HTTPClientConfig{
+				BearerTokenFile: testFiles["bearer_token_file"],
+				Authorization:   &config.Authorization{CredentialsFile: testFiles["auth_credentials_file"]},
+			},
+			expected: []string{testFiles["bearer_token_file"], testFiles["auth_credentials_file"]},
+		},
+		{
+			name: "config with basic_auth and authorization",
+			input: &config.HTTPClientConfig{
+				BasicAuth: &config.BasicAuth{
+					UsernameFile: testFiles["basic_auth_username_file"],
+					PasswordFile: testFiles["basic_auth_password_file"],
+				},
+				Authorization: &config.Authorization{CredentialsFile: testFiles["auth_credentials_file"]},
+			},
+			expected: []string{
+				testFiles["auth_credentials_file"],
+				testFiles["basic_auth_password_file"],
+				testFiles["basic_auth_username_file"],
+			},
+		},
+		{
+			name: "config with basic_auth and tls_config",
+			input: &config.HTTPClientConfig{
+				BasicAuth: &config.BasicAuth{
+					UsernameFile: testFiles["basic_auth_username_file"],
+					PasswordFile: testFiles["basic_auth_password_file"],
+				},
+				TLSConfig: config.TLSConfig{
+					CAFile:   testFiles["tls_ca_file"],
+					CertFile: testFiles["tls_cert_file"],
+					KeyFile:  testFiles["tls_key_file"],
+				},
+			},
+			expected: []string{
+				testFiles["basic_auth_password_file"],
+				testFiles["basic_auth_username_file"],
+				testFiles["tls_ca_file"],
+				testFiles["tls_cert_file"],
+				testFiles["tls_key_file"],
+			},
+		},
+		{
+			name: "config with non existent bearerToken files",
+			input: &config.HTTPClientConfig{
+				BearerTokenFile: "bearerTokenFile",
+			},
+			err: true,
+		},
+		{
+			name: "config with non existent basic_auth files",
+			input: &config.HTTPClientConfig{
+				BasicAuth: &config.BasicAuth{
+					UsernameFile: "usernamefile",
+				},
+			},
+			err: true,
+		},
+		{
+			name: "config with non existent tls_config files",
+			input: &config.HTTPClientConfig{
+				TLSConfig: config.TLSConfig{
+					CAFile: "tls_ca_file",
+				},
+			},
+			err: true,
+		},
+		{
+			name: "config with non existent authorization files",
+			input: &config.HTTPClientConfig{
+				Authorization: &config.Authorization{CredentialsFile: "credentials_file"},
+			},
+			err: true,
+		},
+		{
+			name: "config with non existent header files",
+			input: &config.HTTPClientConfig{
+				HTTPHeaders: &config.Headers{
+					Headers: map[string]config.Header{
+						"test": {
+							Files: []string{"non-existent"},
+						},
+					},
+				},
+			},
+			err: true,
+		},
+	}
+
+	for _, test := range tests {
+		got, err := CheckHTTPClientConfigFiles(test.input)
+		if test.err {
+			require.Error(t, err, test.name)
+		}
+
+		assert.ElementsMatch(t, test.expected, got, test.name)
+	}
+}

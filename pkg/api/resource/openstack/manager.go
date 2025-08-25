@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/ceems-dev/ceems/internal/common"
+	"github.com/ceems-dev/ceems/pkg/api/base"
 	"github.com/ceems-dev/ceems/pkg/api/models"
 	"github.com/ceems-dev/ceems/pkg/api/resource"
 	config_util "github.com/prometheus/common/config"
@@ -86,7 +87,17 @@ func New(cluster models.Cluster, logger *slog.Logger) (resource.Fetcher, error) 
 		userProjectsCacheTTL: 12 * time.Hour,
 	}
 
-	var err error
+	// Check HTTP client config
+	readPaths, err := common.CheckHTTPClientConfigFiles(&cluster.Web.HTTPClientConfig)
+	if err != nil {
+		logger.Error("Failed to check or get file paths in HTTP client config for openstack manager", "err", err)
+
+		return nil, err
+	}
+
+	// Setup app read paths
+	base.AppReadPaths = append(base.AppReadPaths, readPaths...)
+
 	// Check if HTTPClientConfig has Nova Micro version header
 	headerFound := false
 
