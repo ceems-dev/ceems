@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"os"
 	"os/user"
+	"path/filepath"
 	"slices"
 	"strconv"
 	"syscall"
@@ -88,9 +89,15 @@ func NewManager(c *Config, logger *slog.Logger) (*Manager, error) {
 	runAsUserUID := uint32(val)
 
 	// Calculate ACL entries for different paths
-	for _, path := range c.ReadPaths {
-		if path == "" {
+	for _, p := range c.ReadPaths {
+		if p == "" {
 			continue
+		}
+
+		// Resolve any symlinks
+		path, err := filepath.EvalSymlinks(p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve path %s: %w", path, err)
 		}
 
 		// First check if path details and permissions
@@ -125,9 +132,15 @@ func NewManager(c *Config, logger *slog.Logger) (*Manager, error) {
 	}
 
 	// Now handle read write paths
-	for _, path := range c.ReadWritePaths {
-		if path == "" {
+	for _, p := range c.ReadWritePaths {
+		if p == "" {
 			continue
+		}
+
+		// Resolve any symlinks
+		path, err := filepath.EvalSymlinks(p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to resolve path %s: %w", path, err)
 		}
 
 		// First check if path details and permissions

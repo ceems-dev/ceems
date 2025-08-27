@@ -61,3 +61,9 @@ var LBStrategyMap = map[string]LBStrategy{
 	"round-robin":      RoundRobin,
 	"least-connection": LeastConnection,
 }
+
+// CEEMS LB server read and read write paths.
+var (
+	AppReadPaths      []string
+	AppReadWritePaths []string
+)

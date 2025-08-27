@@ -259,50 +259,6 @@ func (lb *CEEMSLoadBalancer) Main() error {
 	runtime.GOMAXPROCS(maxProcs)
 	logger.Debug("Go MAXPROCS", "procs", runtime.GOMAXPROCS(0))
 
-	user, err := user.Current()
-	if err == nil && user.Uid == "0" {
-		logger.Info("CEEMS LB is running as root user. Privileges will be dropped and process will be run as unprivileged user", "new_user", runAsUser)
-	}
-
-	// We should STRONGLY advise in docs that CEEMS LB should not be started as root.
-	securityCfg := &security.Config{
-		RunAsUser: runAsUser,
-		Caps:      nil,
-		ReadPaths: []string{webConfigFilePath, configFilePath},
-	}
-
-	// Check if DB path and file exists in config and add them to ReadPaths
-	_, err = os.Stat(config.Server.Data.Path)
-	if err == nil {
-		securityCfg.ReadPaths = append(securityCfg.ReadPaths, config.Server.Data.Path)
-
-		// Now check if DB file exists
-		dbFile := filepath.Join(config.Server.Data.Path, ceems_api_base.CEEMSDBName)
-
-		_, err := os.Stat(dbFile)
-		if err == nil {
-			securityCfg.ReadPaths = append(securityCfg.ReadPaths, dbFile)
-		}
-	}
-
-	// Start a new manager
-	securityManager, err := security.NewManager(securityCfg, logger)
-	if err != nil {
-		logger.Error("Failed to create a new security manager", "err", err)
-
-		return err
-	}
-
-	// Drop all unnecessary privileges
-	if dropPrivs {
-		err := securityManager.DropPrivileges(disableCapAwareness)
-		if err != nil {
-			logger.Error("Failed to drop privileges", "err", err)
-
-			return err
-		}
-	}
-
 	// Get list of LB types based on provided config
 	lbTypes := backendTypes(config)
 
@@ -321,10 +277,6 @@ func (lb *CEEMSLoadBalancer) Main() error {
 
 		return fmt.Errorf("insufficient --web.listen-address. Expected %d got %d", len(lbTypes), len(webListenAddrs))
 	}
-
-	// Create context that listens for the interrupt signal from the OS.
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	defer stop()
 
 	// Make manager and LB maps
 	managers := make(map[base.LBType]serverpool.Manager, 2)
@@ -375,6 +327,63 @@ func (lb *CEEMSLoadBalancer) Main() error {
 			return err
 		}
 	}
+
+	// We should STRONGLY advise in docs that CEEMS LB should not be started as root.
+	securityCfg := &security.Config{
+		RunAsUser: runAsUser,
+		Caps:      nil,
+		ReadPaths: []string{webConfigFilePath, configFilePath},
+	}
+
+	// Check if DB path and file exists in config and add them to ReadPaths
+	_, err = os.Stat(config.Server.Data.Path)
+	if err == nil {
+		securityCfg.ReadPaths = append(securityCfg.ReadPaths, config.Server.Data.Path)
+
+		// Now check if DB file exists
+		dbFile := filepath.Join(config.Server.Data.Path, ceems_api_base.CEEMSDBName)
+
+		_, err := os.Stat(dbFile)
+		if err == nil {
+			securityCfg.ReadPaths = append(securityCfg.ReadPaths, dbFile)
+		}
+	}
+
+	// Add any readPaths and readWritePaths to security config
+	if len(base.AppReadPaths) > 0 {
+		securityCfg.ReadPaths = append(securityCfg.ReadPaths, base.AppReadPaths...)
+	}
+
+	if len(base.AppReadWritePaths) > 0 {
+		securityCfg.ReadWritePaths = append(securityCfg.ReadWritePaths, base.AppReadWritePaths...)
+	}
+
+	// Start a new manager
+	securityManager, err := security.NewManager(securityCfg, logger)
+	if err != nil {
+		logger.Error("Failed to create a new security manager", "err", err)
+
+		return err
+	}
+
+	// Drop all unnecessary privileges
+	if dropPrivs {
+		user, err := user.Current()
+		if err == nil && user.Uid == "0" {
+			logger.Info("CEEMS LB is running as root user. Privileges will be dropped and process will be run as unprivileged user", "become_user", runAsUser)
+		}
+
+		err = securityManager.DropPrivileges(disableCapAwareness)
+		if err != nil {
+			logger.Error("Failed to drop privileges", "err", err)
+
+			return err
+		}
+	}
+
+	// Create context that listens for the interrupt signal from the OS.
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
 	// Declare wait group and tickers
 	var wg sync.WaitGroup

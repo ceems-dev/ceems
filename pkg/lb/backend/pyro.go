@@ -8,6 +8,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ceems-dev/ceems/internal/common"
+	"github.com/ceems-dev/ceems/pkg/lb/base"
 	"github.com/prometheus/common/config"
 )
 
@@ -27,6 +29,17 @@ func NewPyroscope(c *ServerConfig, logger *slog.Logger) (Server, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Check HTTP client config
+	readPaths, err := common.CheckHTTPClientConfigFiles(&c.Web.HTTPClientConfig)
+	if err != nil {
+		logger.Error("Failed to check or get file paths in HTTP client config for Pyroscope backend server", "err", err)
+
+		return nil, err
+	}
+
+	// Setup app read paths
+	base.AppReadPaths = append(base.AppReadPaths, readPaths...)
 
 	// Create a HTTP roundtripper
 	httpRoundTripper, err := config.NewRoundTripperFromConfig(c.Web.HTTPClientConfig, "ceems_lb", config.WithUserAgent("ceems_lb/"+webURL.Host))

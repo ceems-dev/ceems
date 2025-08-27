@@ -267,60 +267,6 @@ func (b *CEEMSServer) Main() error {
 	runtime.GOMAXPROCS(maxProcs)
 	logger.Debug("Go MAXPROCS", "procs", runtime.GOMAXPROCS(0))
 
-	user, err := user.Current()
-	if err == nil && user.Uid == "0" {
-		logger.Info("CEEMS API server is running as root user. Privileges will be dropped and process will be run as unprivileged user", "new_user", runAsUser)
-	}
-
-	// Make security related config
-	// CEEMS API server should not need any privileges except executing SLURM sacct command.
-	//
-	// In future we should add SLURM API support as well which should avoid any privilege
-	// requirements for CEEMS API server.
-	//
-	// Until then the required privileges should not be more than cap_setuid and cap_setgid.
-	//
-	// So we start with that assumption and during the resource manager instantitation, if
-	// we are using sacct method, we keep the privilege or if the runtime config uses
-	// future SLURM API support, we drop those privileges as well.
-	//
-	// So, we keep the privileges only as a insurance and once we confirm with resource manager
-	// we decide to either keep them or drop them.
-	var allCaps []cap.Value
-
-	for _, name := range []string{"cap_setuid", "cap_setgid"} {
-		value, err := cap.FromName(name)
-		if err != nil {
-			logger.Error("Error parsing capability %s: %w", name, err)
-
-			continue
-		}
-
-		allCaps = append(allCaps, value)
-	}
-
-	// We should STRONGLY advise in docs that CEEMS API server should not be started as root
-	// as that will end up dropping the privileges and running it as nobody user which can
-	// be strange as CEEMS API server writes data to DB.
-	securityCfg := &security.Config{
-		RunAsUser:      runAsUser,
-		Caps:           allCaps,
-		ReadPaths:      []string{webConfigFilePath, base.ConfigFilePath},
-		ReadWritePaths: []string{config.Server.Data.Path, config.Server.Data.BackupPath},
-	}
-
-	// If there is already a DB file, we should add it to ReadWritePaths
-	dbFile := filepath.Join(config.Server.Data.Path, base.CEEMSDBName)
-
-	_, err = os.Stat(dbFile)
-	if err == nil {
-		securityCfg.ReadWritePaths = append(securityCfg.ReadWritePaths, dbFile)
-	}
-
-	// Create context that listens for the interrupt signal from the OS.
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	defer stop()
-
 	// Make DB config.
 	dbConfig := &ceems_db.Config{
 		Logger:          logger,
@@ -382,6 +328,51 @@ func (b *CEEMSServer) Main() error {
 		return err
 	}
 
+	// Make security related config
+	// CEEMS API server should not need any privileges except executing SLURM sacct command.
+	//
+	// In future we should add SLURM API support as well which should avoid any privilege
+	// requirements for CEEMS API server.
+	//
+	// Until then the required privileges should not be more than cap_setuid and cap_setgid.
+	//
+	// So we start with that assumption and during the resource manager instantitation, if
+	// we are using sacct method, we keep the privilege or if the runtime config uses
+	// future SLURM API support, we drop those privileges as well.
+	//
+	// So, we keep the privileges only as a insurance and once we confirm with resource manager
+	// we decide to either keep them or drop them.
+	var allCaps []cap.Value
+
+	for _, name := range []string{"cap_setuid", "cap_setgid"} {
+		value, err := cap.FromName(name)
+		if err != nil {
+			logger.Error("Error parsing capability %s: %w", name, err)
+
+			continue
+		}
+
+		allCaps = append(allCaps, value)
+	}
+
+	// We should STRONGLY advise in docs that CEEMS API server should not be started as root
+	// as that will end up dropping the privileges and running it as nobody user which can
+	// be strange as CEEMS API server writes data to DB.
+	securityCfg := &security.Config{
+		RunAsUser:      runAsUser,
+		Caps:           allCaps,
+		ReadPaths:      []string{webConfigFilePath, base.ConfigFilePath},
+		ReadWritePaths: []string{config.Server.Data.Path, config.Server.Data.BackupPath},
+	}
+
+	// If there is already a DB file, we should add it to ReadWritePaths
+	dbFile := filepath.Join(config.Server.Data.Path, base.CEEMSDBName)
+
+	_, err = os.Stat(dbFile)
+	if err == nil {
+		securityCfg.ReadWritePaths = append(securityCfg.ReadWritePaths, dbFile)
+	}
+
 	// Add any readPaths and readWritePaths to security config
 	if len(base.AppReadPaths) > 0 {
 		securityCfg.ReadPaths = append(securityCfg.ReadPaths, base.AppReadPaths...)
@@ -401,13 +392,22 @@ func (b *CEEMSServer) Main() error {
 
 	// Drop all unnecessary privileges
 	if dropPrivs {
-		err := securityManager.DropPrivileges(disableCapAwareness)
+		user, err := user.Current()
+		if err == nil && user.Uid == "0" {
+			logger.Info("CEEMS API server is running as root user. Privileges will be dropped and process will be run as unprivileged user", "become_user", runAsUser)
+		}
+
+		err = securityManager.DropPrivileges(disableCapAwareness)
 		if err != nil {
 			logger.Error("Failed to drop privileges", "err", err)
 
 			return err
 		}
 	}
+
+	// Create context that listens for the interrupt signal from the OS.
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
 	// Declare wait group and tickers.
 	var wg sync.WaitGroup

@@ -365,6 +365,17 @@ func New(c *Config) (*stats, error) {
 	)
 	c.Logger.Info("DB will be updated from", "last_update", c.Data.LastUpdate.Time)
 
+	// Check Grafana HTTP client config
+	readPaths, err := common.CheckHTTPClientConfigFiles(&c.Admin.Grafana.HTTPClientConfig)
+	if err != nil {
+		c.Logger.Error("Failed to check or get file paths in HTTP client config for Grafana", "err", err)
+
+		return nil, err
+	}
+
+	// Setup app read paths
+	base.AppReadPaths = append(base.AppReadPaths, readPaths...)
+
 	// Create a new instance of Grafana client
 	grafanaClient, err := common.NewGrafanaClient(&c.Admin.Grafana, c.Logger)
 	if err != nil {

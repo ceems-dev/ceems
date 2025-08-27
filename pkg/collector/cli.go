@@ -236,10 +236,6 @@ func (b *CEEMSExporter) Main() error {
 	runtime.GOMAXPROCS(maxProcs)
 	logger.Debug("Go MAXPROCS", "procs", runtime.GOMAXPROCS(0))
 
-	// Create context that listens for the interrupt signal from the OS.
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	defer stop()
-
 	// Create a new instance of profiler
 	profilerConfig := &profilerConfig{
 		logger:                  logger.With("profiler", "ebpf"),
@@ -297,11 +293,6 @@ func (b *CEEMSExporter) Main() error {
 		return err
 	}
 
-	user, err := user.Current()
-	if err == nil && user.Uid == "0" {
-		logger.Info("CEEMS Exporter is running as root user. Privileges will be dropped and process will be run as unprivileged user", "new_user", runAsUser)
-	}
-
 	// Make security related config
 	// If the exporter is started as root, we pick up necessary privileges and
 	// change user to nobody.
@@ -326,7 +317,12 @@ func (b *CEEMSExporter) Main() error {
 
 	// Drop all unnecessary privileges
 	if dropPrivs {
-		err := securityManager.DropPrivileges(disableCapAwareness)
+		user, err := user.Current()
+		if err == nil && user.Uid == "0" {
+			logger.Info("CEEMS Exporter is running as root user. Privileges will be dropped and process will be run as unprivileged user", "become_user", runAsUser)
+		}
+
+		err = securityManager.DropPrivileges(disableCapAwareness)
 		if err != nil {
 			logger.Error("Failed to drop privileges", "err", err)
 
@@ -366,6 +362,10 @@ func (b *CEEMSExporter) Main() error {
 			},
 		},
 	}
+
+	// Create context that listens for the interrupt signal from the OS.
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
 	// Start profiling session if enabled
 	if profiler.Enabled() {
