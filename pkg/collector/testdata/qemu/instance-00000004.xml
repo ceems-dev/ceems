@@ -5,114 +5,351 @@ OVERWRITTEN AND LOST. Changes to this xml configuration should be made using:
 or other application using the libvirt API.
 -->
 
-<domain type='kvm'>
-  <name>instance-00000004</name>
-  <uuid>4de89c5b-50d7-4d30-a630-14e135380fe8</uuid>
-  <metadata>
-    <nova:instance xmlns:nova="http://openstack.org/xmlns/libvirt/nova/1.1">
-      <nova:package version="30.1.0"/>
-      <nova:name>dsdfs</nova:name>
-      <nova:creationTime>2024-10-04 18:10:20</nova:creationTime>
-      <nova:flavor name="ds4G">
-        <nova:memory>4096</nova:memory>
-        <nova:disk>20</nova:disk>
-        <nova:swap>0</nova:swap>
-        <nova:ephemeral>0</nova:ephemeral>
-        <nova:vcpus>4</nova:vcpus>
-      </nova:flavor>
-      <nova:owner>
-        <nova:user uuid="4181b7fa10f24d82b67d8e81459e56bb">admin</nova:user>
-        <nova:project uuid="31bb87f73f304a3d8a29e193d3854f74">admin</nova:project>
-      </nova:owner>
-      <nova:root type="volume" uuid=""/>
-      <nova:ports>
-        <nova:port uuid="0f8c8d0f-87f3-41e1-b5ac-94f0986df999">
-          <nova:ip type="fixed" address="192.168.233.186" ipVersion="4"/>
-        </nova:port>
-      </nova:ports>
-    </nova:instance>
-  </metadata>
-  <memory unit='KiB'>4194304</memory>
-  <currentMemory unit='KiB'>4194304</currentMemory>
-  <vcpu placement='static'>4</vcpu>
-  <sysinfo type='smbios'>
-    <system>
-      <entry name='manufacturer'>OpenStack Foundation</entry>
-      <entry name='product'>OpenStack Nova</entry>
-      <entry name='version'>30.1.0</entry>
-      <entry name='serial'>5f7f6db0-7f7d-4c31-acc6-a03ec4d3ad4e</entry>
-      <entry name='uuid'>5f7f6db0-7f7d-4c31-acc6-a03ec4d3ad4e</entry>
-      <entry name='family'>Virtual Machine</entry>
-    </system>
-  </sysinfo>
-  <os>
-    <type arch='x86_64' machine='pc-i440fx-6.2'>hvm</type>
-    <boot dev='hd'/>
-    <smbios mode='sysinfo'/>
-  </os>
-  <features>
-    <acpi/>
-    <apic/>
-    <vmcoreinfo state='on'/>
-  </features>
-  <cpu mode='custom' match='exact' check='partial'>
-    <model fallback='allow'>Nehalem</model>
-    <topology sockets='4' dies='1' cores='1' threads='1'/>
-  </cpu>
-  <clock offset='utc'>
-    <timer name='pit' tickpolicy='delay'/>
-    <timer name='rtc' tickpolicy='catchup'/>
-    <timer name='hpet' present='no'/>
-  </clock>
-  <on_poweroff>destroy</on_poweroff>
-  <on_reboot>restart</on_reboot>
-  <on_crash>destroy</on_crash>
+<domstatus state='running' reason='booted' pid='1252374'>
+  <monitor path='/var/lib/libvirt/qemu/domain-3-instance-00000004/monitor.sock' type='unix'/>
+  <namespaces>
+    <mount/>
+  </namespaces>
+  <vcpus>
+    <vcpu id='0' pid='1252579'/>
+    <vcpu id='1' pid='1252583'/>
+  </vcpus>
+  <qemuCaps>
+    <flag name='kvm'/>
+    <flag name='sdl'/>
+    <flag name='hda-duplex'/>
+    <flag name='ccid-emulated'/>
+    <flag name='ccid-passthru'/>
+    <flag name='piix3-usb-uhci'/>
+    <flag name='piix4-usb-uhci'/>
+    <flag name='usb-ehci'/>
+    <flag name='ich9-usb-ehci1'/>
+    <flag name='pci-ohci'/>
+    <flag name='usb-redir'/>
+    <flag name='usb-hub'/>
+    <flag name='ich9-ahci'/>
+    <flag name='virtio-blk-pci.scsi'/>
+    <flag name='scsi-disk.channel'/>
+    <flag name='scsi-block'/>
+    <flag name='hda-micro'/>
+    <flag name='nec-usb-xhci'/>
+    <flag name='lsi'/>
+    <flag name='virtio-scsi-pci'/>
+    <flag name='usb-redir.filter'/>
+    <flag name='seccomp-sandbox'/>
+    <flag name='vnc'/>
+    <flag name='VGA'/>
+    <flag name='cirrus-vga'/>
+    <flag name='vmware-svga'/>
+    <flag name='usb-serial'/>
+    <flag name='virtio-rng'/>
+    <flag name='rng-random'/>
+    <flag name='rng-egd'/>
+    <flag name='megasas'/>
+    <flag name='tpm-passthrough'/>
+    <flag name='tpm-tis'/>
+    <flag name='pci-bridge'/>
+    <flag name='vfio-pci'/>
+    <flag name='dmi-to-pci-bridge'/>
+    <flag name='usb-storage'/>
+    <flag name='virtio-mmio'/>
+    <flag name='ich9-intel-hda'/>
+    <flag name='kvm-pit-lost-tick-policy'/>
+    <flag name='pvpanic'/>
+    <flag name='usb-kbd'/>
+    <flag name='usb-audio'/>
+    <flag name='rtc-reset-reinjection'/>
+    <flag name='migrate-rdma'/>
+    <flag name='VGA.vgamem_mb'/>
+    <flag name='vmware-svga.vgamem_mb'/>
+    <flag name='pc-dimm'/>
+    <flag name='machine-vmport-opt'/>
+    <flag name='pci-serial'/>
+    <flag name='gpex-pcihost'/>
+    <flag name='ioh3420'/>
+    <flag name='x3130-upstream'/>
+    <flag name='xio3130-downstream'/>
+    <flag name='rtl8139'/>
+    <flag name='e1000'/>
+    <flag name='virtio-net'/>
+    <flag name='virtio-gpu'/>
+    <flag name='virtio-keyboard'/>
+    <flag name='virtio-mouse'/>
+    <flag name='virtio-tablet'/>
+    <flag name='virtio-input-host'/>
+    <flag name='virtio-balloon-pci.deflate-on-oom'/>
+    <flag name='mptsas1068'/>
+    <flag name='pxb'/>
+    <flag name='pxb-pcie'/>
+    <flag name='intel-iommu'/>
+    <flag name='virtio-vga'/>
+    <flag name='ivshmem-plain'/>
+    <flag name='ivshmem-doorbell'/>
+    <flag name='vhost-scsi'/>
+    <flag name='query-cpu-model-expansion'/>
+    <flag name='nvdimm'/>
+    <flag name='pcie-root-port'/>
+    <flag name='query-cpu-definitions'/>
+    <flag name='qemu-xhci'/>
+    <flag name='intel-iommu.intremap'/>
+    <flag name='intel-iommu.caching-mode'/>
+    <flag name='intel-iommu.eim'/>
+    <flag name='intel-iommu.device-iotlb'/>
+    <flag name='chardev-reconnect'/>
+    <flag name='vmcoreinfo'/>
+    <flag name='isa-serial'/>
+    <flag name='pcie-pci-bridge'/>
+    <flag name='nbd-tls'/>
+    <flag name='tpm-crb'/>
+    <flag name='pr-manager-helper'/>
+    <flag name='screendump_device'/>
+    <flag name='hda-output'/>
+    <flag name='vmgenid'/>
+    <flag name='vhost-vsock'/>
+    <flag name='tpm-emulator'/>
+    <flag name='mch'/>
+    <flag name='mch.extended-tseg-mbytes'/>
+    <flag name='egl-headless'/>
+    <flag name='memory-backend-memfd'/>
+    <flag name='memory-backend-memfd.hugetlb'/>
+    <flag name='egl-headless.rendernode'/>
+    <flag name='memory-backend-file.pmem'/>
+    <flag name='nvdimm.unarmed'/>
+    <flag name='virtio-pci-non-transitional'/>
+    <flag name='nbd-bitmap'/>
+    <flag name='x86-max-cpu'/>
+    <flag name='cpu-unavailable-features'/>
+    <flag name='canonical-cpu-features'/>
+    <flag name='bochs-display'/>
+    <flag name='migration-file-drop-cache'/>
+    <flag name='dbus-vmstate'/>
+    <flag name='vhost-user-gpu'/>
+    <flag name='vhost-user-vga'/>
+    <flag name='incremental-backup'/>
+    <flag name='ramfb'/>
+    <flag name='drive-nvme'/>
+    <flag name='smp-dies'/>
+    <flag name='i8042'/>
+    <flag name='rng-builtin'/>
+    <flag name='vhost-user-fs'/>
+    <flag name='query-named-block-nodes.flat'/>
+    <flag name='blockdev-snapshot.allow-write-only-overlay'/>
+    <flag name='blockdev-reopen'/>
+    <flag name='fsdev.multidevs'/>
+    <flag name='pcie-root-port.hotplug'/>
+    <flag name='aio.io_uring'/>
+    <flag name='tcg'/>
+    <flag name='virtio-blk-pci.scsi.default.disabled'/>
+    <flag name='pvscsi'/>
+    <flag name='cpu.migratable'/>
+    <flag name='intel-iommu.aw-bits'/>
+    <flag name='numa.hmat'/>
+    <flag name='usb-host.hostdevice'/>
+    <flag name='virtio-balloon.free-page-reporting'/>
+    <flag name='block-export-add'/>
+    <flag name='netdev.vhost-vdpa'/>
+    <flag name='dc390'/>
+    <flag name='am53c974'/>
+    <flag name='virtio-pmem-pci'/>
+    <flag name='vhost-user-fs.bootindex'/>
+    <flag name='vhost-user-blk'/>
+    <flag name='cpu-max'/>
+    <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
+    <flag name='migration-param.block-bitmap-mapping'/>
+    <flag name='vnc-power-control'/>
+    <flag name='object.qapified'/>
+    <flag name='rotation-rate'/>
+    <flag name='compat-deprecated'/>
+    <flag name='acpi-index'/>
+    <flag name='input-linux'/>
+    <flag name='confidential-guest-support'/>
+    <flag name='set-action'/>
+    <flag name='virtio-blk.queue-size'/>
+    <flag name='virtio-mem-pci'/>
+    <flag name='memory-backend-file.reserve'/>
+    <flag name='piix4.acpi-root-pci-hotplug'/>
+    <flag name='netdev.json'/>
+    <flag name='query-dirty-rate'/>
+    <flag name='rbd-encryption'/>
+    <flag name='sev-guest-kernel-hashes'/>
+    <flag name='sev-inject-launch-secret'/>
+    <flag name='device.json+hotplug'/>
+    <flag name='virtio-mem-pci.prealloc'/>
+    <flag name='calc-dirty-rate'/>
+    <flag name='dirtyrate-param.mode'/>
+    <flag name='blockdev.nbd.tls-hostname'/>
+    <flag name='memory-backend-file.prealloc-threads'/>
+    <flag name='virtio-iommu-pci'/>
+    <flag name='virtio-iommu.boot-bypass'/>
+    <flag name='virtio-net.rss'/>
+    <flag name='chardev.qemu-vdagent'/>
+    <flag name='display-dbus'/>
+    <flag name='iothread.thread-pool-max'/>
+    <flag name='usb-host.guest-resets-all'/>
+    <flag name='migration.blocked-reasons'/>
+    <flag name='query-stats'/>
+    <flag name='query-stats-schemas'/>
+    <flag name='thread-context'/>
+    <flag name='screenshot-format-png'/>
+    <flag name='machine-hpet'/>
+    <flag name='netdev.stream'/>
+    <flag name='virtio-crypto'/>
+    <flag name='pvpanic-pci'/>
+    <flag name='netdev.stream.reconnect'/>
+    <flag name='virtio-gpu.blob'/>
+    <flag name='rbd-encryption-layering'/>
+    <flag name='rbd-encryption-luks-any'/>
+    <flag name='qcow2-discard-no-unref'/>
+    <flag name='run-with.async-teardown'/>
+  </qemuCaps>
   <devices>
-    <emulator>/usr/bin/qemu-system-x86_64</emulator>
-    <disk type='block' device='disk'>
-      <driver name='qemu' type='raw' cache='none' io='native'/>
-      <source dev='/dev/sde'/>
-      <target dev='vda' bus='virtio'/>
-      <serial>3c97a143-f7ac-4bda-b546-c1e609270f08</serial>
-      <alias name='ua-3c97a143-f7ac-4bda-b546-c1e609270f08'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
-    </disk>
-    <controller type='usb' index='0' model='none'/>
-    <controller type='pci' index='0' model='pci-root'/>
-    <interface type='ethernet'>
-      <mac address='fa:16:3e:51:ee:b7'/>
-      <target dev='tap0f8c8d0f-87'/>
-      <model type='virtio'/>
-      <mtu size='1442'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
-    </interface>
-    <serial type='pty'>
-      <log file='/opt/stack/data/nova/instances/5f7f6db0-7f7d-4c31-acc6-a03ec4d3ad4e/console.log' append='off'/>
-      <target type='isa-serial' port='0'>
-        <model name='isa-serial'/>
-      </target>
-    </serial>
-    <console type='pty'>
-      <log file='/opt/stack/data/nova/instances/5f7f6db0-7f7d-4c31-acc6-a03ec4d3ad4e/console.log' append='off'/>
-      <target type='serial' port='0'/>
-    </console>
-    <input type='mouse' bus='ps2'/>
-    <input type='keyboard' bus='ps2'/>
-    <graphics type='vnc' port='-1' autoport='yes' listen='0.0.0.0'>
-      <listen type='address' address='0.0.0.0'/>
-    </graphics>
-    <audio id='1' type='none'/>
-    <video>
-      <model type='virtio' heads='1' primary='yes'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
-    </video>
-    <memballoon model='virtio'>
-      <stats period='10'/>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
-    </memballoon>
-    <rng model='virtio'>
-      <backend model='random'>/dev/urandom</backend>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
-    </rng>
+    <device alias='input0'/>
+    <device alias='pci.16'/>
+    <device alias='pci.7'/>
+    <device alias='pci.13'/>
+    <device alias='pci.4'/>
+    <device alias='pci.1'/>
+    <device alias='pci.10'/>
+    <device alias='serial0'/>
+    <device alias='usb'/>
+    <device alias='balloon0'/>
+    <device alias='pci.18'/>
+    <device alias='pci.9'/>
+    <device alias='pci.6'/>
+    <device alias='pci.15'/>
+    <device alias='pci.12'/>
+    <device alias='pci.3'/>
+    <device alias='rng0'/>
+    <device alias='input1'/>
+    <device alias='pci.17'/>
+    <device alias='pci.8'/>
+    <device alias='pci.14'/>
+    <device alias='pci.5'/>
+    <device alias='pci.11'/>
+    <device alias='pci.2'/>
+    <device alias='net0'/>
+    <device alias='video0'/>
+    <device alias='ua-a3c6c231-d11d-4e5a-865e-0e204c5a0d1b'/>
   </devices>
-</domain>
+  <libDir path='/var/lib/libvirt/qemu/domain-3-instance-00000004'/>
+  <channelTargetDir path='/run/libvirt/qemu/channel/3-instance-00000004'/>
+  <cpu mode='host-model' check='partial'>
+    <topology sockets='2' dies='1' cores='1' threads='1'/>
+  </cpu>
+  <rememberOwner/>
+  <nodename index='1'/>
+  <fdset index='1'/>
+  <blockjobs active='no'/>
+  <agentTimeout>-2</agentTimeout>
+  <domain type='kvm'>
+    <name>instance-00000004</name>
+    <uuid>4de89c5b-50d7-4d30-a630-14e135380fe8</uuid>
+    <metadata>
+      <nova:instance xmlns:nova="http://openstack.org/xmlns/libvirt/nova/1.1">
+        <nova:package version="30.1.0"/>
+        <nova:name>dsdfs</nova:name>
+        <nova:creationTime>2024-10-04 18:10:20</nova:creationTime>
+        <nova:flavor name="ds4G">
+          <nova:memory>4096</nova:memory>
+          <nova:disk>20</nova:disk>
+          <nova:swap>0</nova:swap>
+          <nova:ephemeral>0</nova:ephemeral>
+          <nova:vcpus>4</nova:vcpus>
+        </nova:flavor>
+        <nova:owner>
+          <nova:user uuid="4181b7fa10f24d82b67d8e81459e56bb">admin</nova:user>
+          <nova:project uuid="31bb87f73f304a3d8a29e193d3854f74">admin</nova:project>
+        </nova:owner>
+        <nova:root type="volume" uuid=""/>
+        <nova:ports>
+          <nova:port uuid="0f8c8d0f-87f3-41e1-b5ac-94f0986df999">
+            <nova:ip type="fixed" address="192.168.233.186" ipVersion="4"/>
+          </nova:port>
+        </nova:ports>
+      </nova:instance>
+    </metadata>
+    <memory unit='KiB'>4194304</memory>
+    <currentMemory unit='KiB'>4194304</currentMemory>
+    <vcpu placement='static'>4</vcpu>
+    <sysinfo type='smbios'>
+      <system>
+        <entry name='manufacturer'>OpenStack Foundation</entry>
+        <entry name='product'>OpenStack Nova</entry>
+        <entry name='version'>30.1.0</entry>
+        <entry name='serial'>5f7f6db0-7f7d-4c31-acc6-a03ec4d3ad4e</entry>
+        <entry name='uuid'>5f7f6db0-7f7d-4c31-acc6-a03ec4d3ad4e</entry>
+        <entry name='family'>Virtual Machine</entry>
+      </system>
+    </sysinfo>
+    <os>
+      <type arch='x86_64' machine='pc-i440fx-6.2'>hvm</type>
+      <boot dev='hd'/>
+      <smbios mode='sysinfo'/>
+    </os>
+    <features>
+      <acpi/>
+      <apic/>
+      <vmcoreinfo state='on'/>
+    </features>
+    <cpu mode='custom' match='exact' check='partial'>
+      <model fallback='allow'>Nehalem</model>
+      <topology sockets='4' dies='1' cores='1' threads='1'/>
+    </cpu>
+    <clock offset='utc'>
+      <timer name='pit' tickpolicy='delay'/>
+      <timer name='rtc' tickpolicy='catchup'/>
+      <timer name='hpet' present='no'/>
+    </clock>
+    <on_poweroff>destroy</on_poweroff>
+    <on_reboot>restart</on_reboot>
+    <on_crash>destroy</on_crash>
+    <devices>
+      <emulator>/usr/bin/qemu-system-x86_64</emulator>
+      <disk type='block' device='disk'>
+        <driver name='qemu' type='raw' cache='none' io='native'/>
+        <source dev='/dev/sde'/>
+        <target dev='vda' bus='virtio'/>
+        <serial>3c97a143-f7ac-4bda-b546-c1e609270f08</serial>
+        <alias name='ua-3c97a143-f7ac-4bda-b546-c1e609270f08'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+      </disk>
+      <controller type='usb' index='0' model='none'/>
+      <controller type='pci' index='0' model='pci-root'/>
+      <interface type='ethernet'>
+        <mac address='fa:16:3e:51:ee:b7'/>
+        <target dev='tap0f8c8d0f-87'/>
+        <model type='virtio'/>
+        <mtu size='1442'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+      </interface>
+      <serial type='pty'>
+        <log file='/opt/stack/data/nova/instances/5f7f6db0-7f7d-4c31-acc6-a03ec4d3ad4e/console.log' append='off'/>
+        <target type='isa-serial' port='0'>
+          <model name='isa-serial'/>
+        </target>
+      </serial>
+      <console type='pty'>
+        <log file='/opt/stack/data/nova/instances/5f7f6db0-7f7d-4c31-acc6-a03ec4d3ad4e/console.log' append='off'/>
+        <target type='serial' port='0'/>
+      </console>
+      <input type='mouse' bus='ps2'/>
+      <input type='keyboard' bus='ps2'/>
+      <graphics type='vnc' port='-1' autoport='yes' listen='0.0.0.0'>
+        <listen type='address' address='0.0.0.0'/>
+      </graphics>
+      <audio id='1' type='none'/>
+      <video>
+        <model type='virtio' heads='1' primary='yes'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      </video>
+      <memballoon model='virtio'>
+        <stats period='10'/>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x05' function='0x0'/>
+      </memballoon>
+      <rng model='virtio'>
+        <backend model='random'>/dev/urandom</backend>
+        <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
+      </rng>
+    </devices>
+  </domain>
+</domstatus>

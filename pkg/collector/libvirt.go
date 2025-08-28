@@ -47,7 +47,7 @@ var (
 	libvirtXMLDir = CEEMSExporterApp.Flag(
 		"collector.libvirt.xml-dir",
 		"Directory containing XML files of instances",
-	).Default("/etc/libvirt/qemu").Hidden().String()
+	).Default("").Hidden().String()
 )
 
 // Security context names.
@@ -55,7 +55,28 @@ const (
 	libvirtReadXMLCtx = "libvirt_read_xml"
 )
 
-// Domain is the top level XML field for libvirt XML schema.
+// XML folder locations
+// There are two different locations:
+// - /etc/libvirt/qemu - Persistent files
+// - /run/libvirt/qemu - Runtime files
+// Runtime files and persistent files have slightly different schemas
+// so we need to handle them differently. Moreover runtime schema
+// files will not be present when the VM is shut down.
+// On some Openstack instances, nova might not create persistent files at all
+// so we need to look at both runtime and persistent directories to find
+// instance properties.
+//
+// More info: https://github.com/ceems-dev/ceems/discussions/402.
+var (
+	defaultLibvirtXMLDirs = []string{"/etc/libvirt/qemu", "/run/libvirt/qemu"}
+)
+
+// Domstatus is the top level XML field for runtime XML files.
+type DomStatus struct {
+	Domain Domain `xml:"domain"`
+}
+
+// Domain is the top level XML field for persistent XML files.
 type Domain struct {
 	Devices Devices `xml:"devices"`
 	Name    string  `xml:"name"`
@@ -100,7 +121,7 @@ type instanceProperties struct {
 // libvirtReadXMLSecurityCtxData contains the input/output data for
 // reading XML files inside a security context.
 type libvirtReadXMLSecurityCtxData struct {
-	xmlPath    string
+	xmlDirs    []string
 	instanceID string
 	devices    []Device
 	properties *instanceProperties
@@ -114,6 +135,7 @@ type libvirtCollector struct {
 	ebpfCollector                 *ebpfCollector
 	rdmaCollector                 *rdmaCollector
 	hostname                      string
+	libvirtXMLDirs                []string
 	gpuSMI                        *GPUSMI
 	vGPUActivated                 bool
 	instanceGpuFlag               *prometheus.Desc
@@ -230,6 +252,13 @@ func NewLibvirtCollector(logger *slog.Logger) (Collector, error) {
 		}
 	}
 
+	// In case XML files are stored in non-standard location, add them to
+	// paths
+	libvirtXMLDirs := defaultLibvirtXMLDirs
+	if *libvirtXMLDir != "" && !slices.Contains(libvirtXMLDirs, *libvirtXMLDir) {
+		libvirtXMLDirs = append(libvirtXMLDirs, *libvirtXMLDir)
+	}
+
 	// Setup necessary capabilities. These are the caps we need to read
 	// XML files in /etc/libvirt/qemu folder that contains GPU devs used by guests.
 	caps, err := setupAppCaps([]string{"cap_dac_read_search"})
@@ -259,6 +288,7 @@ func NewLibvirtCollector(logger *slog.Logger) (Collector, error) {
 		perfCollector:                 perfCollector,
 		ebpfCollector:                 ebpfCollector,
 		rdmaCollector:                 rdmaCollector,
+		libvirtXMLDirs:                libvirtXMLDirs,
 		hostname:                      hostname,
 		gpuSMI:                        gpuSMI,
 		vGPUActivated:                 vGPUActivated,
@@ -497,7 +527,7 @@ func (c *libvirtCollector) updateDeviceMappers(ch chan<- prometheus.Metric) {
 func (c *libvirtCollector) instanceProperties(instanceID string) *instanceProperties {
 	// Read XML file in a security context that raises necessary capabilities
 	dataPtr := &libvirtReadXMLSecurityCtxData{
-		xmlPath:    *libvirtXMLDir,
+		xmlDirs:    c.libvirtXMLDirs,
 		devices:    c.gpuSMI.Devices,
 		instanceID: instanceID,
 	}
@@ -578,6 +608,10 @@ func (c *libvirtCollector) updateDeviceInstances(cgroups []cgroup) {
 
 		// We keep a map of instance ID to instance UUID to setup
 		// UUIDs when this part of code is skipped
+		// NOTE: Never invalidate this cache as shut down instance's XML
+		// files might not be present in some cases but their cgroups will be
+		// always present. In that case we might not be able to get UUID of those
+		// shutdown instances if we invalidate the cache.
 		c.instanceIDUUIDMap[cgrp.id] = properties.uuid
 
 		for _, id := range properties.deviceIDs {
@@ -637,17 +671,32 @@ func readLibvirtXMLFile(data any) error {
 		return security.ErrSecurityCtxDataAssertion
 	}
 
-	// Get full file path
-	xmlFilePath := filepath.Join(d.xmlPath, d.instanceID+".xml")
+	// Try xml dirs one by one
+	var xmlFilePath string
 
-	// If file does not exist return error
-	_, err := os.Stat(xmlFilePath)
-	if err != nil {
-		return err
+	var errs error
+
+	for _, xmlDir := range d.xmlDirs {
+		xmlFilePath = filepath.Join(xmlDir, d.instanceID+".xml")
+
+		// If file exists, break
+		_, err := os.Stat(xmlFilePath)
+		if err == nil {
+			goto read_file
+		} else {
+			errs = errors.Join(errs, err)
+		}
 	}
 
+	// If we end up here, it means we did not find xml file
+	if errs != nil {
+		return fmt.Errorf("xml file for instance %s not found. It means instance might be in shutdown state: %w", d.instanceID, errs)
+	}
+
+read_file:
 	// Read XML file contents
 	xmlByteArray, err := os.ReadFile(xmlFilePath)
+
 	if err != nil {
 		return err
 	}
@@ -655,9 +704,23 @@ func readLibvirtXMLFile(data any) error {
 	// Read XML byte array into domain
 	var domain Domain
 
-	err = xml.Unmarshal(xmlByteArray, &domain)
-	if err != nil {
-		return err
+	// Based on presence of domstatus tag in xml file,
+	// read contents into either domain or domstatus
+	switch {
+	case strings.Contains(string(xmlByteArray), "domstatus"):
+		var domStatus DomStatus
+
+		err = xml.Unmarshal(xmlByteArray, &domStatus)
+		if err != nil {
+			return err
+		}
+
+		domain = domStatus.Domain
+	default:
+		err = xml.Unmarshal(xmlByteArray, &domain)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Initialise resources pointer
