@@ -238,6 +238,15 @@ collector:
 ceems_exporter --collector.libvirt
 ```
 
+:::tip[TIP]
+
+By default the collector will look at `/etc/libvirt/qemu` and `/run/libvirt/qemu`
+for XML files of the instances. In case these XML files are located in a non-standard
+location, the collector can be configured using CLI flag `--collector.libvirt.xml-dir`.
+This is a hidden flag which will not appear in `ceems_exporter --help`.
+
+:::
+
 Both eBPF and perf sub-collectors are supported by the libvirt collector and they can
 be enabled as follows:
 

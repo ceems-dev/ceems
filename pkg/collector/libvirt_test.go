@@ -29,6 +29,7 @@ func TestNewLibvirtCollector(t *testing.T) {
 			"--collector.libvirt.xml-dir", "testdata/qemu",
 			"--collector.perf.hardware-events",
 			"--collector.rdma.stats",
+			"--collector.gpu.type", "nvidia",
 			"--collector.gpu.nvidia-smi-path", "testdata/nvidia-smi",
 			"--collector.cgroups.force-version", "v2",
 		},
@@ -60,7 +61,6 @@ func TestLibvirtInstanceProps(t *testing.T) {
 	_, err := CEEMSExporterApp.Parse(
 		[]string{
 			"--path.cgroupfs", "testdata/sys/fs/cgroup",
-			"--collector.libvirt.xml-dir", "testdata/qemu",
 			"--collector.cgroups.force-version", "v2",
 			"--collector.gpu.nvidia-smi-path", "testdata/nvidia-smi",
 			"--collector.gpu.type", "nvidia",
@@ -89,12 +89,17 @@ func TestLibvirtInstanceProps(t *testing.T) {
 	err = gpu.Discover()
 	require.NoError(t, err)
 
+	// XML dirs
+	libvirtXMLDirs := defaultLibvirtXMLDirs
+	libvirtXMLDirs = append(libvirtXMLDirs, "testdata/qemu")
+
 	c := libvirtCollector{
 		gpuSMI:                        gpu,
 		logger:                        noOpLogger,
 		cgroupManager:                 cgManager,
 		vGPUActivated:                 true,
 		instanceDevicesCacheTTL:       time.Second,
+		libvirtXMLDirs:                libvirtXMLDirs,
 		instanceIDUUIDMap:             make(map[string]string),
 		instanceDeviceslastUpdateTime: time.Now(),
 		securityContexts:              make(map[string]*security.SecurityContext),
@@ -125,12 +130,24 @@ func TestLibvirtInstanceProps(t *testing.T) {
 		"11": {{UUID: "2896bdd5-dbc2-4339-9d8e-ddd838bf35d3", NumShares: 1}},
 	}
 
-	expectedUUIDs := []string{"57f2d45e-8ddf-4338-91df-62d0044ff1b5", "b674a0a2-c300-4dc6-8c9c-65df16da6d69", "2896bdd5-dbc2-4339-9d8e-ddd838bf35d3", "4de89c5b-50d7-4d30-a630-14e135380fe8"}
+	expectedUUIDs := []string{
+		"57f2d45e-8ddf-4338-91df-62d0044ff1b5",
+		"b674a0a2-c300-4dc6-8c9c-65df16da6d69",
+		"2896bdd5-dbc2-4339-9d8e-ddd838bf35d3",
+		"4de89c5b-50d7-4d30-a630-14e135380fe8",
+	}
+
+	expectedInstanceIDs := []string{
+		"instance-00000001",
+		"instance-00000002",
+		"instance-00000003",
+		"instance-00000004",
+	}
 
 	cgroups, err := c.instanceCgroups()
 	require.NoError(t, err)
 
-	assert.ElementsMatch(t, []string{"instance-00000001", "instance-00000002", "instance-00000003", "instance-00000004"}, c.previousInstanceIDs)
+	assert.ElementsMatch(t, expectedInstanceIDs, c.previousInstanceIDs)
 	assert.Len(t, cgroups, 4)
 
 	// Check cgroup UUIDs are properly populated
@@ -180,14 +197,13 @@ func TestInstancePropsCaching(t *testing.T) {
 	err := os.Mkdir(cgroupsPath, 0o750)
 	require.NoError(t, err)
 
-	xmlFilePath := path + "/qemu"
-	err = os.Mkdir(xmlFilePath, 0o750)
+	xmlDir := path + "/qemu"
+	err = os.Mkdir(xmlDir, 0o750)
 	require.NoError(t, err)
 
 	_, err = CEEMSExporterApp.Parse(
 		[]string{
 			"--path.cgroupfs", cgroupsPath,
-			"--collector.libvirt.xml-dir", xmlFilePath,
 			"--collector.gpu.nvidia-smi-path", "testdata/nvidia-smi",
 			"--collector.gpu.type", "nvidia",
 		},
@@ -214,11 +230,16 @@ func TestInstancePropsCaching(t *testing.T) {
 	err = gpu.Discover()
 	require.NoError(t, err)
 
+	// XML dirs
+	libvirtXMLDirs := defaultLibvirtXMLDirs
+	libvirtXMLDirs = append(libvirtXMLDirs, xmlDir)
+
 	c := libvirtCollector{
 		cgroupManager:                 cgManager,
 		logger:                        noOpLogger,
 		gpuSMI:                        gpu,
 		vGPUActivated:                 true,
+		libvirtXMLDirs:                libvirtXMLDirs,
 		instanceDevicesCacheTTL:       500 * time.Millisecond,
 		instanceDeviceslastUpdateTime: time.Now(),
 		instanceIDUUIDMap:             make(map[string]string),
@@ -250,7 +271,7 @@ func TestInstancePropsCaching(t *testing.T) {
 
 	for idev, dev := range c.gpuSMI.Devices {
 		xmlContentPH := `<domain type='kvm'>
-<name>instance-%[1]d</name>
+<name>instance-0000000%[1]d</name>
 <uuid>%[1]d</uuid>
 <devices>
 <hostdev mode='subsystem' type='pci' managed='yes'>
@@ -260,17 +281,18 @@ func TestInstancePropsCaching(t *testing.T) {
 </hostdev>
 </devices>
 </domain>`
+
 		if !dev.VGPUEnabled && !dev.InstancesEnabled {
+			iInstance++
 			xmlContent := fmt.Sprintf(xmlContentPH, idev, strconv.FormatUint(dev.BusID.bus, 16))
 			err = os.WriteFile(
-				fmt.Sprintf("%s/instance-0000000%d.xml", xmlFilePath, iInstance),
+				fmt.Sprintf("%s/instance-0000000%d.xml", xmlDir, iInstance),
 				[]byte(xmlContent),
 				0o600,
 			)
 			require.NoError(t, err)
 
 			fullGPUInstances = append(fullGPUInstances, idev)
-			iInstance++
 		}
 	}
 
@@ -285,7 +307,22 @@ func TestInstancePropsCaching(t *testing.T) {
 		assert.Equal(t, []ComputeUnit{{UUID: strconv.FormatInt(int64(gpuID), 10), NumShares: 1}}, c.gpuSMI.Devices[gpuID].ComputeUnits)
 	}
 
-	// Remove first 10 instances and add new 10 more instances
+	// Get the instance ID UUID map to compare it later
+	expectedInstanceIDUUIDMap := c.instanceIDUUIDMap
+
+	// Remove all XML files
+	for i := range iInstance {
+		err = os.Remove(fmt.Sprintf("%s/instance-0000000%d.xml", xmlDir, i+1))
+		require.NoError(t, err)
+	}
+
+	// Now populate instancePropsCache again and we should have instanceIDUUIDMap intact
+	_, err = c.instanceCgroups()
+	require.NoError(t, err)
+
+	assert.Equal(t, expectedInstanceIDUUIDMap, c.instanceIDUUIDMap)
+
+	// Remove first 10 instances and add new 5 more instances
 	for i := range 10 {
 		dir := fmt.Sprintf("%s/cpuacct/machine.slice/machine-qemu\x2d1\x2dinstance\x2d0000000%d.scope", cgroupsPath, i)
 
