@@ -56,6 +56,10 @@ var (
 		amdDevExporterPkgPowerMetric, // AMD metrics device exporter
 		"ceems_compute_unit_gpu_index_flag",
 		"ceems_compute_unit_gpu_sm_count",
+		"ceems_ebpf_read_bytes_total",
+		"ceems_ebpf_write_bytes_total",
+		"ceems_ebpf_ingress_bytes_total",
+		"ceems_ebpf_egress_bytes_total",
 	}
 
 	nvidiaProfSeriesNames = []string{
@@ -115,6 +119,8 @@ type rulesTemplateData struct {
 	HostPowerQuery     string
 	HostPowerSeries    string
 	RAPLAvailable      bool
+	IOAvailable        bool
+	NetAvailable       bool
 	Job                model.LabelValue
 	PUE                float64
 	EmissionFactor     EmissionFactor
@@ -363,6 +369,8 @@ func CreatePromRecordingRules(
 			HostPowerQuery:     hostPowerQuery,
 			HostPowerSeries:    hostPowerSeries,
 			RAPLAvailable:      slices.Contains(jobSeries[job], "ceems_rapl_package_joules_total") && slices.Contains(jobSeries[job], "ceems_rapl_dram_joules_total"),
+			IOAvailable:        slices.Contains(jobSeries[job], "ceems_ebpf_read_bytes_total") || slices.Contains(jobSeries[job], "ceems_ebpf_write_bytes_total"),
+			NetAvailable:       slices.Contains(jobSeries[job], "ceems_ebpf_ingress_bytes_total") || slices.Contains(jobSeries[job], "ceems_ebpf_egress_bytes_total"),
 			Job:                job,
 			PUE:                pueValue,
 			EmissionFactor:     emissionFactor,

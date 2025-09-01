@@ -23,6 +23,22 @@ must be preferred to generate recording rules.
 The rules in this file estimate the host CPU and CPU memory usage for each
 compute unit and also average usage aggregated over Prometheus jobs.
 
+### [`io-usage.rules`](./rules/io-usage.rules)
+
+The rules in this file estimate the I/O read/write bandwidths for each
+compute unit and also total usage aggregated over Prometheus jobs. These
+metrics are available only when
+[eBPF](https://ceems-dev.github.io/ceems/docs/components/ceems-exporter#ebpf-sub-collector)
+collector is enabled on CEEMS exporter.
+
+### [`network-usage.rules`](./rules/network-usage.rules)
+
+The rules in this file estimate the network ingress and egress bandwidths for each
+compute unit and also total usage aggregated over Prometheus jobs. These
+metrics are available only when
+[eBPF](https://ceems-dev.github.io/ceems/docs/components/ceems-exporter#ebpf-sub-collector)
+collector is enabled on CEEMS exporter.
+
 ### [`host-power-cray-pmc.rules`](./rules/host-power-cray-pmc.rules)
 
 The rules defined in this file estimate host power usage for the nodes where Cray

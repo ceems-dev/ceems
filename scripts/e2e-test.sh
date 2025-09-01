@@ -1754,7 +1754,7 @@ then
       cp cmd/ceems_tool/testdata/prometheus.yml "${tmpdir}/prometheus.yml"
 
       # Ignore existing recording rules
-      sed -i 's/prometheus/prometheus1/g' "${tmpdir}/prometheus.yml"
+      sed -i 's/rules/rules1/g' "${tmpdir}/prometheus.yml"
 
       prometheus \
         --config.file "${tmpdir}/prometheus.yml" \

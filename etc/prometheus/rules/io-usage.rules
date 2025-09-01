@@ -1,0 +1,86 @@
+---
+# Recording rules for compute unit I/O usage
+#
+# The rules estimate the compute unit's I/O usage metrics
+#
+# Optional placeholders to replace:
+#
+# <eval_interval>: Evaluation interval
+#
+# By default rate interval of 1m is used. For scrape intervals more than 30s, use a bigger
+# rate interval.
+#
+groups:
+  - name: io-usage-rules
+    # interval: <eval_interval>
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total[1m])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total[1m])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total[1m])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total[1m])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total[1m])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total[1m])
+
+  # The following recording rules estimate the total I/O usages aggregared for all hosts 
+  # per Prometheus job.
+  - name: host-agg-io-usage-rules
+    # interval: <eval_interval>
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
