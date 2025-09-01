@@ -125,6 +125,8 @@ WaitForStreams:
 }
 
 type FakeResourceServer struct {
+	podresourcesapi.UnimplementedPodResourcesListerServer
+
 	Server                      *grpc.Server
 	ListResp                    *podresourcesapi.ListPodResourcesResponse
 	GetAllocatableResourcesResp *podresourcesapi.AllocatableResourcesResponse
