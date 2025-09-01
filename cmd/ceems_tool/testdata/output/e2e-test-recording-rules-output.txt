@@ -1,5 +1,5 @@
-Number of series found for job series are: 77
-Number of series found for uuid series are: 714
+Number of series found for job series are: 91
+Number of series found for uuid series are: 728
 amd-device-metrics-gpu-gpu.rules
 ---
 # Recording rules for AMD GPUs scrape job amd-device-metrics-gpu.
@@ -464,6 +464,129 @@ groups:
             )
           )
 
+
+
+  - name: compute-unit-io-rules-cpu-cray-amd-gpu
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-cray-amd-gpu"}[2s])
+
+  - name: host-agg-io-rules-cpu-cray-amd-gpu
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-cray-amd-gpu
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-cray-amd-gpu"}[2s])
+
+  - name: host-agg-network-rules-cpu-cray-amd-gpu
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
+          )
 cpu-hwmon-amd-gpu.rules
 ---
 # Recording rules for scrape job cpu-hwmon-amd-gpu
@@ -661,6 +784,128 @@ groups:
                 label_replace(ceems_emissions_gCo2_kWh, "job", "cpu-hwmon-amd-gpu", "instance", "(.*)")
             )
           )
+
+  - name: compute-unit-io-rules-cpu-hwmon-amd-gpu
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+  - name: host-agg-io-rules-cpu-hwmon-amd-gpu
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-hwmon-amd-gpu
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+  - name: host-agg-network-rules-cpu-hwmon-amd-gpu
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
+          )
 cpu-ipmi-nvidia-gpu.rules
 ---
 # Recording rules for scrape job cpu-ipmi-nvidia-gpu
@@ -825,6 +1070,128 @@ groups:
               * on (job) group_right ()
                 label_replace(ceems_emissions_gCo2_kWh, "job", "cpu-ipmi-nvidia-gpu", "instance", "(.*)")
             )
+          )
+
+  - name: compute-unit-io-rules-cpu-ipmi-nvidia-gpu
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+  - name: host-agg-io-rules-cpu-ipmi-nvidia-gpu
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-ipmi-nvidia-gpu
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+  - name: host-agg-network-rules-cpu-ipmi-nvidia-gpu
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
           )
 cpu-only-ipmi.rules
 ---
@@ -1023,6 +1390,128 @@ groups:
                 label_replace(ceems_emissions_gCo2_kWh, "job", "cpu-only-ipmi", "instance", "(.*)")
             )
           )
+
+  - name: compute-unit-io-rules-cpu-only-ipmi
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-only-ipmi"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-only-ipmi"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-only-ipmi"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-only-ipmi"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-only-ipmi"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-only-ipmi"}[2s])
+
+  - name: host-agg-io-rules-cpu-only-ipmi
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-only-ipmi
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-only-ipmi"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-only-ipmi"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-only-ipmi"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-only-ipmi"}[2s])
+
+  - name: host-agg-network-rules-cpu-only-ipmi
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
+          )
 cpu-only-rapl.rules
 ---
 # Recording rules for scrape job cpu-only-rapl
@@ -1184,6 +1673,130 @@ groups:
               * on (job) group_right ()
                 label_replace(ceems_emissions_gCo2_kWh, "job", "cpu-only-rapl", "instance", "(.*)")
             )
+          )
+
+
+
+  - name: compute-unit-io-rules-cpu-only-rapl
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-only-rapl"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-only-rapl"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-only-rapl"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-only-rapl"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-only-rapl"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-only-rapl"}[2s])
+
+  - name: host-agg-io-rules-cpu-only-rapl
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-only-rapl
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-only-rapl"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-only-rapl"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-only-rapl"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-only-rapl"}[2s])
+
+  - name: host-agg-network-rules-cpu-only-rapl
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
           )
 cpu-only-redfish.rules
 ---
@@ -1382,6 +1995,128 @@ groups:
                 label_replace(ceems_emissions_gCo2_kWh, "job", "cpu-only-redfish", "instance", "(.*)")
             )
           )
+
+  - name: compute-unit-io-rules-cpu-only-redfish
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-only-redfish"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-only-redfish"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-only-redfish"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-only-redfish"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-only-redfish"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-only-redfish"}[2s])
+
+  - name: host-agg-io-rules-cpu-only-redfish
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-only-redfish
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-only-redfish"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-only-redfish"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-only-redfish"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-only-redfish"}[2s])
+
+  - name: host-agg-network-rules-cpu-only-redfish
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
+          )
 cpu-redfish-nvidia-gpu.rules
 ---
 # Recording rules for scrape job cpu-redfish-nvidia-gpu
@@ -1578,6 +2313,128 @@ groups:
               * on (job) group_right ()
                 label_replace(ceems_emissions_gCo2_kWh, "job", "cpu-redfish-nvidia-gpu", "instance", "(.*)")
             )
+          )
+
+  - name: compute-unit-io-rules-cpu-redfish-nvidia-gpu
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+  - name: host-agg-io-rules-cpu-redfish-nvidia-gpu
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-redfish-nvidia-gpu
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+  - name: host-agg-network-rules-cpu-redfish-nvidia-gpu
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
           )
 ipmi-nvidia-gpu-gpu.rules
 ---
@@ -2472,6 +3329,129 @@ groups:
             "(.*)"
           )
 
+
+
+  - name: compute-unit-io-rules-cpu-cray-amd-gpu
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-cray-amd-gpu"}[2s])
+
+  - name: host-agg-io-rules-cpu-cray-amd-gpu
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-cray-amd-gpu
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-cray-amd-gpu"}[2s])
+
+  - name: host-agg-network-rules-cpu-cray-amd-gpu
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
+          )
 cpu-hwmon-amd-gpu.rules
 ---
 # Recording rules for scrape job cpu-hwmon-amd-gpu
@@ -2674,6 +3654,128 @@ groups:
             "instance",
             "(.*)"
           )
+
+  - name: compute-unit-io-rules-cpu-hwmon-amd-gpu
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+  - name: host-agg-io-rules-cpu-hwmon-amd-gpu
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-hwmon-amd-gpu
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+  - name: host-agg-network-rules-cpu-hwmon-amd-gpu
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
+          )
 cpu-ipmi-nvidia-gpu.rules
 ---
 # Recording rules for scrape job cpu-ipmi-nvidia-gpu
@@ -2843,6 +3945,128 @@ groups:
             "FR",
             "instance",
             "(.*)"
+          )
+
+  - name: compute-unit-io-rules-cpu-ipmi-nvidia-gpu
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+  - name: host-agg-io-rules-cpu-ipmi-nvidia-gpu
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-ipmi-nvidia-gpu
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+  - name: host-agg-network-rules-cpu-ipmi-nvidia-gpu
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
           )
 cpu-only-ipmi.rules
 ---
@@ -3046,6 +4270,128 @@ groups:
             "instance",
             "(.*)"
           )
+
+  - name: compute-unit-io-rules-cpu-only-ipmi
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-only-ipmi"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-only-ipmi"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-only-ipmi"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-only-ipmi"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-only-ipmi"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-only-ipmi"}[2s])
+
+  - name: host-agg-io-rules-cpu-only-ipmi
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-only-ipmi
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-only-ipmi"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-only-ipmi"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-only-ipmi"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-only-ipmi"}[2s])
+
+  - name: host-agg-network-rules-cpu-only-ipmi
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
+          )
 cpu-only-rapl.rules
 ---
 # Recording rules for scrape job cpu-only-rapl
@@ -3212,6 +4558,130 @@ groups:
             "FR",
             "instance",
             "(.*)"
+          )
+
+
+
+  - name: compute-unit-io-rules-cpu-only-rapl
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-only-rapl"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-only-rapl"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-only-rapl"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-only-rapl"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-only-rapl"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-only-rapl"}[2s])
+
+  - name: host-agg-io-rules-cpu-only-rapl
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-only-rapl
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-only-rapl"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-only-rapl"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-only-rapl"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-only-rapl"}[2s])
+
+  - name: host-agg-network-rules-cpu-only-rapl
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
           )
 cpu-only-redfish.rules
 ---
@@ -3415,6 +4885,128 @@ groups:
             "instance",
             "(.*)"
           )
+
+  - name: compute-unit-io-rules-cpu-only-redfish
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-only-redfish"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-only-redfish"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-only-redfish"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-only-redfish"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-only-redfish"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-only-redfish"}[2s])
+
+  - name: host-agg-io-rules-cpu-only-redfish
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-only-redfish
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-only-redfish"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-only-redfish"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-only-redfish"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-only-redfish"}[2s])
+
+  - name: host-agg-network-rules-cpu-only-redfish
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
+          )
 cpu-redfish-nvidia-gpu.rules
 ---
 # Recording rules for scrape job cpu-redfish-nvidia-gpu
@@ -3616,6 +5208,128 @@ groups:
             "FR",
             "instance",
             "(.*)"
+          )
+
+  - name: compute-unit-io-rules-cpu-redfish-nvidia-gpu
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+  - name: host-agg-io-rules-cpu-redfish-nvidia-gpu
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-redfish-nvidia-gpu
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+  - name: host-agg-network-rules-cpu-redfish-nvidia-gpu
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
           )
 ipmi-nvidia-gpu-gpu.rules
 ---
@@ -4520,6 +6234,129 @@ groups:
             "(.*)"
           )
 
+
+
+  - name: compute-unit-io-rules-cpu-cray-amd-gpu
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-cray-amd-gpu"}[2s])
+
+  - name: host-agg-io-rules-cpu-cray-amd-gpu
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-cray-amd-gpu
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-cray-amd-gpu"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-cray-amd-gpu"}[2s])
+
+  - name: host-agg-network-rules-cpu-cray-amd-gpu
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
+          )
 cpu-hwmon-amd-gpu.rules
 ---
 # Recording rules for scrape job cpu-hwmon-amd-gpu
@@ -4722,6 +6559,128 @@ groups:
             "instance",
             "(.*)"
           )
+
+  - name: compute-unit-io-rules-cpu-hwmon-amd-gpu
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+  - name: host-agg-io-rules-cpu-hwmon-amd-gpu
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-hwmon-amd-gpu
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-hwmon-amd-gpu"}[2s])
+
+  - name: host-agg-network-rules-cpu-hwmon-amd-gpu
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
+          )
 cpu-ipmi-nvidia-gpu.rules
 ---
 # Recording rules for scrape job cpu-ipmi-nvidia-gpu
@@ -4891,6 +6850,128 @@ groups:
             "",
             "instance",
             "(.*)"
+          )
+
+  - name: compute-unit-io-rules-cpu-ipmi-nvidia-gpu
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+  - name: host-agg-io-rules-cpu-ipmi-nvidia-gpu
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-ipmi-nvidia-gpu
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-ipmi-nvidia-gpu"}[2s])
+
+  - name: host-agg-network-rules-cpu-ipmi-nvidia-gpu
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
           )
 cpu-only-ipmi.rules
 ---
@@ -5094,6 +7175,128 @@ groups:
             "instance",
             "(.*)"
           )
+
+  - name: compute-unit-io-rules-cpu-only-ipmi
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-only-ipmi"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-only-ipmi"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-only-ipmi"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-only-ipmi"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-only-ipmi"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-only-ipmi"}[2s])
+
+  - name: host-agg-io-rules-cpu-only-ipmi
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-only-ipmi
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-only-ipmi"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-only-ipmi"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-only-ipmi"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-only-ipmi"}[2s])
+
+  - name: host-agg-network-rules-cpu-only-ipmi
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
+          )
 cpu-only-rapl.rules
 ---
 # Recording rules for scrape job cpu-only-rapl
@@ -5260,6 +7463,130 @@ groups:
             "",
             "instance",
             "(.*)"
+          )
+
+
+
+  - name: compute-unit-io-rules-cpu-only-rapl
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-only-rapl"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-only-rapl"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-only-rapl"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-only-rapl"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-only-rapl"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-only-rapl"}[2s])
+
+  - name: host-agg-io-rules-cpu-only-rapl
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-only-rapl
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-only-rapl"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-only-rapl"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-only-rapl"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-only-rapl"}[2s])
+
+  - name: host-agg-network-rules-cpu-only-rapl
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
           )
 cpu-only-redfish.rules
 ---
@@ -5463,6 +7790,128 @@ groups:
             "instance",
             "(.*)"
           )
+
+  - name: compute-unit-io-rules-cpu-only-redfish
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-only-redfish"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-only-redfish"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-only-redfish"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-only-redfish"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-only-redfish"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-only-redfish"}[2s])
+
+  - name: host-agg-io-rules-cpu-only-redfish
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-only-redfish
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-only-redfish"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-only-redfish"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-only-redfish"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-only-redfish"}[2s])
+
+  - name: host-agg-network-rules-cpu-only-redfish
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
+          )
 cpu-redfish-nvidia-gpu.rules
 ---
 # Recording rules for scrape job cpu-redfish-nvidia-gpu
@@ -5664,6 +8113,128 @@ groups:
             "",
             "instance",
             "(.*)"
+          )
+
+  - name: compute-unit-io-rules-cpu-redfish-nvidia-gpu
+    interval: 1s
+    rules:
+      # I/O read bandwidth in bytes/sec.
+      - record: uuid:ceems_io_read_bytes:irate
+        expr: irate(ceems_ebpf_read_bytes_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # I/O read requests rate in req/sec.
+      - record: uuid:ceems_io_read_requests:irate
+        expr: irate(ceems_ebpf_read_requests_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # I/O read errors rate in err/sec.
+      - record: uuid:ceems_io_read_errors:irate
+        expr: irate(ceems_ebpf_read_errors_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # I/O write bandwidth in bytes/sec.
+      - record: uuid:ceems_io_write_bytes:irate
+        expr: irate(ceems_ebpf_write_bytes_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # I/O write requests rate in req/sec.
+      - record: uuid:ceems_io_write_requests:irate
+        expr: irate(ceems_ebpf_write_requests_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # I/O write errors rate in err/sec.
+      - record: uuid:ceems_io_write_errors:irate
+        expr: irate(ceems_ebpf_write_errors_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+  - name: host-agg-io-rules-cpu-redfish-nvidia-gpu
+    interval: 1s
+    rules:
+      # Total I/O read bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_bytes_total[1m]))
+          )
+
+      # Total I/O read requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_requests_total[1m]))
+          )
+
+      # Total I/O read errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_read_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_read_errors_total[1m]))
+          )
+      
+      # Total I/O write bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_bytes:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_bytes_total[1m]))
+          )
+
+      # Total I/O write requests in req/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_requests:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_requests_total[1m]))
+          )
+
+      # Total I/O write errors in err/sec for all hosts in a Prometheus job.
+      - record: job:ceems_io_write_errors:sum_irate
+        expr: |2
+          sum by (job, mountpoint) (
+            sum by (job, mountpoint, instance) (irate(ceems_ebpf_write_errors_total[1m]))
+          )
+
+  - name: compute-unit-network-rules-cpu-redfish-nvidia-gpu
+    interval: 1s
+    rules:
+      # Netwok ingress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_ingress_bytes:irate
+        expr: irate(ceems_ebpf_ingress_bytes_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # Netwok ingress packets rate in pkts/sec.
+      - record: uuid:ceems_net_ingress_packets:irate
+        expr: irate(ceems_ebpf_ingress_packets_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # Netwok egress bandwidth in bytes/sec.
+      - record: uuid:ceems_net_egress_bytes:irate
+        expr: irate(ceems_ebpf_egress_bytes_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+      # Netwok egress packets rate in pkts/sec.
+      - record: uuid:ceems_net_egress_packets:irate
+        expr: irate(ceems_ebpf_egress_packets_total{job="cpu-redfish-nvidia-gpu"}[2s])
+
+  - name: host-agg-network-rules-cpu-redfish-nvidia-gpu
+    interval: 1s
+    rules:
+      # Total network ingress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_bytes_total[1m]))
+          )
+
+      # Total network ingress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_ingress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_ingress_packets_total[1m]))
+          )
+
+      # Total network egress bandwidth in bytes/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_bytes:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_bytes_total[1m]))
+          )
+      
+      # Total network egress packets rate in pkts/sec for all hosts in a Prometheus job.
+      - record: job:ceems_net_egress_packets:sum_irate
+        expr: |2
+          sum by (job, family, proto) (
+            sum by (job, family, proto, instance) (irate(ceems_ebpf_egress_packets_total[1m]))
           )
 ipmi-nvidia-gpu-gpu.rules
 ---

@@ -1,0 +1,18 @@
+# Fake I/O and network metrics to test rules generation. These metrics
+# come from eBPF collector which is hard to reproduce just with fixtures.
+
+groups:
+  - name: fake-usage-metrics
+    rules:
+      # Fake I/O metric
+      - record: ceems_ebpf_read_bytes_total
+        labels:
+          mountpoint: /fakemount
+        expr: 10 * ceems_cpu_count / ceems_cpu_count
+
+      # Fake network metric
+      - record: ceems_ebpf_ingress_bytes_total
+        labels:
+          proto: tcp
+          family: ipv4
+        expr: 10 * ceems_cpu_count / ceems_cpu_count

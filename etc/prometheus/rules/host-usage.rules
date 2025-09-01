@@ -2,7 +2,7 @@
 # Recording rules for compute unit host CPU and memory usage
 #
 # The rules estimate the compute unit's CPU and CPU memory usage
-# metrics
+# metrics, I/O metrics and network metrics
 #
 # Optional placeholders to replace:
 #
@@ -34,8 +34,7 @@ groups:
           /
           (ceems_compute_unit_memory_total_bytes > 0)
 
-  # The following recording rules estimate the average CPU, CPU memory usages and
-  # total host power (excluding GPUs) and its equivalent emissions aggregared for all hosts 
+  # The following recording rules estimate the average CPU, CPU memory usages aggregared for all hosts 
   # per Prometheus job.
   - name: host-agg-cpu-usage-rules
     # interval: <eval_interval>

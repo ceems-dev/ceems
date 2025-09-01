@@ -7,6 +7,7 @@ global:
 
 rule_files:
   - ../../../etc/prometheus/rules/*.rules
+  - rules/*.rules
 
 # scrape configuration
 scrape_configs:

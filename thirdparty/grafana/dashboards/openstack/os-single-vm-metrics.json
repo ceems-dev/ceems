@@ -1869,7 +1869,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (irate(ceems_ebpf_read_bytes_total{uuid=\"${uuid}\"}[$__rate_interval]))",
+              "expr": "sum without (instance,hostname) (uuid:ceems_io_read_bytes:irate{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Read Bandwith on {{mountpoint}}",
@@ -1882,7 +1882,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (irate(ceems_ebpf_write_bytes_total{uuid=\"${uuid}\"}[$__rate_interval]))",
+              "expr": "sum without (instance,hostname) (uuid:ceems_io_write_bytes:irate{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Write Bandwith on {{mountpoint}}",
@@ -1895,7 +1895,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (mountpoint) (irate(ceems_ebpf_read_bytes_total{uuid=\"${uuid}\"}[$__rate_interval])))",
+              "expr": "sum without (instance,hostname) (sum by (mountpoint) (uuid:ceems_io_read_bytes:irate{uuid=\"${uuid}\"}))",
               "hide": false,
               "instant": false,
               "legendFormat": "Total Read Bandwith on {{mountpoint}}",
@@ -1908,7 +1908,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (mountpoint) (irate(ceems_ebpf_write_bytes_total{uuid=\"${uuid}\"}[$__rate_interval])))",
+              "expr": "sum without (instance,hostname) (sum by (mountpoint) (uuid:ceems_io_write_bytes:irate{uuid=\"${uuid}\"}))",
               "hide": false,
               "instant": false,
               "legendFormat": "Total Write Bandwith on {{mountpoint}}",
@@ -2013,7 +2013,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (irate(ceems_ebpf_read_requests_total{uuid=\"${uuid}\"}[$__rate_interval]))",
+              "expr": "sum without (instance,hostname) (uuid:ceems_io_read_requests:irate{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Read Requests on {{mountpoint}}",
@@ -2026,7 +2026,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (irate(ceems_ebpf_write_requests_total{uuid=\"${uuid}\"}[$__rate_interval]))",
+              "expr": "sum without (instance,hostname) (uuid:ceems_io_write_requests:irate{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Write Requests on {{mountpoint}}",
@@ -2039,7 +2039,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (mountpoint) (irate(ceems_ebpf_read_requests_total{uuid=\"${uuid}\"}[$__rate_interval])))",
+              "expr": "sum without (instance,hostname) (sum by (mountpoint) (uuid:ceems_io_read_requests:irate{uuid=\"${uuid}\"}))",
               "hide": false,
               "instant": false,
               "legendFormat": "Total Read Requests on {{mountpoint}}",
@@ -2052,7 +2052,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (mountpoint) (irate(ceems_ebpf_write_requests_total{uuid=\"${uuid}\"}[$__rate_interval])))",
+              "expr": "sum without (instance,hostname) (sum by (mountpoint) (uuid:ceems_io_write_requests:irate{uuid=\"${uuid}\"}))",
               "hide": false,
               "instant": false,
               "legendFormat": "Total Write Requests on {{mountpoint}}",
@@ -2157,7 +2157,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (irate(ceems_ebpf_read_errors_total{uuid=\"${uuid}\"}[$__rate_interval]))",
+              "expr": "sum without (instance,hostname) (uuid:ceems_io_read_errors:irate{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Read Errors on {{mountpoint}}",
@@ -2170,7 +2170,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (irate(ceems_ebpf_write_errors_total{uuid=\"${uuid}\"}[$__rate_interval]))",
+              "expr": "sum without (instance,hostname) (uuid:ceems_io_write_errors:irate{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Write Errors on {{mountpoint}}",
@@ -2183,7 +2183,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (mountpoint) (irate(ceems_ebpf_read_errors_total{uuid=\"${uuid}\"}[$__rate_interval])))",
+              "expr": "sum without (instance,hostname) (sum by (mountpoint) (uuid:ceems_io_read_errors:irate{uuid=\"${uuid}\"}))",
               "hide": false,
               "instant": false,
               "legendFormat": "Total Read Errors on {{mountpoint}}",
@@ -2196,7 +2196,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (mountpoint) (irate(ceems_ebpf_write_errors_total{uuid=\"${uuid}\"}[$__rate_interval])))",
+              "expr": "sum without (instance,hostname) (sum by (mountpoint) (uuid:ceems_io_write_errors:irate{uuid=\"${uuid}\"}))",
               "hide": false,
               "instant": false,
               "legendFormat": "Total Write Errors on {{mountpoint}}",
@@ -2309,7 +2309,7 @@
           "targets": [
             {
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (irate(ceems_ebpf_ingress_bytes_total{uuid=\"${uuid}\"}[$__rate_interval]))",
+              "expr": "sum without (instance,hostname) (uuid:ceems_net_ingress_bytes:irate{uuid=\"${uuid}\"})",
               "legendFormat": "Ingress Bandwith {{proto}}/{{family}}",
               "range": true,
               "refId": "A",
@@ -2324,7 +2324,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (irate(ceems_ebpf_egress_bytes_total{uuid=\"${uuid}\"}[$__rate_interval]))",
+              "expr": "sum without (instance,hostname) (uuid:ceems_net_egress_bytes:irate{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Egress Bandwith {{proto}}/{{family}}",
@@ -2337,7 +2337,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (proto,family) (irate(ceems_ebpf_ingress_bytes_total{uuid=\"${uuid}\"}[$__rate_interval])))",
+              "expr": "sum without (instance,hostname) (sum by (proto,family) (uuid:ceems_net_ingress_bytes:irate{uuid=\"${uuid}\"}))",
               "hide": false,
               "instant": false,
               "legendFormat": "Total Ingress Bandwith {{proto}}/{{family}}",
@@ -2350,7 +2350,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (proto,family) (irate(ceems_ebpf_egress_bytes_total{uuid=\"${uuid}\"}[$__rate_interval])))",
+              "expr": "sum without (instance,hostname) (sum by (proto,family) (uuid:ceems_net_egress_bytes:irate{uuid=\"${uuid}\"}))",
               "hide": false,
               "instant": false,
               "legendFormat": "Total Egress Bandwith {{proto}}/{{family}}",
@@ -2449,7 +2449,7 @@
           "targets": [
             {
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (irate(ceems_ebpf_ingress_packets_total{uuid=\"${uuid}\"}[$__rate_interval]))",
+              "expr": "sum without (instance,hostname) (uuid:ceems_net_ingress_packets:irate{uuid=\"${uuid}\"})",
               "legendFormat": "Ingress Packets {{proto}}/{{family}}",
               "range": true,
               "refId": "A",
@@ -2464,7 +2464,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (irate(ceems_ebpf_egress_packets_total{uuid=\"${uuid}\"}[$__rate_interval]))",
+              "expr": "sum without (instance,hostname) (uuid:ceems_net_egress_packets:irate{uuid=\"${uuid}\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Egress Packets {{proto}}/{{family}}",
@@ -2477,7 +2477,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (proto,family) (irate(ceems_ebpf_ingress_packets_total{uuid=\"${uuid}\"}[$__rate_interval])))",
+              "expr": "sum without (instance,hostname) (sum by (proto,family) (uuid:ceems_net_ingress_packets:irate{uuid=\"${uuid}\"}))",
               "hide": false,
               "instant": false,
               "legendFormat": "Total Ingress Packets {{proto}}/{{family}}",
@@ -2490,7 +2490,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (proto,family) (irate(ceems_ebpf_egress_packets_total{uuid=\"${uuid}\"}[$__rate_interval])))",
+              "expr": "sum without (instance,hostname) (sum by (proto,family) (uuid:ceems_net_egress_packets:irate{uuid=\"${uuid}\"}))",
               "hide": false,
               "instant": false,
               "legendFormat": "Total Egress Packets {{proto}}/{{family}}",
