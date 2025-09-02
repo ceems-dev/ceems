@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.11.0 / 2025-*
+## 0.11.0 / 2025-09-02
 
 ### Breaking Changes
 
@@ -31,6 +31,15 @@ have been renamed as follows:
     * `uuid:ceems_gpu_pcie_rx_bytes:ratio` -> `uuid:ceems_gpu_prof_pcie_rx_bytes:sum`
     * `uuid:ceems_gpu_nvlink_tx_bytes:ratio` -> `uuid:ceems_gpu_prof_nvlink_tx_bytes:sum`
     * `uuid:ceems_gpu_nvlink_rx_bytes:ratio` -> `uuid:ceems_gpu_prof_nvlink_rx_bytes:sum`
+
+### List of PRs
+
+- [FEAT] Add rules for IO and network metrics [#406](https://github.com/mahendrapaipuri/ceems/pull/406) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [FEAT] Support runtime XML directory for libvirt collector [#404](https://github.com/mahendrapaipuri/ceems/pull/404) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump golanglint-ci to 2.4 [#399](https://github.com/mahendrapaipuri/ceems/pull/399) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [BREAKING] Updates and fixes to recording rules subcommand of `ceems_tool` [#397](https://github.com/mahendrapaipuri/ceems/pull/397) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [BREAKING] Support exporting metrics of IPMI sensors [#395](https://github.com/mahendrapaipuri/ceems/pull/395) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump dependencies [#394](https://github.com/mahendrapaipuri/ceems/pull/394), [#398](https://github.com/mahendrapaipuri/ceems/pull/398), [#400](https://github.com/mahendrapaipuri/ceems/pull/400), [#405](https://github.com/mahendrapaipuri/ceems/pull/405), [#407](https://github.com/mahendrapaipuri/ceems/pull/407), [#408](https://github.com/mahendrapaipuri/ceems/pull/408) ([@dependabot](https://github.com/dependabot))
 
 ## 0.10.2 / 2025-08-07
 
