@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-No released versions of Kepler will receive regular security updates until a
+No released versions of CEEMS will receive regular security updates until a
 SemVer major release has been performed - e.g v1.0.0. A reported and fixed
 vulnerability will be included in the next SemVer minor or patch release
 which depending on the severity of the vulnerability may be immediately
