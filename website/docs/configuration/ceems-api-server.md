@@ -411,7 +411,7 @@ updaters:
         # Average CPU utilization
         avg_cpu_usage: 
           global: |
-            avg_over_time(avg by (uuid) (unit:ceems_compute_unit_cpu_usage:ratio_rate1m{uuid=~"{{.UUIDs}}"} > 0 < inf)[{{.Range}}:])
+            avg_over_time(avg by (uuid) (uuid:ceems_cpu_usage:ratio_irate{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
 ```
 
 Similar to `clusters`, `updaters` is also a list of objects where each object
@@ -553,54 +553,42 @@ updaters:
         # Average CPU utilization
         avg_cpu_usage:
           global: |
-            avg_over_time(avg by (uuid) (unit:ceems_compute_unit_cpu_usage:ratio_rate1m{uuid=~"{{.UUIDs}}"} > 0 < inf)[{{.Range}}:])
+            avg_over_time(avg by (uuid) (uuid:ceems_cpu_usage:ratio_irate{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
             
         # Average CPU Memory utilization
         avg_cpu_mem_usage:
           global: |
-            avg_over_time(avg by (uuid) (unit:ceems_compute_unit_memory_usage:ratio{uuid=~"{{.UUIDs}}"} > 0 < inf)[{{.Range}}:])
+            avg_over_time(avg by (uuid) (uuid:ceems_memory_usage:ratio{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
             
         # Total CPU energy usage in kWh
         total_cpu_energy_usage_kwh:
           total: |
-            sum_over_time(sum by (uuid) (unit:ceems_compute_unit_cpu_energy_usage:sum{uuid=~"{{.UUIDs}}"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
+            sum_over_time(sum by (uuid) (uuid:ceems_host_power_watts:pue{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
             
         # Total CPU emissions in gms
-        total_cpu_emissions_gms:
-          rte_total: |
-            sum_over_time(sum by (uuid) (unit:ceems_compute_unit_cpu_emissions:sum{uuid=~"{{.UUIDs}}",provider="rte"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
-
-          emaps_total: |
-            sum_over_time(sum by (uuid) (unit:ceems_compute_unit_cpu_emissions:sum{uuid=~"{{.UUIDs}}",provider="emaps"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
-            
+        total_cpu_emissions_gms:            
           owid_total: |
-            sum_over_time(sum by (uuid) (unit:ceems_compute_unit_cpu_emissions:sum{uuid=~"{{.UUIDs}}",provider="owid"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+            sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
             
         # Average GPU utilization
         avg_gpu_usage:
           global: |
-            avg_over_time(avg by (uuid) (unit:ceems_compute_unit_gpu_usage:ratio{uuid=~"{{.UUIDs}}"} > 0 < inf)[{{.Range}}:])
+            avg_over_time(avg by (uuid) (uuid:ceems_gpu_usage:ratio{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
             
         # Average GPU memory utilization
         avg_gpu_mem_usage:
           global: |
-            avg_over_time(avg by (uuid) (unit:ceems_compute_unit_gpu_memory_usage:ratio{uuid=~"{{.UUIDs}}"} > 0 < inf)[{{.Range}}:])
+            avg_over_time(avg by (uuid) (uuid:ceems_gpu_memory_usage:ratio{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
             
         # Total GPU energy usage in kWh
         total_gpu_energy_usage_kwh:
           total: |
-            sum_over_time(sum by (uuid) (unit:ceems_compute_unit_gpu_energy_usage:sum{uuid=~"{{.UUIDs}}"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
+            sum_over_time(sum by (uuid) (uuid:ceems_gpu_power_watts:pue{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
             
         # Total GPU emissions in gms
-        total_gpu_emissions_gms:
-          rte_total: |
-            sum_over_time(sum by (uuid) (unit:ceems_compute_unit_gpu_emissions:sum{uuid=~"{{.UUIDs}}",provider="rte"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
-            
-          emaps_total: |
-            sum_over_time(sum by (uuid) (unit:ceems_compute_unit_gpu_emissions:sum{uuid=~"{{.UUIDs}}",provider="emaps"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
-            
+        total_gpu_emissions_gms:            
           owid_total: |
-            sum_over_time(sum by (uuid) (unit:ceems_compute_unit_gpu_emissions:sum{uuid=~"{{.UUIDs}}",provider="owid"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3         
+            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3         
 ```
 
 The above configuration assumes that GPU compute nodes possess NVIDIA GPUs and the
