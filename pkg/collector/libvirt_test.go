@@ -30,7 +30,10 @@ func TestNewLibvirtCollector(t *testing.T) {
 			"--collector.perf.hardware-events",
 			"--collector.rdma.stats",
 			"--collector.gpu.type", "nvidia",
-			"--collector.gpu.nvidia-smi-path", "testdata/nvidia-smi",
+			// This is to simulate GPU device detection but
+			// fail to find GPU devices. The collector should
+			// initialise correctly in that case.
+			// "--collector.gpu.nvidia-smi-path", "testdata/nvidia-smi",
 			"--collector.cgroups.force-version", "v2",
 		},
 	)
