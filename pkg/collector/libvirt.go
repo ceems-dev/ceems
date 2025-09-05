@@ -235,10 +235,13 @@ func NewLibvirtCollector(logger *slog.Logger) (Collector, error) {
 	err = gpuSMI.Discover()
 	if err != nil {
 		// If we failed to fetch GPUs that are from supported
-		// vendor, return with error
+		// vendor, DO NOT return with error.
+		// Seems like we can run into cases where hypervisors
+		// do not have GPU drivers installed when they use
+		// passthrough. In case we cannot get GPUs on the
+		// hypervisor so we should not block exporter from
+		// starting
 		logger.Error("Error fetching GPU devices", "err", err)
-
-		return nil, err
 	}
 
 	// Check if vGPU is activated on atleast one GPU
