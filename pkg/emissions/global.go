@@ -7,8 +7,10 @@ import (
 	"log/slog"
 )
 
+// Global carbon intensity.
+// Ref: https://www.iea.org/reports/electricity-2025/emissions
 const (
-	globalEmissionFactor    = 475
+	globalEmissionFactor    = 445
 	globalEmissionsProvider = "global"
 )
 
@@ -18,7 +20,7 @@ type globalProvider struct {
 
 func init() {
 	// Register emissions provider
-	Register(globalEmissionsProvider, "World Average", NewGlobalProvider)
+	Register(globalEmissionsProvider, "IEA", NewGlobalProvider)
 }
 
 // NewGlobalProvider returns a new Provider that returns a constant global average emission factor.

@@ -648,6 +648,7 @@ then
         --collector.ipmi.test-mode \
         --collector.infiniband \
         --collector.rapl \
+        --collector.emissions \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &

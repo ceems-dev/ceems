@@ -133,6 +133,221 @@ ceems_cpu_seconds_total{hostname="",mode="softirq"} 39.44
 ceems_cpu_seconds_total{hostname="",mode="steal"} 0
 ceems_cpu_seconds_total{hostname="",mode="system"} 1119.22
 ceems_cpu_seconds_total{hostname="",mode="user"} 3018.54
+# HELP ceems_emissions_gCo2_kWh Current emission factor in CO2eq grams per kWh
+# TYPE ceems_emissions_gCo2_kWh gauge
+ceems_emissions_gCo2_kWh{country="Afghanistan",country_code="AF",provider="owid",provider_name="OWID"} 123.711334
+ceems_emissions_gCo2_kWh{country="Albania",country_code="AL",provider="owid",provider_name="OWID"} 24.417313
+ceems_emissions_gCo2_kWh{country="Algeria",country_code="DZ",provider="owid",provider_name="OWID"} 633.64484
+ceems_emissions_gCo2_kWh{country="American Samoa",country_code="AS",provider="owid",provider_name="OWID"} 647.05884
+ceems_emissions_gCo2_kWh{country="Angola",country_code="AO",provider="owid",provider_name="OWID"} 167.22408
+ceems_emissions_gCo2_kWh{country="Antigua and Barbuda",country_code="AG",provider="owid",provider_name="OWID"} 611.1111
+ceems_emissions_gCo2_kWh{country="Argentina",country_code="AR",provider="owid",provider_name="OWID"} 358.94824
+ceems_emissions_gCo2_kWh{country="Armenia",country_code="AM",provider="owid",provider_name="OWID"} 244.3439
+ceems_emissions_gCo2_kWh{country="Aruba",country_code="AW",provider="owid",provider_name="OWID"} 550
+ceems_emissions_gCo2_kWh{country="Australia",country_code="AU",provider="owid",provider_name="OWID"} 551.58984
+ceems_emissions_gCo2_kWh{country="Austria",country_code="AT",provider="owid",provider_name="OWID"} 102.62287
+ceems_emissions_gCo2_kWh{country="Azerbaijan",country_code="AZ",provider="owid",provider_name="OWID"} 633.0714
+ceems_emissions_gCo2_kWh{country="Bahamas",country_code="BS",provider="owid",provider_name="OWID"} 653.65857
+ceems_emissions_gCo2_kWh{country="Bahrain",country_code="BH",provider="owid",provider_name="OWID"} 902.40533
+ceems_emissions_gCo2_kWh{country="Bangladesh",country_code="BD",provider="owid",provider_name="OWID"} 694.62494
+ceems_emissions_gCo2_kWh{country="Barbados",country_code="BB",provider="owid",provider_name="OWID"} 600
+ceems_emissions_gCo2_kWh{country="Belarus",country_code="BY",provider="owid",provider_name="OWID"} 313.6173
+ceems_emissions_gCo2_kWh{country="Belgium",country_code="BE",provider="owid",provider_name="OWID"} 117.57641
+ceems_emissions_gCo2_kWh{country="Belize",country_code="BZ",provider="owid",provider_name="OWID"} 155.55556
+ceems_emissions_gCo2_kWh{country="Benin",country_code="BJ",provider="owid",provider_name="OWID"} 590
+ceems_emissions_gCo2_kWh{country="Bermuda",country_code="BM",provider="owid",provider_name="OWID"} 640.625
+ceems_emissions_gCo2_kWh{country="Bhutan",country_code="BT",provider="owid",provider_name="OWID"} 24.19355
+ceems_emissions_gCo2_kWh{country="Bolivia",country_code="BO",provider="owid",provider_name="OWID"} 468.0162
+ceems_emissions_gCo2_kWh{country="Bosnia and Herzegovina",country_code="BA",provider="owid",provider_name="OWID"} 638.04486
+ceems_emissions_gCo2_kWh{country="Botswana",country_code="BW",provider="owid",provider_name="OWID"} 849.4209
+ceems_emissions_gCo2_kWh{country="Brazil",country_code="BR",provider="owid",provider_name="OWID"} 103.212296
+ceems_emissions_gCo2_kWh{country="British Virgin Islands",country_code="VG",provider="owid",provider_name="OWID"} 647.05884
+ceems_emissions_gCo2_kWh{country="Brunei",country_code="BN",provider="owid",provider_name="OWID"} 892.6654
+ceems_emissions_gCo2_kWh{country="Bulgaria",country_code="BG",provider="owid",provider_name="OWID"} 264.20685
+ceems_emissions_gCo2_kWh{country="Burkina Faso",country_code="BF",provider="owid",provider_name="OWID"} 554.91327
+ceems_emissions_gCo2_kWh{country="Burundi",country_code="BI",provider="owid",provider_name="OWID"} 230.76924
+ceems_emissions_gCo2_kWh{country="Cambodia",country_code="KH",provider="owid",provider_name="OWID"} 497.45547
+ceems_emissions_gCo2_kWh{country="Cameroon",country_code="CM",provider="owid",provider_name="OWID"} 285.7143
+ceems_emissions_gCo2_kWh{country="Canada",country_code="CA",provider="owid",provider_name="OWID"} 174.81425
+ceems_emissions_gCo2_kWh{country="Cape Verde",country_code="CV",provider="owid",provider_name="OWID"} 480
+ceems_emissions_gCo2_kWh{country="Cayman Islands",country_code="KY",provider="owid",provider_name="OWID"} 642.8571
+ceems_emissions_gCo2_kWh{country="Chad",country_code="TD",provider="owid",provider_name="OWID"} 615.38464
+ceems_emissions_gCo2_kWh{country="Chile",country_code="CL",provider="owid",provider_name="OWID"} 265.51648
+ceems_emissions_gCo2_kWh{country="China",country_code="CN",provider="owid",provider_name="OWID"} 559.5517
+ceems_emissions_gCo2_kWh{country="Colombia",country_code="CO",provider="owid",provider_name="OWID"} 285.7959
+ceems_emissions_gCo2_kWh{country="Comoros",country_code="KM",provider="owid",provider_name="OWID"} 642.8572
+ceems_emissions_gCo2_kWh{country="Congo",country_code="CG",provider="owid",provider_name="OWID"} 713.7331
+ceems_emissions_gCo2_kWh{country="Cook Islands",country_code="CK",provider="owid",provider_name="OWID"} 250
+ceems_emissions_gCo2_kWh{country="Costa Rica",country_code="CR",provider="owid",provider_name="OWID"} 63.004845
+ceems_emissions_gCo2_kWh{country="Cote d'Ivoire",country_code="CI",provider="owid",provider_name="OWID"} 393.531
+ceems_emissions_gCo2_kWh{country="Croatia",country_code="HR",provider="owid",provider_name="OWID"} 174.47917
+ceems_emissions_gCo2_kWh{country="Cuba",country_code="CU",provider="owid",provider_name="OWID"} 638.97974
+ceems_emissions_gCo2_kWh{country="Cyprus",country_code="CY",provider="owid",provider_name="OWID"} 512.2378
+ceems_emissions_gCo2_kWh{country="Czechia",country_code="CZ",provider="owid",provider_name="OWID"} 413.85922
+ceems_emissions_gCo2_kWh{country="Democratic Republic of Congo",country_code="CD",provider="owid",provider_name="OWID"} 27.044025
+ceems_emissions_gCo2_kWh{country="Denmark",country_code="DK",provider="owid",provider_name="OWID"} 143.30042
+ceems_emissions_gCo2_kWh{country="Djibouti",country_code="DJ",provider="owid",provider_name="OWID"} 450
+ceems_emissions_gCo2_kWh{country="Dominica",country_code="DM",provider="owid",provider_name="OWID"} 600
+ceems_emissions_gCo2_kWh{country="Dominican Republic",country_code="DO",provider="owid",provider_name="OWID"} 566.6918
+ceems_emissions_gCo2_kWh{country="East Timor",country_code="TL",provider="owid",provider_name="OWID"} 666.6667
+ceems_emissions_gCo2_kWh{country="Ecuador",country_code="EC",provider="owid",provider_name="OWID"} 209.69698
+ceems_emissions_gCo2_kWh{country="Egypt",country_code="EG",provider="owid",provider_name="OWID"} 571.9383
+ceems_emissions_gCo2_kWh{country="El Salvador",country_code="SV",provider="owid",provider_name="OWID"} 101.56249
+ceems_emissions_gCo2_kWh{country="Equatorial Guinea",country_code="GQ",provider="owid",provider_name="OWID"} 605.0955
+ceems_emissions_gCo2_kWh{country="Eritrea",country_code="ER",provider="owid",provider_name="OWID"} 590.90906
+ceems_emissions_gCo2_kWh{country="Estonia",country_code="EE",provider="owid",provider_name="OWID"} 341.0214
+ceems_emissions_gCo2_kWh{country="Eswatini",country_code="SZ",provider="owid",provider_name="OWID"} 142.85713
+ceems_emissions_gCo2_kWh{country="Ethiopia",country_code="ET",provider="owid",provider_name="OWID"} 23.54874
+ceems_emissions_gCo2_kWh{country="Falkland Islands",country_code="FK",provider="owid",provider_name="OWID"} 1000
+ceems_emissions_gCo2_kWh{country="Faroe Islands",country_code="FO",provider="owid",provider_name="OWID"} 354.1667
+ceems_emissions_gCo2_kWh{country="Fiji",country_code="FJ",provider="owid",provider_name="OWID"} 278.26086
+ceems_emissions_gCo2_kWh{country="Finland",country_code="FI",provider="owid",provider_name="OWID"} 72.2488
+ceems_emissions_gCo2_kWh{country="France",country_code="FR",provider="owid",provider_name="OWID"} 44.179085
+ceems_emissions_gCo2_kWh{country="French Guiana",country_code="GF",provider="owid",provider_name="OWID"} 204.08163
+ceems_emissions_gCo2_kWh{country="French Polynesia",country_code="PF",provider="owid",provider_name="OWID"} 436.61972
+ceems_emissions_gCo2_kWh{country="Gabon",country_code="GA",provider="owid",provider_name="OWID"} 429.46707
+ceems_emissions_gCo2_kWh{country="Gambia",country_code="GM",provider="owid",provider_name="OWID"} 666.6667
+ceems_emissions_gCo2_kWh{country="Georgia",country_code="GE",provider="owid",provider_name="OWID"} 143.0575
+ceems_emissions_gCo2_kWh{country="Germany",country_code="DE",provider="owid",provider_name="OWID"} 344.13992
+ceems_emissions_gCo2_kWh{country="Ghana",country_code="GH",provider="owid",provider_name="OWID"} 452.86124
+ceems_emissions_gCo2_kWh{country="Gibraltar",country_code="GI",provider="owid",provider_name="OWID"} 590.90906
+ceems_emissions_gCo2_kWh{country="Greece",country_code="GR",provider="owid",provider_name="OWID"} 319.76236
+ceems_emissions_gCo2_kWh{country="Greenland",country_code="GL",provider="owid",provider_name="OWID"} 111.11111
+ceems_emissions_gCo2_kWh{country="Grenada",country_code="GD",provider="owid",provider_name="OWID"} 666.6667
+ceems_emissions_gCo2_kWh{country="Guadeloupe",country_code="GP",provider="owid",provider_name="OWID"} 493.90244
+ceems_emissions_gCo2_kWh{country="Guam",country_code="GU",provider="owid",provider_name="OWID"} 611.11115
+ceems_emissions_gCo2_kWh{country="Guatemala",country_code="GT",provider="owid",provider_name="OWID"} 272.65973
+ceems_emissions_gCo2_kWh{country="Guinea",country_code="GN",provider="owid",provider_name="OWID"} 182.71605
+ceems_emissions_gCo2_kWh{country="Guinea-Bissau",country_code="GW",provider="owid",provider_name="OWID"} 625
+ceems_emissions_gCo2_kWh{country="Guyana",country_code="GY",provider="owid",provider_name="OWID"} 634.32837
+ceems_emissions_gCo2_kWh{country="Haiti",country_code="HT",provider="owid",provider_name="OWID"} 534.6535
+ceems_emissions_gCo2_kWh{country="Honduras",country_code="HN",provider="owid",provider_name="OWID"} 289.49615
+ceems_emissions_gCo2_kWh{country="Hong Kong",country_code="HK",provider="owid",provider_name="OWID"} 681.98724
+ceems_emissions_gCo2_kWh{country="Hungary",country_code="HU",provider="owid",provider_name="OWID"} 182.81822
+ceems_emissions_gCo2_kWh{country="Iceland",country_code="IS",provider="owid",provider_name="OWID"} 28.330019
+ceems_emissions_gCo2_kWh{country="India",country_code="IN",provider="owid",provider_name="OWID"} 708.3216
+ceems_emissions_gCo2_kWh{country="Indonesia",country_code="ID",provider="owid",provider_name="OWID"} 682.4301
+ceems_emissions_gCo2_kWh{country="Iran",country_code="IR",provider="owid",provider_name="OWID"} 641.93616
+ceems_emissions_gCo2_kWh{country="Iraq",country_code="IQ",provider="owid",provider_name="OWID"} 689.4005
+ceems_emissions_gCo2_kWh{country="Ireland",country_code="IE",provider="owid",provider_name="OWID"} 279.70218
+ceems_emissions_gCo2_kWh{country="Israel",country_code="IL",provider="owid",provider_name="OWID"} 567.26245
+ceems_emissions_gCo2_kWh{country="Italy",country_code="IT",provider="owid",provider_name="OWID"} 287.5335
+ceems_emissions_gCo2_kWh{country="Jamaica",country_code="JM",provider="owid",provider_name="OWID"} 561.24725
+ceems_emissions_gCo2_kWh{country="Japan",country_code="JP",provider="owid",provider_name="OWID"} 482.32416
+ceems_emissions_gCo2_kWh{country="Jordan",country_code="JO",provider="owid",provider_name="OWID"} 539.21136
+ceems_emissions_gCo2_kWh{country="Kazakhstan",country_code="KZ",provider="owid",provider_name="OWID"} 801.9483
+ceems_emissions_gCo2_kWh{country="Kenya",country_code="KE",provider="owid",provider_name="OWID"} 84.824905
+ceems_emissions_gCo2_kWh{country="Kiribati",country_code="KI",provider="owid",provider_name="OWID"} 500
+ceems_emissions_gCo2_kWh{country="Kuwait",country_code="KW",provider="owid",provider_name="OWID"} 637.23474
+ceems_emissions_gCo2_kWh{country="Kyrgyzstan",country_code="KG",provider="owid",provider_name="OWID"} 163.70107
+ceems_emissions_gCo2_kWh{country="Laos",country_code="LA",provider="owid",provider_name="OWID"} 232.12238
+ceems_emissions_gCo2_kWh{country="Latvia",country_code="LV",provider="owid",provider_name="OWID"} 136.22292
+ceems_emissions_gCo2_kWh{country="Lebanon",country_code="LB",provider="owid",provider_name="OWID"} 369.46902
+ceems_emissions_gCo2_kWh{country="Lesotho",country_code="LS",provider="owid",provider_name="OWID"} 20.833334
+ceems_emissions_gCo2_kWh{country="Liberia",country_code="LR",provider="owid",provider_name="OWID"} 435.89746
+ceems_emissions_gCo2_kWh{country="Libya",country_code="LY",provider="owid",provider_name="OWID"} 830.5326
+ceems_emissions_gCo2_kWh{country="Lithuania",country_code="LT",provider="owid",provider_name="OWID"} 139.34425
+ceems_emissions_gCo2_kWh{country="Luxembourg",country_code="LU",provider="owid",provider_name="OWID"} 134.61539
+ceems_emissions_gCo2_kWh{country="Macao",country_code="MO",provider="owid",provider_name="OWID"} 448.97958
+ceems_emissions_gCo2_kWh{country="Madagascar",country_code="MG",provider="owid",provider_name="OWID"} 477.2727
+ceems_emissions_gCo2_kWh{country="Malawi",country_code="MW",provider="owid",provider_name="OWID"} 54.64481
+ceems_emissions_gCo2_kWh{country="Malaysia",country_code="MY",provider="owid",provider_name="OWID"} 604.4294
+ceems_emissions_gCo2_kWh{country="Maldives",country_code="MV",provider="owid",provider_name="OWID"} 611.76465
+ceems_emissions_gCo2_kWh{country="Mali",country_code="ML",provider="owid",provider_name="OWID"} 394.49542
+ceems_emissions_gCo2_kWh{country="Malta",country_code="MT",provider="owid",provider_name="OWID"} 484.1629
+ceems_emissions_gCo2_kWh{country="Martinique",country_code="MQ",provider="owid",provider_name="OWID"} 516.7785
+ceems_emissions_gCo2_kWh{country="Mauritania",country_code="MR",provider="owid",provider_name="OWID"} 481.70734
+ceems_emissions_gCo2_kWh{country="Mauritius",country_code="MU",provider="owid",provider_name="OWID"} 633.0275
+ceems_emissions_gCo2_kWh{country="Mexico",country_code="MX",provider="owid",provider_name="OWID"} 484.83173
+ceems_emissions_gCo2_kWh{country="Moldova",country_code="MD",provider="owid",provider_name="OWID"} 629.55853
+ceems_emissions_gCo2_kWh{country="Mongolia",country_code="MN",provider="owid",provider_name="OWID"} 784.0096
+ceems_emissions_gCo2_kWh{country="Montenegro",country_code="ME",provider="owid",provider_name="OWID"} 413.5135
+ceems_emissions_gCo2_kWh{country="Montserrat",country_code="MS",provider="owid",provider_name="OWID"} 1000
+ceems_emissions_gCo2_kWh{country="Morocco",country_code="MA",provider="owid",provider_name="OWID"} 577.6511
+ceems_emissions_gCo2_kWh{country="Mozambique",country_code="MZ",provider="owid",provider_name="OWID"} 127.81187
+ceems_emissions_gCo2_kWh{country="Myanmar",country_code="MM",provider="owid",provider_name="OWID"} 569.6921
+ceems_emissions_gCo2_kWh{country="Namibia",country_code="NA",provider="owid",provider_name="OWID"} 47.61905
+ceems_emissions_gCo2_kWh{country="Nauru",country_code="NR",provider="owid",provider_name="OWID"} 750
+ceems_emissions_gCo2_kWh{country="Nepal",country_code="NP",provider="owid",provider_name="OWID"} 23.364487
+ceems_emissions_gCo2_kWh{country="Netherlands",country_code="NL",provider="owid",provider_name="OWID"} 253.31152
+ceems_emissions_gCo2_kWh{country="New Caledonia",country_code="NC",provider="owid",provider_name="OWID"} 585.7605
+ceems_emissions_gCo2_kWh{country="New Zealand",country_code="NZ",provider="owid",provider_name="OWID"} 120.10797
+ceems_emissions_gCo2_kWh{country="Nicaragua",country_code="NI",provider="owid",provider_name="OWID"} 288.32953
+ceems_emissions_gCo2_kWh{country="Niger",country_code="NE",provider="owid",provider_name="OWID"} 687.5
+ceems_emissions_gCo2_kWh{country="Nigeria",country_code="NG",provider="owid",provider_name="OWID"} 507.84946
+ceems_emissions_gCo2_kWh{country="North Korea",country_code="KP",provider="owid",provider_name="OWID"} 344.25613
+ceems_emissions_gCo2_kWh{country="North Macedonia",country_code="MK",provider="owid",provider_name="OWID"} 568.9655
+ceems_emissions_gCo2_kWh{country="Norway",country_code="NO",provider="owid",provider_name="OWID"} 30.745583
+ceems_emissions_gCo2_kWh{country="Oman",country_code="OM",provider="owid",provider_name="OWID"} 545.32874
+ceems_emissions_gCo2_kWh{country="Pakistan",country_code="PK",provider="owid",provider_name="OWID"} 398.6102
+ceems_emissions_gCo2_kWh{country="Palestine",country_code="PS",provider="owid",provider_name="OWID"} 460.78433
+ceems_emissions_gCo2_kWh{country="Panama",country_code="PA",provider="owid",provider_name="OWID"} 258.74124
+ceems_emissions_gCo2_kWh{country="Papua New Guinea",country_code="PG",provider="owid",provider_name="OWID"} 513.74207
+ceems_emissions_gCo2_kWh{country="Paraguay",country_code="PY",provider="owid",provider_name="OWID"} 24.864376
+ceems_emissions_gCo2_kWh{country="Peru",country_code="PE",provider="owid",provider_name="OWID"} 263.2733
+ceems_emissions_gCo2_kWh{country="Philippines",country_code="PH",provider="owid",provider_name="OWID"} 613.37994
+ceems_emissions_gCo2_kWh{country="Poland",country_code="PL",provider="owid",provider_name="OWID"} 614.98236
+ceems_emissions_gCo2_kWh{country="Portugal",country_code="PT",provider="owid",provider_name="OWID"} 112.28676
+ceems_emissions_gCo2_kWh{country="Puerto Rico",country_code="PR",provider="owid",provider_name="OWID"} 664.5299
+ceems_emissions_gCo2_kWh{country="Qatar",country_code="QA",provider="owid",provider_name="OWID"} 602.8308
+ceems_emissions_gCo2_kWh{country="Reunion",country_code="RE",provider="owid",provider_name="OWID"} 525.22253
+ceems_emissions_gCo2_kWh{country="Romania",country_code="RO",provider="owid",provider_name="OWID"} 245.55428
+ceems_emissions_gCo2_kWh{country="Russia",country_code="RU",provider="owid",provider_name="OWID"} 449.19592
+ceems_emissions_gCo2_kWh{country="Rwanda",country_code="RW",provider="owid",provider_name="OWID"} 301.8868
+ceems_emissions_gCo2_kWh{country="Saint Helena",country_code="SH",provider="owid",provider_name="OWID"} 1000
+ceems_emissions_gCo2_kWh{country="Saint Kitts and Nevis",country_code="KN",provider="owid",provider_name="OWID"} 636.36365
+ceems_emissions_gCo2_kWh{country="Saint Lucia",country_code="LC",provider="owid",provider_name="OWID"} 649.99994
+ceems_emissions_gCo2_kWh{country="Saint Pierre and Miquelon",country_code="PM",provider="owid",provider_name="OWID"} 600
+ceems_emissions_gCo2_kWh{country="Saint Vincent and the Grenadines",country_code="VC",provider="owid",provider_name="OWID"} 600
+ceems_emissions_gCo2_kWh{country="Samoa",country_code="WS",provider="owid",provider_name="OWID"} 399.99997
+ceems_emissions_gCo2_kWh{country="Sao Tome and Principe",country_code="ST",provider="owid",provider_name="OWID"} 555.55554
+ceems_emissions_gCo2_kWh{country="Saudi Arabia",country_code="SA",provider="owid",provider_name="OWID"} 696.31335
+ceems_emissions_gCo2_kWh{country="Senegal",country_code="SN",provider="owid",provider_name="OWID"} 535.4037
+ceems_emissions_gCo2_kWh{country="Serbia",country_code="RS",provider="owid",provider_name="OWID"} 670.7974
+ceems_emissions_gCo2_kWh{country="Seychelles",country_code="SC",provider="owid",provider_name="OWID"} 571.4286
+ceems_emissions_gCo2_kWh{country="Sierra Leone",country_code="SL",provider="owid",provider_name="OWID"} 47.61905
+ceems_emissions_gCo2_kWh{country="Singapore",country_code="SG",provider="owid",provider_name="OWID"} 498.74182
+ceems_emissions_gCo2_kWh{country="Slovakia",country_code="SK",provider="owid",provider_name="OWID"} 96.488235
+ceems_emissions_gCo2_kWh{country="Slovenia",country_code="SI",provider="owid",provider_name="OWID"} 227.64705
+ceems_emissions_gCo2_kWh{country="Solomon Islands",country_code="SB",provider="owid",provider_name="OWID"} 636.36365
+ceems_emissions_gCo2_kWh{country="Somalia",country_code="SO",provider="owid",provider_name="OWID"} 523.8095
+ceems_emissions_gCo2_kWh{country="South Africa",country_code="ZA",provider="owid",provider_name="OWID"} 708.8762
+ceems_emissions_gCo2_kWh{country="South Korea",country_code="KR",provider="owid",provider_name="OWID"} 414.2726
+ceems_emissions_gCo2_kWh{country="South Sudan",country_code="SS",provider="owid",provider_name="OWID"} 610.16956
+ceems_emissions_gCo2_kWh{country="Spain",country_code="ES",provider="owid",provider_name="OWID"} 146.15356
+ceems_emissions_gCo2_kWh{country="Sri Lanka",country_code="LK",provider="owid",provider_name="OWID"} 509.78137
+ceems_emissions_gCo2_kWh{country="Sudan",country_code="SD",provider="owid",provider_name="OWID"} 214.32835
+ceems_emissions_gCo2_kWh{country="Suriname",country_code="SR",provider="owid",provider_name="OWID"} 383.17755
+ceems_emissions_gCo2_kWh{country="Sweden",country_code="SE",provider="owid",provider_name="OWID"} 35.823833
+ceems_emissions_gCo2_kWh{country="Switzerland",country_code="CH",provider="owid",provider_name="OWID"} 36.599316
+ceems_emissions_gCo2_kWh{country="Syria",country_code="SY",provider="owid",provider_name="OWID"} 682.27094
+ceems_emissions_gCo2_kWh{country="Taiwan",country_code="TW",provider="owid",provider_name="OWID"} 635.65106
+ceems_emissions_gCo2_kWh{country="Tajikistan",country_code="TJ",provider="owid",provider_name="OWID"} 115.87792
+ceems_emissions_gCo2_kWh{country="Tanzania",country_code="TZ",provider="owid",provider_name="OWID"} 371.58472
+ceems_emissions_gCo2_kWh{country="Thailand",country_code="TH",provider="owid",provider_name="OWID"} 554.4976
+ceems_emissions_gCo2_kWh{country="Togo",country_code="TG",provider="owid",provider_name="OWID"} 478.26086
+ceems_emissions_gCo2_kWh{country="Tonga",country_code="TO",provider="owid",provider_name="OWID"} 571.4285
+ceems_emissions_gCo2_kWh{country="Trinidad and Tobago",country_code="TT",provider="owid",provider_name="OWID"} 682.1053
+ceems_emissions_gCo2_kWh{country="Tunisia",country_code="TN",provider="owid",provider_name="OWID"} 560.24963
+ceems_emissions_gCo2_kWh{country="Turkey",country_code="TR",provider="owid",provider_name="OWID"} 469.697
+ceems_emissions_gCo2_kWh{country="Turkmenistan",country_code="TM",provider="owid",provider_name="OWID"} 1306.3036
+ceems_emissions_gCo2_kWh{country="Turks and Caicos Islands",country_code="TC",provider="owid",provider_name="OWID"} 653.8462
+ceems_emissions_gCo2_kWh{country="Uganda",country_code="UG",provider="owid",provider_name="OWID"} 57.391308
+ceems_emissions_gCo2_kWh{country="Ukraine",country_code="UA",provider="owid",provider_name="OWID"} 256.21008
+ceems_emissions_gCo2_kWh{country="United Arab Emirates",country_code="AE",provider="owid",provider_name="OWID"} 492.69827
+ceems_emissions_gCo2_kWh{country="United Kingdom",country_code="GB",provider="owid",provider_name="OWID"} 210.89114
+ceems_emissions_gCo2_kWh{country="United States",country_code="US",provider="owid",provider_name="OWID"} 383.5492
+ceems_emissions_gCo2_kWh{country="United States Virgin Islands",country_code="VI",provider="owid",provider_name="OWID"} 641.791
+ceems_emissions_gCo2_kWh{country="Uruguay",country_code="UY",provider="owid",provider_name="OWID"} 96.69947
+ceems_emissions_gCo2_kWh{country="Uzbekistan",country_code="UZ",provider="owid",provider_name="OWID"} 1121.1803
+ceems_emissions_gCo2_kWh{country="Vanuatu",country_code="VU",provider="owid",provider_name="OWID"} 500
+ceems_emissions_gCo2_kWh{country="Venezuela",country_code="VE",provider="owid",provider_name="OWID"} 180.25078
+ceems_emissions_gCo2_kWh{country="Vietnam",country_code="VN",provider="owid",provider_name="OWID"} 471.15857
+ceems_emissions_gCo2_kWh{country="Western Sahara",country_code="EH",provider="owid",provider_name="OWID"} 666.6666
+ceems_emissions_gCo2_kWh{country="World",country_code="ZZ",provider="global",provider_name="IEA"} 445
+ceems_emissions_gCo2_kWh{country="Yemen",country_code="YE",provider="owid",provider_name="OWID"} 586.3192
+ceems_emissions_gCo2_kWh{country="Zambia",country_code="ZM",provider="owid",provider_name="OWID"} 110.996925
+ceems_emissions_gCo2_kWh{country="Zimbabwe",country_code="ZW",provider="owid",provider_name="OWID"} 298.4356
 # HELP ceems_exporter_build_info A metric with a constant '1' value labeled by version, revision, branch, goversion from which ceems_exporter was built, and the goos and goarch for the build.
 # TYPE ceems_exporter_build_info gauge
 # HELP ceems_infiniband_excessive_buffer_overrun_errors_total Number of times that OverrunErrors consecutive flow control update periods occurred, each having at least one overrun error.
@@ -314,6 +529,7 @@ ceems_rapl_package_power_limit_watts_total{hostname="",index="1",path="pkg/colle
 # HELP ceems_scrape_collector_success ceems_exporter: Whether a collector succeeded.
 # TYPE ceems_scrape_collector_success gauge
 ceems_scrape_collector_success{collector="cpu"} 1
+ceems_scrape_collector_success{collector="emissions"} 1
 ceems_scrape_collector_success{collector="infiniband"} 1
 ceems_scrape_collector_success{collector="ipmi"} 1
 ceems_scrape_collector_success{collector="meminfo"} 1
