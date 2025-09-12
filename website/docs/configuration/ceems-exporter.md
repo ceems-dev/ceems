@@ -724,10 +724,17 @@ token to make requests for emission factors.
 :::tip[TIP]
 
 This collector is not enabled by default as it is not needed to run on every compute node.
-This collector can be run separately on a node that has internet access by disabling the
+When dynamic emission factors provided (like RTE, Electricity Maps or Watt Time) are enabled,
+this collector can be run separately on a node that has internet access by disabling the
 rest of the collectors.
 
 :::
+
+In the case of OWID static data,
+[ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country codes
+are used in Prometheus label `country_code`. Electricity maps has its own codes of
+regions that report emission factors and the same codes are exported in Prometheus
+data.
 
 ## eBPF based continuous profiling
 

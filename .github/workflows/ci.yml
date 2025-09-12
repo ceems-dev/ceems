@@ -71,7 +71,7 @@ jobs:
     uses: ./.github/workflows/step_packaging.yml
 
   docker:
-    needs: [build]
+    needs: [build, test-e2e]
     uses: ./.github/workflows/step_images.yml
     # Since workflow_dispatch inputs are only available on manual triggers
     # we need to set default values to the context vars here
@@ -96,7 +96,7 @@ jobs:
       registry_provider: ${{ inputs.docker_hub_registry_provider || 'dockerhub' }}
 
   quay:
-    needs: [build]
+    needs: [build, test-e2e]
     uses: ./.github/workflows/step_images.yml
     # Since workflow_dispatch inputs are only available on manual triggers
     # we need to set default values to the context vars here

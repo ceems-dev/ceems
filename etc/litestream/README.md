@@ -18,5 +18,5 @@ litestream replicate -config=/etc/litestream/config.yml
 
 assuming the config file is installed at `/etc/litestream/config.yml`.
 
-An [Ansible role](https://mahendrapaipuri.github.io/ansible/branch/main/litestream_role.html)
+An [Ansible role](https://ceems-dev.github.io/ansible/branch/main/litestream_role.html)
 is also available to be able to install and configure litestream using Ansible.

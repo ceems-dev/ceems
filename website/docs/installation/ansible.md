@@ -19,6 +19,6 @@ use the role `ceems.ansible.ceems_api_server`.
 
 The documentation for each role can be found at the following links:
 
-- [CEEMS Exporter Role](https://ceems.github.io/ansible/branch/main/ceems_exporter_role.html)
-- [CEEMS API Server Role](https://ceems.github.io/ansible/branch/main/ceems_api_server_role.html)
-- [CEEMS Load Balancer Role](https://ceems.github.io/ansible/branch/main/ceems_lb_role.html)
+- [CEEMS Exporter Role](https://@ceemsOrg@.github.io/ansible/branch/main/ceems_exporter_role.html)
+- [CEEMS API Server Role](https://@ceemsOrg@.github.io/ansible/branch/main/ceems_api_server_role.html)
+- [CEEMS Load Balancer Role](https://@ceemsOrg@.github.io/ansible/branch/main/ceems_lb_role.html)

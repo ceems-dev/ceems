@@ -23,10 +23,42 @@ func init() {
 	Register(owidEmissionsProvider, "OWID", NewOWIDProvider)
 }
 
+// NewOWIDProvider returns a new Provider that returns emission factor from OWID data.
+func NewOWIDProvider(logger *slog.Logger) (Provider, error) {
+	// Read CSV file
+	carbonIntensityCSV, err := dataDir.ReadFile("data/carbon-intensity-owid.csv")
+	if err != nil {
+		return nil, fmt.Errorf("failed to read OWID data file: %w", err)
+	}
+
+	// Read OWID data CSV file
+	emissionData, err := readOWIDData(carbonIntensityCSV)
+	if err != nil {
+		return nil, err
+	}
+
+	logger.Info("Emission factors from OWID data will be reported.")
+
+	return &owidProvider{
+		logger:       logger,
+		emissionData: emissionData,
+	}, nil
+}
+
+// Get emission factor for a given country.
+func (s *owidProvider) Update() (EmissionFactors, error) {
+	return s.emissionData, nil
+}
+
+// Stop updaters and release all resources.
+func (s *owidProvider) Stop() error {
+	return nil
+}
+
 // readOWIDData reads the carbon intensity CSV file and returns the most "recent"
 // factor for each country.
 // The file can be fetched from https://ourworldindata.org/grapher/carbon-intensity-electricity?tab=table
-// The data is updated every year and the next update will be in June 2025
+// The data is updated every year and the next update will be in June 2026
 // Data sources: Ember - Yearly Electricity Data (2023); Ember - European Electricity Review (2022); Energy Institute - Statistical Review of World Energy (2023).
 func readOWIDData(contents []byte) (EmissionFactors, error) {
 	// Read all records
@@ -75,36 +107,4 @@ func readOWIDData(contents []byte) (EmissionFactors, error) {
 	}
 
 	return emissionFactors, nil
-}
-
-// NewOWIDProvider returns a new Provider that returns emission factor from OWID data.
-func NewOWIDProvider(logger *slog.Logger) (Provider, error) {
-	// Read CSV file
-	carbonIntensityCSV, err := dataDir.ReadFile("data/carbon-intensity-owid.csv")
-	if err != nil {
-		return nil, fmt.Errorf("failed to read OWID data file: %w", err)
-	}
-
-	// Read OWID data CSV file
-	emissionData, err := readOWIDData(carbonIntensityCSV)
-	if err != nil {
-		return nil, err
-	}
-
-	logger.Info("Emission factor from OWID data will be reported.")
-
-	return &owidProvider{
-		logger:       logger,
-		emissionData: emissionData,
-	}, nil
-}
-
-// Get emission factor for a given country.
-func (s *owidProvider) Update() (EmissionFactors, error) {
-	return s.emissionData, nil
-}
-
-// Stop updaters and release all resources.
-func (s *owidProvider) Stop() error {
-	return nil
 }

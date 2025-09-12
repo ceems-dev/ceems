@@ -18,13 +18,14 @@ const emissionsCollectorSubsystem = "emissions"
 var (
 	emissionProviders = CEEMSExporterApp.Flag(
 		"collector.emissions.provider",
-		`Exports emission factors from these providers (default: all).
+		`Exports emission factors from these providers (default: global, owid).
 Supported providers:
+	- "global": World average carbon intensity (https://www.iea.org/reports/electricity-2025/emissions)
 	- "owid": Our World In Data (https://ourworldindata.org/grapher/carbon-intensity-electricity?tab=table)
 	- "emaps": Electricity Maps (https://app.electricitymaps.com/)
 	- "rte": RTE eCO2 Mix (Only for France) (https://www.rte-france.com/en/eco2mix/co2-emissions)
 	- "wt": Watt Time (https://docs.watttime.org/#tag/Introduction)`,
-	).Enums("owid", "emaps", "rte", "wt")
+	).Default("global", "owid").Enums("global", "owid", "emaps", "rte", "wt")
 )
 
 type emissionsCollector struct {
@@ -51,7 +52,7 @@ func NewEmissionsCollector(logger *slog.Logger) (Collector, error) {
 	// Create a new instance of EmissionCollector
 	emissionFactorProviders, err := emissions.NewFactorProviders(logger, *emissionProviders)
 	if err != nil {
-		logger.Error("Failed to create new EmissionCollector", "err", err)
+		logger.Error("Failed to create new emissions collector", "err", err)
 
 		return nil, err
 	}

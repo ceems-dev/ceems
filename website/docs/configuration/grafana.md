@@ -142,13 +142,6 @@ Similarly, CEEMS API server must be added as
 datasource to pull the list of compute units and their usage metrics. Following snippet shows
 a basic configuration for the datasource:
 
-:::important[IMPORTANT]
-
-Header name `X-Ceems-Disable-User-Check` must always be set even when the value is set to `false`
-just to ensure that end users cannot spoof the header value from the browser requests.
-
-:::
-
 ```yaml
 # List of datasources that CEEMS uses
 datasources:
