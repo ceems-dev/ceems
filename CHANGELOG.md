@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.11.2 / 2025-09-12
+
+- [MAINT] Update static emission factors for OWID and world average [#411](https://github.com/mahendrapaipuri/ceems/pull/411) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump dependencies [#410](https://github.com/mahendrapaipuri/ceems/pull/410) ([@dependabot](https://github.com/dependabot))
+
 ## 0.11.1 / 2025-09-06
 
 - [BUGFIX] Allow GPU fetching to fail for libvirt collector [#409](https://github.com/mahendrapaipuri/ceems/pull/409) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
