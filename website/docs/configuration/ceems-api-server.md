@@ -566,9 +566,22 @@ updaters:
             sum_over_time(sum by (uuid) (uuid:ceems_host_power_watts:pue{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
             
         # Total CPU emissions in gms
-        total_cpu_emissions_gms:            
+        total_cpu_emissions_gms:
+          # If RTE emission factor provider is enabled         
+          rte_total: |
+            sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+          # If Electricity Maps emission factor provider is enabled
+          emaps_total: |
+            sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+          # If Watt Time emission factor provider is enabled
+          wt_total: |
+            sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="wt"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+          # If OWID static emission factor provider is enabled
           owid_total: |
             sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+          # If World average (IEA) emission factor provider is enabled
+          global_total: |
+            sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="global"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
             
         # Average GPU utilization
         avg_gpu_usage:
@@ -587,8 +600,21 @@ updaters:
             
         # Total GPU emissions in gms
         total_gpu_emissions_gms:            
+          # If RTE emission factor provider is enabled         
+          rte_total: |
+            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+          # If Electricity Maps emission factor provider is enabled
+          emaps_total: |
+            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+          # If Watt Time emission factor provider is enabled
+          wt_total: |
+            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="wt"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+          # If OWID static emission factor provider is enabled
           owid_total: |
-            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3         
+            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+          # If World average (IEA) emission factor provider is enabled
+          global_total: |
+            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="global"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3        
 ```
 
 The above configuration assumes that GPU compute nodes possess NVIDIA GPUs and the

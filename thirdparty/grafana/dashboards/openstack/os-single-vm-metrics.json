@@ -86,7 +86,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "<span> \n  The following metrics are aggregated over the entire life duration of the VM\n</span>\n<br>\n<br>\n\n<table><tbody>\n  <tr>\n    <th rowspan=\"4\">Average Utilization (%)</th>\n    <th>CPU</th>\n    <td colspan=\"3\">${cpu_usage}</td>\n  </tr>\n  <tr>\n    <th>CPU Memory</th>\n    <td colspan=\"3\">${cpumem_usage}</td>\n  </tr>\n  <tr>\n    <th>GPU</th>\n    <td colspan=\"3\">${gpu_usage}</td>\n  </tr>\n  <tr>\n    <th>GPU Memory</td>\n    <td colspan=\"3\">${gpumem_usage}</td>\n  </tr>\n  <tr>\n    <th rowspan=\"3\">Energy Consumption (kWh)</th>\n    <th>Host</th>\n    <td colspan=\"3\">${cpu_energy}</td>\n  </tr>\n  <tr>\n    <th>GPU</th>\n    <td colspan=\"3\">${gpu_energy}</td>\n  </tr>\n  <tr>\n    <th>Total</th>\n    <td colspan=\"3\">${total_energy}</td>\n  </tr>\n  <tr>\n    <th rowspan=\"4\">Equivalent Emissions (gms)</th>\n    <th>Emission Factor</th>\n    <th>RTE</th>\n    <th>Electricity Maps</th>\n    <th>OWID</th>\n  </tr>\n  <tr>\n    <th>Host</th>\n    <td>${cpu_emissions_rte}</td>\n    <td>${cpu_emissions_emaps}</td>\n    <td>${cpu_emissions_owid}</td>\n  </tr>\n  <tr>\n    <th>GPU</th>\n    <td>${gpu_emissions_rte}</td>\n    <td>${gpu_emissions_emaps}</td>\n    <td>${gpu_emissions_owid}</td>\n  </tr>\n  <tr>\n    <th>Total</th>\n    <td>${total_emissions_rte}</td>\n    <td>${total_emissions_emaps}</td>\n    <td>${total_emissions_owid}</td>\n  </tr>\n</tbody></table>",
+        "content": "<span> \n  The following metrics are aggregated over entire VM duration\n</span>\n<br>\n<br>\n\n<table><tbody>\n  <tr>\n    <th rowspan=\"4\">Average Utilization (%)</th>\n    <th>CPU</th>\n    <td colspan=\"5\">${cpu_usage}</td>\n  </tr>\n  <tr>\n    <th>CPU Memory</th>\n    <td colspan=\"5\">${cpumem_usage}</td>\n  </tr>\n  <tr>\n    <th>GPU</th>\n    <td colspan=\"5\">${gpu_usage}</td>\n  </tr>\n  <tr>\n    <th>GPU Memory</td>\n    <td colspan=\"5\">${gpumem_usage}</td>\n  </tr>\n  <tr>\n    <th rowspan=\"3\">Energy Consumption (kWh)</th>\n    <th>Host</th>\n    <td colspan=\"5\">${cpu_energy}</td>\n  </tr>\n  <tr>\n    <th>GPU</th>\n    <td colspan=\"5\">${gpu_energy}</td>\n  </tr>\n  <tr>\n    <th>Total</th>\n    <td colspan=\"5\">${total_energy}</td>\n  </tr>\n  <tr>\n    <th rowspan=\"6\">Equivalent Emissions (gms)</th>\n    <th>Emission Factor</th>\n    <th>RTE</th>\n    <th>Elec. Maps</th>\n    <th>W. Time</th>\n    <th>OWID</th>\n    <th>World Avg.</th>\n  </tr>\n  <tr>\n    <th>Host</th>\n    <td>${cpu_emissions_rte}</td>\n    <td>${cpu_emissions_emaps}</td>\n    <td>${cpu_emissions_wt}</td>\n    <td>${cpu_emissions_owid}</td>\n    <td>${cpu_emissions_global}</td>\n  </tr>\n  <tr>\n    <th>GPU</th>\n    <td>${gpu_emissions_rte}</td>\n    <td>${gpu_emissions_emaps}</td>\n    <td>${gpu_emissions_wt}</td>\n    <td>${gpu_emissions_owid}</td>\n    <td>${gpu_emissions_global}</td>\n  </tr>\n  <tr>\n    <th>Total</th>\n    <td>${total_emissions_rte}</td>\n    <td>${total_emissions_emaps}</td>\n    <td>${total_emissions_wt}</td>\n    <td>${total_emissions_owid}</td>\n    <td>${total_emissions_global}</td>\n  </tr>\n</tbody></table>",
         "mode": "html"
       },
       "pluginVersion": "11.3.1",
@@ -2764,7 +2764,41 @@
           "value": ""
         },
         "hide": 2,
+        "name": "cpu_emissions_wt",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "hide": 2,
         "name": "cpu_emissions_owid",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "hide": 2,
+        "name": "cpu_emissions_global",
         "options": [
           {
             "selected": true,
@@ -2866,7 +2900,41 @@
           "value": ""
         },
         "hide": 2,
+        "name": "gpu_emissions_wt",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "hide": 2,
         "name": "gpu_emissions_owid",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "hide": 2,
+        "name": "gpu_emissions_global",
         "options": [
           {
             "selected": true,
@@ -2934,7 +3002,41 @@
           "value": ""
         },
         "hide": 2,
+        "name": "total_emissions_wt",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "hide": 2,
         "name": "total_emissions_owid",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "hide": 2,
+        "name": "total_emissions_global",
         "options": [
           {
             "selected": true,
