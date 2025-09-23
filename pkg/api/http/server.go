@@ -724,8 +724,8 @@ func (s *CEEMSServer) unitsQuerier(
 	// Get fields query parameters if any
 	queriedFields := s.getQueriedFields(r.URL.Query(), base.UnitsDBTableColNames)
 	if len(queriedFields) == 0 {
-		s.logger.Error("Invalid query fields", "logged_user", loggedUser, "err", errInvalidQueryField)
-		errorResponse[any](w, &apiError{errorBadData, errInvalidQueryField}, s.logger, nil)
+		s.logger.Error("Invalid query fields", "logged_user", loggedUser, "err", ErrInvalidQueryField)
+		ErrorResponse[any](w, &APIError{ErrorBadData, ErrInvalidQueryField}, s.logger, nil)
 
 		return
 	}
@@ -768,7 +768,7 @@ func (s *CEEMSServer) unitsQuerier(
 	// Get query window time stamps
 	timeQuery, err = s.getQueryWindow(r, "ended_at", running, false)
 	if err != nil {
-		errorResponse[any](w, &apiError{errorBadData, err}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorBadData, err}, s.logger, nil)
 
 		return
 	}
@@ -785,7 +785,7 @@ queryUnits:
 	units, err := s.queriers.unit(r.Context(), s.db, q, s.logger)
 	if units == nil && err != nil {
 		s.logger.Error("Failed to fetch units", "logged_user", loggedUser, "err", err)
-		errorResponse[any](w, &apiError{errorInternal, err}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorInternal, err}, s.logger, nil)
 
 		return
 	}
@@ -977,7 +977,8 @@ func (s *CEEMSServer) verifyUnitsOwnership(w http.ResponseWriter, r *http.Reques
 	// Get list of queried uuids
 	uuids := r.URL.Query()["uuid"]
 	if len(uuids) == 0 {
-		errorResponse[any](w, &apiError{errorBadData, errMissingUUIDs}, s.logger, nil)
+		s.logger.Error("uuids not found in query parameters")
+		ErrorResponse[any](w, &APIError{ErrorBadData, ErrMissingData}, s.logger, nil)
 
 		return
 	}
@@ -996,7 +997,7 @@ func (s *CEEMSServer) verifyUnitsOwnership(w http.ResponseWriter, r *http.Reques
 			w.Write([]byte("KO"))
 		}
 	} else {
-		errorResponse[any](w, &apiError{errorForbidden, errNoAuth}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorForbidden, ErrNoAuth}, s.logger, nil)
 	}
 }
 
@@ -1045,7 +1046,7 @@ func (s *CEEMSServer) clustersAdmin(w http.ResponseWriter, r *http.Request) {
 	clusterIDs, err := s.queriers.cluster(r.Context(), s.db, q, s.logger)
 	if clusterIDs == nil && err != nil {
 		s.logger.Error("Failed to fetch cluster IDs", "user", loggedUser, "err", err)
-		errorResponse[any](w, &apiError{errorInternal, err}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorInternal, err}, s.logger, nil)
 
 		return
 	}
@@ -1081,7 +1082,7 @@ func (s *CEEMSServer) adminUsersQuerier(w http.ResponseWriter, r *http.Request) 
 	adminUsersLists, err := s.queriers.adminUser(r.Context(), s.db, q, s.logger)
 	if adminUsersLists == nil && err != nil {
 		s.logger.Error("Failed to fetch admin user details", "err", err)
-		errorResponse[any](w, &apiError{errorInternal, err}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorInternal, err}, s.logger, nil)
 
 		return
 	}
@@ -1134,7 +1135,7 @@ func (s *CEEMSServer) usersQuerier(users []string, w http.ResponseWriter, r *htt
 	userModels, err := s.queriers.user(r.Context(), s.db, q, s.logger)
 	if userModels == nil && err != nil {
 		s.logger.Error("Failed to fetch user details", "users", strings.Join(users, ","), "err", err)
-		errorResponse[any](w, &apiError{errorInternal, err}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorInternal, err}, s.logger, nil)
 
 		return
 	}
@@ -1281,7 +1282,7 @@ func (s *CEEMSServer) projectsQuerier(users []string, w http.ResponseWriter, r *
 			"Failed to fetch project details",
 			"users", strings.Join(users, ","), "err", err,
 		)
-		errorResponse[any](w, &apiError{errorInternal, err}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorInternal, err}, s.logger, nil)
 
 		return
 	}
@@ -1451,7 +1452,7 @@ func (s *CEEMSServer) currentUsage(users []string, fields []string, w http.Respo
 	// Round `to` and `from` query parameters to cacheTTL
 	err = s.roundQueryWindow(r)
 	if err != nil {
-		errorResponse[any](w, &apiError{errorBadData, err}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorBadData, err}, s.logger, nil)
 
 		return
 	}
@@ -1463,7 +1464,7 @@ func (s *CEEMSServer) currentUsage(users []string, fields []string, w http.Respo
 	// Get query window time stamps
 	timeQuery, err = s.getQueryWindow(r, "last_updated_at", false, terminated)
 	if err != nil {
-		errorResponse[any](w, &apiError{errorBadData, err}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorBadData, err}, s.logger, nil)
 
 		return
 	}
@@ -1601,7 +1602,7 @@ func (s *CEEMSServer) currentUsage(users []string, fields []string, w http.Respo
 	usage, err = s.queriers.usage(r.Context(), s.db, q, s.logger)
 	if usage == nil && err != nil {
 		s.logger.Error("Failed to fetch current usage statistics", "users", strings.Join(users, ","), "err", err)
-		errorResponse[any](w, &apiError{errorInternal, err}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorInternal, err}, s.logger, nil)
 
 		return
 	}
@@ -1658,7 +1659,7 @@ func (s *CEEMSServer) globalUsage(users []string, queriedFields []string, w http
 	usage, err := s.queriers.usage(r.Context(), s.db, q, s.logger)
 	if usage == nil && err != nil {
 		s.logger.Error("Failed to fetch global usage statistics", "users", strings.Join(users, ","), "err", err)
-		errorResponse[any](w, &apiError{errorInternal, err}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorInternal, err}, s.logger, nil)
 
 		return
 	}
@@ -1754,7 +1755,7 @@ func (s *CEEMSServer) usage(w http.ResponseWriter, r *http.Request) {
 
 	var exists bool
 	if mode, exists = mux.Vars(r)["mode"]; !exists {
-		errorResponse[any](w, &apiError{errorBadData, errInvalidRequest}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorBadData, ErrInvalidRequest}, s.logger, nil)
 
 		return
 	}
@@ -1763,7 +1764,7 @@ func (s *CEEMSServer) usage(w http.ResponseWriter, r *http.Request) {
 	queriedFields := s.getQueriedFields(r.URL.Query(), base.UsageDBTableColNames)
 	if len(queriedFields) == 0 {
 		s.logger.Error("Invalid query fields", "logged_user", loggedUser)
-		errorResponse[any](w, &apiError{errorBadData, errInvalidQueryField}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorBadData, ErrInvalidQueryField}, s.logger, nil)
 
 		return
 	}
@@ -1857,7 +1858,7 @@ func (s *CEEMSServer) usageAdmin(w http.ResponseWriter, r *http.Request) {
 
 	var exists bool
 	if mode, exists = mux.Vars(r)["mode"]; !exists {
-		errorResponse[any](w, &apiError{errorBadData, errInvalidRequest}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorBadData, ErrInvalidRequest}, s.logger, nil)
 
 		return
 	}
@@ -1866,7 +1867,7 @@ func (s *CEEMSServer) usageAdmin(w http.ResponseWriter, r *http.Request) {
 	queriedFields := s.getQueriedFields(r.URL.Query(), base.UsageDBTableColNames)
 	if len(queriedFields) == 0 {
 		s.logger.Error("Invalid query fields", "logged_user", loggedUser)
-		errorResponse[any](w, &apiError{errorBadData, errInvalidQueryField}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorBadData, ErrInvalidQueryField}, s.logger, nil)
 
 		return
 	}
@@ -1903,7 +1904,7 @@ func (s *CEEMSServer) currentStats(users []string, w http.ResponseWriter, r *htt
 	// Get query window time stamps
 	timeQuery, err = s.getQueryWindow(r, "ended_at", true, false)
 	if err != nil {
-		errorResponse[any](w, &apiError{errorBadData, err}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorBadData, err}, s.logger, nil)
 
 		return
 	}
@@ -1928,7 +1929,7 @@ func (s *CEEMSServer) currentStats(users []string, w http.ResponseWriter, r *htt
 	stats, err = s.queriers.stat(r.Context(), s.db, q, s.logger)
 	if stats == nil && err != nil {
 		s.logger.Error("Failed to fetch current quick stats", "users", strings.Join(users, ","), "err", err)
-		errorResponse[any](w, &apiError{errorInternal, err}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorInternal, err}, s.logger, nil)
 
 		return
 	}
@@ -1983,7 +1984,7 @@ func (s *CEEMSServer) globalStats(users []string, w http.ResponseWriter, r *http
 	stats, err = s.queriers.stat(r.Context(), s.db, q, s.logger)
 	if stats == nil && err != nil {
 		s.logger.Error("Failed to fetch global quick stats", "users", strings.Join(users, ","), "err", err)
-		errorResponse[any](w, &apiError{errorInternal, err}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorInternal, err}, s.logger, nil)
 
 		return
 	}
@@ -2058,7 +2059,7 @@ func (s *CEEMSServer) statsAdmin(w http.ResponseWriter, r *http.Request) {
 
 	var exists bool
 	if mode, exists = mux.Vars(r)["mode"]; !exists {
-		errorResponse[any](w, &apiError{errorBadData, errInvalidRequest}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorBadData, ErrInvalidRequest}, s.logger, nil)
 
 		return
 	}
@@ -2113,7 +2114,7 @@ func (s *CEEMSServer) demo(w http.ResponseWriter, r *http.Request) {
 
 	var exists bool
 	if resourceType, exists = mux.Vars(r)["resource"]; !exists {
-		errorResponse[any](w, &apiError{errorBadData, errInvalidRequest}, s.logger, nil)
+		ErrorResponse[any](w, &APIError{ErrorBadData, ErrInvalidRequest}, s.logger, nil)
 
 		return
 	}

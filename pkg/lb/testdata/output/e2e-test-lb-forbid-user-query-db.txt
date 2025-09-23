@@ -1,3 +1,3 @@
-{"status":"error","data":null,"errorType":"forbidden","error":"user do not have permissions to view unit metrics"}
-{"status":"error","data":null,"errorType":"forbidden","error":"user do not have permissions to view unit metrics"}
+{"status":"error","data":null,"errorType":"forbidden","error":"user do not have permissions to view metrics of this job/pod/vm"}
+{"status":"error","data":null,"errorType":"forbidden","error":"user do not have permissions to view metrics of this job/pod/vm"}
 

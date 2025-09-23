@@ -1267,17 +1267,17 @@ const docTemplate = `{
                 "not_acceptable"
             ],
             "x-enum-varnames": [
-                "errorNone",
-                "errorUnauthorized",
-                "errorForbidden",
-                "errorTimeout",
-                "errorCanceled",
-                "errorExec",
-                "errorBadData",
-                "errorInternal",
-                "errorUnavailable",
-                "errorNotFound",
-                "errorNotAcceptable"
+                "ErrorNone",
+                "ErrorUnauthorized",
+                "ErrorForbidden",
+                "ErrorTimeout",
+                "ErrorCanceled",
+                "ErrorExec",
+                "ErrorBadData",
+                "ErrorInternal",
+                "ErrorUnavailable",
+                "ErrorNotFound",
+                "ErrorNotAcceptable"
             ]
         },
         "models.Cluster": {

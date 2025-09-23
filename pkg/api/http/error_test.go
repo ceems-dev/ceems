@@ -11,6 +11,6 @@ import (
 )
 
 func TestApiError(t *testing.T) {
-	e := apiError{typ: errorBadData, err: errors.New("bad data")}
+	e := APIError{Typ: ErrorBadData, Err: errors.New("bad data")}
 	assert.Equal(t, "bad_data: bad data", e.Error())
 }

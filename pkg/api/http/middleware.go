@@ -90,7 +90,7 @@ func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler 
 			amw.logger.Error("User Header not found. Denying authentication")
 
 			// Write an error and stop the handler chain
-			errorResponse[any](w, &apiError{errorUnauthorized, errNoUser}, amw.logger, nil)
+			ErrorResponse[any](w, &APIError{ErrorUnauthorized, ErrNoUser}, amw.logger, nil)
 
 			return
 		}
@@ -121,7 +121,7 @@ func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler 
 				amw.logger.Error("Unprivileged user accessing admin resource", "logger_user", loggedUser, "url", r.URL)
 
 				// Write an error and stop the handler chain
-				errorResponse[any](w, &apiError{errorForbidden, errNoPrivs}, amw.logger, nil)
+				ErrorResponse[any](w, &APIError{ErrorForbidden, ErrNoPrivs}, amw.logger, nil)
 
 				return
 			}
