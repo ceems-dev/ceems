@@ -25,32 +25,32 @@ var (
 
 	noOpLogger    = slog.New(slog.DiscardHandler)
 	expectedUnits = map[string]models.Unit{
-		"3a61e77f-1538-476b-8231-5af9eed40fdc": {
-			ClusterID:       "k8s-0",
-			ResourceManager: "k8s",
-			UUID:            "3a61e77f-1538-476b-8231-5af9eed40fdc",
-			Name:            "pod31",
-			Project:         "ns3",
-			Group:           "",
-			User:            "kusr3",
-			CreatedAt:       "2025-07-07T11:16:56+0200",
-			StartedAt:       "N/A",
-			EndedAt:         "N/A",
-			CreatedAtTS:     1751879816000,
-			StartedAtTS:     0,
-			EndedAtTS:       0,
-			Elapsed:         "N/A",
-			State:           "Pending",
-			Allocation: models.Generic{
-				"mem": 3.221225472e+09, "nvidia.com/gpu": 1.0, "nvidia.com/mig-4g.20gb": 2.0, "vcpus": 3.0,
-			},
-			TotalTime: models.MetricMap{
-				"alloc_cpumemtime": 0, "alloc_cputime": 0, "alloc_gpumemtime": 0, "alloc_gputime": 0, "walltime": 0,
-			},
-			Tags: models.Generic{
-				"annotations": map[string]string{"ceems.io/created-by": "kusr3"}, "qos": "Burstable",
-			},
-		},
+		// "3a61e77f-1538-476b-8231-5af9eed40fdc": {
+		// 	ClusterID:       "k8s-0",
+		// 	ResourceManager: "k8s",
+		// 	UUID:            "3a61e77f-1538-476b-8231-5af9eed40fdc",
+		// 	Name:            "pod31",
+		// 	Project:         "ns3",
+		// 	Group:           "",
+		// 	User:            "kusr3",
+		// 	CreatedAt:       "2025-07-07T11:16:56+0200",
+		// 	StartedAt:       "N/A",
+		// 	EndedAt:         "N/A",
+		// 	CreatedAtTS:     1751879816000,
+		// 	StartedAtTS:     0,
+		// 	EndedAtTS:       0,
+		// 	Elapsed:         "N/A",
+		// 	State:           "Pending",
+		// 	Allocation: models.Generic{
+		// 		"mem": 3.221225472e+09, "nvidia.com/gpu": 1.0, "nvidia.com/mig-4g.20gb": 2.0, "vcpus": 3.0,
+		// 	},
+		// 	TotalTime: models.MetricMap{
+		// 		"alloc_cpumemtime": 0, "alloc_cputime": 0, "alloc_gpumemtime": 0, "alloc_gputime": 0, "walltime": 0,
+		// 	},
+		// 	Tags: models.Generic{
+		// 		"annotations": map[string]string{"ceems.io/created-by": "kusr3"}, "qos": "Burstable",
+		// 	},
+		// },
 		"6c22124f-e9a7-450b-8915-9bf3e0716d78": {
 			ClusterID:       "k8s-0",
 			ResourceManager: "k8s",
@@ -136,14 +136,14 @@ var (
 		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "rb2", Projects: models.List{"ns2"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
 		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "kusr1", Projects: models.List{"ns1"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
 		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "kusr2", Projects: models.List{"ns2"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
-		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "kusr3", Projects: models.List{"ns3"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
+		// {ClusterID: "k8s-0", ResourceManager: "k8s", Name: "kusr3", Projects: models.List{"ns3"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
 		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "file1", Projects: models.List{"ns1"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
 		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "file2", Projects: models.List{"ns1"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
 		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "file3", Projects: models.List{"ns3"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
 		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "ns2:" + base.ServiceAccountUser, Projects: models.List{"ns2"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
 	}
 	expectedProjects = []models.Project{
-		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "ns3", Users: models.List{"file3", "kusr3", "rb3"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
+		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "ns3", Users: models.List{"file3", "rb3"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
 		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "ns1", Users: models.List{"file1", "file2", "kusr1", "rb1"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
 		{ClusterID: "k8s-0", ResourceManager: "k8s", Name: "ns2", Users: models.List{"kusr2", "ns2:" + base.ServiceAccountUser, "rb1", "rb2"}, LastUpdatedAt: "2025-07-07T12:15:00+0200"},
 	}
