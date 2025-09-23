@@ -191,7 +191,9 @@ func (k *k8sManager) fetchPods(
 	// Transform pods into units
 	units := make([]models.Unit, len(pods))
 
-	for ipod, pod := range pods {
+	ipod := 0
+
+	for _, pod := range pods {
 		// Convert CreatedAt to current time location
 		createdAt := pod.CreationTimestamp.In(loc)
 
@@ -288,17 +290,22 @@ func (k *k8sManager) fetchPods(
 			elapsedTime = notAvailable
 		}
 
+		// If startedAt is zero, ignore that pod. As we insert data into
+		// DB based on UUID and startedAt fields, including a compute unit
+		// with "N/A" start time and "real" start time (eventually when it starts)
+		// will create two entries for the same compute unit. We do not want that
+		// and so ignore if the pod hasnt started yet.
+		if startedAt.IsZero() {
+			continue
+		}
+
 		// Check if startedAt and endedAt are valid
 		var startedAtString, endedAtString string
 
 		var startedAtTS, endedAtTS int64
 
-		if startedAt.IsZero() {
-			startedAtString = notAvailable
-		} else {
-			startedAtString = startedAt.Format(base.DatetimezoneLayout)
-			startedAtTS = startedAt.UnixMilli()
-		}
+		startedAtString = startedAt.Format(base.DatetimezoneLayout)
+		startedAtTS = startedAt.UnixMilli()
 
 		if endedAt.IsZero() {
 			endedAtString = notAvailable
@@ -418,11 +425,12 @@ func (k *k8sManager) fetchPods(
 			Allocation:      allocation,
 			Tags:            tags,
 		}
+		ipod++
 	}
 
 	k.logger.Info("k8s pods fetched", "cluster_id", k.cluster.ID, "start", start, "end", end, "num_pods", len(units))
 
-	return units
+	return units[:ipod]
 }
 
 func (k *k8sManager) fetchUserNSs(ctx context.Context, current time.Time) ([]models.User, []models.Project) {
