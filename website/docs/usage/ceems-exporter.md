@@ -16,7 +16,6 @@ The following collectors are enabled by default:
 
 - `cpu`: Node-level CPU statistics
 - `memory`: Node-level memory statistics
-- `rapl`: RAPL energy counters
 
 By default, the CEEMS exporter exposes metrics on all interfaces, port `9010`, and
 at the `/metrics` endpoint. This can be changed by setting the `--web.listen-address` CLI flag:

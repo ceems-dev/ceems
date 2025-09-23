@@ -16,7 +16,7 @@ const FeatureList: FeatureItem[] = [
       <>
         CEEMS was designed to be resource manager agnostic. Although
         thoeritically it can support many resource managers, we are focusing to
-        support SLURM, Openstack and Kubernetes deployed on baremetal.
+        support SLURM, Openstack and Kubernetes.
       </>
     ),
   },
