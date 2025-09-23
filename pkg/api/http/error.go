@@ -20,28 +20,28 @@ var (
 type errorType string
 
 // Error response.
-type apiError struct {
-	typ errorType
-	err error
+type APIError struct {
+	Typ errorType
+	Err error
 }
 
-func (e *apiError) Error() string {
-	return fmt.Sprintf("%s: %s", e.typ, e.err)
+func (e *APIError) Error() string {
+	return fmt.Sprintf("%s: %s", e.Typ, e.Err)
 }
 
 // List of predefined errors.
 const (
-	errorNone          errorType = ""
-	errorUnauthorized  errorType = "unauthorized"
-	errorForbidden     errorType = "forbidden"
-	errorTimeout       errorType = "timeout"
-	errorCanceled      errorType = "canceled"
-	errorExec          errorType = "execution"
-	errorBadData       errorType = "bad_data"
-	errorInternal      errorType = "internal"
-	errorUnavailable   errorType = "unavailable"
-	errorNotFound      errorType = "not_found"
-	errorNotAcceptable errorType = "not_acceptable"
+	ErrorNone          errorType = ""
+	ErrorUnauthorized  errorType = "unauthorized"
+	ErrorForbidden     errorType = "forbidden"
+	ErrorTimeout       errorType = "timeout"
+	ErrorCanceled      errorType = "canceled"
+	ErrorExec          errorType = "execution"
+	ErrorBadData       errorType = "bad_data"
+	ErrorInternal      errorType = "internal"
+	ErrorUnavailable   errorType = "unavailable"
+	ErrorNotFound      errorType = "not_found"
+	ErrorNotAcceptable errorType = "not_acceptable"
 )
 
 // Custom error codes.
@@ -53,36 +53,39 @@ const (
 
 // Custom errors.
 var (
-	errNoUser            = errors.New("no user identified")
-	errNoPrivs           = errors.New("current user does not have admin privileges")
-	errInvalidRequest    = errors.New("invalid request")
-	errInvalidQueryField = errors.New("invalid query fields")
-	errMissingUUIDs      = errors.New("uuids missing in the request")
-	errNoAuth            = errors.New("user do not have permissions on uuids")
+	ErrNoUser            = errors.New("no user identified")
+	ErrNoPrivs           = errors.New("current user does not have admin privileges")
+	ErrInvalidRequest    = errors.New("invalid request")
+	ErrInvalidQueryField = errors.New("invalid query fields")
+	ErrMissingData       = errors.New("missing data in the request")
+	ErrNoAuth            = errors.New("user do not have permissions to view metrics of this job/pod/vm")
+	ErrNoAccess          = errors.New("user do not have permissions to access this resource")
+	ErrInvalidClusterID  = errors.New("invalid ceems cluster id")
+	ErrUnavailable       = errors.New("tsdb/pyroscope unavailable")
 )
 
 // Return error response for by setting errorString and errorType in response.
-func errorResponse[T any](w http.ResponseWriter, apiErr *apiError, logger *slog.Logger, data []T) {
+func ErrorResponse[T any](w http.ResponseWriter, apiErr *APIError, logger *slog.Logger, data []T) {
 	var code int
 
-	switch apiErr.typ { //nolint:exhaustive
-	case errorBadData:
+	switch apiErr.Typ { //nolint:exhaustive
+	case ErrorBadData, errorType(ErrNoUser.Error()), errorType(ErrInvalidRequest.Error()), errorType(ErrInvalidQueryField.Error()), errorType(ErrMissingData.Error()):
 		code = http.StatusBadRequest
-	case errorUnauthorized:
+	case ErrorUnauthorized, errorType(ErrNoPrivs.Error()):
 		code = http.StatusUnauthorized
-	case errorForbidden:
+	case ErrorForbidden, errorType(ErrNoAuth.Error()), errorType(ErrNoAccess.Error()):
 		code = http.StatusForbidden
-	case errorExec:
+	case ErrorExec:
 		code = http.StatusUnprocessableEntity
-	case errorCanceled:
+	case ErrorCanceled:
 		code = statusClientClosedConnection
-	case errorTimeout:
+	case ErrorTimeout, ErrorUnavailable, errorType(ErrUnavailable.Error()):
 		code = http.StatusServiceUnavailable
-	case errorInternal:
+	case ErrorInternal:
 		code = http.StatusInternalServerError
-	case errorNotFound:
+	case ErrorNotFound:
 		code = http.StatusNotFound
-	case errorNotAcceptable:
+	case ErrorNotAcceptable:
 		code = http.StatusNotAcceptable
 	default:
 		code = http.StatusInternalServerError
@@ -92,8 +95,8 @@ func errorResponse[T any](w http.ResponseWriter, apiErr *apiError, logger *slog.
 
 	response := Response[T]{
 		Status:    "error",
-		ErrorType: apiErr.typ,
-		Error:     apiErr.err.Error(),
+		ErrorType: apiErr.Typ,
+		Error:     apiErr.Err.Error(),
 		Data:      data,
 	}
 

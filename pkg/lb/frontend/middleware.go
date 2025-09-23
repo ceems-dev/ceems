@@ -6,7 +6,6 @@ package frontend
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log/slog"
@@ -20,7 +19,7 @@ import (
 	"time"
 
 	ceems_api_base "github.com/ceems-dev/ceems/pkg/api/base"
-	ceems_api "github.com/ceems-dev/ceems/pkg/api/http"
+	ceems_api_http "github.com/ceems-dev/ceems/pkg/api/http"
 	"github.com/ceems-dev/ceems/pkg/api/models"
 	"github.com/ceems-dev/ceems/pkg/lb/base"
 	"github.com/prometheus/common/config"
@@ -121,7 +120,7 @@ func (c *ceems) adminUsers(ctx context.Context) ([]string, error) {
 
 	// Check if DB is available
 	if c.db != nil {
-		adminUsers, err = ceems_api.AdminUserNames(ctx, c.db)
+		adminUsers, err = ceems_api_http.AdminUserNames(ctx, c.db)
 		if err != nil {
 			return nil, err
 		}
@@ -254,22 +253,10 @@ func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler 
 
 		// Verify clusterID is in list of valid cluster IDs
 		if !slices.Contains(amw.clusterIDs, reqParams.clusterID) {
-			amw.logger.Error("ClusterID header not found. Bad request", "url", r.URL)
+			amw.logger.Error("Invalid cluster ID", "found_id", reqParams.clusterID, "valid_ids", strings.Join(amw.clusterIDs, ","), "url", r.URL)
 
 			// Write an error and stop the handler chain
-			w.WriteHeader(http.StatusBadRequest)
-
-			response := ceems_api.Response[any]{
-				Status:    "error",
-				ErrorType: "bad_request",
-				Error:     "invalid cluster ID. Set cluster ID using X-Ceems-Cluster-Id header in Prometheus datasource.",
-			}
-
-			err := json.NewEncoder(w).Encode(&response)
-			if err != nil {
-				amw.logger.Error("Failed to encode response", "err", err)
-				w.Write([]byte("KO"))
-			}
+			ceems_api_http.ErrorResponse[any](w, &ceems_api_http.APIError{Typ: ceems_api_http.ErrorBadData, Err: ceems_api_http.ErrInvalidClusterID}, amw.logger, nil)
 
 			return
 		}
@@ -290,22 +277,10 @@ func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler 
 		// Check if username header is available
 		loggedUser = r.Header.Get(ceems_api_base.GrafanaUserHeader)
 		if loggedUser == "" {
-			amw.logger.Error("Grafana user Header not found. Denying authentication", "url", r.URL)
+			amw.logger.Error("User Header not found. Denying authentication", "url", r.URL)
 
 			// Write an error and stop the handler chain
-			w.WriteHeader(http.StatusUnauthorized)
-
-			response := ceems_api.Response[any]{
-				Status:    "error",
-				ErrorType: "unauthorized",
-				Error:     "no user header found. Make sure to set send_user_header = true in [dataproxy] section of Grafana configuration file.",
-			}
-
-			err := json.NewEncoder(w).Encode(&response)
-			if err != nil {
-				amw.logger.Error("Failed to encode response", "err", err)
-				w.Write([]byte("KO"))
-			}
+			ceems_api_http.ErrorResponse[any](w, &ceems_api_http.APIError{Typ: ceems_api_http.ErrorUnauthorized, Err: ceems_api_http.ErrNoUser}, amw.logger, nil)
 
 			return
 		}
@@ -324,19 +299,7 @@ func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler 
 			amw.logger.Error("Forbidden resource", "logged_user", loggedUser, "resource", r.URL.Path)
 
 			// Write an error and stop the handler chain
-			w.WriteHeader(http.StatusForbidden)
-
-			response := ceems_api.Response[any]{
-				Status:    "error",
-				ErrorType: "forbidden",
-				Error:     "user do not have permissions to this resource",
-			}
-
-			err := json.NewEncoder(w).Encode(&response)
-			if err != nil {
-				amw.logger.Error("Failed to encode response", "err", err)
-				w.Write([]byte("KO"))
-			}
+			ceems_api_http.ErrorResponse[any](w, &ceems_api_http.APIError{Typ: ceems_api_http.ErrorForbidden, Err: ceems_api_http.ErrNoAccess}, amw.logger, nil)
 
 			return
 		}
@@ -363,19 +326,7 @@ func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler 
 			reqParams.uuids,
 		) {
 			// Write an error and stop the handler chain
-			w.WriteHeader(http.StatusForbidden)
-
-			response := ceems_api.Response[any]{
-				Status:    "error",
-				ErrorType: "forbidden",
-				Error:     "user do not have permissions to view unit metrics",
-			}
-
-			err := json.NewEncoder(w).Encode(&response)
-			if err != nil {
-				amw.logger.Error("Failed to encode response", "err", err)
-				w.Write([]byte("KO"))
-			}
+			ceems_api_http.ErrorResponse[any](w, &ceems_api_http.APIError{Typ: ceems_api_http.ErrorForbidden, Err: ceems_api_http.ErrNoAuth}, amw.logger, nil)
 
 			return
 		}
@@ -412,7 +363,7 @@ func (amw *authenticationMiddleware) isUserUnit(
 	// Always prefer checking with DB connection directly if it is available
 	// As DB query is way more faster than HTTP API request
 	if amw.ceems.db != nil {
-		return ceems_api.VerifyOwnership(ctx, user, clusterIDs, uuids, amw.ceems.db, amw.logger)
+		return ceems_api_http.VerifyOwnership(ctx, user, clusterIDs, uuids, amw.ceems.db, amw.logger)
 	}
 
 	// If CEEMS URL is available make a API request

@@ -16,6 +16,7 @@ import (
 
 	ceems_api_base "github.com/ceems-dev/ceems/pkg/api/base"
 	ceems_api_cli "github.com/ceems-dev/ceems/pkg/api/cli"
+	ceems_api_http "github.com/ceems-dev/ceems/pkg/api/http"
 	"github.com/ceems-dev/ceems/pkg/api/models"
 	"github.com/ceems-dev/ceems/pkg/lb/base"
 	"github.com/ceems-dev/ceems/pkg/lb/serverpool"
@@ -165,7 +166,8 @@ func (lb *loadBalancer) Serve(w http.ResponseWriter, r *http.Request) {
 
 	// Check if queryParams is nil which could happen in edge cases
 	if queryParams == nil {
-		http.Error(w, "Query parameters not found", http.StatusBadRequest)
+		lb.logger.Error("Query parameters not found", "err", ceems_api_http.ErrMissingData)
+		ceems_api_http.ErrorResponse[any](w, &ceems_api_http.APIError{Typ: ceems_api_http.ErrorBadData, Err: ceems_api_http.ErrMissingData}, lb.logger, nil)
 
 		return
 	}
@@ -176,7 +178,8 @@ func (lb *loadBalancer) Serve(w http.ResponseWriter, r *http.Request) {
 	if v, ok := queryParams.(*ReqParams); ok {
 		id = v.clusterID
 	} else {
-		http.Error(w, "Invalid query parameters", http.StatusBadRequest)
+		lb.logger.Error("Invalid query parameters", "err", ceems_api_http.ErrInvalidRequest)
+		ceems_api_http.ErrorResponse[any](w, &ceems_api_http.APIError{Typ: ceems_api_http.ErrorBadData, Err: ceems_api_http.ErrInvalidRequest}, lb.logger, nil)
 
 		return
 	}
@@ -188,7 +191,8 @@ func (lb *loadBalancer) Serve(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Error(w, "Service not available", http.StatusServiceUnavailable)
+	lb.logger.Error("Service not available", "err", ceems_api_http.ErrUnavailable)
+	ceems_api_http.ErrorResponse[any](w, &ceems_api_http.APIError{Typ: ceems_api_http.ErrorUnavailable, Err: ceems_api_http.ErrUnavailable}, lb.logger, nil)
 }
 
 // errorHandlers sets up error handlers for backend servers.
@@ -203,7 +207,7 @@ func (lb *loadBalancer) errorHandlers() {
 				// If already retried the request, return error
 				if !allowRetry(request) {
 					lb.logger.Info("Max retry attempts reached, terminating", "address", request.RemoteAddr, "path", request.URL.Path)
-					http.Error(writer, "Service not available", http.StatusServiceUnavailable)
+					ceems_api_http.ErrorResponse[any](writer, &ceems_api_http.APIError{Typ: ceems_api_http.ErrorUnavailable, Err: ceems_api_http.ErrUnavailable}, lb.logger, nil)
 
 					return
 				}
