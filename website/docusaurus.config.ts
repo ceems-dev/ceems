@@ -247,6 +247,10 @@ const config: Config = {
               label: "GitHub",
               href: `https://github.com/${organizationName}/${projectName}`,
             },
+            {
+              label: "Helm Charts",
+              href: `https://github.com/${organizationName}/helm-charts`,
+            },
           ],
         },
       ],
