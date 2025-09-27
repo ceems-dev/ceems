@@ -15,7 +15,6 @@ import (
 // Number of units and usage stats to generate.
 const (
 	numUnits       = 100
-	numUsage       = 50
 	maxInt64 int64 = 1<<63 - 1
 )
 
@@ -50,15 +49,7 @@ var (
 	users = []string{
 		"user1", "user2", "user3", "user4", "user5", "user6", "user7",
 	}
-	allProjects []string
 )
-
-// Get a slice of all projects.
-func init() {
-	for _, p := range projects {
-		allProjects = append(allProjects, p...)
-	}
-}
 
 // randomFloats returns random float64s in the range.
 func randomFloats(minBound, maxBound float64) models.JSONFloat { //nolint:unparam
@@ -220,10 +211,13 @@ func mockUsage() []models.Usage {
 
 	for _, user := range users {
 		var userProjects []string
-		for range int(random(1, 4)) {
-			userProjects = append(
-				userProjects, allProjects[int(random(0, int64(len(allProjects))))],
-			)
+
+		for _, prjs := range projects {
+			for range int(random(1, int64(len(prjs)))) {
+				userProjects = append(
+					userProjects, prjs[int(random(0, int64(len(prjs))))],
+				)
+			}
 		}
 
 		userProjectMap[user] = userProjects
