@@ -5,7 +5,7 @@ go 1.24.0
 toolchain go1.24.2
 
 require (
-	connectrpc.com/connect v1.18.1
+	connectrpc.com/connect v1.19.0
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/ceems-dev/perf-utils v0.0.0-20250716113832-99ba71e88ef4
 	github.com/cilium/ebpf v0.19.0
