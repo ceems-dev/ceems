@@ -83,7 +83,7 @@ func (c *emissionsCollector) Update(ch chan<- prometheus.Metric) error {
 	return nil
 }
 
-// Stops collector and releases system resources.
+// Stop stops collector and releases system resources.
 func (c *emissionsCollector) Stop(_ context.Context) error {
 	c.logger.Debug("Stopping", "collector", emissionsCollectorSubsystem)
 

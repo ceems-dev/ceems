@@ -32,7 +32,7 @@ var defaultCompressibleContentTypes = []string{
 	"image/svg+xml",
 }
 
-// Passing a compression level of 5 is sensible value.
+// Compress returns a new handler with compression. Passing a compression level of 5 is sensible value.
 func Compress(level int, types ...string) func(next http.Handler) http.Handler {
 	compressor := NewCompressor(level, types...)
 

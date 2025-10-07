@@ -36,7 +36,7 @@ func NewMockUpdaterHook(instance updater.Instance, logger *slog.Logger) (updater
 	}, nil
 }
 
-// Add the logic here to update the units retrieved from batch scheduler.
+// Update updates units. Add the logic here to update the units retrieved from batch scheduler.
 func (u *mockUpdater) Update(
 	_ context.Context,
 	_ time.Time,

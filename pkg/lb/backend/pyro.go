@@ -111,7 +111,7 @@ func (b *pyroServer) ReverseProxy() *httputil.ReverseProxy {
 	return b.reverseProxy
 }
 
-// Serves the request by the backend Pyroscope server.
+// Serve serves the request by the backend Pyroscope server.
 func (b *pyroServer) Serve(w http.ResponseWriter, r *http.Request) {
 	defer func() {
 		b.mux.Lock()

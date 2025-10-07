@@ -71,7 +71,7 @@ var (
 	defaultLibvirtXMLDirs = []string{"/etc/libvirt/qemu", "/run/libvirt/qemu"}
 )
 
-// Domstatus is the top level XML field for runtime XML files.
+// DomStatus is the top level XML field for runtime XML files.
 type DomStatus struct {
 	Domain Domain `xml:"domain"`
 }

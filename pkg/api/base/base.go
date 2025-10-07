@@ -85,7 +85,7 @@ const (
 	ClusterIDHeader         = "X-Ceems-Cluster-Id"
 )
 
-// Username to be used for service account users.
+// ServiceAccountUser is the username to be used for service account users.
 const ServiceAccountUser = "svc"
 
 // CEEMS API server read and read write paths.

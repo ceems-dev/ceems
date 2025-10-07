@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	// NFDBitS is the amount of bits per mask.
+	// NFDBits is the amount of bits per mask.
 	NFDBits = 8 * 8
 )
 

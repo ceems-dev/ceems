@@ -82,7 +82,7 @@ For smaller improvements to existing functionality:
 
 ### Prerequisites
 
-- Go (1.24 or later recommended)
+- Go (1.25 or later recommended)
 - LLVM (to compile eBPF codes)
 
 ### Building

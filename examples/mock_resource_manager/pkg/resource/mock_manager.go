@@ -57,7 +57,7 @@ func NewMockManager(cluster models.Cluster, logger *slog.Logger) (resource.Fetch
 	}, nil
 }
 
-// Also ensure to set StartTS and EndTS fields to start and end times in unix milliseconds epoch.
+// FetchUnits returns units. Also ensure to set StartTS and EndTS fields to start and end times in unix milliseconds epoch.
 func (s *mockManager) FetchUnits(_ context.Context, _ time.Time, _ time.Time) ([]models.ClusterUnits, error) {
 	return []models.ClusterUnits{
 		{
@@ -76,7 +76,7 @@ func (s *mockManager) FetchUnits(_ context.Context, _ time.Time, _ time.Time) ([
 	}, nil
 }
 
-// resource manager.
+// FetchUsersProjects returnc current users and projects.
 func (s *mockManager) FetchUsersProjects(
 	_ context.Context,
 	_ time.Time,

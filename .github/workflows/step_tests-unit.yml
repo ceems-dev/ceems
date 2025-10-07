@@ -15,7 +15,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v6
         with:
-          go-version: 1.24.x
+          go-version: 1.25.x
 
       - name: Setup clang
         run: ./scripts/install_clang.sh
@@ -24,7 +24,10 @@ jobs:
         run: make checkmetrics checkrules checkbpf
 
       - name: Run unit tests for Go packages
-        run: make test
+        run: |
+          # Fix for https://github.com/golang/go/issues/75031#issuecomment-3195256688
+          go env -w GOTOOLCHAIN=go1.25.0+auto
+          make test
 
       - name: Run unit tests for CGo packages
         run: CGO_APPS=1 make test

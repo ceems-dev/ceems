@@ -38,14 +38,17 @@ func init() {
 				if err != nil {
 					return err
 				}
+
 				err = conn.RegisterFunc("avg_metric_map", avgMetricMap, true)
 				if err != nil {
 					return err
 				}
+
 				err = conn.RegisterAggregator("sum_metric_map_agg", newSumMetricMap, true)
 				if err != nil {
 					return err
 				}
+
 				err = conn.RegisterAggregator("avg_metric_map_agg", newAvgMetricMapAgg, true)
 				if err != nil {
 					return err
