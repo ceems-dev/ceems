@@ -19,7 +19,7 @@ type PowerReading struct {
 	Activated                          bool
 }
 
-// PowerReading returns the current IPMI DCMI power reading.
+// DCMIPowerReading returns the current IPMI DCMI power reading.
 func (i *ipmiClient) DCMIPowerReading() (*PowerReading, error) {
 	// Request payload
 	msgData := [4]uint8{IPMI_DCMI, 0x1, 0x0, 0x0}

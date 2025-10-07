@@ -1,85 +1,33 @@
 version: 2.1
-orbs:
-  prometheus: prometheus/prometheus@0.17.1
 executors:
-  # Whenever the Go version is updated here, .promu.yml and .promu-cgo.yml
-  # should also be updated.
-  golang:
-    docker:
-      - image: cimg/go:1.24
-    resource_class: medium
   arm:
     machine:
       image: ubuntu-2404:current
     resource_class: arm.medium
 
 jobs:
-  test:
-    executor: golang
-    steps:
-      - prometheus/setup_environment
-      - run: go mod download
-      - run: GOARCH=1 make clang
-      - run: make
-      - run: CGO_APPS=1 make
   test-arm:
     executor: arm
     steps:
       - checkout
       - run: uname -a
+      # Install a specific version of Go. Everytime we bump Go toolchain version in
+      # go.mod, we need to use the same version here.
+      # This is to avoid weird errors like `compile: version "go1.25.1" does not match go tool version "go1.25.0"`
+      # when go updates itself
+      - run: |
+          GO_VERSION=1.25.2
+          wget -O /tmp/go${GO_VERSION}.linux-arm64.tar.gz https://go.dev/dl/go${GO_VERSION}.linux-arm64.tar.gz
+          sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf /tmp/go${GO_VERSION}.linux-arm64.tar.gz
+      - run: go env
       - run: GOARCH=1 make clang
       - run: make
       - run: CGO_APPS=1 make
-  build:
-    machine:
-      image: ubuntu-2404:current
-    resource_class: medium
-    parallelism: 3
-    steps:
-      - prometheus/setup_environment
-      # - run: docker run --privileged linuxkit/binfmt:af88a591f9cc896a52ce596b9cf7ca26a061ef97
-      - run: promu --config .promu-go.yml crossbuild -v --parallelism $CIRCLE_NODE_TOTAL --parallelism-thread $CIRCLE_NODE_INDEX
-      # Replace default CGO_APPS before we run CGO. There is no way to inject this env 
-      # variable into golang-builder container. So we artificially replace the default
-      # CGO_APPS variable in Makefile and run CGO promu
-      # Do not use CGO_ENABLED env var as golang-builder image will set this var by default to zer
-      # and our override will not have any effect
-      - run: sed -i -e 's/CGO_APPS               ?= 0/CGO_APPS               ?= 1/g' Makefile
-      - run: promu --config .promu-cgo.yml crossbuild -v --parallelism $CIRCLE_NODE_TOTAL --parallelism-thread $CIRCLE_NODE_INDEX
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .build
-      - store_artifacts:
-          path: .build
-          destination: /build
+
 workflows:
-  version: 2
   ceems:
     jobs:
       - test-arm:
           filters:
             tags:
               only: /.*/
-      # We are doing rest of tests in GitHub CI
-      #
-      # - test:
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      # - build:
-      #     filters:
-      #       tags:
-      #         only: /.*/
-      # - prometheus/publish_release:
-      #     context: org-context
-      #     docker_hub_organization: ''
-      #     quay_io_organization: ''
-      #     requires:
-      #       - test
-      #       - build
-      #     filters:
-      #       tags:
-      #         only: /^v.*/
-      #       branches:
-      #         ignore: /.*/

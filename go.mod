@@ -1,8 +1,8 @@
 module github.com/ceems-dev/ceems
 
-go 1.24.0
+go 1.25.0
 
-toolchain go1.24.2
+toolchain go1.25.2
 
 require (
 	connectrpc.com/connect v1.19.0

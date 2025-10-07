@@ -154,7 +154,7 @@ func (c *Client) Close() error {
 	return nil
 }
 
-// NewInformer creates new pod informer using current client.
+// NewPodInformer creates new pod informer using current client.
 func (c *Client) NewPodInformer(resyncPeriod time.Duration) error {
 	// Create a new informer from factory
 	// Discussion on ideal resync period: https://groups.google.com/g/kubernetes-sig-api-machinery/c/PbSCXdLDno0

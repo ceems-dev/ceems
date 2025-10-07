@@ -275,7 +275,7 @@ const (
 var (
 	prepareStatements = make(map[string]string)
 
-	// For estimating average values, we do weighted average method using following
+	// Weights for estimating average values, we do weighted average method using following
 	// values as weight for each DB column
 	// For CPU and GPU, we use CPU time and GPU time as weights
 	// For memory usage, we use Walltime * Mem for CPU as weight and just walltime
@@ -287,7 +287,7 @@ var (
 		"avg_gpu_mem_usage": "alloc_gpumemtime",
 	}
 
-	// Admin users sources.
+	// AdminUsersSources is the list of sources to get admin users from.
 	AdminUsersSources = []string{"ceems", "grafana"}
 )
 
@@ -480,7 +480,7 @@ func (s *stats) Backup(ctx context.Context) error {
 	return s.createBackup(ctx)
 }
 
-// Close DB connection.
+// Stop closes DB connection.
 func (s *stats) Stop() error {
 	return s.db.Close()
 }

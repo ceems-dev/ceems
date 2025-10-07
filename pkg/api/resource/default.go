@@ -29,7 +29,7 @@ func NewDefaultResourceManager(cluster models.Cluster, logger *slog.Logger) (Fet
 	}, nil
 }
 
-// Return empty units response.
+// FetchUnits returns empty units response.
 func (d *defaultResourceManager) FetchUnits(
 	_ context.Context,
 	start time.Time,
@@ -44,7 +44,7 @@ func (d *defaultResourceManager) FetchUnits(
 	}, nil
 }
 
-// Return empty projects response.
+// FetchUsersProjects returns empty projects response.
 func (d *defaultResourceManager) FetchUsersProjects(
 	_ context.Context,
 	currentTime time.Time,

@@ -19,7 +19,7 @@ var (
 // Error type in API response.
 type errorType string
 
-// Error response.
+// APIError response.
 type APIError struct {
 	Typ errorType
 	Err error
@@ -64,7 +64,7 @@ var (
 	ErrUnavailable       = errors.New("tsdb/pyroscope unavailable")
 )
 
-// Return error response for by setting errorString and errorType in response.
+// ErrorResponse returns error response for by setting errorString and errorType in response.
 func ErrorResponse[T any](w http.ResponseWriter, apiErr *APIError, logger *slog.Logger, data []T) {
 	var code int
 

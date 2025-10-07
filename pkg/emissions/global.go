@@ -30,7 +30,7 @@ func NewGlobalProvider(logger *slog.Logger) (Provider, error) {
 	}, nil
 }
 
-// Get emission factor for a given country.
+// Update returns emission factor for a given country.
 func (s *globalProvider) Update() (EmissionFactors, error) {
 	// We use a fake country code for world as we will need to setup Grafana
 	// dashboards properly

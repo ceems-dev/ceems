@@ -47,7 +47,7 @@ func (s *roundRobin) Target(id string) backend.Server {
 	return nil
 }
 
-// List all backend servers in pool.
+// Backends returns all backend servers in pool.
 func (s *roundRobin) Backends() map[string][]backend.Server {
 	return s.backends
 }
@@ -59,7 +59,7 @@ func (s *roundRobin) Add(id string, b backend.Server) {
 	s.backends[id] = append(s.backends[id], b)
 }
 
-// Total number of backend servers in pool.
+// Size returns total number of backend servers in pool.
 func (s *roundRobin) Size(id string) int {
 	return len(s.backends[id])
 }

@@ -45,7 +45,7 @@ func NewOWIDProvider(logger *slog.Logger) (Provider, error) {
 	}, nil
 }
 
-// Get emission factor for a given country.
+// Update returns emission factor for a given country.
 func (s *owidProvider) Update() (EmissionFactors, error) {
 	return s.emissionData, nil
 }
