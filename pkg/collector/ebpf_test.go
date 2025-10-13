@@ -5,6 +5,7 @@ import (
 	"os/user"
 	"slices"
 	"testing"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
@@ -183,8 +184,15 @@ func TestNewEbpfCollector(t *testing.T) {
 		}
 	}()
 
-	err = collector.Update(metrics, nil, "")
-	require.NoError(t, err)
+	// Make multiple update calls to make sure
+	// we cover most of the code as eBPF maps
+	// might not be populated with just one call
+	for range 5 {
+		err = collector.Update(metrics, nil, "")
+		require.NoError(t, err)
+
+		time.Sleep(2 * time.Second)
+	}
 
 	err = collector.Stop(t.Context())
 	require.NoError(t, err)

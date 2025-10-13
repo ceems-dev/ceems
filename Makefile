@@ -121,10 +121,13 @@ all:: vet common-all $(checkbpf) $(cross-test) $(test-docker) $(checkmetrics) $(
 
 .PHONY: coverage
 coverage:
-	@echo ">> getting coverage report"
-	tail -n +2 coverage-cgo.out > coverage-cgo.tmp.out && mv coverage-cgo.tmp.out coverage-cgo.out
-	cat coverage-go.out coverage-cgo.out > coverage.out
-	$(GO) tool cover -func=coverage.out -o=coverage.out
+	@echo ">> getting coverage reports"
+	$(GO) tool cover -html=coverage-go.out -o coverage-go.html
+	$(GO) tool cover -html=coverage-cgo.out -o coverage-cgo.html
+	cp coverage-go.out coverage-raw.out
+	tail -n +2 coverage-cgo.out >> coverage-raw.out
+	$(GO) tool cover -html=coverage-raw.out -o coverage.html
+	$(GO) tool cover -func=coverage-raw.out -o=coverage.out
 
 .PHONY: test
 test: pkg/collector/testdata/sys/.unpacked pkg/collector/testdata/proc/.unpacked bpf
