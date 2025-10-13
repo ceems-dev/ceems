@@ -4307,11 +4307,6 @@ commander@^10.0.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-10.0.1.tgz#881ee46b4f77d1c1dccc5823433aa39b022cbe06"
   integrity sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug==
 
-commander@^13.1.0:
-  version "13.1.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-13.1.0.tgz#776167db68c78f38dcce1f9b8d7b8b9a488abf46"
-  integrity sha512-/rFeCpNJQbhSZjGVwO9RFV3xPqbnERS8MmIQzCtD/zl6gpJuV/bMLuN92oG3F7d8oDEHHRrujSXNUr8fpjntKw==
-
 commander@^14.0.0:
   version "14.0.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-14.0.0.tgz#f244fc74a92343514e56229f16ef5c5e22ced5e9"
@@ -7013,10 +7008,10 @@ lines-and-columns@^1.1.6:
   resolved "https://registry.yarnpkg.com/lines-and-columns/-/lines-and-columns-1.2.4.tgz#eca284f75d2965079309dc0ad9255abb2ebc1632"
   integrity sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==
 
-link-check@^5.4.0:
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/link-check/-/link-check-5.4.0.tgz#73be9b8c40a107da0dbb83a2d2c97657ae3c6672"
-  integrity sha512-0Pf4xBVUnwJdbDgpBlhHNmWDtbVjHTpIFs+JaBuIsC9PKRxjv4KMGCO2Gc8lkVnqMf9B/yaNY+9zmMlO5MyToQ==
+link-check@^5.5.0:
+  version "5.5.0"
+  resolved "https://registry.yarnpkg.com/link-check/-/link-check-5.5.0.tgz#7c768c8b189934c0ee93684502331605a72866cb"
+  integrity sha512-CpMk2zMfyEMdDvFG92wO5pU/2I/wbw72/9pvUFhU9cDKkwhmVlPuvxQJzd/jXA2iVOgNgPLnS5zyOLW7OzNpdA==
   dependencies:
     is-relative-url "^4.0.0"
     ms "^2.1.3"
@@ -7116,15 +7111,15 @@ markdown-extensions@^2.0.0:
   resolved "https://registry.yarnpkg.com/markdown-extensions/-/markdown-extensions-2.0.0.tgz#34bebc83e9938cae16e0e017e4a9814a8330d3c4"
   integrity sha512-o5vL7aDWatOTX8LzaS1WMoaoxIiLRQJuIKKe2wAw6IeULDHaqbiqiggmx+pKvZDb1Sj+pE46Sn1T7lCqfFtg1Q==
 
-markdown-link-check@3.13.7:
-  version "3.13.7"
-  resolved "https://registry.yarnpkg.com/markdown-link-check/-/markdown-link-check-3.13.7.tgz#789d7f2e6bf9a48df3d2a501735aa04b8acf1bd7"
-  integrity sha512-Btn3HU8s2Uyh1ZfzmyZEkp64zp2+RAjwfQt1u4swq2Xa6w37OW0T2inQZrkSNVxDSa2jSN2YYhw/JkAp5jF1PQ==
+markdown-link-check@3.14.1:
+  version "3.14.1"
+  resolved "https://registry.yarnpkg.com/markdown-link-check/-/markdown-link-check-3.14.1.tgz#bb45082ce32cffb7dfd69b1f89de8f18ffc79eb3"
+  integrity sha512-h1tihNL3kmOS3N7H4FyF4xKDxiHnNBNSgs/LWlDiRHlC8O0vfRX0LhDDvesRSs4HM7nS0F658glLxonaXBmuWw==
   dependencies:
     async "^3.2.6"
     chalk "^5.3.0"
-    commander "^13.1.0"
-    link-check "^5.4.0"
+    commander "^14.0.0"
+    link-check "^5.5.0"
     markdown-link-extractor "^4.0.2"
     needle "^3.3.1"
     progress "^2.0.3"
