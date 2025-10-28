@@ -8,5 +8,5 @@ if [ ! $(getent group ${gid}) ]; then
    groupadd -r ${gid} > /dev/null 2>&1 || :
 fi
 if [ ! $(getent passwd ${uid}) ]; then
-   useradd -M -r -d / -g ${gid} ${uid} > /dev/null 2>&1 || :
+   useradd -M -r -s /sbin/nologin -d / -g ${gid} ${uid} > /dev/null 2>&1 || :
 fi
