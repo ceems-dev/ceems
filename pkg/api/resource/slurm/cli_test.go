@@ -30,39 +30,56 @@ func TestPreflightsCLI(t *testing.T) {
 }
 
 func TestParseSacctCmdOutput(t *testing.T) {
+	tests := []struct {
+		name        string
+		sacctOutput string
+		walltime    float64
+	}{
+		{
+			name:        "Job finished in past",
+			sacctOutput: `1479763|part1|qos1|acc1|grp|1000|usr|1000|2023-02-20T14:37:02+0100|2023-02-20T14:37:07+0100|2023-02-20T15:37:07+0100|01:49:22|3000|0:0|RUNNING|billing=80,cpu=160,energy=1439089,gres/gpu=8,mem=320G,node=2|compute-0|test_script1|/home/usr`,
+			walltime:    3600,
+		},
+		{
+			name:        "Job created but not started",
+			sacctOutput: `1479763|part1|qos1|acc1|grp|1000|usr|1000|2023-02-21T14:37:02+0100|NA|NA|01:49:22|3000|0:0|PENDING|billing=80,cpu=160,energy=1439089,gres/gpu=8,mem=320G,node=2|compute-0|test_script1|/home/usr`,
+			walltime:    0,
+		},
+		{
+			name:        "Job started inside current interval",
+			sacctOutput: `1479763|part1|qos1|acc1|grp|1000|usr|1000|2023-02-21T15:10:00+0100|2023-02-21T15:10:00+0100|NA|01:49:22|3000|0:0|RUNNING|billing=80,cpu=160,energy=1439089,gres/gpu=8,mem=320G,node=2|compute-0|test_script1|/home/usr`,
+			walltime:    300,
+		},
+		{
+			name:        "Job ended inside current interval",
+			sacctOutput: `1479763|part1|qos1|acc1|grp|1000|usr|1000|2023-02-21T14:10:00+0100|2023-02-21T14:10:00+0100|2023-02-21T15:10:00+0100|01:49:22|3000|0:0|COMPLETED|billing=80,cpu=160,energy=1439089,gres/gpu=8,mem=320G,node=2|compute-0|test_script1|/home/usr`,
+			walltime:    600,
+		},
+		{
+			name:        "Job started and ended inside current interval",
+			sacctOutput: `1479763|part1|qos1|acc1|grp|1000|usr|1000|2023-02-21T15:10:00+0100|2023-02-21T15:10:00+0100|2023-02-21T15:12:00+0100|01:49:22|3000|0:0|COMPLETED|billing=80,cpu=160,energy=1439089,gres/gpu=8,mem=320G,node=2|compute-0|test_script1|/home/usr`,
+			walltime:    120,
+		},
+		{
+			name:        "Job times do not have TZ offset",
+			sacctOutput: `1479763|part1|qos1|acc1|grp|1000|usr|1000|2023-02-21T15:10:00|2023-02-21T15:10:00|2023-02-21T15:12:00|01:49:22|3000|0:0|COMPLETED|billing=80,cpu=160,energy=1439089,gres/gpu=8,mem=320G,node=2|compute-0|test_script1|/home/usr`,
+			walltime:    120,
+		},
+	}
+
+	// Check units
 	units, numUnits := parseSacctCmdOutput(sacctCmdOutput, start, end)
 	require.ElementsMatch(t, units, expectedBatchJobs)
 	require.Equal(t, 2, numUnits)
 
-	// Job finished in past
-	sacctCmdOutput1 := `1479763|part1|qos1|acc1|grp|1000|usr|1000|2023-02-20T14:37:02+0100|2023-02-20T14:37:07+0100|2023-02-20T15:37:07+0100|01:49:22|3000|0:0|RUNNING|billing=80,cpu=160,energy=1439089,gres/gpu=8,mem=320G,node=2|compute-0|test_script1|/home/usr`
-	units, _ = parseSacctCmdOutput(sacctCmdOutput1, start, end)
-	// Check if elapsed time corresponds to real elapsed time of job
-	assert.InEpsilon(t, 3600, float64(units[0].TotalTime["walltime"]), 0)
-
-	// Job created but not started
-	sacctCmdOutput2 := `1479763|part1|qos1|acc1|grp|1000|usr|1000|2023-02-21T14:37:02+0100|NA|NA|01:49:22|3000|0:0|PENDING|billing=80,cpu=160,energy=1439089,gres/gpu=8,mem=320G,node=2|compute-0|test_script1|/home/usr`
-	units, _ = parseSacctCmdOutput(sacctCmdOutput2, start, end)
-	// Check if elapsed time corresponds to real elapsed time of job
-	assert.Equal(t, 0, int(units[0].TotalTime["walltime"]))
-
-	// Job started inside current interval
-	sacctCmdOutput3 := `1479763|part1|qos1|acc1|grp|1000|usr|1000|2023-02-21T15:10:00+0100|2023-02-21T15:10:00+0100|NA|01:49:22|3000|0:0|RUNNING|billing=80,cpu=160,energy=1439089,gres/gpu=8,mem=320G,node=2|compute-0|test_script1|/home/usr`
-	units, _ = parseSacctCmdOutput(sacctCmdOutput3, start, end)
-	// Check if elapsed time corresponds to real elapsed time of job
-	assert.InEpsilon(t, 300, float64(units[0].TotalTime["walltime"]), 0)
-
-	// Job ended inside current interval
-	sacctCmdOutput4 := `1479763|part1|qos1|acc1|grp|1000|usr|1000|2023-02-21T14:10:00+0100|2023-02-21T14:10:00+0100|2023-02-21T15:10:00+0100|01:49:22|3000|0:0|COMPLETED|billing=80,cpu=160,energy=1439089,gres/gpu=8,mem=320G,node=2|compute-0|test_script1|/home/usr`
-	units, _ = parseSacctCmdOutput(sacctCmdOutput4, start, end)
-	// Check if elapsed time corresponds to real elapsed time of job
-	assert.InEpsilon(t, 600, float64(units[0].TotalTime["walltime"]), 0)
-
-	// Job started and ended inside current interval
-	sacctCmdOutput5 := `1479763|part1|qos1|acc1|grp|1000|usr|1000|2023-02-21T15:10:00+0100|2023-02-21T15:10:00+0100|2023-02-21T15:12:00+0100|01:49:22|3000|0:0|COMPLETED|billing=80,cpu=160,energy=1439089,gres/gpu=8,mem=320G,node=2|compute-0|test_script1|/home/usr`
-	units, _ = parseSacctCmdOutput(sacctCmdOutput5, start, end)
-	// Check if elapsed time corresponds to real elapsed time of job
-	assert.InEpsilon(t, 120, float64(units[0].TotalTime["walltime"]), 0)
+	for _, test := range tests {
+		units, _ = parseSacctCmdOutput(test.sacctOutput, start, end)
+		if test.walltime == 0 {
+			assert.Equal(t, 0, int(units[0].TotalTime["walltime"]), test.name)
+		} else {
+			assert.InEpsilon(t, test.walltime, float64(units[0].TotalTime["walltime"]), 0, test.name)
+		}
+	}
 }
 
 func TestParseSacctMgrCmdOutput(t *testing.T) {
