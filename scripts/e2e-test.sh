@@ -397,6 +397,10 @@ then
   then
     desc="cacct by normal user attempt to admin query"
     fixture='cmd/cacct/testdata/output/e2e-test-cacct-forbid-query.txt'
+	elif [ "${scenario}" = "cacct-invalid-config" ]
+  then
+    desc="cacct using invalid config"
+    fixture='cmd/cacct/testdata/output/e2e-test-cacct-invalid-config.txt'
   elif [ "${scenario}" = "cacct-tsdata" ]
   then
     desc="cacct to dump time series data"
@@ -1505,6 +1509,9 @@ then
   elif [ "${scenario}" = "cacct-forbid-query" ]
   then
     ./bin/cacct --current-user=usr3 --config-path="cmd/cacct/testdata" --starttime="2022-02-20" --endtime="2022-03-20" --user=usr1,usr2 > "${fixture_output}" 2>&1 || true
+	elif [ "${scenario}" = "cacct-invalid-config" ]
+  then
+    ./bin/cacct --current-user=usr1 --config-path="nonexistant/testdata" --starttime="2022-02-20" --endtime="2022-03-20" > "${fixture_output}" 2>&1 || true
   elif [ "${scenario}" = "cacct-tsdata" ]
   then
     ./bin/cacct --current-user=usr1 --config-path="cmd/cacct/testdata" --job="147973" --ts --ts.out-dir="${tmpdir}/ts" > "${fixture_output}" 2>&1

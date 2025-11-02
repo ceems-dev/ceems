@@ -223,6 +223,8 @@ var (
 // Custom errors.
 var (
 	errNoPerm   = errors.New("forbidden response from API server")
+	errConfig   = errors.New("unable to get cacct config")
+	errUser     = errors.New("unable to change user context")
 	errInternal = errors.New("internal server error")
 )
 
@@ -491,7 +493,7 @@ func main() {
 	// the config file can be read as the owner of this app
 	config, err := readConfig()
 	if err != nil {
-		os.Exit(checkErr(fmt.Errorf("failed to read config file: %w", err)))
+		os.Exit(checkErr(fmt.Errorf("%w: failed to read config file: %w", errConfig, err)))
 	}
 
 	// Now time to drop privileges so that rest of app will be run as regular user
@@ -503,23 +505,23 @@ func main() {
 		// Convert UID anf GID to int
 		uid, err := strconv.Atoi(currentUser.Uid)
 		if err != nil {
-			os.Exit(checkErr(fmt.Errorf("failed to get current user uid: %w", err)))
+			os.Exit(checkErr(fmt.Errorf("%w: failed to get current user uid: %w", errUser, err)))
 		}
 
 		gid, err := strconv.Atoi(currentUser.Gid)
 		if err != nil {
-			os.Exit(checkErr(fmt.Errorf("failed to get current user gid: %w", err)))
+			os.Exit(checkErr(fmt.Errorf("%w: failed to get current user gid: %w", errUser, err)))
 		}
 
 		// Set UID and GID to current user
 		err = syscall.Setuid(uid)
 		if err != nil {
-			os.Exit(checkErr(fmt.Errorf("failed to set current user uid: %w", err)))
+			os.Exit(checkErr(fmt.Errorf("%w: failed to set current user uid: %w", errUser, err)))
 		}
 
 		err = syscall.Setgid(gid)
 		if err != nil {
-			os.Exit(checkErr(fmt.Errorf("failed to set current user gid: %w", err)))
+			os.Exit(checkErr(fmt.Errorf("%w: failed to set current user gid: %w", errUser, err)))
 		}
 	}
 
@@ -799,9 +801,15 @@ func checkErr(err error) int {
 	if err != nil {
 		switch {
 		case errors.Is(err, errNoPerm):
-			fmt.Fprintln(os.Stderr, "forbidden. It is likely that the user is attempting to view statistics of others")
+			fmt.Fprintln(os.Stderr, "error: forbidden. It is likely that the user is attempting to view statistics of others")
 		case errors.Is(err, errInternal):
-			fmt.Fprintln(os.Stderr, "server did not return any data due to unknown error")
+			fmt.Fprintln(os.Stderr, "error: server did not return any data due to unknown error")
+		case errors.Is(err, errConfig):
+			fmt.Fprintln(os.Stderr, "error: "+errConfig.Error())
+		case errors.Is(err, errUser):
+			fmt.Fprintln(os.Stderr, "error: "+errUser.Error())
+		default:
+			fmt.Fprintln(os.Stderr, err.Error())
 		}
 
 		return 1
