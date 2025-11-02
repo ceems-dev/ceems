@@ -201,6 +201,15 @@ func parseSacctCmdOutput(sacctOutput string, start time.Time, end time.Time) ([]
 				t, err := time.Parse(base.DatetimezoneLayout, components[sacctFieldMap[c]])
 				if err == nil {
 					components[sacctFieldMap[c]] = t.In(loc).Format(base.DatetimezoneLayout)
+				} else {
+					// In case SLURM does not include tz offset (seems like it can happen in edge cases),
+					// parse the time in location configured on API server.
+					// We dont need to deal with more edge cases as SLURM by default returns the times
+					// in DatetimeLayout format
+					t, err := time.ParseInLocation(base.DatetimeLayout, components[sacctFieldMap[c]], loc)
+					if err == nil {
+						components[sacctFieldMap[c]] = t.Format(base.DatetimezoneLayout)
+					}
 				}
 
 				eventTS[c] = helper.TimeToTimestamp(base.DatetimezoneLayout, components[sacctFieldMap[c]])
