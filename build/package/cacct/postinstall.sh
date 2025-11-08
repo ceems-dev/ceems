@@ -3,16 +3,33 @@
 # Step 1, get systemd version
 # systemd_version=$(systemctl --version | sed -nE "s/systemd ([0-9]+).*/\1/p")
 
+uid=ceems
+gid=ceems
+
+setPermissions() {
+    # Step 3 (clean install), setup setuid bit on cacct
+    chmod u+s /usr/local/bin/cacct
+}
+
+createLogDirectory() {
+    # Create log file directory
+    mkdir -p /var/log/ceems
+    chown ${uid}:${gid} /var/log/ceems
+    chmod o-rwx /var/log/ceems
+}
+
 cleanInstall() {
     printf "\033[32m Post Install of an clean install\033[0m\n"
-    # Step 3 (clean install), setup setgid bit on cacct
-    chmod u+s /usr/local/bin/cacct
+    
+    setPermissions
+    createLogDirectory
 }
 
 upgrade() {
     printf "\033[32m Post Install of an upgrade\033[0m\n"
-    # Step 3(upgrade), setup setgid bit on cacct
-    chmod u+s /usr/local/bin/cacct
+    
+    setPermissions
+    createLogDirectory
 }
 
 # Step 2, check if this is a clean install or an upgrade

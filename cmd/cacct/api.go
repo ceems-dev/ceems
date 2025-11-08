@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
@@ -25,6 +26,7 @@ const (
 
 // stats returns units and usage structs by making requests to CEEMS API server.
 func stats(
+	logger *slog.Logger,
 	config *Config,
 	currentUser string,
 	start time.Time,
@@ -58,12 +60,16 @@ func stats(
 	// Parse web URL of API server
 	apiURL, err := url.Parse(config.API.Web.URL)
 	if err != nil {
+		logger.Error("Failed to parse CEEMS API server URL", "err", errors.Unwrap(err))
+
 		return nil, nil, fmt.Errorf("invalid API server url: %w", errors.Unwrap(err))
 	}
 
 	// Make a API server client from config file
 	apiClient, err := http_config.NewClientFromConfig(config.API.Web.HTTPClientConfig, "ceems_api_server")
 	if err != nil {
+		logger.Error("Failed to create client for API server", "err", errors.Unwrap(err))
+
 		return nil, nil, fmt.Errorf("failed to create client: %w", errors.Unwrap(err))
 	}
 
@@ -101,14 +107,18 @@ func stats(
 		usageReqURL = apiURL.JoinPath("/api/v1/usage/current").String()
 	}
 
+	logger.Debug("Request to fetch units", "url", unitsReqURL, "units_query", urlValues.Encode())
+
 	// If CEEMS URL is available make a API request
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
 	// Get all units in the given period
-	units, err := makeRequest[models.Unit](ctx, unitsReqURL, urlValues, apiClient)
+	units, err := doRequest[models.Unit](ctx, unitsReqURL, urlValues, apiClient)
 	if err != nil {
-		os.Exit(checkErr(fmt.Errorf("failed to fetch jobs: %w", err)))
+		logger.Error("Failed to fetch units data from CEEMS API server", "err", err)
+
+		return nil, nil, fmt.Errorf("failed to fetch jobs: %w", err)
 	}
 
 	// Get all units in the given period
@@ -121,31 +131,39 @@ func stats(
 		urlValues.Add("field", "total_time_seconds")
 	}
 
-	usage, err := makeRequest[models.Usage](ctx, usageReqURL, urlValues, apiClient)
+	logger.Debug("Request to fetch usage", "url", usageReqURL, "usage_query", urlValues.Encode())
+
+	usage, err := doRequest[models.Usage](ctx, usageReqURL, urlValues, apiClient)
 	if err != nil {
-		os.Exit(checkErr(fmt.Errorf("failed to fetch jobs: %w", err)))
+		logger.Error("Failed to fetch usage data from CEEMS API server", "err", err)
+
+		return nil, nil, fmt.Errorf("failed to fetch usage: %w", err)
 	}
 
 	// If tsData is enabled, get time series data
 	if tsData {
 		// If metrics are not configured, return logging a message
 		if len(config.TSDB.Queries) == 0 {
+			logger.Warn("TSDB queries not configured")
 			fmt.Fprintln(os.Stderr, "time series data not available")
 
 			return units, usage, nil
 		}
 
-		err := tsdbData(ctx, config, units, tsDataOut)
+		logger.Debug("Fetching time series data from TSDB")
+
+		err := tsdbData(ctx, logger, config, units, tsDataOut)
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "failed to fetch time series data", err)
+			logger.Error("failed to fetch time series data", "err", err)
+			fmt.Fprintln(os.Stderr, "failed to fetch time series data")
 		}
 	}
 
 	return units, usage, nil
 }
 
-// makeRequest does an API request to CEEMS API server and returns response.
-func makeRequest[T any](ctx context.Context, reqURL string, urlValues url.Values, client *http.Client) ([]T, error) {
+// doRequest does an API request to CEEMS API server and returns response.
+func doRequest[T any](ctx context.Context, reqURL string, urlValues url.Values, client *http.Client) ([]T, error) {
 	// Make a new request
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 	if err != nil {

@@ -7,6 +7,8 @@ remove() {
 
 purge() {
     printf "\033[32m Post Remove purge, deb only\033[0m\n"
+    # Remove log directory when purging
+    rm -rf /var/log/ceems
 }
 
 upgrade() {

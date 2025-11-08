@@ -33,18 +33,28 @@ type queryMetadata struct {
 }
 
 // tsdbData saves time series data of units in CSV files.
-func tsdbData(ctx context.Context, config *Config, units []models.Unit, outDir string) error {
+func tsdbData(ctx context.Context, logger *slog.Logger, config *Config, units []models.Unit, outDir string) error {
 	// New TSDB client
 	tsdb, err := tsdb.New(config.TSDB.Web.URL, config.TSDB.Web.HTTPClientConfig, slog.New(slog.DiscardHandler))
 	if err != nil {
+		logger.Error("Failed to create a new TSDB client", "err", err)
+
 		return fmt.Errorf("failed to create tsdb API client: %w", err)
 	}
 
+	// Get absolute path of outDir
+	absOutDir, err := filepath.Abs(outDir)
+	if err != nil {
+		return fmt.Errorf("failed to get absolute path for directory for saving CSV files: %w", err)
+	}
+
 	// Create outDir for saving CSV files
-	err = os.MkdirAll(outDir, 0o700)
+	err = os.MkdirAll(absOutDir, 0o700)
 	if err != nil {
 		return fmt.Errorf("failed to create directory for saving CSV files: %w", err)
 	}
+
+	logger.Debug("Time series data will be saved", "dir", absOutDir)
 
 	// Start a wait group
 	wg := sync.WaitGroup{}
@@ -55,7 +65,7 @@ func tsdbData(ctx context.Context, config *Config, units []models.Unit, outDir s
 			wg.Add(1)
 
 			// Fetch metrics from TSDB and write to CSV files
-			go fetchData(ctx, queryID, fmt.Sprintf(query, unit.UUID), unit.StartedAtTS, unit.EndedAtTS, outDir, tsdb, &wg)
+			go fetchData(ctx, queryID, fmt.Sprintf(query, unit.UUID), unit.StartedAtTS, unit.EndedAtTS, absOutDir, tsdb, &wg)
 		}
 	}
 
@@ -63,9 +73,9 @@ func tsdbData(ctx context.Context, config *Config, units []models.Unit, outDir s
 	wg.Wait()
 
 	// Dump metadata.json
-	writeMetadata(queryMD, outDir)
+	writeMetadata(logger, queryMD, absOutDir)
 
-	fmt.Fprintln(os.Stderr, "time series data saved to directory", outDir)
+	fmt.Fprintln(os.Stderr, "time series data saved to directory", absOutDir)
 
 	return nil
 }
@@ -147,7 +157,7 @@ func fetchData(ctx context.Context, queryID string, query string, start int64, e
 }
 
 // writeMetadata dumps the metadata.json file to outDir.
-func writeMetadata(mds []queryMetadata, outDir string) {
+func writeMetadata(logger *slog.Logger, mds []queryMetadata, outDir string) {
 	metadataFilepath := filepath.Join(outDir, "metadata.json")
 
 	// Read existing metadata
@@ -188,6 +198,8 @@ func writeMetadata(mds []queryMetadata, outDir string) {
 
 		return
 	}
+
+	logger.Debug("Metadata file saved", "file", metadataFilepath)
 }
 
 // newCSVWriter returns a new CSV writer.

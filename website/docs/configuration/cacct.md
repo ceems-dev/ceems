@@ -30,6 +30,7 @@ the available configuration sections for `cacct`:
 
 ```yaml
 # cacct configuration skeleton
+logging: <LOGGING CONFIG>
 
 ceems_api_server: <CEEMS API SERVER CONFIG>
 
@@ -134,6 +135,70 @@ of the compute unit before passing them to the TSDB server.
 
 :::
 
+As `cacct` is user facing application, any errors encountered while making requests to
+CEEMS API server and/or TSDB will not be shown to end user to avoid leaking any sensitive
+information. Thus, the errors messages from `cacct` are very generic and will not aide for
+debugging the errors. To address this shortcoming, `cacct` supports a system level
+logging where a comprehensive logging of all `cacct` invocations from end users are maintained.
+This system level logging is meant to be used only by system operators and administrators
+and thus, it will be created with strict permissions. This logging file can also be used
+for auditing purposes as user activity will be logged along with the runtime configurations
+thus allow operators to detect users that might be abusing the service. This logging can be
+enabled using `logging` section in the configuration file.
+
+```yaml
+logging:
+  enabled: true
+  format: json
+  level: debug
+
+ceems_api_server:
+  cluster_id: slurm-0
+  user_header_name: X-Grafana-User
+  web:
+    url: http://ceems-api-server:9020
+    basic_auth:
+      username: ceems
+      password: supersecretpassword
+
+tsdb:
+  web:
+    url: http://tsdb:9090
+    basic_auth:
+      username: prometheus
+      password: anothersupersecretpassword
+  queries:
+    # CPU utilization
+    cpu_usage: uuid:ceems_cpu_usage:ratio_irate{uuid=~"%s"}
+    
+    # CPU Memory utilization
+    cpu_mem_usage: uuid:ceems_cpu_memory_usage:ratio{uuid=~"%s"}
+      
+    # Host power usage in Watts
+    host_power_usage: uuid:ceems_host_power_watts:pue{uuid=~"%s"}
+
+    # Host emissions in g/s
+    host_emissions: uuid:ceems_host_emissions_g_s:pue{uuid=~"%s"}
+
+    # GPU utilization
+    avg_gpu_usage: uuid:ceems_gpu_usage:ratio{uuid=~"%s"}
+
+    # GPU memory utilization
+    avg_gpu_mem_usage: uuid:ceems_gpu_memory_usage:ratio{uuid=~"%s"}
+
+    # GPU power usage in Watts
+    gpu_power_usage: uuid:ceems_gpu_power_watts:pue{uuid=~"%s"}
+
+    # GPU emissions in g/s
+    gpu_emissions: uuid:ceems_gpu_emissions_g_s:pue{uuid=~"%s"}
+
+    # Read IO bytes/s
+    io_read_bytes: irate(ceems_ebpf_read_bytes_total{uuid=~"%s"}[1m])
+
+    # Write IO bytes/s
+    io_write_bytes: irate(ceems_ebpf_write_bytes_total{uuid=~"%s"}[1m])
+```
+
 A complete reference can be found in the [Reference](./config-reference.md) section. A valid
 sample configuration file can be found in the
 [repository](https://github.com/@ceemsOrg@/@ceemsRepo@/blob/main/build/config/cacct/cacct.yml).
@@ -146,8 +211,8 @@ accessible to end-users so they can fetch their usage statistics. This means `ca
 be able to read the configuration file at runtime, but the user executing it should not.
 This can be achieved using the [Sticky bit](https://www.redhat.com/en/blog/suid-sgid-sticky-bit).
 
-By using the SETUID or SETGID bit on the executable, the binary will have privileges of the user or
-group that owns the file. Thus, a SETUID `ceems` owned file can read config file owned by `ceems`.
+By using the SETUID bit on the executable, the binary will have privileges of the user
+that owns the file. Thus, a SETUID `ceems` owned file can read config file owned by `ceems`.
 Once the config file has been read, `cacct` will drop privileges and executes rest of code as the
 user who invoked it. This way the privileges are only kept for a minimal time to read config file
 and dropped after fetching config. The SETGID sticky bit
@@ -168,6 +233,18 @@ chmod o-rwx /etc/ceems/config.yml
 Now, every time `cacct` is invoked, it will have privileges of the `ceems` user/group instead to read
 `/etc/ceems/config.yml` and drop privileges to user who invoked the program later.
 
+Similarly, if system logging is desired, the `cacct` binary should keep the group ownership of `ceems`
+while end user launches the application. This way the log file will be owned by `ceems` user preventing
+regular end users to access it. 
+
+```bash
+# Create a directory to place system level log file
+mkdir -p /var/log/ceems
+chown ceems:ceems /var/log/ceems
+# Revoke all permissions for others
+chmod o-rwx /var/log/ceems
+```
+
 When `cacct` is installed using the RPM/DEB file provided by the
 [CEEMS Releases](https://github.com/@ceemsOrg@/@ceemsRepo@/releases), `cacct` is already installed with
-the sticky bit set. Operators only need to populate the configuration file at `/etc/ceems/config.yml`.
+the sticky bits set. Operators only need to populate the configuration file at `/etc/ceems/config.yml`.
