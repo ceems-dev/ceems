@@ -23,15 +23,6 @@ func TestBatchjobStatsExecutable(t *testing.T) {
 		t.Skipf("ceems_api_server binary not available, try to run `make build` first: %s", err)
 	}
 
-	tmpDir := t.TempDir()
-	tmpSacctPath := tmpDir + "/sacct"
-
-	sacctPath, err := filepath.Abs("../../pkg/api/testdata/sacct")
-	require.NoError(t, err)
-
-	err = os.Link(sacctPath, tmpSacctPath)
-	require.NoError(t, err)
-
 	usagestats := exec.CommandContext(
 		t.Context(),
 		binary,

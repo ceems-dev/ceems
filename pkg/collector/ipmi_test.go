@@ -5,7 +5,6 @@ package collector
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
@@ -238,15 +237,12 @@ func TestIpmiClientFinder(t *testing.T) {
 		},
 	}
 
-	// Get PATH
-	basePath := os.Getenv("PATH")
-
 	for _, test := range tests {
 		ipmiClientPath, err := filepath.Abs(filepath.Join("testdata/ipmi", test.path))
 		require.NoError(t, err)
 
 		// Set path
-		t.Setenv("PATH", fmt.Sprintf("%s:%s", ipmiClientPath, basePath))
+		t.Setenv("PATH", ipmiClientPath)
 
 		ipmiClientSlice, err := findIPMICmd()
 		require.NoError(t, err, test.name)
@@ -259,7 +255,7 @@ func TestCachedPowerReadings(t *testing.T) {
 	tmpIPMIPath := tmpDir + "/ipmiutil"
 
 	// Set path
-	t.Setenv("PATH", fmt.Sprintf("%s:%s", tmpDir, os.Getenv("PATH")))
+	t.Setenv("PATH", tmpDir)
 
 	// Expected values
 	expected := map[string]float64{"dcmi_avg": 49, "dcmi_current": 304, "dcmi_max": 304, "dcmi_min": 6}

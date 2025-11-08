@@ -570,7 +570,7 @@ then
 
   elif [ "${scenario}" = "exporter-cgroups-v2-nvidia-ipmiutil" ] 
   then
-      REDFISH_HOST=localhost REDFISH_PORT=5000 PATH="${PWD}/pkg/collector/testdata/ipmi/ipmiutils:${PATH}" ./bin/ceems_exporter \
+      REDFISH_HOST=localhost REDFISH_PORT=5000 ./bin/ceems_exporter \
         --path.sysfs="pkg/collector/testdata/sys" \
         --path.cgroupfs="pkg/collector/testdata/sys/fs/cgroup" \
         --path.procfs="pkg/collector/testdata/proc" \
@@ -584,6 +584,7 @@ then
         --collector.empty-hostname-label \
         --collector.ipmi \
         --collector.ipmi.test-mode \
+        --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/ipmiutils/ipmiutil" \
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
@@ -596,7 +597,7 @@ then
 
   elif [ "${scenario}" = "exporter-cgroups-v2-nvidia-gpu-reordering" ] 
   then
-      PATH="${PWD}/pkg/collector/testdata/ipmi/ipmiutils:${PATH}" ./bin/ceems_exporter \
+      ./bin/ceems_exporter \
         --path.sysfs="pkg/collector/testdata/sys" \
         --path.cgroupfs="pkg/collector/testdata/sys/fs/cgroup" \
         --path.procfs="pkg/collector/testdata/proc" \
@@ -610,6 +611,7 @@ then
         --collector.empty-hostname-label \
         --collector.ipmi \
         --collector.ipmi.test-mode \
+        --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/ipmiutils/ipmiutil" \
         --collector.cray_pm_counters \
         --collector.rapl \
         --web.listen-address "127.0.0.1:${port}" \
@@ -618,7 +620,7 @@ then
 
   elif [ "${scenario}" = "exporter-cgroups-v2-amd-ipmitool" ] 
   then
-      REDFISH_HOST=localhost REDFISH_PORT=5000 PATH="${PWD}/pkg/collector/testdata/ipmi/openipmi:${PATH}" ./bin/ceems_exporter \
+      REDFISH_HOST=localhost REDFISH_PORT=5000 ./bin/ceems_exporter \
         --path.sysfs="pkg/collector/testdata/sys" \
         --path.cgroupfs="pkg/collector/testdata/sys/fs/cgroup" \
         --path.procfs="pkg/collector/testdata/proc" \
@@ -630,6 +632,7 @@ then
         --collector.hwmon \
         --collector.ipmi \
         --collector.ipmi.test-mode \
+        --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/openipmi/ipmitool" \
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
@@ -640,7 +643,7 @@ then
 
   elif [ "${scenario}" = "exporter-cgroups-v2-nogpu" ] 
   then
-      PATH="${PWD}/pkg/collector/testdata/ipmi/capmc:${PATH}" ./bin/ceems_exporter \
+      ./bin/ceems_exporter \
         --path.sysfs="pkg/collector/testdata/sys" \
         --path.cgroupfs="pkg/collector/testdata/sys/fs/cgroup" \
         --path.procfs="pkg/collector/testdata/proc" \
@@ -650,6 +653,7 @@ then
         --collector.empty-hostname-label \
         --collector.ipmi \
         --collector.ipmi.test-mode \
+        --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
         --collector.infiniband \
         --collector.rapl \
         --collector.emissions \
