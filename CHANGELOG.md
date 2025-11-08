@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.12.0 / 2025-11-08
+
+- [FEAT] System level logging for `cacct` [#436](https://github.com/mahendrapaipuri/ceems/pull/436) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [BUGFIX] bug(fix): Use configured time zone when SLURM does not include time offsets [#433](https://github.com/mahendrapaipuri/ceems/pull/433) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Make multiple update calls to eBPF coll in unit tests [#424](https://github.com/mahendrapaipuri/ceems/pull/424) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] chore: Update go to 1.25.x [#420](https://github.com/mahendrapaipuri/ceems/pull/420) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Always return error responses in JSON for CEEMS LB [#414](https://github.com/mahendrapaipuri/ceems/pull/414) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump dependencies [#412](https://github.com/mahendrapaipuri/ceems/pull/412), [#415](https://github.com/mahendrapaipuri/ceems/pull/415), [#416](https://github.com/mahendrapaipuri/ceems/pull/416), [#417](https://github.com/mahendrapaipuri/ceems/pull/417), [#419](https://github.com/mahendrapaipuri/ceems/pull/419), [#421](https://github.com/mahendrapaipuri/ceems/pull/421), [#422](https://github.com/mahendrapaipuri/ceems/pull/422), [#423](https://github.com/mahendrapaipuri/ceems/pull/423), [#425](https://github.com/mahendrapaipuri/ceems/pull/425), [#426](https://github.com/mahendrapaipuri/ceems/pull/426), [#427](https://github.com/mahendrapaipuri/ceems/pull/427), [#428](https://github.com/mahendrapaipuri/ceems/pull/428), [#429](https://github.com/mahendrapaipuri/ceems/pull/429), [#430](https://github.com/mahendrapaipuri/ceems/pull/430), [#434](https://github.com/mahendrapaipuri/ceems/pull/434) ([@dependabot](https://github.com/dependabot))
+
 ## 0.11.2 / 2025-09-12
 
 - [MAINT] Update static emission factors for OWID and world average [#411](https://github.com/mahendrapaipuri/ceems/pull/411) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
