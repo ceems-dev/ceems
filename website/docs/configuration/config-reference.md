@@ -878,6 +878,37 @@ A valid sample configuration file can be found in the
 # to read the config file.
 #
 ---
+# Logging configuration. This logging file contains information
+# that is interesting for system operators and administrators
+# to debug any potential errors from `cacct`. This also can be
+# used for auditing as user activity is logged. 
+#
+logging:
+  # Enable system logging
+  enabled: false
+
+  # Logging level. Valid options are
+  # - info
+  # - debug
+  # - warn
+  # - error 
+  #
+  level: info
+
+  # Logging format. Valid options are
+  # - logfmt
+  # - json
+  # - warn
+  # - error 
+  #
+  format: logfmt
+
+  # Directory where logging file will be saved.
+  # This directory must exist with correct
+  # permissions for logging file to be created.
+  #
+  directory: /var/log/ceems
+
 # Configuration of the CEEMS API server
 #
 ceems_api_server:

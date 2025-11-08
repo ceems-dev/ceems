@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -19,6 +20,7 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	http_config "github.com/prometheus/common/config"
+	"github.com/prometheus/common/promslog"
 	"github.com/prometheus/common/version"
 	"gopkg.in/yaml.v3"
 )
@@ -224,6 +226,7 @@ var (
 var (
 	errNoPerm   = errors.New("forbidden response from API server")
 	errConfig   = errors.New("unable to get cacct config")
+	errLogFile  = errors.New("unable to get open log file")
 	errUser     = errors.New("unable to change user context")
 	errInternal = errors.New("internal server error")
 )
@@ -294,6 +297,13 @@ type Config struct {
 		Web     WebConfig         `yaml:"web"`
 		Queries map[string]string `yaml:"queries"`
 	} `yaml:"tsdb"`
+	Logging struct {
+		Enabled   bool             `yaml:"enabled"`
+		Level     *promslog.Level  `yaml:"level"`
+		Format    *promslog.Format `yaml:"format"`
+		Directory string           `yaml:"directory"`
+		File      string
+	} `yaml:"logging"`
 }
 
 // UnmarshalYAML implements the yaml.Unmarshaler interface.
@@ -301,13 +311,66 @@ func (c *Config) UnmarshalYAML(unmarshal func(any) error) error {
 	// Set a default config
 	*c = Config{}
 	c.API.UserHeaderName = "X-Grafana-User"
+	c.Logging.Level = promslog.NewLevel()
+
+	err := c.Logging.Level.Set("info")
+	if err != nil {
+		return fmt.Errorf("failed to set default log level: %w", err)
+	}
+
+	c.Logging.Format = promslog.NewFormat()
+
+	err = c.Logging.Format.Set("logfmt")
+	if err != nil {
+		return fmt.Errorf("failed to set default log format: %w", err)
+	}
+
+	c.Logging.Directory = "/var/log/ceems"
 	// c.TSDB.Queries = defaultQueries
 
 	type plain Config
 
-	err := unmarshal((*plain)(c))
+	err = unmarshal((*plain)(c))
 	if err != nil {
 		return err
+	}
+
+	// Validate config
+	err = c.Validate()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Validate validates the config.
+func (c *Config) Validate() error {
+	// If logging is not enabled, nothing to do here
+	if !c.Logging.Enabled {
+		return nil
+	}
+
+	// Check if logging directory exists
+	absPath, err := filepath.Abs(c.Logging.Directory)
+	if err != nil {
+		return fmt.Errorf("failed to resolve abolsute path for logging directory: %w", err)
+	}
+
+	_, err = os.Stat(absPath)
+	if err != nil {
+		return fmt.Errorf("failed to locate logging directory: %w", err)
+	}
+
+	// Set absolute path
+	c.Logging.Directory = absPath
+
+	// Set logging file path based on format
+	switch c.Logging.Format.String() {
+	case "json":
+		c.Logging.File = filepath.Join(c.Logging.Directory, "cacct.json")
+	default:
+		c.Logging.File = filepath.Join(c.Logging.Directory, "cacct.log")
 	}
 
 	return nil
@@ -472,13 +535,45 @@ func main() {
 		kingpin.Fatalf("limit period between --starttime and --endtime to 7 days when --ts is enabled")
 	}
 
+	// By this time, user input is validated. Time to read config file
+	// to get HTTP config to connect to CEEMS API server.
+	// Either setuid or setgid bits must be applied on the app so that
+	// the config file can be read as the owner of this app
+	config, err := readConfig(mockConfigPath)
+	if err != nil {
+		os.Exit(checkErr(fmt.Errorf("%w: %w", errConfig, err)))
+	}
+
+	// Setup logger
+	promslogConfig := &promslog.Config{
+		Level:  config.Logging.Level,
+		Format: config.Logging.Format,
+		Writer: io.Discard,
+	}
+
+	// Open logging file
+	if config.Logging.Enabled {
+		logFile, err := os.OpenFile(config.Logging.File, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0o660)
+		if err != nil {
+			os.Exit(checkErr(fmt.Errorf("%w: %w", errLogFile, err)))
+		}
+		defer logFile.Close()
+
+		promslogConfig.Writer = logFile
+	}
+
+	// Create a new logger
+	logger := promslog.New(promslogConfig)
+
 	// Get current user and add user's config dir to slice of config
 	// dirs.
 	// If current user is root and mockCurrentUser and/or mockConfigPath
 	// are set, we override the actual with mock ones. Only used in testing
 	// and it should not affect production cases.
-	currentUser, err := getCurrentUser(mockCurrentUser, mockConfigPath)
+	currentUser, err := getCurrentUser(mockCurrentUser)
 	if err != nil {
+		logger.Error("Failed to get current user executing cacct", "err", err)
+
 		os.Exit(checkErr(fmt.Errorf("failed to get current user: %w", err)))
 	}
 
@@ -487,14 +582,8 @@ func main() {
 		userNames = nil
 	}
 
-	// By this time, user input is validated. Time to read config file
-	// to get HTTP config to connect to CEEMS API server.
-	// Either setuid or setgid bits must be applied on the app so that
-	// the config file can be read as the owner of this app
-	config, err := readConfig()
-	if err != nil {
-		os.Exit(checkErr(fmt.Errorf("%w: failed to read config file: %w", errConfig, err)))
-	}
+	logger = logger.With("username", currentUser.Username)
+	logger.Info("Current user identified")
 
 	// Now time to drop privileges so that rest of app will be run as regular user
 	// who invoked it. It is necessary so to be able to create directories and files
@@ -505,28 +594,35 @@ func main() {
 		// Convert UID anf GID to int
 		uid, err := strconv.Atoi(currentUser.Uid)
 		if err != nil {
-			os.Exit(checkErr(fmt.Errorf("%w: failed to get current user uid: %w", errUser, err)))
+			logger.Error("Failed to parse user UID", "err", err)
+
+			os.Exit(checkErr(fmt.Errorf("%w: %w", errUser, err)))
 		}
 
-		gid, err := strconv.Atoi(currentUser.Gid)
-		if err != nil {
-			os.Exit(checkErr(fmt.Errorf("%w: failed to get current user gid: %w", errUser, err)))
-		}
+		// gid, err := strconv.Atoi(currentUser.Gid)
+		// if err != nil {
+		// 	os.Exit(checkErr(fmt.Errorf("%w: failed to get current user gid: %w", errUser, err)))
+		// }
 
 		// Set UID and GID to current user
 		err = syscall.Setuid(uid)
 		if err != nil {
+			logger.Error("Failed to set UID", "username", currentUser.Username, "uid", currentUser.Uid, "err", err)
+
 			os.Exit(checkErr(fmt.Errorf("%w: failed to set current user uid: %w", errUser, err)))
 		}
 
-		err = syscall.Setgid(gid)
-		if err != nil {
-			os.Exit(checkErr(fmt.Errorf("%w: failed to set current user gid: %w", errUser, err)))
-		}
+		// err = syscall.Setgid(gid)
+		// if err != nil {
+		// 	os.Exit(checkErr(fmt.Errorf("%w: failed to set current user gid: %w", errUser, err)))
+		// }
 	}
 
+	logger = logger.With("uid", syscall.Getuid(), "euid", syscall.Geteuid(), "gid", syscall.Getgid(), "egid", syscall.Getegid())
+	logger.Info("User context changed after setuid syscall")
+
 	// Get stats
-	units, usages, err := stats(config, currentUser.Username, start, end, accounts, jobs, userNames, fields, tsData, tsDataOut)
+	units, usages, err := stats(logger, config, currentUser.Username, start, end, accounts, jobs, userNames, fields, tsData, tsDataOut)
 	if err != nil {
 		os.Exit(checkErr(err))
 	}
@@ -682,8 +778,13 @@ func updateField(structKeys []string, f *field) {
 }
 
 // readConfig returns config struct from first found config file.
-func readConfig() (*Config, error) {
+func readConfig(mockConfigPath string) (*Config, error) {
 	var config Config
+
+	// If mockConfigPath is set as well, add to configPaths
+	if mockConfigPath != "" {
+		configPaths = append(configPaths, mockConfigPath)
+	}
 
 	// Look for config.yml or config.yaml or cacct.yml or cacct.yaml files
 	for _, configPath := range configPaths {
@@ -698,7 +799,7 @@ func readConfig() (*Config, error) {
 					return nil, err
 				}
 
-				err = yaml.Unmarshal(cfg, &config)
+				err = yaml.Unmarshal(cfg, &config) //nolint: musttag
 				if err != nil {
 					return nil, err
 				}
@@ -708,12 +809,12 @@ func readConfig() (*Config, error) {
 		}
 	}
 
-	return nil, errors.New("config file not found")
+	return nil, errConfig
 }
 
 // getCurrentUser returns the actual user executing the cacct. If --current-user
 // CLI flag is passed, that user will be returned as current user.
-func getCurrentUser(mockUserName string, mockConfigPath string) (*user.User, error) {
+func getCurrentUser(mockUserName string) (*user.User, error) {
 	// Get current user is who is executing cacct
 	var currentUser *user.User
 
@@ -727,23 +828,18 @@ func getCurrentUser(mockUserName string, mockConfigPath string) (*user.User, err
 		// builds
 		if mockUserName != "" {
 			currentUser = &user.User{Username: mockUserName}
-
-			// If mockConfigPath is set as well, add to configPaths
-			if mockConfigPath != "" {
-				configPaths = append(configPaths, mockConfigPath)
-			}
 		} else {
 			currentUser = u
 		}
 	}
 
-	// Add user HOME to configPaths
-	userConfigDir, err := os.UserConfigDir()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get config file: %w", err)
-	}
+	// // Add user HOME to configPaths
+	// userConfigDir, err := os.UserConfigDir()
+	// if err != nil {
+	// 	return nil, fmt.Errorf("failed to get config file: %w", err)
+	// }
 
-	configPaths = append(configPaths, filepath.Join(userConfigDir, "ceems"))
+	// configPaths = append(configPaths, filepath.Join(userConfigDir, "ceems"))
 
 	return currentUser, nil
 }
@@ -809,7 +905,7 @@ func checkErr(err error) int {
 		case errors.Is(err, errUser):
 			fmt.Fprintln(os.Stderr, "error: "+errUser.Error())
 		default:
-			fmt.Fprintln(os.Stderr, err.Error())
+			fmt.Fprintln(os.Stderr, "error: internal error")
 		}
 
 		return 1

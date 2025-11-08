@@ -61,6 +61,9 @@ test () {
 
 	# Test if cacct has setuid bit on it
 	[ -u "/usr/local/bin/cacct" ] && printf "cacct has setuid set\n" || printf "cacct does not have setuid set\n"
+
+  # Test if log directory exists
+	[ -d "/var/log/ceems" ] && printf "cacct log directory created\n" || printf "cacct log directory not created\n"
 }
 
 if [ ${build} -ne 0 ]
