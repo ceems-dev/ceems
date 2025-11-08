@@ -66,7 +66,7 @@ ifeq ($(CGO_APPS), 1)
 	checkbpf := skip-checkbpf
 
 	# go test flags
-	coverage-file := coverage-cgo.out
+	coverage-file := /tmp/coverage-cgo.out
 else
 	PROMU_CONF ?= .promu/.promu-go.yml
 	pkgs := ./pkg/collector ./pkg/emissions ./pkg/tsdb ./pkg/grafana ./pkg/k8s \
@@ -78,7 +78,7 @@ else
 	checkbpf := checkbpf
 
 	# go test flags
-	coverage-file := coverage-go.out
+	coverage-file := /tmp/coverage-go.out
 
 	# If running in CI add -exec sudo flags to run tests that require privileges
 	ifeq ($(CI), true)
@@ -122,12 +122,12 @@ all:: vet common-all $(checkbpf) $(cross-test) $(test-docker) $(checkmetrics) $(
 .PHONY: coverage
 coverage:
 	@echo ">> getting coverage reports"
-	$(GO) tool cover -html=coverage-go.out -o coverage-go.html
-	$(GO) tool cover -html=coverage-cgo.out -o coverage-cgo.html
-	cp coverage-go.out coverage-raw.out
-	tail -n +2 coverage-cgo.out >> coverage-raw.out
-	$(GO) tool cover -html=coverage-raw.out -o coverage.html
-	$(GO) tool cover -func=coverage-raw.out -o=coverage.out
+	$(GO) tool cover -html=/tmp/coverage-go.out -o coverage-go.html
+	$(GO) tool cover -html=/tmp/coverage-cgo.out -o coverage-cgo.html
+	cp /tmp/coverage-go.out /tmp/coverage-raw.out
+	tail -n +2 /tmp/coverage-cgo.out >> /tmp/coverage-raw.out
+	$(GO) tool cover -html=/tmp/coverage-raw.out -o=coverage.html
+	$(GO) tool cover -func=/tmp/coverage-raw.out -o=coverage.out
 
 .PHONY: test
 test: pkg/collector/testdata/sys/.unpacked pkg/collector/testdata/proc/.unpacked bpf
