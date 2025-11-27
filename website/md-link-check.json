@@ -24,6 +24,9 @@
     },
 		{
 			"pattern": "https://math.univ-cotedazur.fr"
+		},
+    {
+			"pattern": "https://medium.com/"
 		}
   ],
   "replacementPatterns": [
