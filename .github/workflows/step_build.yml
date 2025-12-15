@@ -53,7 +53,7 @@ jobs:
         run: CGO_APPS=1 make crossbuild-test
 
       - name: Upload go build artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: build-artifacts
           # Here we add .tarballs to path even if there is no .tarballs. This is to be
