@@ -238,7 +238,7 @@ func TestNewGPUSMIWithK8s(t *testing.T) {
 	}
 
 	// Make fake client
-	fakeClientset := fake.NewSimpleClientset(gpuPods...)
+	fakeClientset := fake.NewClientset(gpuPods...)
 
 	// Make k8s client
 	client := &ceems_k8s.Client{

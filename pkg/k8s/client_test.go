@@ -385,7 +385,7 @@ func TestPodDevices(t *testing.T) {
 	kubeletClient := podresourcesapi.NewPodResourcesListerClient(conn)
 
 	// Make fake client
-	fakeClientset := fake.NewSimpleClientset(testPods...)
+	fakeClientset := fake.NewClientset(testPods...)
 
 	// Make k8s client
 	client := &Client{
