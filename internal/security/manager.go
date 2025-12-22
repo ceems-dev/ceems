@@ -88,6 +88,12 @@ func NewManager(c *Config, logger *slog.Logger) (*Manager, error) {
 	// we asked for 32 bits while conversion
 	runAsUserUID := uint32(val)
 
+	// Get all group IDs that runAsUser is part of
+	runAsUserGIDs, err := manager.runAsUser.GroupIds()
+	if err != nil {
+		logger.Warn("Failed to get runAsUser groups", "err", err)
+	}
+
 	// Calculate ACL entries for different paths
 	for _, p := range c.ReadPaths {
 		if p == "" {
@@ -116,10 +122,10 @@ func NewManager(c *Config, logger *slog.Logger) (*Manager, error) {
 		switch mode := fperms.Stat.Mode(); {
 		case mode.IsDir():
 			perms = 5
-			hasPerms = hasReadExecutable(fperms, manager.currentUser, manager.runAsUser)
+			hasPerms = hasReadExecutable(fperms, manager.currentUser, manager.runAsUser, runAsUserGIDs)
 		case mode.IsRegular():
 			perms = 4
-			hasPerms = hasRead(fperms, manager.currentUser, manager.runAsUser)
+			hasPerms = hasRead(fperms, manager.currentUser, manager.runAsUser, runAsUserGIDs)
 		}
 
 		// If the path is readable/executable by runAsUser, nothing to do here. Continue
@@ -159,10 +165,10 @@ func NewManager(c *Config, logger *slog.Logger) (*Manager, error) {
 		switch mode := fperms.Stat.Mode(); {
 		case mode.IsDir():
 			perms = 7
-			hasPerms = hasReadWriteExecutable(fperms, manager.currentUser, manager.runAsUser)
+			hasPerms = hasReadWriteExecutable(fperms, manager.currentUser, manager.runAsUser, runAsUserGIDs)
 		case mode.IsRegular():
 			perms = 6
-			hasPerms = hasReadWrite(fperms, manager.currentUser, manager.runAsUser)
+			hasPerms = hasReadWrite(fperms, manager.currentUser, manager.runAsUser, runAsUserGIDs)
 		}
 
 		// If the path is readable/executable by runAsUser, nothing to do here. Continue
@@ -419,61 +425,76 @@ func setCapabilities(caps []cap.Value, enableEffective bool) error {
 }
 
 // hasRead returns true if runAsUser has r permissions on path.
-func hasRead(p fileperm.PermUser, currentUser *user.User, runAsUser *user.User) bool {
+func hasRead(p fileperm.PermUser, currentUser *user.User, runAsUser *user.User, runAsUserGIDs []string) bool {
 	// If current user is runAsUser, check for user permissions
 	if currentUser.Uid == runAsUser.Uid {
 		return p.UserReadable()
 	}
 
-	// If not check, check for other permissions
-	if p.Stat.Mode().Perm()&fileperm.OsOthR != 0 {
-		return true
+	// File group owner
+	pGID := strconv.FormatUint(uint64(p.GID), 10)
+
+	// Check if runAsUser GIDs matches with file GID and in that case
+	// check for group permissions
+	if slices.Contains(runAsUserGIDs, pGID) {
+		return p.Stat.Mode().Perm()&fileperm.OsGroupR != 0
 	}
 
 	return false
 }
 
 // hasReadExecutable returns true if runAsUser has rx permissions on path.
-func hasReadExecutable(p fileperm.PermUser, currentUser *user.User, runAsUser *user.User) bool {
+func hasReadExecutable(p fileperm.PermUser, currentUser *user.User, runAsUser *user.User, runAsUserGIDs []string) bool {
 	// If current user is runAsUser, check for user permissions
 	if currentUser.Uid == runAsUser.Uid {
 		return p.UserReadExecutable()
 	}
 
-	// If not check, check for other permissions
-	if p.Stat.Mode().Perm()&fileperm.OsOthR != 0 && p.Stat.Mode().Perm()&fileperm.OsOthX != 0 {
-		return true
+	// File group owner
+	pGID := strconv.FormatUint(uint64(p.GID), 10)
+
+	// Check if runAsUser GIDs matches with file GID and in that case
+	// check for group permissions
+	if slices.Contains(runAsUserGIDs, pGID) {
+		return p.Stat.Mode().Perm()&fileperm.OsGroupR != 0 && p.Stat.Mode().Perm()&fileperm.OsGroupX != 0
 	}
 
 	return false
 }
 
 // hasReadWrite returns true if runAsUser has rw permissions on path.
-func hasReadWrite(p fileperm.PermUser, currentUser *user.User, runAsUser *user.User) bool {
+func hasReadWrite(p fileperm.PermUser, currentUser *user.User, runAsUser *user.User, runAsUserGIDs []string) bool {
 	// If current user is runAsUser, check for user permissions
 	if currentUser.Uid == runAsUser.Uid {
 		return p.UserWriteReadable()
 	}
 
-	// If not check, check for other permissions
-	if p.Stat.Mode().Perm()&fileperm.OsOthR != 0 && p.Stat.Mode().Perm()&fileperm.OsOthW != 0 {
-		return true
+	// File group owner
+	pGID := strconv.FormatUint(uint64(p.GID), 10)
+
+	// Check if runAsUser GIDs matches with file GID and in that case
+	// check for group permissions
+	if slices.Contains(runAsUserGIDs, pGID) {
+		return p.Stat.Mode().Perm()&fileperm.OsGroupR != 0 && p.Stat.Mode().Perm()&fileperm.OsGroupW != 0
 	}
 
 	return false
 }
 
 // hasReadWriteExecutable returns true if runAsUser has rwx permissions on path.
-func hasReadWriteExecutable(p fileperm.PermUser, currentUser *user.User, runAsUser *user.User) bool {
+func hasReadWriteExecutable(p fileperm.PermUser, currentUser *user.User, runAsUser *user.User, runAsUserGIDs []string) bool {
 	// If current user is runAsUser, check for user permissions
 	if currentUser.Uid == runAsUser.Uid {
 		return p.UserWriteReadExecutable()
 	}
 
-	// If not check, check for other permissions
-	if p.Stat.Mode().Perm()&fileperm.OsOthR != 0 && p.Stat.Mode().Perm()&fileperm.OsOthW != 0 &&
-		p.Stat.Mode().Perm()&fileperm.OsOthX != 0 {
-		return true
+	// File group owner
+	pGID := strconv.FormatUint(uint64(p.GID), 10)
+
+	// Check if runAsUser GIDs matches with file GID and in that case
+	// check for group permissions
+	if slices.Contains(runAsUserGIDs, pGID) {
+		return p.Stat.Mode().Perm()&fileperm.OsGroupR != 0 && p.Stat.Mode().Perm()&fileperm.OsGroupW != 0 && p.Stat.Mode().Perm()&fileperm.OsGroupX != 0
 	}
 
 	return false
