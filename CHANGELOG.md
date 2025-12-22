@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.1 / 2025-12-22
+
+- [BUGFIX] Check group ownership of files while dropping privileges [#451](https://github.com/mahendrapaipuri/ceems/pull/451) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump dependencies [#437](https://github.com/mahendrapaipuri/ceems/pull/437), [#438](https://github.com/mahendrapaipuri/ceems/pull/438), [#439](https://github.com/mahendrapaipuri/ceems/pull/439), [#440](https://github.com/mahendrapaipuri/ceems/pull/440), [#441](https://github.com/mahendrapaipuri/ceems/pull/441), [#442](https://github.com/mahendrapaipuri/ceems/pull/442), [#443](https://github.com/mahendrapaipuri/ceems/pull/443), [#444](https://github.com/mahendrapaipuri/ceems/pull/444), [#445](https://github.com/mahendrapaipuri/ceems/pull/445), [#446](https://github.com/mahendrapaipuri/ceems/pull/446), [#447](https://github.com/mahendrapaipuri/ceems/pull/447), [#448](https://github.com/mahendrapaipuri/ceems/pull/448), [#449](https://github.com/mahendrapaipuri/ceems/pull/449), [#450](https://github.com/mahendrapaipuri/ceems/pull/450) ([@dependabot](https://github.com/dependabot))
+
 ## 0.12.0 / 2025-11-08
 
 - [FEAT] System level logging for `cacct` [#436](https://github.com/mahendrapaipuri/ceems/pull/436) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
