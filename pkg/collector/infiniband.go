@@ -1,5 +1,4 @@
 //go:build !noinfiniband
-// +build !noinfiniband
 
 package collector
 

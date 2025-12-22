@@ -1,5 +1,4 @@
 //go:build !nok8s
-// +build !nok8s
 
 package collector
 
@@ -278,11 +277,8 @@ func (c *k8sCollector) Update(ch chan<- prometheus.Metric) error {
 
 	// Start a wait group
 	wg := sync.WaitGroup{}
-	wg.Add(1)
 
-	go func() {
-		defer wg.Done()
-
+	wg.Go(func() {
 		// Update cgroup metrics
 		err := c.cgroupCollector.Update(ch, cgroups)
 		if err != nil {
@@ -293,48 +289,36 @@ func (c *k8sCollector) Update(ch chan<- prometheus.Metric) error {
 		if len(c.gpuSMI.Devices) > 0 {
 			c.updateDeviceMappers(ch)
 		}
-	}()
+	})
 
 	if perfCollectorEnabled() {
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
+		wg.Go(func() {
 			// Update perf metrics
 			err := c.perfCollector.Update(ch, cgroups, k8sCollectorSubsystem)
 			if err != nil {
 				c.logger.Error("Failed to update perf stats", "err", err)
 			}
-		}()
+		})
 	}
 
 	if ebpfCollectorEnabled() {
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
+		wg.Go(func() {
 			// Update ebpf metrics
 			err := c.ebpfCollector.Update(ch, cgroups, k8sCollectorSubsystem)
 			if err != nil {
 				c.logger.Error("Failed to update IO and/or network stats", "err", err)
 			}
-		}()
+		})
 	}
 
 	if rdmaCollectorEnabled() {
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
+		wg.Go(func() {
 			// Update RDMA metrics
 			err := c.rdmaCollector.Update(ch, cgroups, k8sCollectorSubsystem)
 			if err != nil {
 				c.logger.Error("Failed to update RDMA stats", "err", err)
 			}
-		}()
+		})
 	}
 
 	// Wait for all go routines

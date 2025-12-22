@@ -1,5 +1,4 @@
 //go:build !nordma
-// +build !nordma
 
 package collector
 

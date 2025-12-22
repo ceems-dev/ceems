@@ -1,5 +1,4 @@
 //go:build !noebpf
-// +build !noebpf
 
 package collector
 

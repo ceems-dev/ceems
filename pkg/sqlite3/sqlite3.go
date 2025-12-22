@@ -1,5 +1,4 @@
 //go:build cgo
-// +build cgo
 
 /*
 Package sqlite3 implements a connect hook around the sqlite3 driver so that the

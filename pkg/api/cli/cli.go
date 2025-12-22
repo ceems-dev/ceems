@@ -1,5 +1,4 @@
 //go:build cgo
-// +build cgo
 
 // Package cli implements the CLI of the CEEMS API server app
 package cli
@@ -417,11 +416,7 @@ func (b *CEEMSServer) Main() error {
 	// Initialize tickers. We will stop the ticker immediately after signal has received.
 	dbUpdateTicker = time.NewTicker(time.Duration(config.Server.Data.UpdateInterval))
 
-	wg.Add(1)
-
-	go func() {
-		defer wg.Done()
-
+	wg.Go(func() {
 		for {
 			// This will ensure that we will run the method as soon as go routine
 			// starts instead of waiting for ticker to tick.
@@ -441,18 +436,14 @@ func (b *CEEMSServer) Main() error {
 				return
 			}
 		}
-	}()
+	})
 
 	// Start backup go routine only backup path is provided in CLI.
 	if config.Server.Data.BackupPath != "" {
 		// Initialise ticker and increase waitgroup counter.
 		dbBackupTicker = time.NewTicker(time.Duration(config.Server.Data.BackupInterval))
 
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
+		wg.Go(func() {
 			for {
 				select {
 				case <-dbBackupTicker.C:
@@ -471,7 +462,7 @@ func (b *CEEMSServer) Main() error {
 					return
 				}
 			}
-		}()
+		})
 	}
 
 	// Initializing the server in a goroutine so that

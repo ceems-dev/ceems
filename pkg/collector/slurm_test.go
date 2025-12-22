@@ -1,5 +1,4 @@
 //go:build !noslurm
-// +build !noslurm
 
 package collector
 

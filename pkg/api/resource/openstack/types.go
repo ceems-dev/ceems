@@ -189,10 +189,10 @@ type PowerState int
 const (
 	NOSTATE = iota
 	RUNNING
-	_UNUSED1 //nolint:stylecheck
+	_UNUSED1
 	PAUSED
 	SHUTDOWN
-	_UNUSED2 //nolint:stylecheck
+	_UNUSED2
 	CRASHED
 	SUSPENDED
 )

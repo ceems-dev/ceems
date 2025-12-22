@@ -1,5 +1,4 @@
 //go:build !nonetdev
-// +build !nonetdev
 
 package collector
 

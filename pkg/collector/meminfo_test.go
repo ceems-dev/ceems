@@ -1,5 +1,4 @@
 //go:build !nomemory
-// +build !nomemory
 
 package collector
 

@@ -1,5 +1,4 @@
 //go:build 386 || mips || mipsle
-// +build 386 mips mipsle
 
 package ipmi
 

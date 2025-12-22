@@ -8,10 +8,10 @@ import (
 
 // IPMI sensor related constants.
 const (
-	IPMI_SENSOR_RECORD_CMD    = 0x23 //nolint:stylecheck
-	IPMI_SENSOR_RECORD_NETFN  = 0xa  //nolint:stylecheck
-	IPMI_SENSOR_READING_CMD   = 0x2d //nolint:stylecheck
-	IPMI_SENSOR_READING_NETFN = 0x4  //nolint:stylecheck
+	IPMI_SENSOR_RECORD_CMD    = 0x23
+	IPMI_SENSOR_RECORD_NETFN  = 0xa
+	IPMI_SENSOR_READING_CMD   = 0x2d
+	IPMI_SENSOR_READING_NETFN = 0x4
 )
 
 // SensorRecords returns full sensor records info.
@@ -33,7 +33,7 @@ func (i *ipmiClient) SensorRecords() ([]*FullSensorRecord, error) {
 			AddrLen: uint(unsafe.Sizeof(i.bmcAddr)),
 			Msgid:   1,
 			Msg: ipmiMsg{
-				Data:    uintptr(unsafe.Pointer(&msgData[0])),
+				Data:    uintptr(unsafe.Pointer(&msgData[0])), //nolint:gosec
 				DataLen: 6,
 				Netfn:   IPMI_SENSOR_RECORD_NETFN,
 				Cmd:     IPMI_SENSOR_RECORD_CMD,

@@ -1,5 +1,4 @@
 //go:build !nocpu
-// +build !nocpu
 
 package collector
 

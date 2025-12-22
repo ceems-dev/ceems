@@ -1,5 +1,4 @@
 //go:build cgo
-// +build cgo
 
 // Package db creates DB tables, call resource manager interfaces and
 // populates the DB with compute units

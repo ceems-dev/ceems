@@ -19,11 +19,11 @@ import (
 
 // IPMI related constants.
 const (
-	IPMICTL_SET_GETS_EVENTS_CMD     = 0x80046910 //nolint:stylecheck
-	IPMICTL_SEND_COMMAND            = 0x8028690d //nolint:stylecheck
-	IPMICTL_RECEIVE_MSG_TRUNC       = 0xc030690b //nolint:stylecheck
-	IPMI_SYSTEM_INTERFACE_ADDR_TYPE = 0xC        //nolint:stylecheck
-	IPMI_BMC_CHANNEL                = 0xF        //nolint:stylecheck
+	IPMICTL_SET_GETS_EVENTS_CMD     = 0x80046910
+	IPMICTL_SEND_COMMAND            = 0x8028690d
+	IPMICTL_RECEIVE_MSG_TRUNC       = 0xc030690b
+	IPMI_SYSTEM_INTERFACE_ADDR_TYPE = 0xC
+	IPMI_BMC_CHANNEL                = 0xF
 )
 
 type Client interface {

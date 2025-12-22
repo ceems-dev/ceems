@@ -1,7 +1,6 @@
 // Taken from node_exporter/collector/rapl_linux.go
 
 //go:build !norapl
-// +build !norapl
 
 package collector
 
@@ -150,27 +149,19 @@ func (c *raplCollector) Update(ch chan<- prometheus.Metric) error {
 	// Start wait group
 	wg := sync.WaitGroup{}
 
-	wg.Add(1)
-
-	go func() {
-		defer wg.Done()
-
+	wg.Go(func() {
 		err := c.updateLimits(zones, ch)
 		if err != nil {
 			c.logger.Error("Failed to update RAPL power limits", "err", err)
 		}
-	}()
+	})
 
-	wg.Add(1)
-
-	go func() {
-		defer wg.Done()
-
+	wg.Go(func() {
 		err := c.updateEnergy(zones, ch)
 		if err != nil {
 			c.logger.Error("Failed to update RAPL energy counters", "err", err)
 		}
-	}()
+	})
 
 	// Wait for go routines
 	wg.Wait()

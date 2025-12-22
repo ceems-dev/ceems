@@ -1,5 +1,4 @@
 //go:build !emissions
-// +build !emissions
 
 package emissions
 

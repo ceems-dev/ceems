@@ -90,7 +90,7 @@ func scanRows[T any](rows *sql.Rows, numRows int) ([]T, error) {
 	rowIdx := 0
 
 	// Get indexes
-	indexes := structset.CachedFieldIndexes(reflect.TypeOf(&value).Elem())
+	indexes := structset.CachedFieldIndexes(reflect.TypeFor[T]())
 
 	// Get columns
 	columns, err = rows.Columns()

@@ -1,5 +1,4 @@
 //go:build !noemissions
-// +build !noemissions
 
 package collector
 

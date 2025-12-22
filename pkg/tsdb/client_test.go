@@ -255,14 +255,10 @@ func TestTSDBConfigSuccess(t *testing.T) {
 
 	// Get settings from concurrent go routines
 	for range 10 {
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
+		wg.Go(func() {
 			settings := tsdb.Settings(ctx)
 			assert.Equal(t, expectedSettings, *settings)
-		}()
+		})
 	}
 
 	wg.Wait()
