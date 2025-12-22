@@ -81,7 +81,9 @@ func TestNewManager(t *testing.T) {
 
 	expectedEntries := []acl{
 		{path: filepath.Join(tmpDir, "l1", "l2", "l3"), entry: acls.NewEntry(acls.TAG_ACL_USER, 65534, 5)},
+		{path: filepath.Join(tmpDir, "l1", "l2"), entry: acls.NewEntry(acls.TAG_ACL_USER, 65534, 5)},
 		{path: filepath.Join(tmpDir, "l1"), entry: acls.NewEntry(acls.TAG_ACL_USER, 65534, 5)},
+		{path: tmpDir, entry: acls.NewEntry(acls.TAG_ACL_USER, 65534, 5)},
 		{path: filepath.Dir(tmpDir), entry: acls.NewEntry(acls.TAG_ACL_USER, 65534, 5)},
 		{path: filepath.Join(tmpDir, "l1", "l2", "l3", "testRead"), entry: acls.NewEntry(acls.TAG_ACL_USER, 65534, 4)},
 		{path: filepath.Join(tmpDir, "l1", "l2", "l3", "testWrite"), entry: acls.NewEntry(acls.TAG_ACL_USER, 65534, 6)},
