@@ -1,5 +1,4 @@
 //go:build !nocraypmc
-// +build !nocraypmc
 
 package collector
 

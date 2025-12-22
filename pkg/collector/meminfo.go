@@ -1,5 +1,4 @@
 //go:build !nomeminfo
-// +build !nomeminfo
 
 package collector
 

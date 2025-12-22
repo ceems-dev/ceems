@@ -7,9 +7,9 @@ import (
 
 // IPMI DCMI related constants.
 const (
-	IPMI_LAN             = 0x1 //nolint:stylecheck
-	IPMI_LANP_IP_ADDR    = 0x2 //nolint:stylecheck
-	IPMI_NETFN_TRANSPORT = 0xC //nolint:stylecheck
+	IPMI_LAN             = 0x1
+	IPMI_LANP_IP_ADDR    = 0x2
+	IPMI_NETFN_TRANSPORT = 0xC
 )
 
 // LanIP returns the IP address of BMC.

@@ -1,5 +1,4 @@
 //go:build !noredfish
-// +build !noredfish
 
 package collector
 

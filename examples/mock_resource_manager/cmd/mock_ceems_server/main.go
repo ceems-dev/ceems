@@ -1,5 +1,4 @@
 //go:build cgo
-// +build cgo
 
 // Boiler plate code to create a new instance of CEEMSServer entrypoint
 package main

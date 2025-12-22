@@ -1,5 +1,4 @@
 //go:build !nohwmon
-// +build !nohwmon
 
 package collector
 

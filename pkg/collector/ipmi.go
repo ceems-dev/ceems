@@ -1,5 +1,4 @@
 //go:build !noimpi
-// +build !noimpi
 
 package collector
 

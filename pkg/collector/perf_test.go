@@ -1,5 +1,4 @@
 //go:build !noperf
-// +build !noperf
 
 package collector
 

@@ -41,9 +41,7 @@ func TestGetStructFieldTagMap(t *testing.T) {
 }
 
 func TestCachedFiledIndexes(t *testing.T) {
-	var value testStruct
-
-	indexes := CachedFieldIndexes(reflect.TypeOf(&value).Elem())
+	indexes := CachedFieldIndexes(reflect.TypeFor[testStruct]())
 
 	expected := map[string]int{"f1": 1, "f2": 2, "f3": 3, "f4": 4, "id": 0}
 	assert.Equal(t, expected, indexes)
@@ -60,6 +58,6 @@ func TestCachedFiledIndexes(t *testing.T) {
 	assert.Equal(t, 1, i)
 
 	// Now making second request should get value from cache
-	indexes = CachedFieldIndexes(reflect.TypeOf(&value).Elem())
+	indexes = CachedFieldIndexes(reflect.TypeFor[testStruct]())
 	assert.Equal(t, expected, indexes)
 }

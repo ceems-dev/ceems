@@ -1,5 +1,4 @@
 //go:build cgo
-// +build cgo
 
 // Package cli implements the CLI app of load balancer
 package cli
@@ -390,13 +389,9 @@ func (lb *CEEMSLoadBalancer) Main() error {
 
 	for _, lbType := range lbTypes {
 		// Spawn a go routine to do health checks of backend TSDB servers
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
+		wg.Go(func() {
 			monitor(ctx, managers[lbType], logger.With("backend_type", lbType))
-		}()
+		})
 
 		// Initializing the server in a goroutine so that
 		// it won't block the graceful shutdown handling below

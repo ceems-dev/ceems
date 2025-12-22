@@ -529,6 +529,7 @@ func TestCheckHTTPClientConfigFiles(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	testFiles := make(map[string]string)
+
 	for _, n := range []string{
 		"bearer_token_file",
 		"auth_credentials_file",

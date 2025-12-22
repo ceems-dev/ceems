@@ -1,5 +1,4 @@
 //go:build !nordma
-// +build !nordma
 
 package collector
 
@@ -387,11 +386,8 @@ func (c *rdmaCollector) update(ch chan<- prometheus.Metric, cgroups []cgroup) {
 	}(procCgroup)
 
 	// Fetch sys wide counters
-	wg.Add(1)
 
-	go func() {
-		defer wg.Done()
-
+	wg.Go(func() {
 		counters, err := c.linkCountersSysWide()
 		if err != nil {
 			c.logger.Error("Failed to fetch system wide RDMA counters", "err", err)
@@ -418,7 +414,7 @@ func (c *rdmaCollector) update(ch chan<- prometheus.Metric, cgroups []cgroup) {
 				}
 			}
 		}
-	}()
+	})
 
 	// Wait for all go routines
 	wg.Wait()

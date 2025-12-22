@@ -8,10 +8,10 @@ import (
 
 // IPMI DCMI related constants.
 const (
-	IPMI_DCMI           = 0xDC //nolint:stylecheck
-	IPMI_DCMI_GETRED    = 0x2  //nolint:stylecheck
-	IPMI_NETFN_DCGRP    = 0x2C //nolint:stylecheck
-	IPMI_DCMI_ACTIVATED = 0x40 //nolint:stylecheck
+	IPMI_DCMI           = 0xDC
+	IPMI_DCMI_GETRED    = 0x2
+	IPMI_NETFN_DCGRP    = 0x2C
+	IPMI_DCMI_ACTIVATED = 0x40
 )
 
 type PowerReading struct {

@@ -1,5 +1,4 @@
 //go:build 386 || mips || mips64 || mips64le || mipsle || ppc64le || riscv64
-// +build 386 mips mips64 mips64le mipsle ppc64le riscv64
 
 package collector
 

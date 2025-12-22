@@ -1,5 +1,4 @@
 //go:build !nolibvirt
-// +build !nolibvirt
 
 package collector
 

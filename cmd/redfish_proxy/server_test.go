@@ -208,11 +208,7 @@ func TestNewRedfishProxyServerWithWebConfig(t *testing.T) {
 
 	// Make concurrent requests to detect data races
 	for i := range 20 {
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
+		wg.Go(func() {
 			req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:%d/redfish/v1/", p), nil) //nolint:noctx
 			errs <- err
 
@@ -232,7 +228,7 @@ func TestNewRedfishProxyServerWithWebConfig(t *testing.T) {
 
 			// Check the body if it has same IP set
 			assert.Equal(t, strings.Join([]string{remoteIPs[tid]}, ","), string(bodyBytes))
-		}()
+		})
 	}
 
 	// Wait for all requests to finish

@@ -1,5 +1,4 @@
 //go:build amd64 || arm64 || mips64 || mips64le || ppc64le || riscv64
-// +build amd64 arm64 mips64 mips64le ppc64le riscv64
 
 package ipmi
 
