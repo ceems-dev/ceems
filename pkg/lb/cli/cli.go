@@ -267,6 +267,11 @@ func (lb *CEEMSLoadBalancer) Main() error {
 		lbNames = append(lbNames, t.String())
 	}
 
+	// If no backends found in config, return error
+	if len(lbTypes) == 0 {
+		return errors.New("no backends found in the config")
+	}
+
 	logger.Info("Load balancers: " + strings.Join(lbNames, ", "))
 
 	// Ensure that enough web listen addresses are provided
@@ -285,7 +290,7 @@ func (lb *CEEMSLoadBalancer) Main() error {
 		// Create a pool of backend servers
 		managers[lbType], err = serverpool.New(base.LBStrategyMap[config.LB.Strategy], logger.With("backend_type", lbType))
 		if err != nil {
-			logger.Error("Failed to create backend server poo", "backend_type", lbType, "err", err)
+			logger.Error("Failed to create backend server pool", "backend_type", lbType, "err", err)
 
 			return err
 		}
