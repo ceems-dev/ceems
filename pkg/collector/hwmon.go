@@ -218,9 +218,8 @@ func getHwmon(dir string) (*hwmon, error) {
 	hwmon := &hwmon{dir: dir, name: hwmonName, sensors: sensors}
 
 	// Extract index from directory name (e.g., "hwmon1" -> "1")
-	base := filepath.Base(dir)
-	if strings.HasPrefix(base, "hwmon") {
-		hwmon.index = strings.TrimPrefix(base, "hwmon")
+	if index, ok := strings.CutPrefix(filepath.Base(dir), "hwmon"); ok {
+		hwmon.index = index
 	}
 
 	hwmonChipName, err := hwmonHumanReadableChipName(dir)
