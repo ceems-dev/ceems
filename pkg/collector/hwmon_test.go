@@ -90,6 +90,9 @@ func TestHwmonMetrics(t *testing.T) {
 				gotValues[mon.name][sensor.sensorProperty][fmt.Sprintf("%s%d", sensor.sensorType, sensor.sensorNum)] = val
 			}
 		}
+
+		// Verify index is extracted (should not be empty for hwmon devices)
+		assert.NotEmpty(t, mon.index, "Monitor index should not be empty")
 	}
 
 	assert.Equal(t, expectedHwmonValues, gotValues)
