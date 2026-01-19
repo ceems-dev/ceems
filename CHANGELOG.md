@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12.2 / 2026-01-19
+
+- [BUGFIX] fix(collector): add index label to hwmon metrics to distinguish devices [#456](https://github.com/mahendrapaipuri/ceems/pull/456) ([@samoz83](https://github.com/samoz83))
+- [MAINT] Bump dependencies [#452](https://github.com/mahendrapaipuri/ceems/pull/452), [#453](https://github.com/mahendrapaipuri/ceems/pull/453), [#454](https://github.com/mahendrapaipuri/ceems/pull/454), [#457](https://github.com/mahendrapaipuri/ceems/pull/457), [#458](https://github.com/mahendrapaipuri/ceems/pull/458) ([@dependabot](https://github.com/dependabot))
+
 ## 0.12.1 / 2025-12-22
 
 - [BUGFIX] Check group ownership of files while dropping privileges [#451](https://github.com/mahendrapaipuri/ceems/pull/451) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
