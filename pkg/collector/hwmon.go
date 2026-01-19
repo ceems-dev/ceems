@@ -39,6 +39,7 @@ type hwmon struct {
 	sensors  []hwmonSensor
 	name     string
 	chipName string
+	index    string
 }
 
 type hwmonSensor struct {
@@ -63,23 +64,23 @@ func NewHwmonCollector(logger *slog.Logger) (Collector, error) {
 
 	metricDesc["power_input"] = prometheus.NewDesc(
 		prometheus.BuildFQName(Namespace, hwmonCollectorSubSystem, "power_current_watts"),
-		"Current Power consumption in watts", []string{"hostname", "sensor", "chip", "chip_name"}, nil,
+		"Current Power consumption in watts", []string{"hostname", "index", "sensor", "chip", "chip_name"}, nil,
 	)
 	metricDesc["power_input_lowest"] = prometheus.NewDesc(
 		prometheus.BuildFQName(Namespace, hwmonCollectorSubSystem, "power_min_watts"),
-		"Minimum Power consumption in watts", []string{"hostname", "sensor", "chip", "chip_name"}, nil,
+		"Minimum Power consumption in watts", []string{"hostname", "index", "sensor", "chip", "chip_name"}, nil,
 	)
 	metricDesc["power_input_highest"] = prometheus.NewDesc(
 		prometheus.BuildFQName(Namespace, hwmonCollectorSubSystem, "power_max_watts"),
-		"Maximum Power consumption in watts", []string{"hostname", "sensor", "chip", "chip_name"}, nil,
+		"Maximum Power consumption in watts", []string{"hostname", "index", "sensor", "chip", "chip_name"}, nil,
 	)
 	metricDesc["power_average"] = prometheus.NewDesc(
 		prometheus.BuildFQName(Namespace, hwmonCollectorSubSystem, "power_avg_watts"),
-		"Average Power consumption in watts", []string{"hostname", "sensor", "chip", "chip_name"}, nil,
+		"Average Power consumption in watts", []string{"hostname", "index", "sensor", "chip", "chip_name"}, nil,
 	)
 	metricDesc["energy_input"] = prometheus.NewDesc(
 		prometheus.BuildFQName(Namespace, hwmonCollectorSubSystem, "energy_current_joules"),
-		"Current Energy consumption in joules", []string{"hostname", "sensor", "chip", "chip_name"}, nil,
+		"Current Energy consumption in joules", []string{"hostname", "index", "sensor", "chip", "chip_name"}, nil,
 	)
 
 	hwmonCollector := &hwmonCollector{
@@ -116,6 +117,7 @@ func (c *hwmonCollector) Update(ch chan<- prometheus.Metric) error {
 						prometheus.GaugeValue,
 						val/1000000.0,
 						c.hostname,
+						mon.index,
 						fmt.Sprintf("%s%d", sensor.sensorType, sensor.sensorNum),
 						mon.name,
 						mon.chipName,
@@ -214,6 +216,11 @@ func getHwmon(dir string) (*hwmon, error) {
 	}
 
 	hwmon := &hwmon{dir: dir, name: hwmonName, sensors: sensors}
+
+	// Extract index from directory name (e.g., "hwmon1" -> "1")
+	if index, ok := strings.CutPrefix(filepath.Base(dir), "hwmon"); ok {
+		hwmon.index = index
+	}
 
 	hwmonChipName, err := hwmonHumanReadableChipName(dir)
 	if err == nil {

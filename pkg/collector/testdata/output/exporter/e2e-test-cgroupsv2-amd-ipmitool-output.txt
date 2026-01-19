@@ -157,24 +157,24 @@ ceems_cpu_seconds_total{hostname="",mode="user"} 3018.54
 # TYPE ceems_exporter_build_info gauge
 # HELP ceems_hwmon_energy_current_joules Current Energy consumption in joules
 # TYPE ceems_hwmon_energy_current_joules gauge
-ceems_hwmon_energy_current_joules{chip="socket",chip_name="socket",hostname="",sensor="energy1"} 22323
-ceems_hwmon_energy_current_joules{chip="socket",chip_name="socket",hostname="",sensor="energy2"} 9509
+ceems_hwmon_energy_current_joules{chip="socket",chip_name="socket",hostname="",index="4",sensor="energy1"} 22323
+ceems_hwmon_energy_current_joules{chip="socket",chip_name="socket",hostname="",index="4",sensor="energy2"} 9509
 # HELP ceems_hwmon_power_avg_watts Average Power consumption in watts
 # TYPE ceems_hwmon_power_avg_watts gauge
-ceems_hwmon_power_avg_watts{chip="socket",chip_name="socket",hostname="",sensor="power1"} 234
-ceems_hwmon_power_avg_watts{chip="socket",chip_name="socket",hostname="",sensor="power2"} 120
+ceems_hwmon_power_avg_watts{chip="socket",chip_name="socket",hostname="",index="4",sensor="power1"} 234
+ceems_hwmon_power_avg_watts{chip="socket",chip_name="socket",hostname="",index="4",sensor="power2"} 120
 # HELP ceems_hwmon_power_current_watts Current Power consumption in watts
 # TYPE ceems_hwmon_power_current_watts gauge
-ceems_hwmon_power_current_watts{chip="socket",chip_name="socket",hostname="",sensor="power1"} 270
-ceems_hwmon_power_current_watts{chip="socket",chip_name="socket",hostname="",sensor="power2"} 156
+ceems_hwmon_power_current_watts{chip="socket",chip_name="socket",hostname="",index="4",sensor="power1"} 270
+ceems_hwmon_power_current_watts{chip="socket",chip_name="socket",hostname="",index="4",sensor="power2"} 156
 # HELP ceems_hwmon_power_max_watts Maximum Power consumption in watts
 # TYPE ceems_hwmon_power_max_watts gauge
-ceems_hwmon_power_max_watts{chip="socket",chip_name="socket",hostname="",sensor="power1"} 328
-ceems_hwmon_power_max_watts{chip="socket",chip_name="socket",hostname="",sensor="power2"} 190
+ceems_hwmon_power_max_watts{chip="socket",chip_name="socket",hostname="",index="4",sensor="power1"} 328
+ceems_hwmon_power_max_watts{chip="socket",chip_name="socket",hostname="",index="4",sensor="power2"} 190
 # HELP ceems_hwmon_power_min_watts Minimum Power consumption in watts
 # TYPE ceems_hwmon_power_min_watts gauge
-ceems_hwmon_power_min_watts{chip="socket",chip_name="socket",hostname="",sensor="power1"} 65
-ceems_hwmon_power_min_watts{chip="socket",chip_name="socket",hostname="",sensor="power2"} 46
+ceems_hwmon_power_min_watts{chip="socket",chip_name="socket",hostname="",index="4",sensor="power1"} 65
+ceems_hwmon_power_min_watts{chip="socket",chip_name="socket",hostname="",index="4",sensor="power2"} 46
 # HELP ceems_ipmi_dcmi_power_avg_watts Average power consumption reported by DCMI in watts
 # TYPE ceems_ipmi_dcmi_power_avg_watts gauge
 ceems_ipmi_dcmi_power_avg_watts{hostname=""} 2567
