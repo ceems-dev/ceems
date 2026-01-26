@@ -24,13 +24,13 @@ require (
 	github.com/prometheus/common v0.67.5
 	github.com/prometheus/exporter-toolkit v0.15.1
 	github.com/prometheus/procfs v0.19.2
-	github.com/steiler/acls v0.1.4
+	github.com/steiler/acls v0.1.5
 	github.com/stmcginnis/gofish v0.20.0
 	github.com/stretchr/testify v1.11.1
 	github.com/swaggo/http-swagger/v2 v2.0.2
 	github.com/swaggo/swag v1.16.6
 	github.com/wneessen/go-fileperm v0.2.1
-	github.com/zeebo/xxh3 v1.0.2
+	github.com/zeebo/xxh3 v1.1.0
 	golang.org/x/crypto v0.47.0
 	golang.org/x/sys v0.40.0
 	google.golang.org/grpc v1.78.0
