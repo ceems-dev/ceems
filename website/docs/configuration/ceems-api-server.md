@@ -85,7 +85,7 @@ found in the [API Docs](https://@ceemsOrg@.github.io/@ceemsRepo@/docs/category/a
 - `admin.grafana`: In addition to a static list of users, the CEEMS API server can pull users from specified Grafana teams to add them to the list of users that will be granted access to the admin endpoints. This
 enables dynamic addition of users to the admin users list for CEEMS without having to reconfigure and restart the CEEMS API server. This section allows to provide the client configuration for
 Grafana. All possible client configuration options can be found in the
-[Config Reference](./config-reference.md#grafana-config).
+[Config Reference](./config-reference.md#grafana_config).
 
 <!-- Finally, the section `web` can be used to configured HTTP server of CEEMS API server.
 

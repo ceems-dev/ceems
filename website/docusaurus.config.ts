@@ -53,7 +53,6 @@ const config: Config = {
 
   // NOTE: Set it to throw once docs are "release" ready
   onBrokenLinks: "warn",
-  onBrokenMarkdownLinks: "warn",
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -139,6 +138,9 @@ const config: Config = {
   ],
 
   markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: "throw",
+    },
     preprocessor: ({ filePath, fileContent }) => {
       let content = fileContent;
 

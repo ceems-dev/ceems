@@ -54,7 +54,7 @@ All available command-line options are listed in the
 
 :::
 
-All endpoints of the CEEMS API server are discussed in detail in the dedicated [API documentation](/ceems/api).
+All endpoints of the CEEMS API server are discussed in detail in the dedicated [API documentation](/ceems/docs/category/api).
 
 ## Access Control
 
