@@ -24,9 +24,9 @@ COPY build/config/redfish_proxy/redfish_proxy.yml /etc/redfish_proxy/config.yml
 COPY build/config/cacct/cacct.yml /etc/ceems/config.yml
 COPY LICENSE /LICENSE
 
-ENV CEEMS_API_SERVER_CONFIG_FILE /etc/ceems_api_server/config.yml
-ENV CEEMS_LB_CONFIG_FILE /etc/ceems_lb/config.yml
-ENV REDFISH_PROXY_CONFIG_FILE /etc/redfish_proxy/config.yml
+ENV CEEMS_API_SERVER_CONFIG_FILE=/etc/ceems_api_server/config.yml
+ENV CEEMS_LB_CONFIG_FILE=/etc/ceems_lb/config.yml
+ENV REDFISH_PROXY_CONFIG_FILE=/etc/redfish_proxy/config.yml
 
 RUN mkdir -p /var/lib/ceems && chown -R root:root /etc/ceems_exporter /var/lib/ceems /etc/ceems_api_server /etc/ceems_lb /etc/redfish_proxy && chmod +x /bin/liveness-probe.sh
 
