@@ -15,7 +15,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stmcginnis/gofish"
-	"github.com/stmcginnis/gofish/redfish"
+	"github.com/stmcginnis/gofish/schemas"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -286,7 +286,7 @@ func TestPowerReadings(t *testing.T) {
 		config:      &config,
 		chassis:     chassis,
 		client:      redfishClient,
-		cachedPower: make(map[string]*redfish.Power, len(chassis)),
+		cachedPower: make(map[string]*schemas.Power, len(chassis)),
 	}
 
 	// Expected power readings
@@ -311,7 +311,7 @@ func TestPowerReadings(t *testing.T) {
 	}
 
 	// Set cachedPower to nil so we get nil response in next request
-	collector.cachedPower = make(map[string]*redfish.Power)
+	collector.cachedPower = make(map[string]*schemas.Power)
 
 	// Get power readings which should be zero
 	zeroExpected := map[string]map[string]float64{
