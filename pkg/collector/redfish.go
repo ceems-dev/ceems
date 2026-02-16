@@ -18,7 +18,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/config"
 	"github.com/stmcginnis/gofish"
-	"github.com/stmcginnis/gofish/redfish"
+	"github.com/stmcginnis/gofish/schemas"
 )
 
 const redfishCollectorSubsystem = "redfish"
@@ -166,8 +166,8 @@ type redfishCollector struct {
 	hostname    string
 	config      *gofish.ClientConfig
 	client      *gofish.APIClient
-	chassis     []*redfish.Chassis
-	cachedPower map[string]*redfish.Power
+	chassis     []*schemas.Chassis
+	cachedPower map[string]*schemas.Power
 	metricDesc  map[string]*prometheus.Desc
 }
 
@@ -286,7 +286,7 @@ func NewRedfishCollector(logger *slog.Logger) (Collector, error) {
 		logger:      logger,
 		hostname:    hostname,
 		config:      &config,
-		cachedPower: make(map[string]*redfish.Power),
+		cachedPower: make(map[string]*schemas.Power),
 		metricDesc:  metricDesc,
 	}
 
@@ -400,10 +400,10 @@ func (c *redfishCollector) powerReadings() map[string]map[string]float64 {
 
 		// Get all power readings from response
 		for _, pwc := range power.PowerControl {
-			values["current"][chassisID] += float64(pwc.PowerConsumedWatts)
-			values["min"][chassisID] += float64(pwc.PowerMetrics.MinConsumedWatts)
-			values["max"][chassisID] += float64(pwc.PowerMetrics.MaxConsumedWatts)
-			values["avg"][chassisID] += float64(pwc.PowerMetrics.AverageConsumedWatts)
+			values["current"][chassisID] += float64(gofish.Deref(pwc.PowerConsumedWatts))
+			values["min"][chassisID] += float64(gofish.Deref(pwc.PowerMetrics.MinConsumedWatts))
+			values["max"][chassisID] += float64(gofish.Deref(pwc.PowerMetrics.MaxConsumedWatts))
+			values["avg"][chassisID] += float64(gofish.Deref(pwc.PowerMetrics.AverageConsumedWatts))
 		}
 	}
 

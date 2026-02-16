@@ -190,6 +190,16 @@ well as other organizations, has been extensively used in the development of CEE
 which was kindly sponsored by [ISDM MESO](https://isdm.umontpellier.fr/mesolr)
 in Montpellier, France.
 
+## 💬 Contact
+
+You can get in contact with the CEEMS community in the following ways:
+
+### Discord
+
+Please join the community's [Discord](https://discord.gg/bedRvX5uVY) server for keeping
+up with the latest news about CEEMS, posting questions and, generally getting in touch
+with other users and the developers.
+
 ## ⭐️ Project assistance
 
 If you want to say **thank you** or/and support active development of CEEMS:
