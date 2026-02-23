@@ -25,7 +25,7 @@ require (
 	github.com/prometheus/exporter-toolkit v0.15.1
 	github.com/prometheus/procfs v0.19.2
 	github.com/steiler/acls v0.1.5
-	github.com/stmcginnis/gofish v0.21.0
+	github.com/stmcginnis/gofish v0.21.3
 	github.com/stretchr/testify v1.11.1
 	github.com/swaggo/http-swagger/v2 v2.0.2
 	github.com/swaggo/swag v1.16.6
