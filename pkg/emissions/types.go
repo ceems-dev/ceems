@@ -136,8 +136,20 @@ type CountryCode struct {
 	IsoCode []CountryCodeFields `json:"3166-1"`
 }
 
+// eMapsZoneDetails represents the details of a zone from the Electricity Maps API.
+type eMapsZoneDetails struct {
+	ZoneName                string   `json:"zoneName"`
+	CountryName             string   `json:"countryName"`
+	ZoneKey                 string   `json:"zoneKey"`
+	CountryCode             string   `json:"countryCode"`
+	ZoneParentKey           *string  `json:"zoneParentKey"`
+	SubZoneKeys             []string `json:"subZoneKeys"`
+	IsCommerciallyAvailable bool     `json:"isCommerciallyAvailable"`
+	Tier                    *string  `json:"tier"`
+}
+
 // Electricity Maps zones response signature.
-type eMapsZonesResponse map[string]map[string]string
+type eMapsZonesResponse map[string]eMapsZoneDetails
 
 // Electricity Maps carbon intensity response signature.
 type eMapsCarbonIntensityResponse struct {
