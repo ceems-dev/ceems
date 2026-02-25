@@ -84,17 +84,18 @@ func NewEMapsProvider(logger *slog.Logger) (Provider, error) {
 	zones := make(map[string]string, len(zoneData))
 
 	for zone, details := range zoneData {
-		// Check for countryName
-		var compoundName string
+		// Build compound name from countryName and zoneName
+		var parts []string
 
-		for _, name := range []string{"countryName", "zoneName"} {
-			if n, ok := details[name]; ok {
-				compoundName = fmt.Sprintf("%s %s", compoundName, n)
-			}
+		if details.CountryName != "" {
+			parts = append(parts, details.CountryName)
 		}
-		// Trim white spaces
-		compoundName = strings.TrimSpace(compoundName)
-		zones[zone] = compoundName
+
+		if details.ZoneName != "" {
+			parts = append(parts, details.ZoneName)
+		}
+
+		zones[zone] = strings.Join(parts, " ")
 	}
 
 	e := &emapsProvider{

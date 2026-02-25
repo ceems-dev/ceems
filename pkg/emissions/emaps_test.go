@@ -106,7 +106,7 @@ func TestEMapsDataProviderError(t *testing.T) {
 
 func TestNewEMapsProvider(t *testing.T) {
 	// Start test server
-	expected := eMapsZonesResponse{"FR": map[string]string{"zoneName": "France"}}
+	expected := eMapsZonesResponse{"FR": eMapsZoneDetails{ZoneName: "France"}}
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		err := json.NewEncoder(w).Encode(&expected)
