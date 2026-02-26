@@ -81,10 +81,11 @@
         "kubeflow",
         "myrules",
         "elist",
-				"LJAD",
-				"Université",
-				"Côte",
-				"d'Azur"
+        "LJAD",
+        "Université",
+        "Côte",
+        "d'Azur",
+        "AISURREY"
     ],
     // flagWords - list of words to be always considered incorrect
     // This is useful for offensive words and common spelling errors.
