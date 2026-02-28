@@ -43,7 +43,7 @@ process.
 Different collectors of the CEEMS exporter require different capabilities. The following
 list summarizes the capabilities needed for each collector:
 
-- `ipmi_dcmi`: `cap_setuid` and `cap_setgid` to execute IPMI command as `root` when third-party
+- `ipmi`: `cap_setuid` and `cap_setgid` to execute IPMI command as `root` when third-party
 libaries are used. `cap_dac_override` when pure Golang implementation is used to communicate
 with device `/dev/ipmi0`.
 - `redfish`: `cap_dac_override` to discover BMC IP address when it is not provided _via_ configuration
@@ -101,7 +101,7 @@ example is as follows:
 
 ```ini
 [Service]
-ExecStart=/usr/local/bin/ceems_exporter --collector.slurm --collector.perf.hardware-events --collector.ebpf.io-metrics --collector.ipmi_dcmi --collector.ipmi_dcmi.force-native-mode
+ExecStart=/usr/local/bin/ceems_exporter --collector.slurm --collector.perf.hardware-events --collector.ebpf.io-metrics --collector.ipmi --collector.ipmi.force-native-mode
 AmbientCapabilities=CAP_SYS_PTRACE CAP_DAC_READ_SEARCH CAP_DAC_OVERRIDE CAP_PERFMON CAP_BPF CAP_SYS_RESOURCE
 ```
 

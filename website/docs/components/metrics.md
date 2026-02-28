@@ -20,7 +20,7 @@ The following collectors are enabled by default:
 The rest of the collectors and sub-collectors are disabled by default. Collectors
 disabled by default are:
 
-- ipmi_dcmi
+- ipmi
 - emissions
 - slurm
 - libvirt

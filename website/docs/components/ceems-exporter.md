@@ -103,6 +103,12 @@ on perf events can be found in
 
 ### eBPF sub-collector
 
+:::warning[WARNING]
+
+The eBPF sub-collector needs a kernel version `>= 5.8`.
+
+:::
+
 The eBPF sub-collector uses [eBPF](https://ebpf.io/what-is-ebpf/) to monitor network and
 IO statistics. More details on eBPF are outside the scope of the current documentation.
 This sub-collector loads various BPF programs that trace several kernel functions that
