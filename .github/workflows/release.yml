@@ -95,7 +95,7 @@ jobs:
           go mod download
 
       - name: Download release artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: release-artifacts
           path: .tarballs
