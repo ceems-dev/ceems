@@ -23,7 +23,7 @@ require (
 	github.com/prometheus/client_golang v1.23.2
 	github.com/prometheus/common v0.67.5
 	github.com/prometheus/exporter-toolkit v0.15.1
-	github.com/prometheus/procfs v0.19.2
+	github.com/prometheus/procfs v0.20.1
 	github.com/steiler/acls v0.1.5
 	github.com/stmcginnis/gofish v0.21.3
 	github.com/stretchr/testify v1.11.1
@@ -36,10 +36,10 @@ require (
 	google.golang.org/grpc v1.79.1
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/api v0.35.1
-	k8s.io/apimachinery v0.35.1
-	k8s.io/client-go v0.35.1
-	k8s.io/kubelet v0.35.1
+	k8s.io/api v0.35.2
+	k8s.io/apimachinery v0.35.2
+	k8s.io/client-go v0.35.2
+	k8s.io/kubelet v0.35.2
 	kernel.org/pub/linux/libs/security/libcap/cap v1.2.77
 )
 
