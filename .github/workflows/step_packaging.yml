@@ -21,7 +21,7 @@ jobs:
         run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@latest
 
       - name: Download go build artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: build-artifacts
 
@@ -44,7 +44,7 @@ jobs:
         run: ./scripts/packaging.sh -v ${{ steps.vars.outputs.version }} -t
 
       - name: Upload release artifacts
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: release-artifacts
           path: .tarballs
