@@ -8,7 +8,7 @@ require (
 	connectrpc.com/connect v1.19.1
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/ceems-dev/perf-utils v0.0.0-20250716113832-99ba71e88ef4
-	github.com/cilium/ebpf v0.20.0
+	github.com/cilium/ebpf v0.21.0
 	github.com/containerd/cgroups/v3 v3.1.3
 	github.com/go-chi/httprate v0.15.0
 	github.com/go-kit/log v0.2.1
@@ -25,15 +25,15 @@ require (
 	github.com/prometheus/exporter-toolkit v0.15.1
 	github.com/prometheus/procfs v0.20.1
 	github.com/steiler/acls v0.1.5
-	github.com/stmcginnis/gofish v0.21.3
+	github.com/stmcginnis/gofish v0.21.4
 	github.com/stretchr/testify v1.11.1
 	github.com/swaggo/http-swagger/v2 v2.0.2
 	github.com/swaggo/swag v1.16.6
 	github.com/wneessen/go-fileperm v0.2.1
 	github.com/zeebo/xxh3 v1.1.0
 	golang.org/x/crypto v0.48.0
-	golang.org/x/sys v0.41.0
-	google.golang.org/grpc v1.79.1
+	golang.org/x/sys v0.42.0
+	google.golang.org/grpc v1.79.2
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.35.2
@@ -78,7 +78,7 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.10 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
-	github.com/mdlayher/socket v0.4.1 // indirect
+	github.com/mdlayher/socket v0.5.1 // indirect
 	github.com/mdlayher/vsock v1.2.1 // indirect
 	github.com/moby/spdystream v0.5.0 // indirect
 	github.com/moby/sys/userns v0.1.0 // indirect
