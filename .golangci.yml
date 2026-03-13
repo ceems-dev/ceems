@@ -54,6 +54,9 @@ linters:
       ignore-string-values: 
         - cpu
         - info
+    gomoddirectives:
+      replace-allow-list:
+        - github.com/grafana/pyroscope/ebpf
   exclusions:
     generated: lax
     presets:
