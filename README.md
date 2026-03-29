@@ -164,7 +164,7 @@ cacct  --starttime="2025-01-01" --endtime="2025-03-22"
 
 ## 🤝 Adopters
 
-- Currently CEEMS is running on [Jean Zay HPC](http://www.idris.fr/eng/jean-zay/jean-zay-presentation-eng.html)
+- Currently CEEMS is running on [Jean Zay HPC](http://www.idris.fr/docs/jean-zay/jean-zay/jean-zay-presentation)
 platform that has a daily job churn rate of around 25k jobs with a scrape interval of 10s.
 - [LJAD](https://math.univ-cotedazur.fr) lab from [Université Côte d'Azur](https://univ-cotedazur.fr/)
 is using CEEMS on their SLURM cluster for monitoring the energy consumption of user jobs.
