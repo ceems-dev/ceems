@@ -74,10 +74,10 @@ const void *__builtin_preserve_access_index(void *);
  *   gcc: https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-warn_005funused_005fresult-function-attribute
  * clang: https://clang.llvm.org/docs/AttributeReference.html#nodiscard-warn-unused-result
  */
-#define __must_check                    __attribute__((__warn_unused_result__))
+#define __must_check __attribute__((__warn_unused_result__))
 
 #ifndef __force
-# define __force
+#define __force
 #endif
 /*
  * Kernel pointers have redundant information, so we can use a
@@ -87,7 +87,7 @@ const void *__builtin_preserve_access_index(void *);
  * This should be a per-architecture thing, to allow different
  * error and pointer decisions.
  */
-#define MAX_ERRNO	4095
+#define MAX_ERRNO 4095
 
 /**
  * IS_ERR_VALUE - Detect an error pointer.

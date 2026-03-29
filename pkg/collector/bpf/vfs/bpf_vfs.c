@@ -165,7 +165,8 @@ __u64 BPF_PROG(fexit_vfs_mkdir, struct mnt_idmap *idmap, struct inode *dir,
 {
 	// Initialise return value
 	int ret = 0;
-	if (IS_ERR(out)) ret = 1; 
+	if (IS_ERR(out))
+		ret = 1;
 	return handle_inode_event((__s64)ret, MODE_MKDIR);
 }
 
