@@ -1087,8 +1087,10 @@ func aggNetStats(d *ebpfReadMapsCtxData) {
 // bpfVFSObjs returns the VFS bpf objects based on current kernel version.
 func bpfVFSObjs(kernelVersion int64) string {
 	// Return appropriate bpf object file based on kernel version
-	if kernelVersion > KernelStringToNumeric("6.2") {
+	if kernelVersion > KernelStringToNumeric("6.14") {
 		return "bpf_vfs.o"
+	} else if kernelVersion > KernelStringToNumeric("6.2") && kernelVersion <= KernelStringToNumeric("6.14") {
+		return "bpf_vfs_v614.o"
 	} else if kernelVersion > KernelStringToNumeric("5.11") && kernelVersion <= KernelStringToNumeric("6.2") {
 		return "bpf_vfs_v62.o"
 	} else {

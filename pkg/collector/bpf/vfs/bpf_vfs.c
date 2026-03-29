@@ -120,7 +120,7 @@ __u64 BPF_PROG(fexit_vfs_rmdir, struct user_namespace *mnt_userns, struct inode 
 	return handle_inode_event((__s64)ret, MODE_RMDIR);
 }
 
-#else
+#elif defined(__KERNEL_POST_v63_PRE_v614)
 
 SEC("fexit/vfs_create")
 __u64 BPF_PROG(fexit_vfs_create, struct mnt_idmap *idmap, struct inode *dir,
@@ -133,6 +133,39 @@ SEC("fexit/vfs_mkdir")
 __u64 BPF_PROG(fexit_vfs_mkdir, struct mnt_idmap *idmap, struct inode *dir,
 	       struct dentry *dentry, umode_t mode, int ret)
 {
+	return handle_inode_event((__s64)ret, MODE_MKDIR);
+}
+
+SEC("fexit/vfs_unlink")
+__u64 BPF_PROG(fexit_vfs_unlink, struct mnt_idmap *idmap, struct inode *dir,
+	       struct dentry *dentry, struct inode **pdir, int ret)
+{
+	return handle_inode_event((__s64)ret, MODE_UNLINK);
+}
+
+SEC("fexit/vfs_rmdir")
+__u64 BPF_PROG(fexit_vfs_rmdir, struct mnt_idmap *idmap, struct inode *dir,
+	       struct dentry *dentry, int ret)
+{
+	return handle_inode_event((__s64)ret, MODE_RMDIR);
+}
+
+#else
+
+SEC("fexit/vfs_create")
+__u64 BPF_PROG(fexit_vfs_create, struct mnt_idmap *idmap, struct inode *dir,
+	       struct dentry *dentry, umode_t mode, bool want_excl, int ret)
+{
+	return handle_inode_event((__s64)ret, MODE_CREATE);
+}
+
+SEC("fexit/vfs_mkdir")
+__u64 BPF_PROG(fexit_vfs_mkdir, struct mnt_idmap *idmap, struct inode *dir,
+	       struct dentry *dentry, umode_t mode, struct dentry *out)
+{
+	// Initialise return value
+	int ret = 0;
+	if (IS_ERR(out)) ret = 1; 
 	return handle_inode_event((__s64)ret, MODE_MKDIR);
 }
 

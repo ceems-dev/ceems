@@ -69,3 +69,42 @@ const void *__builtin_preserve_access_index(void *);
 #ifndef __user
 #define __user
 #endif
+
+/*
+ *   gcc: https://gcc.gnu.org/onlinedocs/gcc/Common-Function-Attributes.html#index-warn_005funused_005fresult-function-attribute
+ * clang: https://clang.llvm.org/docs/AttributeReference.html#nodiscard-warn-unused-result
+ */
+#define __must_check                    __attribute__((__warn_unused_result__))
+
+#ifndef __force
+# define __force
+#endif
+/*
+ * Kernel pointers have redundant information, so we can use a
+ * scheme where we can return either an error code or a normal
+ * pointer with the same return value.
+ *
+ * This should be a per-architecture thing, to allow different
+ * error and pointer decisions.
+ */
+#define MAX_ERRNO	4095
+
+/**
+ * IS_ERR_VALUE - Detect an error pointer.
+ * @x: The pointer to check.
+ *
+ * Like IS_ERR(), but does not generate a compiler warning if result is unused.
+ *
+ * Fetched from kernel source https://github.com/torvalds/linux/blob/master/include/linux/err.h#L28
+ */
+#define IS_ERR_VALUE(x) unlikely((unsigned long)(void *)(x) >= (unsigned long)-MAX_ERRNO)
+
+/**
+ * IS_ERR - Detect an error pointer.
+ * @ptr: The pointer to check.
+ * Return: true if @ptr is an error pointer, false otherwise.
+ */
+FUNC_INLINE bool __must_check IS_ERR(__force const void *ptr)
+{
+	return IS_ERR_VALUE((unsigned long)ptr);
+}
