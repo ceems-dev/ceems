@@ -37,7 +37,9 @@ continuous profiling of compute units.
 - Monitors energy, performance, IO and network metrics for different types of resource
 managers (SLURM, Openstack, k8s)
 - Supports different energy sources like RAPL, HWMON, Cray's PM Counters and BMC _via_ IPMI or Redfish
-- Supports NVIDIA (MIG, time sharing, MPS and vGPU) and AMD GPUs ([Partition](https://rocm.blogs.amd.com/software-tools-optimization/compute-memory-modes/README.html) like CPX, QPX, TPX, DPX)
+- Supports NVIDIA (MIG, time sharing, MPS and vGPU) and AMD GPUs ([Partition](https://rocm.blogs.amd.com/software-tools-optimization/compute-memory-modes/README.html) like CPX, QPX, TPX, DPX). [Dynamic MIG](https://github.com/kubernetes-sigs/nvidia-dra-driver-gpu)
+offered by k8s [DRA](https://kubernetes.io/docs/concepts/scheduling-eviction/dynamic-resource-allocation/)
+is also supported for NVIDIA GPUs.
 - Supports zero instrumentation eBPF based continuous profiling using
 [Grafana Pyroscope](https://grafana.com/oss/pyroscope/) as backend
 - Realtime access to metrics *via* Grafana dashboards or a simple CLI tool
