@@ -82,6 +82,19 @@ any special configuration. However, the configuration presented for
 [cgroups v1](#cgroups-v1) is applicable to cgroups v2, and it is advised to use
 that configuration for cgroups v2 as well.
 
+## LSF
+
+For LSF, ensure the following configuration is setup in `lsf.conf` file:
+
+```ini
+LSB_RESOURCE_ENFORCE="cpu memory gpu" # Use gpu only when GPUs are present in the cluster
+LSF_PROCESS_TRACKING=Y
+LSF_LINUX_CGROUP_ACCT=Y
+```
+
+The above configuration ensures that jobs usage accounting information will be available
+in the cgroups. More information can be consulted in [docs](https://www.ibm.com/docs/en/spectrum-lsf/10.1.0?topic=lsfconf-lsb-resource-enforce).
+
 ## Libvirt
 
 The libvirt collector is meant to be used for OpenStack clusters. There is no

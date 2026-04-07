@@ -226,6 +226,34 @@ enable and disable them at runtime is more involved.
 Both perf and eBPF sub-collectors need extra privileges to work and the necessary privileges
 are discussed in the [Security](./security.md) section.
 
+### LSF collector
+
+The LSF collector is meant to be used on [IBM Spectrum LSF](https://www.ibm.com/docs/en/spectrum-lsf)
+clusters. Most of the options applicable to SLURM are applicable to lsf as well.
+The exporter can be launched as follows to enable the lsf collector:
+
+```bash
+ceems_exporter --collector.lsf
+```
+
+Both eBPF and perf sub-collectors are supported by the lsf collector and they can
+be enabled as follows:
+
+```bash
+ceems_exporter --collector.lsf --collector.perf.hardware-events --collector.perf.software-events --collector.perf.hardware-cache-events --collector.ebpf.io-metrics --collector.ebpf.network-metrics
+```
+
+:::note[NOTE]
+
+LSF collector uses `bjobs` command to fetch GPU devices for the jobs that are running
+on a given compute node. Ensure that `bjobs` command is available on `PATH` before
+starting exporter.
+
+:::
+
+Both perf and eBPF sub-collectors need extra privileges to work and the necessary privileges
+are discussed in the [Security](./security.md) section.
+
 ### Libvirt collector
 
 The Libvirt collector is meant to be used on OpenStack clusters where VMs are managed by
@@ -739,10 +767,17 @@ data.
 ## eBPF based continuous profiling
 
 CEEMS exporter has an optional component that can continuous profiling compute units
-of SLURM and k8s resource managers. This can be enabled by the flag `--profiling.ebpf`.
+of SLURM, LSF and k8s resource managers. This can be enabled by the flag `--profiling.ebpf`.
 The profile samples must be sent to Grafana Pyroscope server and hence thee server
 must be installed beforehand. The continuous profiling requires a config file to configure
 the profiling parameters and Grafana Pyroscope server client.
+
+:::note[NOTE]
+
+Currently, continuous profiling is only supported for SLURM, LSF and k8s resource
+managers.
+
+:::
 
 A sample profiling config file is shown as below:
 

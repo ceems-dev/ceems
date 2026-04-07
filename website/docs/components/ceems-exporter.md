@@ -17,7 +17,8 @@ eBPF based continuous profiling of compute units.
 
 These collectors export metrics from different resource managers.
 
-- Slurm collector: Exports SLURM job metrics like CPU, memory and GPU indices to job ID maps
+- Slurm collector: Exports SLURM job metrics like CPU, memory and GPU indices to job ID maps.
+- Lsf collector: Exports LSF job metrics like CPU, memory and GPU indices to job ID maps.
 - Libvirt collector: Exports libvirt managed VMs metrics like CPU, memory, IO, _etc_.
 - k8s collector: Exports k8s managed pods metrics like CPU, memory, IO, _etc_.
 
@@ -316,6 +317,46 @@ and [eBPF](./ceems-exporter.md#ebpf-sub-collector) sub-collectors. Hence, in
 addition to the above stated metrics, all the metrics available in the sub-collectors
 can also be reported for each cgroup.
 
+### Lsf collector
+
+LSF collector exports the job related metrics like usage of CPU, DRAM, RDMA, _etc_.
+It works exactly like Slurm collector and it supports both cgroups **v1** and **v2**.
+
+:::warning[WARNING]
+
+LSF must be configured to use cgroup controllers for the collector to work properly.
+More details on how to configure SLURM to get accounting information from cgroups can
+be found in [Configuration](../configuration/resource-managers.md) section.
+
+:::
+
+Currently, the list of job related metrics exported by SLURM exporter are as follows:
+
+- Job current CPU time in user and system mode
+- Job CPUs limit (Number of CPUs allocated to the job)
+- Job current total memory usage
+- Job total memory limit (Memory allocated to the job)
+- Job current RSS memory usage
+- Job current cache memory usage
+- Job current number of memory usage hits limits
+- Job current memory and swap usage
+- Job current memory and swap usage hits limits
+- Job total memory and swap limit
+- Job CPU and memory pressures
+- Job maximum RDMA HCA handles
+- Job maximum RDMA HCA objects
+- Job to GPU ordinal mapping (when GPUs found on the compute node)
+- Current number of jobs on the compute node
+
+More information on the metrics can be found in kernel documentation of
+[cgroups v1](https://www.kernel.org/doc/Documentation/cgroup-v1/memory.txt) and
+[cgroups v2](https://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git/tree/Documentation/admin-guide/cgroup-v2.rst).
+
+Lsf collector supports [perf](./ceems-exporter.md#perf-sub-collector)
+and [eBPF](./ceems-exporter.md#ebpf-sub-collector) sub-collectors. Hence, in
+addition to the above stated metrics, all the metrics available in the sub-collectors
+can also be reported for each cgroup.
+
 ### Libvirt collector
 
 Similar to slurm collector, libvirt collector exports metrics of VMs managed
@@ -526,7 +567,7 @@ aggregated by compute unit identifier on Pyroscope server. -->
 
 CEEMS exporter supports continuously profiling compute units using
 [Grafana Pyroscope](https://grafana.com/docs/pyroscope/latest/configure-client/grafana-alloy/ebpf/).
-The continuously profiling is only relevant for SLURM and k8s resource managers as
+The continuously profiling is only relevant for SLURM, LSF and k8s resource managers as
 profiling Openstack VMs from the hypervisor is not practical. Based on a configurable
 discovery interval, the exporter will find all the new process PIDs of a given compute
 unit and starts profiling them and send those profiling samples to Grafana Pyroscope
