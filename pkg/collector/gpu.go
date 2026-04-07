@@ -670,6 +670,9 @@ func NewGPUSMI(k8sClient *ceems_k8s.Client, logger *slog.Logger) (*GPUSMI, error
 func (g *GPUSMI) Discover() error {
 	var err, errs error
 
+	// Reset GPU devices
+	g.Devices = make([]Device, 0)
+
 	for _, vendor := range g.vendors {
 		var devs []Device
 
@@ -833,6 +836,17 @@ func (g *GPUSMI) ReindexGPUs(orderMap string) {
 	// Emit debug logs to show GPU ordering after reindexing
 	g.logger.Debug("GPU order after reindexing")
 	g.print()
+}
+
+// InstancedEnabled returns true if GPU instances is enabled on at least on GPU.
+func (g *GPUSMI) InstancedEnabled() bool {
+	for _, device := range g.Devices {
+		if device.InstancesEnabled {
+			return true
+		}
+	}
+
+	return false
 }
 
 // print emits debug logs with GPU details.

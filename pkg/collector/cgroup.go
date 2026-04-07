@@ -51,6 +51,7 @@ type manager int
 const (
 	_ manager = iota
 	slurm
+	lsf
 	libvirt
 	k8s
 )
@@ -58,6 +59,7 @@ const (
 // Resource manager names.
 var rmNames = map[manager]string{
 	slurm:   "slurm",
+	lsf:     "lsf",
 	libvirt: "libvirt",
 	k8s:     "k8s",
 }
@@ -73,7 +75,7 @@ const (
 	netSubsystem = "net_cls,net_prio"
 )
 
-// Regular expressions of cgroup paths for different resource managers.
+// Regular expressions of cgroup paths for SLURM.
 // ^.*/(?:(.*?)_)?slurm(?:_(.*?)/)?(?:.*?)/job_([0-9]+)(?:.*$)
 // ^.*/slurm(?:_(.*?))?/(?:.*?)/job_([0-9]+)(?:.*$)
 /*
@@ -88,6 +90,31 @@ var (
 	slurmCgroupV1PathRegex = regexp.MustCompile("^.*/slurm(?:_(?P<host>.*?)/)?(?:.*?)job_(?P<id>[0-9]+)(?:.*$)")
 	slurmCgroupV2PathRegex = regexp.MustCompile("^.*/(?:(?P<host>.*?)_)?slurm(?:.*?)/job_(?P<id>[0-9]+)(?:.*$)")
 	slurmIgnoreProcsRegex  = regexp.MustCompile("slurmstepd:(.*)|sleep ([0-9]+)|/bin/bash (.*)/slurm_script")
+)
+
+// Regular expressions of cgroup paths for LSF.
+// ^.*/(?:(.*?)_)?slurm(?:_(.*?)/)?(?:.*?)/job_([0-9]+)(?:.*$)
+// ^.*/slurm(?:_(.*?))?/(?:.*?)/job_([0-9]+)(?:.*$)
+/*
+	For v1 possibilities are /cpuacct/lsf/cluster_name/job.42.34071.1775289779
+							 /memory/lsf/cluster_name/job.42.34071.1775289779
+
+	For v2 possibilities are /lsf/cluster1/job.9.30675.1775295256
+							 /lsf/cluster1/job.9.30675.1775295256/leaf
+
+	Seems like there are no cgroups for each MPI task created by LSF. At least I am not
+	able to find proper settings to get them created
+
+	Ignored processes are of form:
+
+	/usr/share/lsf/10.1/linux3.10-glibc2.17-x86_64/etc/res -d /usr/share/lsf/conf -m dahu-1.grenoble.grid5000.fr /home/usr1/.lsbatch/1775296755.13
+	/bin/bash /home/usr1/.lsbatch/1775296755.13
+	/bin/bash /home/usr1/.lsbatch/1775296755.13.shell
+*/
+var (
+	lsfCgroupV1PathRegex = regexp.MustCompile(`^.*/lsf/(?:(?P<cluster_name>.*?))/job\.(?P<id>[0-9]+)\.(?:(?P<int_id>[0-9]+))\.(?:(?P<ts>[0-9]+))(?:.*$)`)
+	lsfCgroupV2PathRegex = regexp.MustCompile(`^.*/lsf/(?:(?P<cluster_name>.*?))/job\.(?P<id>[0-9]+)\.(?:(?P<int_id>[0-9]+))\.(?:(?P<ts>[0-9]+))/leaf(?:.*$)`)
+	lsfIgnoreProcsRegex  = regexp.MustCompile("(.*)/.lsbatch/(.*)")
 )
 
 // Ref: https://libvirt.org/cgroups.html#legacy-cgroups-layout
@@ -173,6 +200,7 @@ type cgroup struct {
 	procs    []procfs.Proc
 	path     cgroupPath
 	children []cgroupPath // All the children under this root cgroup
+	ncpus    int          // Used only for LSF where jobs without any affinity defined will have cpuset to ALL cpus
 }
 
 // String implements stringer interface of the struct.
@@ -307,6 +335,56 @@ func NewCgroupManager(name manager, logger *slog.Logger) (*cgroupManager, error)
 
 		return manager, nil
 
+	case lsf:
+		if (*forceCgroupsVersion == "" && cgroups.Mode() == cgroups.Unified) || *forceCgroupsVersion == "v2" {
+			manager = &cgroupManager{
+				logger:  logger,
+				fs:      fs,
+				mode:    cgroups.Unified,
+				root:    *cgroupfsPath,
+				idRegex: lsfCgroupV2PathRegex,
+				slices:  []string{"lsf"},
+			}
+		} else {
+			var mode cgroups.CGMode
+			if *forceCgroupsVersion == "v1" {
+				mode = cgroups.Legacy
+			} else {
+				mode = cgroups.Mode()
+			}
+
+			// Resolve subsystem
+			activeSubsystem := resolveSubsystem(*activeController)
+
+			manager = &cgroupManager{
+				logger:           logger,
+				fs:               fs,
+				mode:             mode,
+				root:             *cgroupfsPath,
+				idRegex:          lsfCgroupV1PathRegex,
+				activeController: activeSubsystem,
+				slices:           []string{"lsf"},
+			}
+		}
+
+		// Add manager field
+		manager.id = name
+		manager.name = rmNames[name]
+
+		// Seems like NVIDIA MPS is enabled, it creates a child cgroup to
+		// manage MPS process. It is created under job-mps-service folder,
+		manager.isChild = func(p string) bool {
+			return strings.Contains(p, "/job-mps-service")
+		}
+		manager.ignoreProc = func(p string) bool {
+			return lsfIgnoreProcsRegex.MatchString(p)
+		}
+
+		// Set mountpoints
+		manager.setMountPoints()
+
+		return manager, nil
+
 	case libvirt:
 		if (*forceCgroupsVersion == "" && cgroups.Mode() == cgroups.Unified) || *forceCgroupsVersion == "v2" {
 			manager = &cgroupManager{
@@ -314,7 +392,6 @@ func NewCgroupManager(name manager, logger *slog.Logger) (*cgroupManager, error)
 				fs:     fs,
 				mode:   cgroups.Unified,
 				root:   *cgroupfsPath,
-				slices: []string{},
 			}
 		} else {
 			var mode cgroups.CGMode
@@ -333,7 +410,6 @@ func NewCgroupManager(name manager, logger *slog.Logger) (*cgroupManager, error)
 				mode:             mode,
 				root:             *cgroupfsPath,
 				activeController: activeSubsystem,
-				slices:           []string{},
 			}
 		}
 
@@ -548,6 +624,22 @@ func (c *cgroupManager) setMountPoints() {
 			// For cgroups v1 we need to shift root to /sys/fs/cgroup/cpuacct
 			c.root = filepath.Join(c.root, c.activeController)
 		}
+	case lsf:
+		switch c.mode { //nolint:exhaustive
+		case cgroups.Unified:
+			// /sys/fs/cgroup/lsf
+			for _, slice := range c.slices {
+				c.mountPoints = append(c.mountPoints, filepath.Join(c.root, slice))
+			}
+		default:
+			// /sys/fs/cgroup/cpuacct/lsf
+			for _, slice := range c.slices {
+				c.mountPoints = append(c.mountPoints, filepath.Join(c.root, c.activeController, slice))
+			}
+
+			// For cgroups v1 we need to shift root to /sys/fs/cgroup/cpuacct
+			c.root = filepath.Join(c.root, c.activeController)
+		}
 	case libvirt:
 		switch c.mode { //nolint:exhaustive
 		case cgroups.Unified:
@@ -754,6 +846,8 @@ type cgroupCollector struct {
 	cgBlkioPressure   *prometheus.Desc
 	cgRDMAHCAHandles  *prometheus.Desc
 	cgRDMAHCAObjects  *prometheus.Desc
+	cgGPUFlag         *prometheus.Desc
+	cgGPUNumSMs       *prometheus.Desc
 	collectError      *prometheus.Desc
 }
 
@@ -931,6 +1025,18 @@ func NewCgroupCollector(logger *slog.Logger, cgManager *cgroupManager, opts cgro
 			[]string{"manager", "hostname", "cgrouphostname", "uuid", "device"},
 			nil,
 		),
+		cgGPUFlag: prometheus.NewDesc(
+			prometheus.BuildFQName(Namespace, genericSubsystem, "unit_gpu_index_flag"),
+			"A value > 0 indicates the compute unit using current GPU",
+			[]string{"manager", "hostname", "cgrouphostname", "uuid", "index", "hindex", "gpuuuid", "gpuiid"},
+			nil,
+		),
+		cgGPUNumSMs: prometheus.NewDesc(
+			prometheus.BuildFQName(Namespace, genericSubsystem, "unit_gpu_sm_count"),
+			"Number of SMs/CUs in the GPU instance",
+			[]string{"manager", "hostname", "cgrouphostname", "uuid", "index", "hindex", "gpuuuid", "gpuiid"},
+			nil,
+		),
 		collectError: prometheus.NewDesc(
 			prometheus.BuildFQName(Namespace, genericSubsystem, "collect_error"),
 			"Indicates collection error, 0=no error, 1=error",
@@ -941,7 +1047,7 @@ func NewCgroupCollector(logger *slog.Logger, cgManager *cgroupManager, opts cgro
 }
 
 // Update updates cgroup metrics on given channel.
-func (c *cgroupCollector) Update(ch chan<- prometheus.Metric, cgroups []cgroup) error {
+func (c *cgroupCollector) Update(ch chan<- prometheus.Metric, cgroups []cgroup, gpuSMI *GPUSMI) error {
 	// Fetch metrics
 	metrics := c.update(cgroups)
 
@@ -1023,6 +1129,11 @@ func (c *cgroupCollector) Update(ch chan<- prometheus.Metric, cgroups []cgroup) 
 		}
 	}
 
+	// Update device mapper metrics
+	if len(gpuSMI.Devices) > 0 {
+		c.updateDeviceMappers(ch, gpuSMI)
+	}
+
 	return nil
 }
 
@@ -1031,6 +1142,95 @@ func (c *cgroupCollector) Stop(_ context.Context) error {
 	c.logger.Debug("Stopping", "sub_collector", "cgroup")
 
 	return nil
+}
+
+// updateDeviceMappers updates the device mapper metrics.
+func (c *cgroupCollector) updateDeviceMappers(ch chan<- prometheus.Metric, gpuSMI *GPUSMI) {
+	for _, gpu := range gpuSMI.Devices {
+		// Update mappers for physical GPUs
+		for _, unit := range gpu.ComputeUnits {
+			// If sharing is available, estimate coefficient
+			value := 1.0
+			if gpu.CurrentShares > 0 && unit.NumShares > 0 {
+				value = float64(unit.NumShares) / float64(gpu.CurrentShares)
+			}
+
+			ch <- prometheus.MustNewConstMetric(
+				c.cgGPUFlag,
+				prometheus.GaugeValue,
+				value,
+				c.cgroupManager.name,
+				c.hostname,
+				unit.Hostname,
+				unit.UUID,
+				gpu.Index,
+				fmt.Sprintf("%s/gpu-%s", c.hostname, gpu.Index),
+				gpu.UUID,
+				"",
+			)
+
+			// Export number of SMs/CUs as well
+			// Currently we are not using them for AMD GPUs, so they
+			// will be zero.
+			if gpu.NumSMs > 0 {
+				ch <- prometheus.MustNewConstMetric(
+					c.cgGPUNumSMs,
+					prometheus.GaugeValue,
+					float64(gpu.NumSMs),
+					c.cgroupManager.name,
+					c.hostname,
+					unit.Hostname,
+					unit.UUID,
+					gpu.Index,
+					fmt.Sprintf("%s/gpu-%s", c.hostname, gpu.Index),
+					gpu.UUID,
+					"",
+				)
+			}
+		}
+
+		// Update mappers for instance GPUs
+		for _, inst := range gpu.Instances {
+			for _, unit := range inst.ComputeUnits {
+				// If sharing is available, estimate coefficient
+				value := 1.0
+				if inst.CurrentShares > 0 && unit.NumShares > 0 {
+					value = float64(unit.NumShares) / float64(inst.CurrentShares)
+				}
+
+				ch <- prometheus.MustNewConstMetric(
+					c.cgGPUFlag,
+					prometheus.GaugeValue,
+					value,
+					c.cgroupManager.name,
+					c.hostname,
+					unit.Hostname,
+					unit.UUID,
+					inst.Index,
+					fmt.Sprintf("%s/gpu-%s", c.hostname, inst.Index),
+					gpu.UUID,
+					strconv.FormatUint(inst.GPUInstID, 10),
+				)
+
+				// For GPU instances, export number of SMs/CUs as well
+				if inst.NumSMs > 0 {
+					ch <- prometheus.MustNewConstMetric(
+						c.cgGPUNumSMs,
+						prometheus.GaugeValue,
+						float64(inst.NumSMs),
+						c.cgroupManager.name,
+						c.hostname,
+						unit.Hostname,
+						unit.UUID,
+						inst.Index,
+						fmt.Sprintf("%s/gpu-%s", c.hostname, inst.Index),
+						gpu.UUID,
+						strconv.FormatUint(inst.GPUInstID, 10),
+					)
+				}
+			}
+		}
+	}
 }
 
 // update gets metrics of current active cgroups.
@@ -1096,6 +1296,19 @@ func (c *cgroupCollector) cpusFromCPUSet(path string) (int, error) {
 	}
 
 	return len(cpus) * milliCPUtoCPU, nil
+}
+
+// cpusFromCPUSetUsingDefault returns number of milli CPUs from a default value passed if valid or
+// from cpuset cgroup.
+func (c *cgroupCollector) cpusFromCPUSetUsingDefault(path string, ncpusDefault int) (int, error) {
+	// In the case of LSF, while building cgroups we pass ncpus info fetched from
+	// bjobs command. If non zero value found, that should be the correct value
+	// and we use it directly. If not, we fallback to CPUSet cgroup
+	if ncpusDefault > 0 {
+		return ncpusDefault * milliCPUtoCPU, nil
+	} else {
+		return c.cpusFromCPUSet(path)
+	}
 }
 
 // cpusFromChildren returns number of milli CPUs from child cgroups.
@@ -1184,10 +1397,12 @@ func (c *cgroupCollector) cpusFromShares(path string) (int, error) {
 }
 
 // getCPUs returns number of milli CPUs in the cgroup.
-func (c *cgroupCollector) getCPUs(path string) (int, error) {
+func (c *cgroupCollector) getCPUs(path string, ncpusDefault int) (int, error) {
 	switch c.cgroupManager.id {
 	case slurm:
 		return c.cpusFromCPUSet(path)
+	case lsf:
+		return c.cpusFromCPUSetUsingDefault(path, ncpusDefault)
 	case libvirt:
 		return c.cpusFromChildren(path)
 	case k8s:
@@ -1242,7 +1457,7 @@ func (c *cgroupCollector) statsV1(cgrp cgroup) cgMetric {
 		}
 	}
 
-	ncpus, err := c.getCPUs(path)
+	ncpus, err := c.getCPUs(path, cgrp.ncpus)
 	if err == nil {
 		metric.cpus = ncpus
 	}
@@ -1376,7 +1591,7 @@ func (c *cgroupCollector) statsV2(cgrp cgroup) cgMetric {
 		}
 	}
 
-	ncpus, err := c.getCPUs(path)
+	ncpus, err := c.getCPUs(path, cgrp.ncpus)
 	if err == nil {
 		metric.cpus = ncpus
 	}

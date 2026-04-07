@@ -1,0 +1,26 @@
+#!/bin/bash
+
+echo -e '{
+  "COMMAND":"bjobs",
+  "JOBS":3,
+  "RECORDS":[
+    {
+      "JOBID":"1009248",
+      "ALLOC_SLOT":"testhost-1.example.com:testhost-1.example.com:testhost-1.example.com:testhost-1.example.com:testhost-1.example.com:testhost-1.example.com",
+      "NALLOC_SLOT":"6",
+      "GPU_ALLOC":"testhost-1.example.com:2:1\/0,3:1\/0,2:1\/0,3:1\/0,2:1\/0,3:1\/0"
+    },
+    {
+      "JOBID":"1009249",
+      "ALLOC_SLOT":"testhost-1.example.com:testhost-1.example.com:testhost-1.example.com:testhost-1.example.com:testhost-2.example.com:testhost-2.example.com:testhost-2.example.com:testhost-2.example.com",
+      "NALLOC_SLOT":"8",
+      "GPU_ALLOC":"testhost-1.example.com:0,0,1,1;testhost-2.example.com:0,0,1,1"
+    },
+    {
+      "JOBID":"1009250",
+      "ALLOC_SLOT":"testhost-1.example.com:testhost-1.example.com:testhost-1.example.com:testhost-1.example.com",
+      "NALLOC_SLOT":"4",
+      "GPU_ALLOC":"testhost-1.example.com:1,4,1,4"
+    }
+  ]
+}'

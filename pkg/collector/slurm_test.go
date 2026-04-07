@@ -480,7 +480,7 @@ func TestGRESSharesUpdate(t *testing.T) {
 	}
 }
 
-func writeEnvironFile(procFS string, jobid int, gres gres) error {
+func writeSLURMEnvironFile(procFS string, jobid int, gres gres) error {
 	dir := fmt.Sprintf("%s/%d", procFS, jobid)
 
 	envs := []string{fmt.Sprintf("SLURM_JOB_ID=%d", jobid), "SLURM_JOB_GPUS=" + strings.Join(gres.deviceIDs, ",")}
@@ -585,7 +585,7 @@ func TestJobDevicesCaching(t *testing.T) {
 
 	// Binds GPUs to first 3 jobs
 	for ijob := range len(mockJobs) - 3 {
-		err = writeEnvironFile(procFS, ijob, mockJobs[ijob])
+		err = writeSLURMEnvironFile(procFS, ijob, mockJobs[ijob])
 		require.NoError(t, err)
 	}
 
@@ -599,7 +599,7 @@ func TestJobDevicesCaching(t *testing.T) {
 
 	// Now binds GPUs to first 7 jobs
 	for ijob := range mockJobs {
-		err = writeEnvironFile(procFS, ijob, mockJobs[ijob])
+		err = writeSLURMEnvironFile(procFS, ijob, mockJobs[ijob])
 		require.NoError(t, err)
 	}
 
@@ -663,7 +663,7 @@ func TestJobDevicesCaching(t *testing.T) {
 	// Binds GPUs to first jobs 19 to 25
 	for ijob, gres := range mockJobs {
 		jobid := ijob + 19
-		err = writeEnvironFile(procFS, jobid, gres)
+		err = writeSLURMEnvironFile(procFS, jobid, gres)
 		require.NoError(t, err)
 	}
 

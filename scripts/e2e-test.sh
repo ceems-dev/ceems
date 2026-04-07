@@ -95,6 +95,16 @@ then
     cgroups_mode="unified"
     desc="Cgroups V2 enabling all available cgroups metrics"
     fixture='pkg/collector/testdata/output/exporter/e2e-test-cgroupsv2-all-metrics-output.txt'
+  elif [ "${scenario}" = "exporter-cgroups-v1-lsf" ]
+  then
+    cgroups_mode="legacy"
+    desc="Cgroups V1 with LSF"
+    fixture='pkg/collector/testdata/output/exporter/e2e-test-cgroupsv1-lsf-output.txt'
+  elif [ "${scenario}" = "exporter-cgroups-v2-lsf" ]
+  then
+    cgroups_mode="unified"
+    desc="Cgroups V2 with LSF"
+    fixture='pkg/collector/testdata/output/exporter/e2e-test-cgroupsv2-lsf-output.txt'
   elif [ "${scenario}" = "exporter-cgroups-v1-libvirt" ]
   then
     cgroups_mode="legacy"
@@ -105,7 +115,7 @@ then
     cgroups_mode="unified"
     desc="Cgroups V2 with libvirt"
     fixture='pkg/collector/testdata/output/exporter/e2e-test-cgroupsv2-libvirt-output.txt'
-   elif [ "${scenario}" = "exporter-cgroups-v2-libvirt-nonsystemd-layout" ]
+  elif [ "${scenario}" = "exporter-cgroups-v2-libvirt-nonsystemd-layout" ]
   then
     cgroups_mode="unified"
     desc="Cgroups V2 with libvirt with non-systemd cgroup layout"
@@ -143,6 +153,16 @@ then
     cgroups_mode="legacy"
     desc="Cgroups V1 discoverer for Slurm"
     fixture='pkg/collector/testdata/output/discoverer/e2e-test-discoverer-cgroupsv1-slurm-output.txt'
+  elif [ "${scenario}" = "discoverer-cgroups-v2-lsf" ]
+  then
+    cgroups_mode="unified"
+    desc="Cgroups V2 discoverer for LSF"
+    fixture='pkg/collector/testdata/output/discoverer/e2e-test-discoverer-cgroupsv2-lsf-output.txt'
+  elif [ "${scenario}" = "discoverer-cgroups-v1-lsf" ]
+  then
+    cgroups_mode="legacy"
+    desc="Cgroups V1 discoverer for LSF"
+    fixture='pkg/collector/testdata/output/discoverer/e2e-test-discoverer-cgroupsv1-lsf-output.txt'
   elif [ "${scenario}" = "discoverer-cgroups-v2-k8s" ]
   then
     cgroups_mode="unified"
@@ -542,7 +562,7 @@ then
         --collector.redfish.config.file.expand-env-vars \
         --collector.cray_pm_counters \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -563,7 +583,7 @@ then
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/freeipmi/ipmi-dcmi" \
         --collector.ipmi.test-mode \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -581,7 +601,7 @@ then
         --collector.gpu.nvidia-smi-path="pkg/collector/testdata/nvidia-smi" \
         --collector.rdma.stats \
         --collector.rdma.cmd="pkg/collector/testdata/rdma" \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --collector.ipmi \
         --collector.ipmi.test-mode \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/ipmiutils/ipmiutil" \
@@ -608,7 +628,7 @@ then
         --collector.gpu.nvidia-smi-path="pkg/collector/testdata/nvidia-smi" \
         --collector.rdma.stats \
         --collector.rdma.cmd="pkg/collector/testdata/rdma" \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --collector.ipmi \
         --collector.ipmi.test-mode \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/ipmiutils/ipmiutil" \
@@ -628,7 +648,7 @@ then
         --collector.slurm \
         --collector.gpu.type="amd" \
         --collector.gpu.rocm-smi-path="pkg/collector/testdata/rocm-smi" \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --collector.hwmon \
         --collector.ipmi \
         --collector.ipmi.test-mode \
@@ -650,7 +670,7 @@ then
         --collector.cgroups.force-version="v2" \
         --collector.slurm \
         --collector.gpu.type="nogpu" \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --collector.ipmi \
         --collector.ipmi.test-mode \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
@@ -676,7 +696,7 @@ then
         --collector.ipmi.test-mode \
         --collector.cray_pm_counters \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -701,7 +721,52 @@ then
         --collector.redfish.config.file.expand-env-vars \
         --collector.cray_pm_counters \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
+        --web.listen-address "127.0.0.1:${port}" \
+        --web.disable-exporter-metrics \
+        --log.level="debug" > "${logfile}" 2>&1 &
+  elif [ "${scenario}" = "exporter-cgroups-v1-lsf" ] 
+  then
+      ./bin/ceems_exporter \
+        --path.sysfs="pkg/collector/testdata/sys" \
+        --path.cgroupfs="pkg/collector/testdata/sys/fs/cgroup" \
+        --path.procfs="pkg/collector/testdata/proc" \
+        --collector.cgroups.force-version="v1" \
+        --collector.lsf \
+        --collector.gpu.type="nvidia" \
+        --collector.gpu.nvidia-smi-path="pkg/collector/testdata/nvidia-smi" \
+        --collector.lsf.bjobs-path="pkg/collector/testdata/bjobs" \
+        --collector.lsf.swap-memory-metrics \
+        --collector.lsf.psi-metrics \
+        --collector.ipmi \
+        --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
+        --collector.ipmi.test-mode \
+        --collector.rapl \
+        --collector.force-hostname="testhost-1" \
+        --web.listen-address "127.0.0.1:${port}" \
+        --web.disable-exporter-metrics \
+        --log.level="debug" > "${logfile}" 2>&1 &
+  elif [ "${scenario}" = "exporter-cgroups-v2-lsf" ] 
+  then
+      REDFISH_HOST=localhost REDFISH_PORT=5000 ./bin/ceems_exporter \
+        --path.sysfs="pkg/collector/testdata/sys" \
+        --path.cgroupfs="pkg/collector/testdata/sys/fs/cgroup" \
+        --path.procfs="pkg/collector/testdata/proc" \
+        --collector.cgroups.force-version="v2" \
+        --collector.lsf \
+        --collector.gpu.type="nvidia" \
+        --collector.gpu.nvidia-smi-path="pkg/collector/testdata/nvidia-smi" \
+        --collector.lsf.bjobs-path="pkg/collector/testdata/bjobs" \
+        --collector.lsf.swap-memory-metrics \
+        --collector.lsf.psi-metrics \
+        --collector.ipmi \
+        --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
+        --collector.ipmi.test-mode \
+        --collector.redfish \
+        --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
+        --collector.redfish.config.file.expand-env-vars \
+        --collector.rapl \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -723,7 +788,7 @@ then
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
         --collector.ipmi.test-mode \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -748,7 +813,7 @@ then
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -772,7 +837,7 @@ then
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --collector.rapl \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -793,7 +858,7 @@ then
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
         --collector.ipmi.test-mode \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -816,7 +881,7 @@ then
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -833,7 +898,7 @@ then
         --collector.ipmi \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
         --collector.ipmi.test-mode \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --collector.rapl \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -851,7 +916,7 @@ then
         --collector.ipmi \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
         --collector.ipmi.test-mode \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --collector.rapl \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
@@ -873,7 +938,48 @@ then
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
+        --web.listen-address "127.0.0.1:${port}" \
+        --web.disable-exporter-metrics \
+        --log.level="debug" > "${logfile}" 2>&1 &
+  elif [ "${scenario}" = "discoverer-cgroups-v2-lsf" ] 
+  then
+      ./bin/ceems_exporter \
+        --path.sysfs="pkg/collector/testdata/sys" \
+        --path.cgroupfs="pkg/collector/testdata/sys/fs/cgroup" \
+        --path.procfs="pkg/collector/testdata/proc" \
+        --discoverer.alloy-targets \
+        --collector.cgroups.force-version="v2" \
+        --collector.lsf \
+        --collector.lsf.bjobs-path="pkg/collector/testdata/bjobs" \
+        --collector.gpu.type="nogpu" \
+        --collector.ipmi \
+        --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
+        --collector.ipmi.test-mode \
+        --collector.force-hostname="testhost-1" \
+        --collector.rapl \
+        --web.listen-address "127.0.0.1:${port}" \
+        --web.disable-exporter-metrics \
+        --log.level="debug" > "${logfile}" 2>&1 &
+  elif [ "${scenario}" = "discoverer-cgroups-v1-lsf" ] 
+  then
+      REDFISH_HOST=localhost REDFISH_PORT=5000 ./bin/ceems_exporter \
+        --path.sysfs="pkg/collector/testdata/sys" \
+        --path.cgroupfs="pkg/collector/testdata/sys/fs/cgroup" \
+        --path.procfs="pkg/collector/testdata/proc" \
+        --discoverer.alloy-targets \
+        --collector.lsf \
+        --collector.lsf.bjobs-path="pkg/collector/testdata/bjobs" \
+        --collector.gpu.type="nogpu" \
+        --collector.cgroups.force-version="v1" \
+        --collector.ipmi \
+        --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
+        --collector.ipmi.test-mode \
+        --collector.redfish \
+        --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
+        --collector.redfish.config.file.expand-env-vars \
+        --collector.rapl \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -890,7 +996,7 @@ then
         --collector.k8s.kube-config-file="pkg/collector/testdata/k8s/kubeconfig.yml" \
         --collector.k8s.kubelet-socket-file="${CEEMS_KUBELET_SOCKET_DIR}/amd/kubelet.sock" \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -910,7 +1016,7 @@ then
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:${port}" \
         --web.disable-exporter-metrics \
         --log.level="debug" > "${logfile}" 2>&1 &
@@ -1567,7 +1673,7 @@ then
         --collector.ipmi.test-mode \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/freeipmi/ipmi-dcmi" \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:9010" \
         --web.disable-exporter-metrics \
         --log.level="debug" > /dev/null 2>&1 &
@@ -1582,7 +1688,7 @@ then
         --collector.slurm \
         --collector.gpu.type="nogpu" \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:9011" \
         --web.disable-exporter-metrics \
         --log.level="debug" > /dev/null 2>&1 &
@@ -1600,7 +1706,7 @@ then
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:9012" \
         --web.disable-exporter-metrics \
         --log.level="debug" > /dev/null 2>&1 &
@@ -1620,7 +1726,7 @@ then
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:9013" \
         --web.disable-exporter-metrics \
         --log.level="debug" > /dev/null 2>&1 &
@@ -1637,7 +1743,7 @@ then
         --collector.gpu.rocm-smi-path="pkg/collector/testdata/rocm-smi" \
         --collector.cray_pm_counters \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:9014" \
         --web.disable-exporter-metrics \
         --log.level="debug" > /dev/null 2>&1 &
@@ -1654,7 +1760,7 @@ then
         --collector.gpu.rocm-smi-path="pkg/collector/testdata/rocm-smi" \
         --collector.hwmon \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:9015" \
         --web.disable-exporter-metrics \
         --log.level="debug" > /dev/null 2>&1 &
@@ -1673,7 +1779,7 @@ then
         --collector.ipmi.test-mode \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/openipmi/ipmitool" \
         --collector.rapl \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:9016" \
         --web.disable-exporter-metrics \
         --log.level="debug" > /dev/null 2>&1 &
@@ -1684,7 +1790,7 @@ then
         --collector.disable-defaults \
         --collector.emissions \
         --collector.emissions.provider=owid \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:9017" \
         --web.disable-exporter-metrics \
         --log.level="debug" > /dev/null 2>&1 &
@@ -1819,7 +1925,7 @@ then
         --web.listen-address "127.0.0.1:${port}" \
         --web.config.file="${tmpdir}/config/web-config.yml" \
         --web.disable-exporter-metrics \
-        --collector.empty-hostname-label \
+        --collector.force-hostname="testhost-1" \
         --log.level="debug" >> "${logfile}" 2>&1 &
       EXPORTER_PID=$!
 

@@ -76,6 +76,8 @@ func NewTargetDiscoverer(c *discovererConfig) (Discoverer, error) {
 	switch {
 	case *collectorState["slurm"]:
 		cgManager = slurm
+	case *collectorState["lsf"]:
+		cgManager = lsf
 	case *collectorState["k8s"]:
 		cgManager = k8s
 	}
