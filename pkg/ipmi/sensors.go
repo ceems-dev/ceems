@@ -33,7 +33,7 @@ func (i *ipmiClient) SensorRecords() ([]*FullSensorRecord, error) {
 			AddrLen: uint(unsafe.Sizeof(i.bmcAddr)),
 			Msgid:   1,
 			Msg: ipmiMsg{
-				Data:    uintptr(unsafe.Pointer(&msgData[0])), //nolint:gosec
+				Data:    uintptr(unsafe.Pointer(&msgData[0])),
 				DataLen: 6,
 				Netfn:   IPMI_SENSOR_RECORD_NETFN,
 				Cmd:     IPMI_SENSOR_RECORD_CMD,

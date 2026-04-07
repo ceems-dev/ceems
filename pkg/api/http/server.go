@@ -1075,7 +1075,7 @@ func (s *CEEMSServer) adminUsersQuerier(w http.ResponseWriter, r *http.Request) 
 
 	// Make query
 	q := Query{}
-	q.query("SELECT * FROM " + base.AdminUsersDBTableName)
+	q.query("SELECT * FROM " + base.AdminUsersDBTableName) //nolint:unqueryvet
 
 	// Make query and get admin users list
 	adminUsersLists, err := s.queriers.adminUser(r.Context(), s.db, q, s.logger)
@@ -1111,7 +1111,7 @@ func (s *CEEMSServer) usersQuerier(users []string, w http.ResponseWriter, r *htt
 
 	// Make query
 	q := Query{}
-	q.query("SELECT * FROM " + base.UsersDBTableName)
+	q.query("SELECT * FROM " + base.UsersDBTableName) //nolint:unqueryvet
 	// If no user is queried, return all users. This can happen only for admin
 	// end points
 	if len(users) == 0 {
@@ -1253,7 +1253,7 @@ func (s *CEEMSServer) projectsQuerier(users []string, w http.ResponseWriter, r *
 
 	// Make query
 	q := Query{}
-	q.query("SELECT * FROM " + base.ProjectsDBTableName)
+	q.query("SELECT * FROM " + base.ProjectsDBTableName) //nolint:unqueryvet
 
 	// First select all projects that user is part of using subquery
 	q.query(" WHERE name IN ")

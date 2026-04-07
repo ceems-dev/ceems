@@ -22,7 +22,7 @@ func makeTestCPUCollector(s procfs.CPUStat) *cpuCollector {
 
 func TestCPUCollector(t *testing.T) {
 	_, err := CEEMSExporterApp.Parse([]string{
-		"--path.procfs", "testdata/proc", "--collector.empty-hostname-label",
+		"--path.procfs", "testdata/proc", "--collector.force-hostname", "testhost-1",
 	})
 	require.NoError(t, err)
 

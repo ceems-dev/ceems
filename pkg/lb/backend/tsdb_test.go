@@ -172,7 +172,7 @@ func TestTSDBQueryWithLabelFilter(t *testing.T) {
 	require.NoError(t, err)
 
 	// Make a request to query resource
-	req := httptest.NewRequest(http.MethodGet, "/query", nil)
+	req := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/query", nil)
 
 	responseRecorder := httptest.NewRecorder()
 	http.HandlerFunc(b.Serve).ServeHTTP(responseRecorder, req)

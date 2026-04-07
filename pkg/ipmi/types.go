@@ -165,17 +165,17 @@ func (r *FullSensorRecord) DecodeFromBytes(data []uint8) error {
 	buf := [...]byte{data[28] >> 6, data[27]}
 	r.M = twos(buf, 10)
 	r.Tolerance = data[28] & 0x3f
-	buf[1] = data[29]      //nolint:gosec
-	buf[0] = data[30] >> 6 //nolint:gosec
+	buf[1] = data[29]
+	buf[0] = data[30] >> 6
 	r.B = twos(buf, 10)
-	buf[1] = data[30]&0x3f | ((data[31] & 0xf0) << 2) //nolint:gosec
-	buf[0] = (data[31] & 0xf0) >> 6                   //nolint:gosec
+	buf[1] = data[30]&0x3f | ((data[31] & 0xf0) << 2)
+	buf[0] = (data[31] & 0xf0) >> 6
 	r.Accuracy = twos(buf, 10)
 	r.AccuracyExp = (data[31] & 0xc) >> 2
-	buf[0] = 0                  //nolint:gosec
-	buf[1] = data[32] >> 4      //nolint:gosec
+	buf[0] = 0
+	buf[1] = data[32] >> 4
 	r.RExp = int8(twos(buf, 4)) //nolint:gosec
-	buf[1] = data[32] & 0xf     //nolint:gosec
+	buf[1] = data[32] & 0xf
 	r.BExp = int8(twos(buf, 4)) //nolint:gosec
 
 	encoding := StringEncoding(data[50] >> 6)

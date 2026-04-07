@@ -3,6 +3,7 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -19,9 +20,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func queryServer(address string) error {
+func queryServer(ctx context.Context, address string) error {
 	client := &http.Client{}
-	req, _ := http.NewRequest( //nolint:noctx
+	req, _ := http.NewRequestWithContext(
+		ctx,
 		http.MethodGet,
 		fmt.Sprintf("http://%s/api/%s/health", address, base.APIVersion),
 		nil,
@@ -142,7 +144,7 @@ ceems_api_server:
 
 	// Query exporter
 	for i := range 10 {
-		err := queryServer("localhost:9020")
+		err := queryServer(t.Context(), "localhost:9020")
 		if err == nil {
 			break
 		}

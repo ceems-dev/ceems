@@ -43,7 +43,7 @@ func TestUnitsQuerier(t *testing.T) {
 	q := Query{}
 	q.query(
 		fmt.Sprintf(
-			"SELECT * FROM %s WHERE ignore = 0 AND username in ('usr1') AND cluster_id in ('slurm-0')", //nolint:unqueryvet
+			"SELECT * FROM %s WHERE ignore = 0 AND username in ('usr1') AND cluster_id in ('slurm-0')",
 			base.UnitsDBTableName,
 		),
 	)
@@ -181,7 +181,7 @@ func TestUsageQuerier(t *testing.T) {
 	q := Query{}
 	q.query(
 		fmt.Sprintf(
-			"SELECT * FROM %s WHERE username IN ('usr15') AND cluster_id IN ('slurm-1')", //nolint:unqueryvet
+			"SELECT * FROM %s WHERE username IN ('usr15') AND cluster_id IN ('slurm-1')",
 			base.UsageDBTableName,
 		),
 	)
@@ -233,7 +233,7 @@ func TestProjectQuerier(t *testing.T) {
 	q := Query{}
 	q.query(
 		fmt.Sprintf(
-			"SELECT * FROM %s WHERE name IN ('acc1') AND cluster_id IN ('slurm-1')", //nolint:unqueryvet
+			"SELECT * FROM %s WHERE name IN ('acc1') AND cluster_id IN ('slurm-1')",
 			base.ProjectsDBTableName,
 		),
 	)
@@ -263,7 +263,7 @@ func TestUserQuerier(t *testing.T) {
 	q := Query{}
 	q.query(
 		fmt.Sprintf(
-			"SELECT * FROM %s WHERE name IN ('usr1') AND cluster_id IN ('slurm-1')", //nolint:unqueryvet
+			"SELECT * FROM %s WHERE name IN ('usr1') AND cluster_id IN ('slurm-1')",
 			base.UsersDBTableName,
 		),
 	)
@@ -364,12 +364,12 @@ func TestKeysQuerier(t *testing.T) {
 }
 
 func TestQueryBuilder(t *testing.T) {
-	expectedQueryString := "SELECT * FROM table WHERE a IN (?,?) AND b IN (?,?) AND c BETWEEN (?) AND (?)" //nolint:unqueryvet
+	expectedQueryString := "SELECT * FROM table WHERE a IN (?,?) AND b IN (?,?) AND c BETWEEN (?) AND (?)"
 	expectedQueryParams := []string{"a1", "a2", "10", "20", "2023-01-01", "2023-02-01"}
 
 	// StartedAt query
 	q := Query{}
-	q.query("SELECT * FROM table") //nolint:unqueryvet
+	q.query("SELECT * FROM table")
 	q.query(" WHERE a IN ")
 	q.param([]string{"a1", "a2"})
 
@@ -388,7 +388,7 @@ func TestQueryBuilder(t *testing.T) {
 }
 
 func TestSubQueryBuilder(t *testing.T) {
-	expectedQueryString := "SELECT * FROM table WHERE a IN (SELECT a FROM table1 WHERE d IN (?,?)) AND b IN (?,?)" //nolint:unqueryvet
+	expectedQueryString := "SELECT * FROM table WHERE a IN (SELECT a FROM table1 WHERE d IN (?,?)) AND b IN (?,?)"
 	expectedQueryParams := []string{"d1", "d2", "10", "20"}
 
 	// Sub query
@@ -399,7 +399,7 @@ func TestSubQueryBuilder(t *testing.T) {
 
 	// StartedAt query
 	q := Query{}
-	q.query("SELECT * FROM table") //nolint:unqueryvet
+	q.query("SELECT * FROM table")
 	q.query(" WHERE a IN ")
 	q.subQuery(qSub)
 

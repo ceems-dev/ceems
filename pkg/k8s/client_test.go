@@ -150,7 +150,7 @@ users:
 	tmpfile, err := os.CreateTemp(t.TempDir(), "kubeconfig")
 	require.NoError(t, err)
 
-	err = os.WriteFile(tmpfile.Name(), []byte(content), 0o700) //nolint:gosec
+	err = os.WriteFile(tmpfile.Name(), []byte(content), 0o700)
 	require.NoError(t, err)
 
 	// Create fake kubelet socket server

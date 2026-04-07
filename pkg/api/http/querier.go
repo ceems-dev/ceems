@@ -30,14 +30,14 @@ func (q *Query) query(s string) {
 
 // Add parameter and its placeholder.
 func (q *Query) param(val []string) {
-	q.builder.WriteString(fmt.Sprintf("(%s)", strings.Join(strings.Split(strings.Repeat("?", len(val)), ""), ",")))
+	fmt.Fprintf(&q.builder, "(%s)", strings.Join(strings.Split(strings.Repeat("?", len(val)), ""), ","))
 	q.params = append(q.params, val...)
 }
 
 // Add sub query to builder.
 func (q *Query) subQuery(sq Query) {
 	subQuery, subQueryParams := sq.get()
-	q.builder.WriteString(fmt.Sprintf("(%s)", subQuery))
+	fmt.Fprintf(&q.builder, "(%s)", subQuery)
 	q.params = append(q.params, subQueryParams...)
 }
 

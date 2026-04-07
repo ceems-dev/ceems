@@ -213,7 +213,7 @@ func TestNewFrontendSingleGroup(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		request := httptest.NewRequest(http.MethodGet, "/test", nil)
+		request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/test", nil)
 
 		// Add uuids and start to context
 		var newReq *http.Request
@@ -242,7 +242,7 @@ func TestNewFrontendSingleGroup(t *testing.T) {
 	// Take backend offline, we should expect 503
 	backend1.SetAlive(false)
 
-	request := httptest.NewRequest(http.MethodGet, "/test", nil)
+	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/test", nil)
 	newReq := request.WithContext(
 		context.WithValue(
 			request.Context(), ReqParamsContextKey{},
@@ -325,7 +325,7 @@ func TestNewFrontendTwoGroups(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		request := httptest.NewRequest(http.MethodGet, "/test", nil)
+		request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/test", nil)
 
 		// Add uuids and start to context
 		var newReq *http.Request
@@ -354,7 +354,7 @@ func TestNewFrontendTwoGroups(t *testing.T) {
 	// Take backend offline, we should expect 503
 	backend1.SetAlive(false)
 
-	request := httptest.NewRequest(http.MethodGet, "/test", nil)
+	request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/test", nil)
 	newReq := request.WithContext(
 		context.WithValue(
 			request.Context(), ReqParamsContextKey{},

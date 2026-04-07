@@ -108,7 +108,7 @@ func (s *RedfishProxyServer) newProxyHandlerFunc() (func(w http.ResponseWriter, 
 			if !s.redfish.Config.allowedAPIResourcesRegexp.MatchString(r.URL.Path) {
 				s.logger.Error("Requested resource is not allowed", "path", r.URL.Path, "allowed_resources", s.redfish.Config.allowedAPIResourcesRegexp)
 				w.WriteHeader(http.StatusUnauthorized)
-				fmt.Fprintf(w, "access to api resource %s is not allowed", r.URL.Path)
+				fmt.Fprintf(w, "access to api resource %s is not allowed", r.URL.Path) //nolint:gosec
 
 				return
 			}

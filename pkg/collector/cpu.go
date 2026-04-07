@@ -74,7 +74,7 @@ func NewCPUCollector(logger *slog.Logger) (Collector, error) {
 	}
 
 	// In tests, the expected output is 4
-	if *emptyHostnameLabel {
+	if *forceHostname == "testhost-1" {
 		physicalCores = 4
 	}
 

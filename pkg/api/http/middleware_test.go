@@ -154,7 +154,7 @@ func TestMiddleware(t *testing.T) {
 
 	for _, test := range tests {
 		// create a mock request to use
-		req := httptest.NewRequest(test.method, test.endpoint, nil)
+		req := httptest.NewRequestWithContext(t.Context(), test.method, test.endpoint, nil)
 
 		userName := "usr1"
 		if test.admin {

@@ -90,7 +90,7 @@ func TestNewRedfishProxyServerWithTargets(t *testing.T) {
 	client := http.Client{}
 
 	for _, ip := range remoteIPs {
-		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:%d", p), nil) //nolint:noctx
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, fmt.Sprintf("http://localhost:%d", p), nil)
 		require.NoError(t, err)
 
 		req.Header.Add(realIPHeaderName, ip)
@@ -162,7 +162,7 @@ func TestNewRedfishProxyServerWithWebConfig(t *testing.T) {
 
 	// Make request to only 1st server
 	for i := range 2 {
-		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:%d/redfish/v1/", p), nil) //nolint:noctx
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, fmt.Sprintf("http://localhost:%d/redfish/v1/", p), nil)
 		require.NoError(t, err)
 
 		// Make second request without Redfish URL header and it should pass as we
@@ -186,7 +186,7 @@ func TestNewRedfishProxyServerWithWebConfig(t *testing.T) {
 	}
 
 	// Make a request without redfishURL header and invalid remoteIP
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:%d/redfish/v1/", p), nil) //nolint:noctx
+	req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, fmt.Sprintf("http://localhost:%d/redfish/v1/", p), nil)
 	require.NoError(t, err)
 
 	req.Header.Add(realIPHeaderName, "1.1.1.1")
@@ -209,7 +209,7 @@ func TestNewRedfishProxyServerWithWebConfig(t *testing.T) {
 	// Make concurrent requests to detect data races
 	for i := range 20 {
 		wg.Go(func() {
-			req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("http://localhost:%d/redfish/v1/", p), nil) //nolint:noctx
+			req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, fmt.Sprintf("http://localhost:%d/redfish/v1/", p), nil)
 			errs <- err
 
 			// Target ID

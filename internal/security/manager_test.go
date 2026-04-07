@@ -42,14 +42,14 @@ func testConfig(tmpDir string) (*Config, error) {
 	// Create a file in testDir
 	testReadFile := filepath.Join(testDir, "testRead")
 
-	err = os.WriteFile(testReadFile, []byte("hello"), 0o700) //nolint:gosec
+	err = os.WriteFile(testReadFile, []byte("hello"), 0o700)
 	if err != nil {
 		return nil, err
 	}
 
 	testWriteFile := filepath.Join(testDir, "testWrite")
 
-	err = os.WriteFile(testWriteFile, []byte("hello"), 0o700) //nolint:gosec
+	err = os.WriteFile(testWriteFile, []byte("hello"), 0o700)
 	if err != nil {
 		return nil, err
 	}

@@ -114,7 +114,7 @@ func TestPromReverseProxyModifyResponse(t *testing.T) {
 		frontendProxy.URL + "/label/instance/values",
 		frontendProxy.URL + "/label/job/values",
 	} {
-		resp, err := http.Get(tt) //nolint:gosec,noctx
+		resp, err := http.Get(tt) //nolint:noctx
 		require.NoError(t, err)
 
 		// Read response body

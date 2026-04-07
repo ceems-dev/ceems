@@ -125,7 +125,7 @@ func TestLeastConnectionLB(t *testing.T) {
 		go func(i string) {
 			defer wg.Done()
 
-			r := httptest.NewRequest(http.MethodGet, "/test", nil)
+			r := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/test", nil)
 			w := httptest.NewRecorder()
 
 			if target := manager.Target(i); target != nil {
