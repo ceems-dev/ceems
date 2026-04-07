@@ -203,7 +203,7 @@ func TestUsersHandlers(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		request := httptest.NewRequest(http.MethodGet, test.req, nil)
+		request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, test.req, nil)
 		request.Header.Set("X-Grafana-User", test.user)
 
 		if test.admin {
@@ -276,7 +276,7 @@ func TestProjectsHandler(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		request := httptest.NewRequest(http.MethodGet, test.req, nil)
+		request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, test.req, nil)
 		request.Header.Set("X-Grafana-User", test.user)
 
 		if test.admin {
@@ -368,7 +368,7 @@ func TestUnitsHandler(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		request := httptest.NewRequest(http.MethodGet, test.req, nil)
+		request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, test.req, nil)
 		request.Header.Set("X-Grafana-User", test.user)
 
 		if test.admin {
@@ -464,7 +464,7 @@ func TestUsageHandlers(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		request := httptest.NewRequest(http.MethodGet, test.req, nil)
+		request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, test.req, nil)
 		request.Header.Set("X-Grafana-User", test.user)
 
 		if test.admin {
@@ -570,7 +570,7 @@ func TestUsageErrorHandlers(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		request := httptest.NewRequest(http.MethodGet, test.req, nil)
+		request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, test.req, nil)
 		request.Header.Set("X-Grafana-User", test.user)
 
 		if test.admin {
@@ -644,7 +644,7 @@ func TestStatsHandlers(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		request := httptest.NewRequest(http.MethodGet, test.req, nil)
+		request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, test.req, nil)
 		request.Header.Set("X-Grafana-User", test.user)
 
 		if test.admin {
@@ -714,7 +714,7 @@ func TestVerifyHandler(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		request := httptest.NewRequest(http.MethodGet, test.req, nil)
+		request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, test.req, nil)
 		request.Header.Set("X-Grafana-User", test.user)
 
 		// Start recorder
@@ -763,7 +763,7 @@ func TestDemoHandlers(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		request := httptest.NewRequest(http.MethodGet, test.req, nil)
+		request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, test.req, nil)
 		request.Header.Set("X-Grafana-User", test.user)
 
 		if strings.Contains(test.name, "units") {
@@ -798,7 +798,7 @@ func TestClustersHandler(t *testing.T) {
 	defer server.Shutdown(t.Context())
 
 	// Create request
-	req := httptest.NewRequest(http.MethodGet, "/api/"+base.APIVersion+"/clusters/admin", nil)
+	req := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/"+base.APIVersion+"/clusters/admin", nil)
 	// Add user header
 	currentUser := "foo"
 	req.Header.Set("X-Grafana-User", currentUser)
@@ -841,7 +841,7 @@ func TestUnitsHandlerWithMalformedQueryParams(t *testing.T) {
 	defer server.Shutdown(t.Context())
 
 	// Create request
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/units", nil)
+	req := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/units", nil)
 	// Add user header
 	req.Header.Set("X-Grafana-User", "foo")
 	// Add from query parameter
@@ -884,7 +884,7 @@ func TestUnitsHandlerWithQueryWindowExceeded(t *testing.T) {
 	server := setupServer(tmpDir)
 	defer server.Shutdown(t.Context())
 	// Create request
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/units", nil)
+	req := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/units", nil)
 	// Add user header
 	req.Header.Set("X-Grafana-User", "foo")
 	// Add from query parameter
@@ -930,7 +930,7 @@ func TestUnitsHandlerWithUnituuidsQueryParams(t *testing.T) {
 	defer server.Shutdown(t.Context())
 
 	// Create request
-	req := httptest.NewRequest(http.MethodGet, "/api/v1/units", nil)
+	req := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/units", nil)
 	// Add user header
 	req.Header.Set("X-Grafana-User", "foo")
 	// Add from query parameter
@@ -969,7 +969,7 @@ func TestUnitsHandlerWithUnituuidsQueryParams(t *testing.T) {
 // 	defer server.Shutdown(t.Context())
 
 // 	// Create request
-// 	req := httptest.NewRequest(http.MethodGet, "/api/v1/usage/current", nil)
+// 	req := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/api/v1/usage/current", nil)
 // 	// Need to set path variables here
 // 	req = mux.SetURLVars(req, map[string]string{"mode": "current"})
 

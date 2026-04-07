@@ -65,9 +65,19 @@ linters:
       - legacy
       - std-error-handling
     rules:
-      - linters:
+      # Those reports are not relevant in tests.
+      - linters: 
+          - gosec
+          - unqueryvet
           - errcheck
+        # text: "(G705: XSS via taint analysis|G704: SSRF via taint analysis|G703: Path traversal via taint analysis|G702: Command injection via taint analysis|G306: Expect WriteFile permissions to be 0600 or less|G120: Parsing form data without limiting request body size can allow memory exhaustion (use http.MaxBytesReader)|net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext)"
         path: _test.go
+      - linters: 
+          - gosec
+          - noctx
+          - unqueryvet
+        # text: "(G705: XSS via taint analysis|G704: SSRF via taint analysis|G703: Path traversal via taint analysis|G702: Command injection via taint analysis|G306: Expect WriteFile permissions to be 0600 or less|G120: Parsing form data without limiting request body size can allow memory exhaustion (use http.MaxBytesReader)|net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext)"
+        path: scripts/mock_servers
     paths:
       - third_party$
       - builtin$

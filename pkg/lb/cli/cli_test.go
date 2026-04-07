@@ -3,6 +3,7 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -24,8 +25,8 @@ var mockCEEMSLBApp = *kingpin.New(
 	"Mock Load Balancer App.",
 )
 
-func queryLB(address, clusterID string) error {
-	req, err := http.NewRequest(http.MethodGet, "http://"+address, nil) //nolint:noctx
+func queryLB(ctx context.Context, address, clusterID string) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "http://"+address, nil)
 	if err != nil {
 		return err
 	}
@@ -109,9 +110,9 @@ ceems_lb:
 
 	// Query LB
 	for i := range 10 {
-		err := queryLB("localhost:9040", "default")
+		err := queryLB(t.Context(), "localhost:9040", "default")
 		if err == nil {
-			err := queryLB("localhost:9040", "default")
+			err := queryLB(t.Context(), "localhost:9040", "default")
 			if err == nil {
 				break
 			}

@@ -541,7 +541,7 @@ func TestCheckHTTPClientConfigFiles(t *testing.T) {
 	} {
 		path := filepath.Join(tmpDir, n)
 		testFiles[n] = path
-		err := os.WriteFile(path, []byte(n), 0o700) //nolint:gosec
+		err := os.WriteFile(path, []byte(n), 0o700)
 		require.NoError(t, err)
 	}
 

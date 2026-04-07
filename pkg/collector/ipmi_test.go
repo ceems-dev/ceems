@@ -262,7 +262,7 @@ func TestCachedPowerReadings(t *testing.T) {
 	// When collector is being instantiated
 	d1 := []byte(`#!/bin/bash
 exit 1`)
-	err := os.WriteFile(tmpIPMIPath, d1, 0o700) //nolint:gosec
+	err := os.WriteFile(tmpIPMIPath, d1, 0o700)
 	require.NoError(t, err)
 
 	_, err = CEEMSExporterApp.Parse([]string{
@@ -314,7 +314,7 @@ DCMI Secondary LAN Channel:     Supported
   Correction Time:   62914560 ms
   Sampling period:   1472 sec
 ipmiutil dcmi, completed successfully"""`)
-	err = os.WriteFile(tmpIPMIPath, d1, 0o700) //nolint:gosec
+	err = os.WriteFile(tmpIPMIPath, d1, 0o700)
 	require.NoError(t, err)
 
 	// Get readings
@@ -326,7 +326,7 @@ ipmiutil dcmi, completed successfully"""`)
 	// Modify script again to return error
 	d1 = []byte(`#!/bin/bash
 exit 1`)
-	err = os.WriteFile(tmpIPMIPath, d1, 0o700) //nolint:gosec
+	err = os.WriteFile(tmpIPMIPath, d1, 0o700)
 	require.NoError(t, err)
 
 	// Get readings
@@ -358,7 +358,7 @@ DCMI Secondary LAN Channel:     Supported
   Correction Time:   62914560 ms
   Sampling period:   1472 sec
 ipmiutil dcmi, completed successfully"""`)
-	err = os.WriteFile(tmpIPMIPath, d1, 0o700) //nolint:gosec
+	err = os.WriteFile(tmpIPMIPath, d1, 0o700)
 	require.NoError(t, err)
 
 	// Get readings again and we should get last cached values

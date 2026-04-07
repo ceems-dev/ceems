@@ -202,7 +202,7 @@ users:
 
 	content = fmt.Sprintf(content, apiURL)
 
-	err := os.WriteFile(kubeconfig, []byte(content), 0o700) //nolint:gosec
+	err := os.WriteFile(kubeconfig, []byte(content), 0o700)
 	if err != nil {
 		return yaml.Node{}, "", err
 	}
@@ -215,7 +215,7 @@ ceems_api_server:
 `
 	mainConfigFile := filepath.Join(tmpDir, "config.yaml")
 
-	err = os.WriteFile(mainConfigFile, []byte(mainConfig), 0o700) //nolint:gosec
+	err = os.WriteFile(mainConfigFile, []byte(mainConfig), 0o700)
 	if err != nil {
 		return yaml.Node{}, "", err
 	}
@@ -231,7 +231,7 @@ users:
 `
 	usersDBFile := filepath.Join(tmpDir, "users_db.yaml")
 
-	err = os.WriteFile(usersDBFile, []byte(usersDB), 0o700) //nolint:gosec
+	err = os.WriteFile(usersDBFile, []byte(usersDB), 0o700)
 	if err != nil {
 		return yaml.Node{}, "", err
 	}

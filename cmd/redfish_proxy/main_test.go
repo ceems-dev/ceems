@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -16,9 +17,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func queryServer(address, port string) error {
+func queryServer(ctx context.Context, address, port string) error {
 	client := &http.Client{}
-	req, _ := http.NewRequest( //nolint:noctx
+	req, _ := http.NewRequestWithContext(
+		ctx,
 		http.MethodGet,
 		fmt.Sprintf("http://%s/redfish/v1/", address),
 		nil,
@@ -163,7 +165,7 @@ redfish_config:
 
 	// Query exporter
 	for i := range 10 {
-		err := queryServer("localhost:5000", port)
+		err := queryServer(t.Context(), "localhost:5000", port)
 		if err == nil {
 			break
 		}

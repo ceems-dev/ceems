@@ -81,7 +81,7 @@ func TestParseTSDBQueryParams(t *testing.T) {
 			body = strings.NewReader("hello")
 		}
 
-		req, err := http.NewRequest(test.method, "http://localhost:9090"+test.path, body) //nolint:noctx
+		req, err := http.NewRequestWithContext(t.Context(), test.method, "http://localhost:9090"+test.path, body)
 		require.NoError(t, err)
 
 		// For GET request add query to URL
@@ -176,7 +176,7 @@ func TestParsePyroQueryParams(t *testing.T) {
 
 		require.NoError(t, err)
 
-		req, err := http.NewRequest(http.MethodPost, "http://localhost:4040/"+test.resource, bytes.NewBuffer(data)) //nolint:noctx
+		req, err := http.NewRequestWithContext(t.Context(), http.MethodPost, "http://localhost:4040/"+test.resource, bytes.NewBuffer(data))
 		require.NoError(t, err)
 
 		p := &ReqParams{}

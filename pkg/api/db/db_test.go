@@ -938,7 +938,7 @@ func TestUnitStatsDBBackup(t *testing.T) {
 		t.Errorf("Failed to create DB connection to backup DB: %s", err)
 	}
 
-	rows, err := db.QueryContext(t.Context(), "SELECT * FROM "+base.UnitsDBTableName) //nolint:gosec
+	rows, err := db.QueryContext(t.Context(), "SELECT * FROM "+base.UnitsDBTableName)
 	require.NoError(t, err)
 
 	defer rows.Close()

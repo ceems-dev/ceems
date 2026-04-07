@@ -12,7 +12,7 @@ import (
 
 func TestCrayPMCCollector(t *testing.T) {
 	_, err := CEEMSExporterApp.Parse([]string{
-		"--path.sysfs", "testdata/sys", "--collector.empty-hostname-label",
+		"--path.sysfs", "testdata/sys", "--collector.force-hostname", "testhost-1",
 	})
 	require.NoError(t, err)
 
@@ -39,7 +39,7 @@ func TestCrayPMCCollector(t *testing.T) {
 
 func TestGetCrayPMCDomains(t *testing.T) {
 	_, err := CEEMSExporterApp.Parse([]string{
-		"--path.sysfs", "testdata/sys", "--collector.empty-hostname-label",
+		"--path.sysfs", "testdata/sys", "--collector.force-hostname", "testhost-1",
 	})
 	require.NoError(t, err)
 

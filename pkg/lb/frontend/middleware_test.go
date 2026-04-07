@@ -335,7 +335,7 @@ func TestMiddleware(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		request := httptest.NewRequest(http.MethodGet, test.req, nil)
+		request := httptest.NewRequestWithContext(t.Context(), http.MethodGet, test.req, nil)
 		if test.header {
 			request.Header.Set(base.GrafanaUserHeader, test.user)
 		}

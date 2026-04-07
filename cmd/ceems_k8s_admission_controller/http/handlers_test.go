@@ -201,9 +201,9 @@ func TestHandler(t *testing.T) {
 			err := json.NewEncoder(buf).Encode(test.req)
 			require.NoError(t, err)
 
-			request = httptest.NewRequest(test.method, test.url, buf)
+			request = httptest.NewRequestWithContext(t.Context(), test.method, test.url, buf)
 		} else {
-			request = httptest.NewRequest(test.method, test.url, nil)
+			request = httptest.NewRequestWithContext(t.Context(), test.method, test.url, nil)
 		}
 
 		request.Header.Set("Content-Type", "application/json")

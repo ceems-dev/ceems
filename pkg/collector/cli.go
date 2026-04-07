@@ -55,13 +55,12 @@ var (
 	disableCapAwareness bool
 )
 
-// Empty hostname flag (Used only for testing).
-// var emptyHostnameLabel *bool
+// Force hostname (Used only for testing).
 // This is hidden flag only used for e2e testing.
-var emptyHostnameLabel = CEEMSExporterApp.Flag(
-	"collector.empty-hostname-label",
-	"Use empty hostname in labels. Only for testing. (default is disabled)",
-).Hidden().Default("false").Bool()
+var forceHostname = CEEMSExporterApp.Flag(
+	"collector.force-hostname",
+	"Force hostname. Only for testing.",
+).Hidden().Default("").String()
 
 // NewCEEMSExporter returns a new CEEMSExporter instance.
 func NewCEEMSExporter() (*CEEMSExporter, error) {
@@ -110,7 +109,7 @@ func (b *CEEMSExporter) Main() error {
 	// eBPF profiling related flags
 	b.App.Flag(
 		"profiling.ebpf",
-		"[Experimental] Enable eBPF based continuous profiling. Supported for SLURM and k8s. Enabling this "+
+		"[Experimental] Enable eBPF based continuous profiling. Supported for SLURM, LSF and k8s. Enabling this "+
 			"will continuously profile compute units without needing to deploy Grafana Alloy. Available only on amd64 and arm64 architectures. (default: false).",
 	).Default("false").BoolVar(&enableProfiler)
 	b.App.Flag(
@@ -221,7 +220,7 @@ func (b *CEEMSExporter) Main() error {
 	)
 
 	// Get hostname
-	if !*emptyHostnameLabel {
+	if *forceHostname == "" {
 		// Inside k8s pod, we need to get hostname from NODE_NAME env var
 		if os.Getenv("NODE_NAME") != "" {
 			hostname = os.Getenv("NODE_NAME")
@@ -231,6 +230,8 @@ func (b *CEEMSExporter) Main() error {
 				logger.Error("Failed to get hostname", "err", err)
 			}
 		}
+	} else {
+		hostname = *forceHostname
 	}
 
 	runtime.GOMAXPROCS(maxProcs)
