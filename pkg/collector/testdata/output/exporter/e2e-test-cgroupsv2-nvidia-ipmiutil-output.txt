@@ -1,311 +1,311 @@
 # HELP ceems_compute_unit_cpu_system_seconds_total Total job CPU system seconds
 # TYPE ceems_compute_unit_cpu_system_seconds_total counter
-ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="",hostname="",manager="slurm",uuid="1009248"} 115.777502
-ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="",hostname="",manager="slurm",uuid="1009249"} 115.777502
-ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="",hostname="",manager="slurm",uuid="1009250"} 115.777502
-ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009248"} 115.777502
-ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009249"} 115.777502
-ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009250"} 115.777502
-ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009248"} 115.777502
-ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009249"} 115.777502
-ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009250"} 115.777502
+ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009248"} 115.777502
+ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009249"} 115.777502
+ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009250"} 115.777502
+ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009248"} 115.777502
+ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009249"} 115.777502
+ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009250"} 115.777502
+ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009248"} 115.777502
+ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009249"} 115.777502
+ceems_compute_unit_cpu_system_seconds_total{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009250"} 115.777502
 # HELP ceems_compute_unit_cpu_user_seconds_total Total job CPU user seconds
 # TYPE ceems_compute_unit_cpu_user_seconds_total counter
-ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="",hostname="",manager="slurm",uuid="1009248"} 60375.292848
-ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="",hostname="",manager="slurm",uuid="1009249"} 60375.292848
-ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="",hostname="",manager="slurm",uuid="1009250"} 60375.292848
-ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009248"} 60375.292848
-ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009249"} 60375.292848
-ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009250"} 60375.292848
-ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009248"} 60375.292848
-ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009249"} 60375.292848
-ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009250"} 60375.292848
+ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009248"} 60375.292848
+ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009249"} 60375.292848
+ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009250"} 60375.292848
+ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009248"} 60375.292848
+ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009249"} 60375.292848
+ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009250"} 60375.292848
+ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009248"} 60375.292848
+ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009249"} 60375.292848
+ceems_compute_unit_cpu_user_seconds_total{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009250"} 60375.292848
 # HELP ceems_compute_unit_cpus Total number of job CPUs
 # TYPE ceems_compute_unit_cpus gauge
-ceems_compute_unit_cpus{cgrouphostname="",hostname="",manager="slurm",uuid="1009248"} 2
-ceems_compute_unit_cpus{cgrouphostname="",hostname="",manager="slurm",uuid="1009249"} 2
-ceems_compute_unit_cpus{cgrouphostname="",hostname="",manager="slurm",uuid="1009250"} 2
-ceems_compute_unit_cpus{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009248"} 2
-ceems_compute_unit_cpus{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009249"} 2
-ceems_compute_unit_cpus{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009250"} 2
-ceems_compute_unit_cpus{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009248"} 2
-ceems_compute_unit_cpus{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009249"} 2
-ceems_compute_unit_cpus{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009250"} 2
-# HELP ceems_compute_unit_gpu_index_flag A value > 0 indicates the job using current GPU
+ceems_compute_unit_cpus{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009248"} 2
+ceems_compute_unit_cpus{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009249"} 2
+ceems_compute_unit_cpus{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009250"} 2
+ceems_compute_unit_cpus{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009248"} 2
+ceems_compute_unit_cpus{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009249"} 2
+ceems_compute_unit_cpus{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009250"} 2
+ceems_compute_unit_cpus{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009248"} 2
+ceems_compute_unit_cpus{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009249"} 2
+ceems_compute_unit_cpus{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009250"} 2
+# HELP ceems_compute_unit_gpu_index_flag A value > 0 indicates the compute unit using current GPU
 # TYPE ceems_compute_unit_gpu_index_flag gauge
-ceems_compute_unit_gpu_index_flag{cgrouphostname="",gpuiid="",gpuuuid="GPU-61a65011-6571-a6d2-5ab8-66cbb6f7f9c3",hindex="/gpu-1",hostname="",index="1",manager="slurm",uuid="1009249"} 1
-ceems_compute_unit_gpu_index_flag{cgrouphostname="",gpuiid="",gpuuuid="GPU-61a65011-6571-a6d2-5ab8-66cbb6f7f9c3",hindex="/gpu-1",hostname="",index="1",manager="slurm",uuid="1009250"} 1
-ceems_compute_unit_gpu_index_flag{cgrouphostname="",gpuiid="",gpuuuid="GPU-f124aa59-d406-d45b-9481-8fcd694e6c9e",hindex="/gpu-0",hostname="",index="0",manager="slurm",uuid="1009249"} 1
-ceems_compute_unit_gpu_index_flag{cgrouphostname="",gpuiid="1",gpuuuid="GPU-956348bc-d43d-23ed-53d4-857749fa2b67",hindex="/gpu-2",hostname="",index="2",manager="slurm",uuid="1009248"} 1
-ceems_compute_unit_gpu_index_flag{cgrouphostname="node0",gpuiid="",gpuuuid="GPU-61a65011-6571-a64n-5ab8-66cbb6f7f9c3",hindex="/gpu-9",hostname="",index="9",manager="slurm",uuid="2009249"} 0.75
-ceems_compute_unit_gpu_index_flag{cgrouphostname="node0",gpuiid="",gpuuuid="GPU-61a65011-6571-a64n-5ab8-66cbb6f7f9c3",hindex="/gpu-9",hostname="",index="9",manager="slurm",uuid="2009250"} 0.25
-ceems_compute_unit_gpu_index_flag{cgrouphostname="node0",gpuiid="",gpuuuid="GPU-61a65011-6571-a6d2-5th8-66cbb6f7f9c3",hindex="/gpu-8",hostname="",index="8",manager="slurm",uuid="2009249"} 1
-ceems_compute_unit_gpu_index_flag{cgrouphostname="node0",gpuiid="6",gpuuuid="GPU-feba7e40-d724-01ff-b00f-3a439a28a6c7",hindex="/gpu-7",hostname="",index="7",manager="slurm",uuid="2009248"} 1
+ceems_compute_unit_gpu_index_flag{cgrouphostname="",gpuiid="",gpuuuid="GPU-61a65011-6571-a6d2-5ab8-66cbb6f7f9c3",hindex="testhost-1/gpu-1",hostname="testhost-1",index="1",manager="slurm",uuid="1009249"} 1
+ceems_compute_unit_gpu_index_flag{cgrouphostname="",gpuiid="",gpuuuid="GPU-61a65011-6571-a6d2-5ab8-66cbb6f7f9c3",hindex="testhost-1/gpu-1",hostname="testhost-1",index="1",manager="slurm",uuid="1009250"} 1
+ceems_compute_unit_gpu_index_flag{cgrouphostname="",gpuiid="",gpuuuid="GPU-f124aa59-d406-d45b-9481-8fcd694e6c9e",hindex="testhost-1/gpu-0",hostname="testhost-1",index="0",manager="slurm",uuid="1009249"} 1
+ceems_compute_unit_gpu_index_flag{cgrouphostname="",gpuiid="1",gpuuuid="GPU-956348bc-d43d-23ed-53d4-857749fa2b67",hindex="testhost-1/gpu-2",hostname="testhost-1",index="2",manager="slurm",uuid="1009248"} 1
+ceems_compute_unit_gpu_index_flag{cgrouphostname="node0",gpuiid="",gpuuuid="GPU-61a65011-6571-a64n-5ab8-66cbb6f7f9c3",hindex="testhost-1/gpu-9",hostname="testhost-1",index="9",manager="slurm",uuid="2009249"} 0.75
+ceems_compute_unit_gpu_index_flag{cgrouphostname="node0",gpuiid="",gpuuuid="GPU-61a65011-6571-a64n-5ab8-66cbb6f7f9c3",hindex="testhost-1/gpu-9",hostname="testhost-1",index="9",manager="slurm",uuid="2009250"} 0.25
+ceems_compute_unit_gpu_index_flag{cgrouphostname="node0",gpuiid="",gpuuuid="GPU-61a65011-6571-a6d2-5th8-66cbb6f7f9c3",hindex="testhost-1/gpu-8",hostname="testhost-1",index="8",manager="slurm",uuid="2009249"} 1
+ceems_compute_unit_gpu_index_flag{cgrouphostname="node0",gpuiid="6",gpuuuid="GPU-feba7e40-d724-01ff-b00f-3a439a28a6c7",hindex="testhost-1/gpu-7",hostname="testhost-1",index="7",manager="slurm",uuid="2009248"} 1
 # HELP ceems_compute_unit_gpu_sm_count Number of SMs/CUs in the GPU instance
 # TYPE ceems_compute_unit_gpu_sm_count gauge
-ceems_compute_unit_gpu_sm_count{cgrouphostname="",gpuiid="",gpuuuid="GPU-61a65011-6571-a6d2-5ab8-66cbb6f7f9c3",hindex="/gpu-1",hostname="",index="1",manager="slurm",uuid="1009249"} 108
-ceems_compute_unit_gpu_sm_count{cgrouphostname="",gpuiid="",gpuuuid="GPU-61a65011-6571-a6d2-5ab8-66cbb6f7f9c3",hindex="/gpu-1",hostname="",index="1",manager="slurm",uuid="1009250"} 108
-ceems_compute_unit_gpu_sm_count{cgrouphostname="",gpuiid="",gpuuuid="GPU-f124aa59-d406-d45b-9481-8fcd694e6c9e",hindex="/gpu-0",hostname="",index="0",manager="slurm",uuid="1009249"} 108
-ceems_compute_unit_gpu_sm_count{cgrouphostname="",gpuiid="1",gpuuuid="GPU-956348bc-d43d-23ed-53d4-857749fa2b67",hindex="/gpu-2",hostname="",index="2",manager="slurm",uuid="1009248"} 42
-ceems_compute_unit_gpu_sm_count{cgrouphostname="node0",gpuiid="",gpuuuid="GPU-61a65011-6571-a64n-5ab8-66cbb6f7f9c3",hindex="/gpu-9",hostname="",index="9",manager="slurm",uuid="2009249"} 108
-ceems_compute_unit_gpu_sm_count{cgrouphostname="node0",gpuiid="",gpuuuid="GPU-61a65011-6571-a64n-5ab8-66cbb6f7f9c3",hindex="/gpu-9",hostname="",index="9",manager="slurm",uuid="2009250"} 108
-ceems_compute_unit_gpu_sm_count{cgrouphostname="node0",gpuiid="",gpuuuid="GPU-61a65011-6571-a6d2-5th8-66cbb6f7f9c3",hindex="/gpu-8",hostname="",index="8",manager="slurm",uuid="2009249"} 108
-ceems_compute_unit_gpu_sm_count{cgrouphostname="node0",gpuiid="6",gpuuuid="GPU-feba7e40-d724-01ff-b00f-3a439a28a6c7",hindex="/gpu-7",hostname="",index="7",manager="slurm",uuid="2009248"} 14
+ceems_compute_unit_gpu_sm_count{cgrouphostname="",gpuiid="",gpuuuid="GPU-61a65011-6571-a6d2-5ab8-66cbb6f7f9c3",hindex="testhost-1/gpu-1",hostname="testhost-1",index="1",manager="slurm",uuid="1009249"} 108
+ceems_compute_unit_gpu_sm_count{cgrouphostname="",gpuiid="",gpuuuid="GPU-61a65011-6571-a6d2-5ab8-66cbb6f7f9c3",hindex="testhost-1/gpu-1",hostname="testhost-1",index="1",manager="slurm",uuid="1009250"} 108
+ceems_compute_unit_gpu_sm_count{cgrouphostname="",gpuiid="",gpuuuid="GPU-f124aa59-d406-d45b-9481-8fcd694e6c9e",hindex="testhost-1/gpu-0",hostname="testhost-1",index="0",manager="slurm",uuid="1009249"} 108
+ceems_compute_unit_gpu_sm_count{cgrouphostname="",gpuiid="1",gpuuuid="GPU-956348bc-d43d-23ed-53d4-857749fa2b67",hindex="testhost-1/gpu-2",hostname="testhost-1",index="2",manager="slurm",uuid="1009248"} 42
+ceems_compute_unit_gpu_sm_count{cgrouphostname="node0",gpuiid="",gpuuuid="GPU-61a65011-6571-a64n-5ab8-66cbb6f7f9c3",hindex="testhost-1/gpu-9",hostname="testhost-1",index="9",manager="slurm",uuid="2009249"} 108
+ceems_compute_unit_gpu_sm_count{cgrouphostname="node0",gpuiid="",gpuuuid="GPU-61a65011-6571-a64n-5ab8-66cbb6f7f9c3",hindex="testhost-1/gpu-9",hostname="testhost-1",index="9",manager="slurm",uuid="2009250"} 108
+ceems_compute_unit_gpu_sm_count{cgrouphostname="node0",gpuiid="",gpuuuid="GPU-61a65011-6571-a6d2-5th8-66cbb6f7f9c3",hindex="testhost-1/gpu-8",hostname="testhost-1",index="8",manager="slurm",uuid="2009249"} 108
+ceems_compute_unit_gpu_sm_count{cgrouphostname="node0",gpuiid="6",gpuuuid="GPU-feba7e40-d724-01ff-b00f-3a439a28a6c7",hindex="testhost-1/gpu-7",hostname="testhost-1",index="7",manager="slurm",uuid="2009248"} 14
 # HELP ceems_compute_unit_memory_cache_bytes Memory cache used in bytes
 # TYPE ceems_compute_unit_memory_cache_bytes gauge
-ceems_compute_unit_memory_cache_bytes{cgrouphostname="",hostname="",manager="slurm",uuid="1009248"} 0
-ceems_compute_unit_memory_cache_bytes{cgrouphostname="",hostname="",manager="slurm",uuid="1009249"} 0
-ceems_compute_unit_memory_cache_bytes{cgrouphostname="",hostname="",manager="slurm",uuid="1009250"} 0
-ceems_compute_unit_memory_cache_bytes{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009248"} 0
-ceems_compute_unit_memory_cache_bytes{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009249"} 0
-ceems_compute_unit_memory_cache_bytes{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009250"} 0
-ceems_compute_unit_memory_cache_bytes{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009248"} 0
-ceems_compute_unit_memory_cache_bytes{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009249"} 0
-ceems_compute_unit_memory_cache_bytes{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009250"} 0
+ceems_compute_unit_memory_cache_bytes{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009248"} 0
+ceems_compute_unit_memory_cache_bytes{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009249"} 0
+ceems_compute_unit_memory_cache_bytes{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009250"} 0
+ceems_compute_unit_memory_cache_bytes{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009248"} 0
+ceems_compute_unit_memory_cache_bytes{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009249"} 0
+ceems_compute_unit_memory_cache_bytes{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009250"} 0
+ceems_compute_unit_memory_cache_bytes{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009248"} 0
+ceems_compute_unit_memory_cache_bytes{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009249"} 0
+ceems_compute_unit_memory_cache_bytes{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009250"} 0
 # HELP ceems_compute_unit_memory_fail_count Memory fail count
 # TYPE ceems_compute_unit_memory_fail_count gauge
-ceems_compute_unit_memory_fail_count{cgrouphostname="",hostname="",manager="slurm",uuid="1009248"} 0
-ceems_compute_unit_memory_fail_count{cgrouphostname="",hostname="",manager="slurm",uuid="1009249"} 0
-ceems_compute_unit_memory_fail_count{cgrouphostname="",hostname="",manager="slurm",uuid="1009250"} 0
-ceems_compute_unit_memory_fail_count{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009248"} 0
-ceems_compute_unit_memory_fail_count{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009249"} 0
-ceems_compute_unit_memory_fail_count{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009250"} 0
-ceems_compute_unit_memory_fail_count{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009248"} 0
-ceems_compute_unit_memory_fail_count{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009249"} 0
-ceems_compute_unit_memory_fail_count{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009250"} 0
+ceems_compute_unit_memory_fail_count{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009248"} 0
+ceems_compute_unit_memory_fail_count{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009249"} 0
+ceems_compute_unit_memory_fail_count{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009250"} 0
+ceems_compute_unit_memory_fail_count{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009248"} 0
+ceems_compute_unit_memory_fail_count{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009249"} 0
+ceems_compute_unit_memory_fail_count{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009250"} 0
+ceems_compute_unit_memory_fail_count{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009248"} 0
+ceems_compute_unit_memory_fail_count{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009249"} 0
+ceems_compute_unit_memory_fail_count{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009250"} 0
 # HELP ceems_compute_unit_memory_rss_bytes Memory RSS used in bytes
 # TYPE ceems_compute_unit_memory_rss_bytes gauge
-ceems_compute_unit_memory_rss_bytes{cgrouphostname="",hostname="",manager="slurm",uuid="1009248"} 4.098592768e+09
-ceems_compute_unit_memory_rss_bytes{cgrouphostname="",hostname="",manager="slurm",uuid="1009249"} 4.098592768e+09
-ceems_compute_unit_memory_rss_bytes{cgrouphostname="",hostname="",manager="slurm",uuid="1009250"} 4.098592768e+09
-ceems_compute_unit_memory_rss_bytes{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009248"} 4.098592768e+09
-ceems_compute_unit_memory_rss_bytes{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009249"} 4.098592768e+09
-ceems_compute_unit_memory_rss_bytes{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009250"} 4.098592768e+09
-ceems_compute_unit_memory_rss_bytes{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009248"} 4.098592768e+09
-ceems_compute_unit_memory_rss_bytes{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009249"} 4.098592768e+09
-ceems_compute_unit_memory_rss_bytes{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009250"} 4.098592768e+09
+ceems_compute_unit_memory_rss_bytes{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009248"} 4.098592768e+09
+ceems_compute_unit_memory_rss_bytes{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009249"} 4.098592768e+09
+ceems_compute_unit_memory_rss_bytes{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009250"} 4.098592768e+09
+ceems_compute_unit_memory_rss_bytes{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009248"} 4.098592768e+09
+ceems_compute_unit_memory_rss_bytes{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009249"} 4.098592768e+09
+ceems_compute_unit_memory_rss_bytes{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009250"} 4.098592768e+09
+ceems_compute_unit_memory_rss_bytes{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009248"} 4.098592768e+09
+ceems_compute_unit_memory_rss_bytes{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009249"} 4.098592768e+09
+ceems_compute_unit_memory_rss_bytes{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009250"} 4.098592768e+09
 # HELP ceems_compute_unit_memory_total_bytes Memory total in bytes
 # TYPE ceems_compute_unit_memory_total_bytes gauge
-ceems_compute_unit_memory_total_bytes{cgrouphostname="",hostname="",manager="slurm",uuid="1009248"} 4.294967296e+09
-ceems_compute_unit_memory_total_bytes{cgrouphostname="",hostname="",manager="slurm",uuid="1009249"} 4.294967296e+09
-ceems_compute_unit_memory_total_bytes{cgrouphostname="",hostname="",manager="slurm",uuid="1009250"} 4.294967296e+09
-ceems_compute_unit_memory_total_bytes{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009248"} 4.294967296e+09
-ceems_compute_unit_memory_total_bytes{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009249"} 4.294967296e+09
-ceems_compute_unit_memory_total_bytes{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009250"} 4.294967296e+09
-ceems_compute_unit_memory_total_bytes{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009248"} 4.294967296e+09
-ceems_compute_unit_memory_total_bytes{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009249"} 4.294967296e+09
-ceems_compute_unit_memory_total_bytes{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009250"} 4.294967296e+09
+ceems_compute_unit_memory_total_bytes{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009248"} 4.294967296e+09
+ceems_compute_unit_memory_total_bytes{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009249"} 4.294967296e+09
+ceems_compute_unit_memory_total_bytes{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009250"} 4.294967296e+09
+ceems_compute_unit_memory_total_bytes{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009248"} 4.294967296e+09
+ceems_compute_unit_memory_total_bytes{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009249"} 4.294967296e+09
+ceems_compute_unit_memory_total_bytes{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009250"} 4.294967296e+09
+ceems_compute_unit_memory_total_bytes{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009248"} 4.294967296e+09
+ceems_compute_unit_memory_total_bytes{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009249"} 4.294967296e+09
+ceems_compute_unit_memory_total_bytes{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009250"} 4.294967296e+09
 # HELP ceems_compute_unit_memory_used_bytes Memory used in bytes
 # TYPE ceems_compute_unit_memory_used_bytes gauge
-ceems_compute_unit_memory_used_bytes{cgrouphostname="",hostname="",manager="slurm",uuid="1009248"} 4.111491072e+09
-ceems_compute_unit_memory_used_bytes{cgrouphostname="",hostname="",manager="slurm",uuid="1009249"} 4.111491072e+09
-ceems_compute_unit_memory_used_bytes{cgrouphostname="",hostname="",manager="slurm",uuid="1009250"} 4.111491072e+09
-ceems_compute_unit_memory_used_bytes{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009248"} 4.111491072e+09
-ceems_compute_unit_memory_used_bytes{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009249"} 4.111491072e+09
-ceems_compute_unit_memory_used_bytes{cgrouphostname="node0",hostname="",manager="slurm",uuid="2009250"} 4.111491072e+09
-ceems_compute_unit_memory_used_bytes{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009248"} 4.111491072e+09
-ceems_compute_unit_memory_used_bytes{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009249"} 4.111491072e+09
-ceems_compute_unit_memory_used_bytes{cgrouphostname="node1",hostname="",manager="slurm",uuid="3009250"} 4.111491072e+09
+ceems_compute_unit_memory_used_bytes{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009248"} 4.111491072e+09
+ceems_compute_unit_memory_used_bytes{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009249"} 4.111491072e+09
+ceems_compute_unit_memory_used_bytes{cgrouphostname="",hostname="testhost-1",manager="slurm",uuid="1009250"} 4.111491072e+09
+ceems_compute_unit_memory_used_bytes{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009248"} 4.111491072e+09
+ceems_compute_unit_memory_used_bytes{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009249"} 4.111491072e+09
+ceems_compute_unit_memory_used_bytes{cgrouphostname="node0",hostname="testhost-1",manager="slurm",uuid="2009250"} 4.111491072e+09
+ceems_compute_unit_memory_used_bytes{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009248"} 4.111491072e+09
+ceems_compute_unit_memory_used_bytes{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009249"} 4.111491072e+09
+ceems_compute_unit_memory_used_bytes{cgrouphostname="node1",hostname="testhost-1",manager="slurm",uuid="3009250"} 4.111491072e+09
 # HELP ceems_compute_unit_rdma_hca_handles Current number of RDMA HCA handles
 # TYPE ceems_compute_unit_rdma_hca_handles gauge
-ceems_compute_unit_rdma_hca_handles{cgrouphostname="",device="hfi1_0",hostname="",manager="slurm",uuid="1009249"} 479
-ceems_compute_unit_rdma_hca_handles{cgrouphostname="",device="hfi1_0",hostname="",manager="slurm",uuid="1009250"} 289
-ceems_compute_unit_rdma_hca_handles{cgrouphostname="",device="hfi1_1",hostname="",manager="slurm",uuid="1009249"} 1479
-ceems_compute_unit_rdma_hca_handles{cgrouphostname="",device="hfi1_2",hostname="",manager="slurm",uuid="1009249"} 2479
-ceems_compute_unit_rdma_hca_handles{cgrouphostname="node0",device="hfi1_0",hostname="",manager="slurm",uuid="2009249"} 479
-ceems_compute_unit_rdma_hca_handles{cgrouphostname="node0",device="hfi1_0",hostname="",manager="slurm",uuid="2009250"} 289
-ceems_compute_unit_rdma_hca_handles{cgrouphostname="node0",device="hfi1_1",hostname="",manager="slurm",uuid="2009249"} 1479
-ceems_compute_unit_rdma_hca_handles{cgrouphostname="node0",device="hfi1_2",hostname="",manager="slurm",uuid="2009249"} 2479
-ceems_compute_unit_rdma_hca_handles{cgrouphostname="node1",device="hfi1_0",hostname="",manager="slurm",uuid="3009249"} 479
-ceems_compute_unit_rdma_hca_handles{cgrouphostname="node1",device="hfi1_0",hostname="",manager="slurm",uuid="3009250"} 289
-ceems_compute_unit_rdma_hca_handles{cgrouphostname="node1",device="hfi1_1",hostname="",manager="slurm",uuid="3009249"} 1479
-ceems_compute_unit_rdma_hca_handles{cgrouphostname="node1",device="hfi1_2",hostname="",manager="slurm",uuid="3009249"} 2479
+ceems_compute_unit_rdma_hca_handles{cgrouphostname="",device="hfi1_0",hostname="testhost-1",manager="slurm",uuid="1009249"} 479
+ceems_compute_unit_rdma_hca_handles{cgrouphostname="",device="hfi1_0",hostname="testhost-1",manager="slurm",uuid="1009250"} 289
+ceems_compute_unit_rdma_hca_handles{cgrouphostname="",device="hfi1_1",hostname="testhost-1",manager="slurm",uuid="1009249"} 1479
+ceems_compute_unit_rdma_hca_handles{cgrouphostname="",device="hfi1_2",hostname="testhost-1",manager="slurm",uuid="1009249"} 2479
+ceems_compute_unit_rdma_hca_handles{cgrouphostname="node0",device="hfi1_0",hostname="testhost-1",manager="slurm",uuid="2009249"} 479
+ceems_compute_unit_rdma_hca_handles{cgrouphostname="node0",device="hfi1_0",hostname="testhost-1",manager="slurm",uuid="2009250"} 289
+ceems_compute_unit_rdma_hca_handles{cgrouphostname="node0",device="hfi1_1",hostname="testhost-1",manager="slurm",uuid="2009249"} 1479
+ceems_compute_unit_rdma_hca_handles{cgrouphostname="node0",device="hfi1_2",hostname="testhost-1",manager="slurm",uuid="2009249"} 2479
+ceems_compute_unit_rdma_hca_handles{cgrouphostname="node1",device="hfi1_0",hostname="testhost-1",manager="slurm",uuid="3009249"} 479
+ceems_compute_unit_rdma_hca_handles{cgrouphostname="node1",device="hfi1_0",hostname="testhost-1",manager="slurm",uuid="3009250"} 289
+ceems_compute_unit_rdma_hca_handles{cgrouphostname="node1",device="hfi1_1",hostname="testhost-1",manager="slurm",uuid="3009249"} 1479
+ceems_compute_unit_rdma_hca_handles{cgrouphostname="node1",device="hfi1_2",hostname="testhost-1",manager="slurm",uuid="3009249"} 2479
 # HELP ceems_compute_unit_rdma_hca_objects Current number of RDMA HCA objects
 # TYPE ceems_compute_unit_rdma_hca_objects gauge
-ceems_compute_unit_rdma_hca_objects{cgrouphostname="",device="hfi1_0",hostname="",manager="slurm",uuid="1009249"} 479
-ceems_compute_unit_rdma_hca_objects{cgrouphostname="",device="hfi1_0",hostname="",manager="slurm",uuid="1009250"} 289
-ceems_compute_unit_rdma_hca_objects{cgrouphostname="",device="hfi1_1",hostname="",manager="slurm",uuid="1009249"} 1479
-ceems_compute_unit_rdma_hca_objects{cgrouphostname="",device="hfi1_2",hostname="",manager="slurm",uuid="1009249"} 2479
-ceems_compute_unit_rdma_hca_objects{cgrouphostname="node0",device="hfi1_0",hostname="",manager="slurm",uuid="2009249"} 479
-ceems_compute_unit_rdma_hca_objects{cgrouphostname="node0",device="hfi1_0",hostname="",manager="slurm",uuid="2009250"} 289
-ceems_compute_unit_rdma_hca_objects{cgrouphostname="node0",device="hfi1_1",hostname="",manager="slurm",uuid="2009249"} 1479
-ceems_compute_unit_rdma_hca_objects{cgrouphostname="node0",device="hfi1_2",hostname="",manager="slurm",uuid="2009249"} 2479
-ceems_compute_unit_rdma_hca_objects{cgrouphostname="node1",device="hfi1_0",hostname="",manager="slurm",uuid="3009249"} 479
-ceems_compute_unit_rdma_hca_objects{cgrouphostname="node1",device="hfi1_0",hostname="",manager="slurm",uuid="3009250"} 289
-ceems_compute_unit_rdma_hca_objects{cgrouphostname="node1",device="hfi1_1",hostname="",manager="slurm",uuid="3009249"} 1479
-ceems_compute_unit_rdma_hca_objects{cgrouphostname="node1",device="hfi1_2",hostname="",manager="slurm",uuid="3009249"} 2479
+ceems_compute_unit_rdma_hca_objects{cgrouphostname="",device="hfi1_0",hostname="testhost-1",manager="slurm",uuid="1009249"} 479
+ceems_compute_unit_rdma_hca_objects{cgrouphostname="",device="hfi1_0",hostname="testhost-1",manager="slurm",uuid="1009250"} 289
+ceems_compute_unit_rdma_hca_objects{cgrouphostname="",device="hfi1_1",hostname="testhost-1",manager="slurm",uuid="1009249"} 1479
+ceems_compute_unit_rdma_hca_objects{cgrouphostname="",device="hfi1_2",hostname="testhost-1",manager="slurm",uuid="1009249"} 2479
+ceems_compute_unit_rdma_hca_objects{cgrouphostname="node0",device="hfi1_0",hostname="testhost-1",manager="slurm",uuid="2009249"} 479
+ceems_compute_unit_rdma_hca_objects{cgrouphostname="node0",device="hfi1_0",hostname="testhost-1",manager="slurm",uuid="2009250"} 289
+ceems_compute_unit_rdma_hca_objects{cgrouphostname="node0",device="hfi1_1",hostname="testhost-1",manager="slurm",uuid="2009249"} 1479
+ceems_compute_unit_rdma_hca_objects{cgrouphostname="node0",device="hfi1_2",hostname="testhost-1",manager="slurm",uuid="2009249"} 2479
+ceems_compute_unit_rdma_hca_objects{cgrouphostname="node1",device="hfi1_0",hostname="testhost-1",manager="slurm",uuid="3009249"} 479
+ceems_compute_unit_rdma_hca_objects{cgrouphostname="node1",device="hfi1_0",hostname="testhost-1",manager="slurm",uuid="3009250"} 289
+ceems_compute_unit_rdma_hca_objects{cgrouphostname="node1",device="hfi1_1",hostname="testhost-1",manager="slurm",uuid="3009249"} 1479
+ceems_compute_unit_rdma_hca_objects{cgrouphostname="node1",device="hfi1_2",hostname="testhost-1",manager="slurm",uuid="3009249"} 2479
 # HELP ceems_compute_units Total number of jobs
 # TYPE ceems_compute_units gauge
-ceems_compute_units{hostname="",manager="slurm"} 9
+ceems_compute_units{hostname="testhost-1",manager="slurm"} 9
 # HELP ceems_cpu_count Number of CPUs.
 # TYPE ceems_cpu_count gauge
-ceems_cpu_count{hostname=""} 8
+ceems_cpu_count{hostname="testhost-1"} 8
 # HELP ceems_cpu_per_core_count Number of logical CPUs per physical core.
 # TYPE ceems_cpu_per_core_count gauge
-ceems_cpu_per_core_count{hostname=""} 2
+ceems_cpu_per_core_count{hostname="testhost-1"} 2
 # HELP ceems_cpu_seconds_total Seconds the CPUs spent in each mode.
 # TYPE ceems_cpu_seconds_total counter
-ceems_cpu_seconds_total{hostname="",mode="idle"} 89790.04
-ceems_cpu_seconds_total{hostname="",mode="iowait"} 35.52
-ceems_cpu_seconds_total{hostname="",mode="irq"} 0.02
-ceems_cpu_seconds_total{hostname="",mode="nice"} 6.12
-ceems_cpu_seconds_total{hostname="",mode="softirq"} 39.44
-ceems_cpu_seconds_total{hostname="",mode="steal"} 0
-ceems_cpu_seconds_total{hostname="",mode="system"} 1119.22
-ceems_cpu_seconds_total{hostname="",mode="user"} 3018.54
+ceems_cpu_seconds_total{hostname="testhost-1",mode="idle"} 89790.04
+ceems_cpu_seconds_total{hostname="testhost-1",mode="iowait"} 35.52
+ceems_cpu_seconds_total{hostname="testhost-1",mode="irq"} 0.02
+ceems_cpu_seconds_total{hostname="testhost-1",mode="nice"} 6.12
+ceems_cpu_seconds_total{hostname="testhost-1",mode="softirq"} 39.44
+ceems_cpu_seconds_total{hostname="testhost-1",mode="steal"} 0
+ceems_cpu_seconds_total{hostname="testhost-1",mode="system"} 1119.22
+ceems_cpu_seconds_total{hostname="testhost-1",mode="user"} 3018.54
 # HELP ceems_exporter_build_info A metric with a constant '1' value labeled by version, revision, branch, goversion from which ceems_exporter was built, and the goos and goarch for the build.
 # TYPE ceems_exporter_build_info gauge
 # HELP ceems_ipmi_dcmi_power_avg_watts Average power consumption reported by DCMI in watts
 # TYPE ceems_ipmi_dcmi_power_avg_watts gauge
-ceems_ipmi_dcmi_power_avg_watts{hostname=""} 49
+ceems_ipmi_dcmi_power_avg_watts{hostname="testhost-1"} 49
 # HELP ceems_ipmi_dcmi_power_current_watts Current power consumption reported by DCMI in watts
 # TYPE ceems_ipmi_dcmi_power_current_watts gauge
-ceems_ipmi_dcmi_power_current_watts{hostname=""} 49
+ceems_ipmi_dcmi_power_current_watts{hostname="testhost-1"} 49
 # HELP ceems_ipmi_dcmi_power_max_watts Maximum power consumption reported by DCMI in watts
 # TYPE ceems_ipmi_dcmi_power_max_watts gauge
-ceems_ipmi_dcmi_power_max_watts{hostname=""} 304
+ceems_ipmi_dcmi_power_max_watts{hostname="testhost-1"} 304
 # HELP ceems_ipmi_dcmi_power_min_watts Minimum power consumption reported by DCMI in watts
 # TYPE ceems_ipmi_dcmi_power_min_watts gauge
-ceems_ipmi_dcmi_power_min_watts{hostname=""} 6
+ceems_ipmi_dcmi_power_min_watts{hostname="testhost-1"} 6
 # HELP ceems_meminfo_MemAvailable_bytes Memory information field MemAvailable_bytes.
 # TYPE ceems_meminfo_MemAvailable_bytes gauge
-ceems_meminfo_MemAvailable_bytes{hostname=""} 0
+ceems_meminfo_MemAvailable_bytes{hostname="testhost-1"} 0
 # HELP ceems_meminfo_MemFree_bytes Memory information field MemFree_bytes.
 # TYPE ceems_meminfo_MemFree_bytes gauge
-ceems_meminfo_MemFree_bytes{hostname=""} 4.50891776e+08
+ceems_meminfo_MemFree_bytes{hostname="testhost-1"} 4.50891776e+08
 # HELP ceems_meminfo_MemTotal_bytes Memory information field MemTotal_bytes.
 # TYPE ceems_meminfo_MemTotal_bytes gauge
-ceems_meminfo_MemTotal_bytes{hostname=""} 1.6042172416e+10
+ceems_meminfo_MemTotal_bytes{hostname="testhost-1"} 1.6042172416e+10
 # HELP ceems_netdev_receive_bytes_total Total received bytes by the network device
 # TYPE ceems_netdev_receive_bytes_total counter
-ceems_netdev_receive_bytes_total{device="eth0",hostname=""} 8.74354587e+08
+ceems_netdev_receive_bytes_total{device="eth0",hostname="testhost-1"} 8.74354587e+08
 # HELP ceems_netdev_receive_compressed_total Total received compressed packets by the network device
 # TYPE ceems_netdev_receive_compressed_total counter
-ceems_netdev_receive_compressed_total{device="eth0",hostname=""} 0
+ceems_netdev_receive_compressed_total{device="eth0",hostname="testhost-1"} 0
 # HELP ceems_netdev_receive_dropped_total Total received dropped packets by the network device
 # TYPE ceems_netdev_receive_dropped_total counter
-ceems_netdev_receive_dropped_total{device="eth0",hostname=""} 0
+ceems_netdev_receive_dropped_total{device="eth0",hostname="testhost-1"} 0
 # HELP ceems_netdev_receive_errors_total Total received errors by the network device
 # TYPE ceems_netdev_receive_errors_total counter
-ceems_netdev_receive_errors_total{device="eth0",hostname=""} 0
+ceems_netdev_receive_errors_total{device="eth0",hostname="testhost-1"} 0
 # HELP ceems_netdev_receive_fifo_total Total received FIFO errors by the network device
 # TYPE ceems_netdev_receive_fifo_total counter
-ceems_netdev_receive_fifo_total{device="eth0",hostname=""} 0
+ceems_netdev_receive_fifo_total{device="eth0",hostname="testhost-1"} 0
 # HELP ceems_netdev_receive_frame_total Total received frames by the network device
 # TYPE ceems_netdev_receive_frame_total counter
-ceems_netdev_receive_frame_total{device="eth0",hostname=""} 0
+ceems_netdev_receive_frame_total{device="eth0",hostname="testhost-1"} 0
 # HELP ceems_netdev_receive_multicast_total Total received multicast packets by the network device
 # TYPE ceems_netdev_receive_multicast_total counter
-ceems_netdev_receive_multicast_total{device="eth0",hostname=""} 0
+ceems_netdev_receive_multicast_total{device="eth0",hostname="testhost-1"} 0
 # HELP ceems_netdev_receive_packets_total Total received packets by the network device
 # TYPE ceems_netdev_receive_packets_total counter
-ceems_netdev_receive_packets_total{device="eth0",hostname=""} 1.036395e+06
+ceems_netdev_receive_packets_total{device="eth0",hostname="testhost-1"} 1.036395e+06
 # HELP ceems_netdev_transmit_bytes_total Total transmitted bytes by the network device
 # TYPE ceems_netdev_transmit_bytes_total counter
-ceems_netdev_transmit_bytes_total{device="eth0",hostname=""} 5.63352563e+08
+ceems_netdev_transmit_bytes_total{device="eth0",hostname="testhost-1"} 5.63352563e+08
 # HELP ceems_netdev_transmit_carrier_total Total frame transmission errors errors due to loss of carrier by the network device
 # TYPE ceems_netdev_transmit_carrier_total counter
-ceems_netdev_transmit_carrier_total{device="eth0",hostname=""} 0
+ceems_netdev_transmit_carrier_total{device="eth0",hostname="testhost-1"} 0
 # HELP ceems_netdev_transmit_colls_total Total transmitted collisions by the network device
 # TYPE ceems_netdev_transmit_colls_total counter
-ceems_netdev_transmit_colls_total{device="eth0",hostname=""} 0
+ceems_netdev_transmit_colls_total{device="eth0",hostname="testhost-1"} 0
 # HELP ceems_netdev_transmit_compressed_total Total transmitted compressed packets by the network device
 # TYPE ceems_netdev_transmit_compressed_total counter
-ceems_netdev_transmit_compressed_total{device="eth0",hostname=""} 0
+ceems_netdev_transmit_compressed_total{device="eth0",hostname="testhost-1"} 0
 # HELP ceems_netdev_transmit_dropped_total Total transmitted dropped packets by the network device
 # TYPE ceems_netdev_transmit_dropped_total counter
-ceems_netdev_transmit_dropped_total{device="eth0",hostname=""} 0
+ceems_netdev_transmit_dropped_total{device="eth0",hostname="testhost-1"} 0
 # HELP ceems_netdev_transmit_errors_total Total transmitted bytes by the network device
 # TYPE ceems_netdev_transmit_errors_total counter
-ceems_netdev_transmit_errors_total{device="eth0",hostname=""} 0
+ceems_netdev_transmit_errors_total{device="eth0",hostname="testhost-1"} 0
 # HELP ceems_netdev_transmit_fifo_total Total frame transmission errors FIFO by the network device
 # TYPE ceems_netdev_transmit_fifo_total counter
-ceems_netdev_transmit_fifo_total{device="eth0",hostname=""} 0
+ceems_netdev_transmit_fifo_total{device="eth0",hostname="testhost-1"} 0
 # HELP ceems_netdev_transmit_packets_total Total transmitted packets by the network device
 # TYPE ceems_netdev_transmit_packets_total counter
-ceems_netdev_transmit_packets_total{device="eth0",hostname=""} 732147
+ceems_netdev_transmit_packets_total{device="eth0",hostname="testhost-1"} 732147
 # HELP ceems_rapl_dram_joules_total Current RAPL dram value in joules
 # TYPE ceems_rapl_dram_joules_total counter
-ceems_rapl_dram_joules_total{hostname="",index="0",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:0:0"} 24468.409791
-ceems_rapl_dram_joules_total{hostname="",index="1",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:1:0"} 64930.394974
+ceems_rapl_dram_joules_total{hostname="testhost-1",index="0",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:0:0"} 24468.409791
+ceems_rapl_dram_joules_total{hostname="testhost-1",index="1",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:1:0"} 64930.394974
 # HELP ceems_rapl_dram_power_limit_watts_total Current RAPL dram power limit in watts
 # TYPE ceems_rapl_dram_power_limit_watts_total counter
-ceems_rapl_dram_power_limit_watts_total{hostname="",index="0",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:0:0"} 0
-ceems_rapl_dram_power_limit_watts_total{hostname="",index="1",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:1:0"} 0
+ceems_rapl_dram_power_limit_watts_total{hostname="testhost-1",index="0",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:0:0"} 0
+ceems_rapl_dram_power_limit_watts_total{hostname="testhost-1",index="1",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:1:0"} 0
 # HELP ceems_rapl_package_joules_total Current RAPL package value in joules
 # TYPE ceems_rapl_package_joules_total counter
-ceems_rapl_package_joules_total{hostname="",index="0",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:0"} 258218.293244
-ceems_rapl_package_joules_total{hostname="",index="1",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:1"} 130570.505826
+ceems_rapl_package_joules_total{hostname="testhost-1",index="0",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:0"} 258218.293244
+ceems_rapl_package_joules_total{hostname="testhost-1",index="1",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:1"} 130570.505826
 # HELP ceems_rapl_package_power_limit_watts_total Current RAPL package power limit in watts
 # TYPE ceems_rapl_package_power_limit_watts_total counter
-ceems_rapl_package_power_limit_watts_total{hostname="",index="0",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:0"} 180
-ceems_rapl_package_power_limit_watts_total{hostname="",index="1",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:1"} 180
+ceems_rapl_package_power_limit_watts_total{hostname="testhost-1",index="0",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:0"} 180
+ceems_rapl_package_power_limit_watts_total{hostname="testhost-1",index="1",path="pkg/collector/testdata/sys/class/powercap/intel-rapl:1"} 180
 # HELP ceems_rdma_cqe_len_active Length of active CQs
 # TYPE ceems_rdma_cqe_len_active gauge
-ceems_rdma_cqe_len_active{device="mlx5_0",hostname="",manager="slurm",port="",uuid="1009248"} 8190
-ceems_rdma_cqe_len_active{device="mlx5_0",hostname="",manager="slurm",port="",uuid="1009249"} 8190
+ceems_rdma_cqe_len_active{device="mlx5_0",hostname="testhost-1",manager="slurm",port="",uuid="1009248"} 8190
+ceems_rdma_cqe_len_active{device="mlx5_0",hostname="testhost-1",manager="slurm",port="",uuid="1009249"} 8190
 # HELP ceems_rdma_cqs_active Number of active CQs
 # TYPE ceems_rdma_cqs_active gauge
-ceems_rdma_cqs_active{device="mlx5_0",hostname="",manager="slurm",port="",uuid="1009248"} 2
-ceems_rdma_cqs_active{device="mlx5_0",hostname="",manager="slurm",port="",uuid="1009249"} 2
+ceems_rdma_cqs_active{device="mlx5_0",hostname="testhost-1",manager="slurm",port="",uuid="1009248"} 2
+ceems_rdma_cqs_active{device="mlx5_0",hostname="testhost-1",manager="slurm",port="",uuid="1009249"} 2
 # HELP ceems_rdma_mrs_active Number of active MRs
 # TYPE ceems_rdma_mrs_active gauge
-ceems_rdma_mrs_active{device="mlx5_0",hostname="",manager="slurm",port="",uuid="1009248"} 2
-ceems_rdma_mrs_active{device="mlx5_0",hostname="",manager="slurm",port="",uuid="1009249"} 2
+ceems_rdma_mrs_active{device="mlx5_0",hostname="testhost-1",manager="slurm",port="",uuid="1009248"} 2
+ceems_rdma_mrs_active{device="mlx5_0",hostname="testhost-1",manager="slurm",port="",uuid="1009249"} 2
 # HELP ceems_rdma_mrs_len_active Length of active MRs
 # TYPE ceems_rdma_mrs_len_active gauge
-ceems_rdma_mrs_len_active{device="mlx5_0",hostname="",manager="slurm",port="",uuid="1009248"} 4.194304e+06
-ceems_rdma_mrs_len_active{device="mlx5_0",hostname="",manager="slurm",port="",uuid="1009249"} 4.194304e+06
+ceems_rdma_mrs_len_active{device="mlx5_0",hostname="testhost-1",manager="slurm",port="",uuid="1009248"} 4.194304e+06
+ceems_rdma_mrs_len_active{device="mlx5_0",hostname="testhost-1",manager="slurm",port="",uuid="1009249"} 4.194304e+06
 # HELP ceems_rdma_port_data_received_bytes_total Number of data octets received on all links
 # TYPE ceems_rdma_port_data_received_bytes_total counter
-ceems_rdma_port_data_received_bytes_total{device="hfi1_0",hostname="",manager="slurm",port="1"} 1.380366808104e+12
-ceems_rdma_port_data_received_bytes_total{device="mlx4_0",hostname="",manager="slurm",port="1"} 8.884894436e+09
-ceems_rdma_port_data_received_bytes_total{device="mlx4_0",hostname="",manager="slurm",port="2"} 9.841747136e+09
-ceems_rdma_port_data_received_bytes_total{device="mlx5_0",hostname="",manager="slurm",port="1"} 7.2505381512e+10
+ceems_rdma_port_data_received_bytes_total{device="hfi1_0",hostname="testhost-1",manager="slurm",port="1"} 1.380366808104e+12
+ceems_rdma_port_data_received_bytes_total{device="mlx4_0",hostname="testhost-1",manager="slurm",port="1"} 8.884894436e+09
+ceems_rdma_port_data_received_bytes_total{device="mlx4_0",hostname="testhost-1",manager="slurm",port="2"} 9.841747136e+09
+ceems_rdma_port_data_received_bytes_total{device="mlx5_0",hostname="testhost-1",manager="slurm",port="1"} 7.2505381512e+10
 # HELP ceems_rdma_port_data_transmitted_bytes_total Number of data octets transmitted on all links
 # TYPE ceems_rdma_port_data_transmitted_bytes_total counter
-ceems_rdma_port_data_transmitted_bytes_total{device="hfi1_0",hostname="",manager="slurm",port="1"} 1.094233306172e+12
-ceems_rdma_port_data_transmitted_bytes_total{device="mlx4_0",hostname="",manager="slurm",port="1"} 1.0603645318e+11
-ceems_rdma_port_data_transmitted_bytes_total{device="mlx4_0",hostname="",manager="slurm",port="2"} 1.0616142756e+11
-ceems_rdma_port_data_transmitted_bytes_total{device="mlx5_0",hostname="",manager="slurm",port="1"} 1.1523046035392e+13
+ceems_rdma_port_data_transmitted_bytes_total{device="hfi1_0",hostname="testhost-1",manager="slurm",port="1"} 1.094233306172e+12
+ceems_rdma_port_data_transmitted_bytes_total{device="mlx4_0",hostname="testhost-1",manager="slurm",port="1"} 1.0603645318e+11
+ceems_rdma_port_data_transmitted_bytes_total{device="mlx4_0",hostname="testhost-1",manager="slurm",port="2"} 1.0616142756e+11
+ceems_rdma_port_data_transmitted_bytes_total{device="mlx5_0",hostname="testhost-1",manager="slurm",port="1"} 1.1523046035392e+13
 # HELP ceems_rdma_port_packets_received_total Number of packets received on all VLs by this port (including errors)
 # TYPE ceems_rdma_port_packets_received_total counter
-ceems_rdma_port_packets_received_total{device="hfi1_0",hostname="",manager="slurm",port="1"} 6.38036947e+08
-ceems_rdma_port_packets_received_total{device="mlx4_0",hostname="",manager="slurm",port="1"} 8.7169372e+07
-ceems_rdma_port_packets_received_total{device="mlx4_0",hostname="",manager="slurm",port="2"} 8.9332064e+07
-ceems_rdma_port_packets_received_total{device="mlx5_0",hostname="",manager="slurm",port="1"} 5.41889824e+08
+ceems_rdma_port_packets_received_total{device="hfi1_0",hostname="testhost-1",manager="slurm",port="1"} 6.38036947e+08
+ceems_rdma_port_packets_received_total{device="mlx4_0",hostname="testhost-1",manager="slurm",port="1"} 8.7169372e+07
+ceems_rdma_port_packets_received_total{device="mlx4_0",hostname="testhost-1",manager="slurm",port="2"} 8.9332064e+07
+ceems_rdma_port_packets_received_total{device="mlx5_0",hostname="testhost-1",manager="slurm",port="1"} 5.41889824e+08
 # HELP ceems_rdma_port_packets_transmitted_total Number of packets transmitted on all VLs from this port (including errors)
 # TYPE ceems_rdma_port_packets_transmitted_total counter
-ceems_rdma_port_packets_transmitted_total{device="hfi1_0",hostname="",manager="slurm",port="1"} 5.68318856e+08
-ceems_rdma_port_packets_transmitted_total{device="mlx4_0",hostname="",manager="slurm",port="1"} 8.5734114e+07
-ceems_rdma_port_packets_transmitted_total{device="mlx4_0",hostname="",manager="slurm",port="2"} 8.862285e+07
-ceems_rdma_port_packets_transmitted_total{device="mlx5_0",hostname="",manager="slurm",port="1"} 1.0907922116e+10
+ceems_rdma_port_packets_transmitted_total{device="hfi1_0",hostname="testhost-1",manager="slurm",port="1"} 5.68318856e+08
+ceems_rdma_port_packets_transmitted_total{device="mlx4_0",hostname="testhost-1",manager="slurm",port="1"} 8.5734114e+07
+ceems_rdma_port_packets_transmitted_total{device="mlx4_0",hostname="testhost-1",manager="slurm",port="2"} 8.862285e+07
+ceems_rdma_port_packets_transmitted_total{device="mlx5_0",hostname="testhost-1",manager="slurm",port="1"} 1.0907922116e+10
 # HELP ceems_rdma_qps_active Number of active QPs
 # TYPE ceems_rdma_qps_active gauge
-ceems_rdma_qps_active{device="mlx5_0",hostname="",manager="slurm",port="1",uuid="1009248"} 16
-ceems_rdma_qps_active{device="mlx5_0",hostname="",manager="slurm",port="1",uuid="1009249"} 16
+ceems_rdma_qps_active{device="mlx5_0",hostname="testhost-1",manager="slurm",port="1",uuid="1009248"} 16
+ceems_rdma_qps_active{device="mlx5_0",hostname="testhost-1",manager="slurm",port="1",uuid="1009249"} 16
 # HELP ceems_rdma_state_id State of the InfiniBand port (0: no change, 1: down, 2: init, 3: armed, 4: active, 5: act defer)
 # TYPE ceems_rdma_state_id gauge
-ceems_rdma_state_id{device="hfi1_0",hostname="",manager="slurm",port="1"} 4
-ceems_rdma_state_id{device="mlx4_0",hostname="",manager="slurm",port="1"} 4
-ceems_rdma_state_id{device="mlx4_0",hostname="",manager="slurm",port="2"} 4
-ceems_rdma_state_id{device="mlx5_0",hostname="",manager="slurm",port="1"} 4
+ceems_rdma_state_id{device="hfi1_0",hostname="testhost-1",manager="slurm",port="1"} 4
+ceems_rdma_state_id{device="mlx4_0",hostname="testhost-1",manager="slurm",port="1"} 4
+ceems_rdma_state_id{device="mlx4_0",hostname="testhost-1",manager="slurm",port="2"} 4
+ceems_rdma_state_id{device="mlx5_0",hostname="testhost-1",manager="slurm",port="1"} 4
 # HELP ceems_redfish_power_avg_watts Average Power consumption in watts
 # TYPE ceems_redfish_power_avg_watts gauge
-ceems_redfish_power_avg_watts{chassis="Chassis_1",hostname=""} 365
-ceems_redfish_power_avg_watts{chassis="Chassis_2",hostname=""} 1734
+ceems_redfish_power_avg_watts{chassis="Chassis_1",hostname="testhost-1"} 365
+ceems_redfish_power_avg_watts{chassis="Chassis_2",hostname="testhost-1"} 1734
 # HELP ceems_redfish_power_current_watts Current Power consumption in watts
 # TYPE ceems_redfish_power_current_watts gauge
-ceems_redfish_power_current_watts{chassis="Chassis_1",hostname=""} 397
-ceems_redfish_power_current_watts{chassis="Chassis_2",hostname=""} 1696
+ceems_redfish_power_current_watts{chassis="Chassis_1",hostname="testhost-1"} 397
+ceems_redfish_power_current_watts{chassis="Chassis_2",hostname="testhost-1"} 1696
 # HELP ceems_redfish_power_max_watts Maximum Power consumption in watts
 # TYPE ceems_redfish_power_max_watts gauge
-ceems_redfish_power_max_watts{chassis="Chassis_1",hostname=""} 609
-ceems_redfish_power_max_watts{chassis="Chassis_2",hostname=""} 2155
+ceems_redfish_power_max_watts{chassis="Chassis_1",hostname="testhost-1"} 609
+ceems_redfish_power_max_watts{chassis="Chassis_2",hostname="testhost-1"} 2155
 # HELP ceems_redfish_power_min_watts Minimum Power consumption in watts
 # TYPE ceems_redfish_power_min_watts gauge
-ceems_redfish_power_min_watts{chassis="Chassis_1",hostname=""} 326
-ceems_redfish_power_min_watts{chassis="Chassis_2",hostname=""} 588
+ceems_redfish_power_min_watts{chassis="Chassis_1",hostname="testhost-1"} 326
+ceems_redfish_power_min_watts{chassis="Chassis_2",hostname="testhost-1"} 588
 # HELP ceems_scrape_collector_duration_seconds ceems_exporter: Duration of a collector scrape.
 # TYPE ceems_scrape_collector_duration_seconds gauge
 # HELP ceems_scrape_collector_success ceems_exporter: Whether a collector succeeded.

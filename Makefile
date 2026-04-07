@@ -167,6 +167,8 @@ test-e2e: $(PROMTOOL) build pkg/collector/testdata/sys/.unpacked pkg/collector/t
 	./scripts/e2e-test.sh -s exporter-cgroups-v2-nogpu
 	./scripts/e2e-test.sh -s exporter-cgroups-v2-procfs
 	./scripts/e2e-test.sh -s exporter-cgroups-v2-all-metrics
+	./scripts/e2e-test.sh -s exporter-cgroups-v1-lsf
+	./scripts/e2e-test.sh -s exporter-cgroups-v2-lsf
 	./scripts/e2e-test.sh -s exporter-cgroups-v1-libvirt
 	./scripts/e2e-test.sh -s exporter-cgroups-v2-libvirt
 	./scripts/e2e-test.sh -s exporter-cgroups-v2-libvirt-nonsystemd-layout
@@ -175,6 +177,8 @@ test-e2e: $(PROMTOOL) build pkg/collector/testdata/sys/.unpacked pkg/collector/t
 	./scripts/e2e-test.sh -s exporter-cgroups-v2-k8s-nogpu
 	./scripts/e2e-test.sh -s discoverer-cgroups-v2-slurm
 	./scripts/e2e-test.sh -s discoverer-cgroups-v1-slurm
+	./scripts/e2e-test.sh -s discoverer-cgroups-v2-lsf
+	./scripts/e2e-test.sh -s discoverer-cgroups-v1-lsf
 	./scripts/e2e-test.sh -s discoverer-cgroups-v2-k8s
 	./scripts/e2e-test.sh -s discoverer-cgroups-v1-k8s
 	./scripts/e2e-test.sh -s k8s-admission-controller-basic
@@ -254,6 +258,8 @@ test-e2e-update: build pkg/collector/testdata/sys/.unpacked pkg/collector/testda
 	./scripts/e2e-test.sh -s exporter-cgroups-v2-nogpu -u || true
 	./scripts/e2e-test.sh -s exporter-cgroups-v2-procfs -u || true
 	./scripts/e2e-test.sh -s exporter-cgroups-v2-all-metrics -u || true
+	./scripts/e2e-test.sh -s exporter-cgroups-v1-lsf -u || true
+	./scripts/e2e-test.sh -s exporter-cgroups-v2-lsf -u || true
 	./scripts/e2e-test.sh -s exporter-cgroups-v1-libvirt -u || true
 	./scripts/e2e-test.sh -s exporter-cgroups-v2-libvirt -u || true
 	./scripts/e2e-test.sh -s exporter-cgroups-v2-libvirt-nonsystemd-layout -u || true
@@ -262,6 +268,8 @@ test-e2e-update: build pkg/collector/testdata/sys/.unpacked pkg/collector/testda
 	./scripts/e2e-test.sh -s exporter-cgroups-v2-k8s-nogpu -u || true
 	./scripts/e2e-test.sh -s discoverer-cgroups-v2-slurm -u || true
 	./scripts/e2e-test.sh -s discoverer-cgroups-v1-slurm -u || true
+	./scripts/e2e-test.sh -s discoverer-cgroups-v2-lsf -u || true
+	./scripts/e2e-test.sh -s discoverer-cgroups-v1-lsf -u || true
 	./scripts/e2e-test.sh -s discoverer-cgroups-v2-k8s -u || true
 	./scripts/e2e-test.sh -s discoverer-cgroups-v1-k8s -u || true
 	./scripts/e2e-test.sh -s k8s-admission-controller-basic -u || true

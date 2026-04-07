@@ -37,6 +37,14 @@ func TestNewCgroupManagerV2(t *testing.T) {
 			numCgroups: 9,
 		},
 		{
+			name:    "lsf",
+			manager: lsf,
+			mountPoints: []string{
+				"testdata/sys/fs/cgroup/lsf",
+			},
+			numCgroups: 3,
+		},
+		{
 			name:        "libvirt",
 			manager:     libvirt,
 			mountPoints: []string{"testdata/sys/fs/cgroup/machine.slice"},
@@ -94,6 +102,12 @@ func TestNewCgroupManagerV1(t *testing.T) {
 			numCgroups: 9,
 		},
 		{
+			name:        "lsf",
+			manager:     lsf,
+			mountPoints: []string{"testdata/sys/fs/cgroup/cpu,cpuacct/lsf"},
+			numCgroups:  3,
+		},
+		{
 			name:        "libvirt",
 			manager:     libvirt,
 			mountPoints: []string{"testdata/sys/fs/cgroup/cpu,cpuacct/machine.slice"},
@@ -133,6 +147,7 @@ func TestNewCgroupCollector(t *testing.T) {
 	_, err := CEEMSExporterApp.Parse(
 		[]string{
 			"--path.cgroupfs", "testdata/sys/fs/cgroup",
+			"--collector.gpu.nvidia-smi-path", "testdata/nvidia-smi",
 		},
 	)
 	require.NoError(t, err)
@@ -157,6 +172,14 @@ func TestNewCgroupCollector(t *testing.T) {
 	collector, err := NewCgroupCollector(noOpLogger, cgManager, opts)
 	require.NoError(t, err)
 
+	// Create GPU SMI
+	gpuSMI, err := NewGPUSMI(nil, noOpLogger)
+	require.NoError(t, err)
+
+	// Discover devices
+	err = gpuSMI.Discover()
+	require.NoError(t, err)
+
 	// Setup background goroutine to capture metrics.
 	metrics := make(chan prometheus.Metric)
 	defer close(metrics)
@@ -171,7 +194,7 @@ func TestNewCgroupCollector(t *testing.T) {
 	cgroups, err := cgManager.discover()
 	require.NoError(t, err)
 
-	err = collector.Update(metrics, cgroups)
+	err = collector.Update(metrics, cgroups, gpuSMI)
 	require.NoError(t, err)
 
 	err = collector.Stop(t.Context())
@@ -213,6 +236,35 @@ func TestCgroupsV2Metrics(t *testing.T) {
 				memoryPressure:  0,
 				rdmaHCAHandles:  map[string]float64{"hfi1_0": 479, "hfi1_1": 1479, "hfi1_2": 2479},
 				rdmaHCAObjects:  map[string]float64{"hfi1_0": 340, "hfi1_1": 1340, "hfi1_2": 2340},
+				blkioReadBytes:  map[string]float64{},
+				blkioWriteBytes: map[string]float64{},
+				blkioReadReqs:   map[string]float64{},
+				blkioWriteReqs:  map[string]float64{},
+				blkioPressure:   0,
+				err:             false,
+			},
+		},
+		{
+			name:    "lsf",
+			manager: lsf,
+			expected: cgMetric{
+				cgroup:          cgroup{uuid: "1009249", path: cgroupPath{rel: "/lsf/cluster1/job.1009249.27179.1775318460"}, ncpus: 4},
+				cpuUser:         2796.546074,
+				cpuSystem:       1.233341,
+				cpuTotal:        2797.779415,
+				cpus:            4000,
+				cpuPressure:     0.0067,
+				memoryRSS:       1.1776e+07,
+				memoryCache:     192512,
+				memoryUsed:      1.4426112e+07,
+				memoryTotal:     123456,
+				memoryFailCount: 0,
+				memswUsed:       0,
+				memswTotal:      1234,
+				memswFailCount:  0,
+				memoryPressure:  0,
+				rdmaHCAHandles:  map[string]float64{},
+				rdmaHCAObjects:  map[string]float64{},
 				blkioReadBytes:  map[string]float64{},
 				blkioWriteBytes: map[string]float64{},
 				blkioReadReqs:   map[string]float64{},
@@ -356,6 +408,28 @@ func TestCgroupsV1Metrics(t *testing.T) {
 				memoryPressure:  0,
 				rdmaHCAHandles:  map[string]float64{"hfi1_0": 479, "hfi1_1": 1479, "hfi1_2": 2479},
 				rdmaHCAObjects:  map[string]float64{"hfi1_0": 340, "hfi1_1": 1340, "hfi1_2": 2340},
+				err:             false,
+			},
+		},
+		{
+			name:    "lsf",
+			manager: lsf,
+			expected: cgMetric{
+				cgroup:          cgroup{uuid: "1009249", path: cgroupPath{rel: "/lsf/cluster1/job.1009249.35464.1775318445"}},
+				cpuUser:         2608.03,
+				cpuSystem:       0.12,
+				cpuTotal:        2608.072837534,
+				cpus:            8000,
+				cpuPressure:     0,
+				memoryRSS:       1.0428416e+07,
+				memoryCache:     0,
+				memoryUsed:      1.5867904e+07,
+				memoryTotal:     9.223372036854772e+18,
+				memoryFailCount: 0,
+				memswUsed:       0,
+				memswTotal:      0,
+				memswFailCount:  0,
+				memoryPressure:  0,
 				err:             false,
 			},
 		},

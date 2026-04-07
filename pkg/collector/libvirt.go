@@ -11,7 +11,6 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -137,9 +136,6 @@ type libvirtCollector struct {
 	libvirtXMLDirs                []string
 	gpuSMI                        *GPUSMI
 	vGPUActivated                 bool
-	instanceGpuFlag               *prometheus.Desc
-	instanceGpuNumSMs             *prometheus.Desc
-	collectError                  *prometheus.Desc
 	instanceIDUUIDMap             map[string]string
 	previousInstanceIDs           []string
 	instanceDevicesCacheTTL       time.Duration
@@ -298,43 +294,7 @@ func NewLibvirtCollector(logger *slog.Logger) (Collector, error) {
 		instanceDeviceslastUpdateTime: time.Now(),
 		instanceIDUUIDMap:             make(map[string]string),
 		securityContexts:              map[string]*security.SecurityContext{libvirtReadXMLCtx: securityCtx},
-		instanceGpuFlag: prometheus.NewDesc(
-			prometheus.BuildFQName(Namespace, genericSubsystem, "unit_gpu_index_flag"),
-			"A value > 0 indicates running instance using current GPU",
-			[]string{
-				"manager",
-				"hostname",
-				"cgrouphostname",
-				"uuid",
-				"index",
-				"hindex",
-				"gpuuuid",
-				"gpuiid",
-			},
-			nil,
-		),
-		instanceGpuNumSMs: prometheus.NewDesc(
-			prometheus.BuildFQName(Namespace, genericSubsystem, "unit_gpu_sm_count"),
-			"Number of SMs/CUs in the GPU instance",
-			[]string{
-				"manager",
-				"hostname",
-				"cgrouphostname",
-				"uuid",
-				"index",
-				"hindex",
-				"gpuuuid",
-				"gpuiid",
-			},
-			nil,
-		),
-		collectError: prometheus.NewDesc(
-			prometheus.BuildFQName(Namespace, genericSubsystem, "collect_error"),
-			"Indicates collection error, 0=no error, 1=error",
-			[]string{"manager", "hostname", "uuid"},
-			nil,
-		),
-		logger: logger,
+		logger:                        logger,
 	}, nil
 }
 
@@ -350,14 +310,9 @@ func (c *libvirtCollector) Update(ch chan<- prometheus.Metric) error {
 
 	wg.Go(func() {
 		// Update cgroup metrics
-		err := c.cgroupCollector.Update(ch, cgroups)
+		err := c.cgroupCollector.Update(ch, cgroups, c.gpuSMI)
 		if err != nil {
 			c.logger.Error("Failed to update cgroup stats", "err", err)
-		}
-
-		// Update instance GPU ordinals
-		if len(c.gpuSMI.Devices) > 0 {
-			c.updateDeviceMappers(ch)
 		}
 	})
 
@@ -423,95 +378,6 @@ func (c *libvirtCollector) Stop(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-// updateDeviceMappers updates the device mapper metrics.
-func (c *libvirtCollector) updateDeviceMappers(ch chan<- prometheus.Metric) {
-	for _, gpu := range c.gpuSMI.Devices {
-		// Update mappers for physical GPUs
-		for _, unit := range gpu.ComputeUnits {
-			// If sharing is available, estimate coefficient
-			value := 1.0
-			if gpu.CurrentShares > 0 && unit.NumShares > 0 {
-				value = float64(unit.NumShares) / float64(gpu.CurrentShares)
-			}
-
-			ch <- prometheus.MustNewConstMetric(
-				c.instanceGpuFlag,
-				prometheus.GaugeValue,
-				value,
-				c.cgroupManager.name,
-				c.hostname,
-				"",
-				unit.UUID,
-				gpu.Index,
-				fmt.Sprintf("%s/gpu-%s", c.hostname, gpu.Index),
-				gpu.UUID,
-				"",
-			)
-
-			// Export number of SMs/CUs as well
-			// Currently we are not using them for AMD GPUs, so they
-			// will be zero.
-			if gpu.NumSMs > 0 {
-				ch <- prometheus.MustNewConstMetric(
-					c.instanceGpuNumSMs,
-					prometheus.GaugeValue,
-					float64(gpu.NumSMs),
-					c.cgroupManager.name,
-					c.hostname,
-					unit.Hostname,
-					unit.UUID,
-					gpu.Index,
-					fmt.Sprintf("%s/gpu-%s", c.hostname, gpu.Index),
-					gpu.UUID,
-					"",
-				)
-			}
-		}
-
-		// Update mappers for instance GPUs
-		for _, inst := range gpu.Instances {
-			for _, unit := range inst.ComputeUnits {
-				// If sharing is available, estimate coefficient
-				value := 1.0
-				if inst.CurrentShares > 0 && unit.NumShares > 0 {
-					value = float64(unit.NumShares) / float64(inst.CurrentShares)
-				}
-
-				ch <- prometheus.MustNewConstMetric(
-					c.instanceGpuFlag,
-					prometheus.GaugeValue,
-					value,
-					c.cgroupManager.name,
-					c.hostname,
-					"",
-					unit.UUID,
-					inst.Index,
-					fmt.Sprintf("%s/gpu-%s", c.hostname, inst.Index),
-					gpu.UUID,
-					strconv.FormatUint(inst.GPUInstID, 10),
-				)
-
-				// For GPU instances, export number of SMs/CUs as well
-				if inst.NumSMs > 0 {
-					ch <- prometheus.MustNewConstMetric(
-						c.instanceGpuNumSMs,
-						prometheus.GaugeValue,
-						float64(inst.NumSMs),
-						c.cgroupManager.name,
-						c.hostname,
-						"",
-						unit.UUID,
-						inst.Index,
-						fmt.Sprintf("%s/gpu-%s", c.hostname, inst.Index),
-						gpu.UUID,
-						strconv.FormatUint(inst.GPUInstID, 10),
-					)
-				}
-			}
-		}
-	}
 }
 
 // instanceDevices returns devices attached to instance by parsing libvirt XML file.

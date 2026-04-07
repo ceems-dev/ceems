@@ -356,7 +356,7 @@ func TestNvidiaMIGAtLowerAddr(t *testing.T) {
 	content := fmt.Sprintf(`#!/bin/bash
 echo """%s"""	
 `, nvidiaSmiLog)
-	os.WriteFile(nvidiaSMIPath, []byte(content), 0o700) // #nosec
+	os.WriteFile(nvidiaSMIPath, []byte(content), 0o700)
 
 	_, err := CEEMSExporterApp.Parse(
 		[]string{
@@ -428,7 +428,7 @@ func TestNvidiaMIGAtHigherAddr(t *testing.T) {
 	content := fmt.Sprintf(`#!/bin/bash
 echo """%s"""	
 `, nvidiaSmiLog)
-	os.WriteFile(nvidiaSMIPath, []byte(content), 0o700) // #nosec
+	os.WriteFile(nvidiaSMIPath, []byte(content), 0o700)
 
 	_, err := CEEMSExporterApp.Parse(
 		[]string{

@@ -71,16 +71,6 @@ type gres struct {
 	numShares uint64
 }
 
-// slurmReadProcSecurityCtxData contains the input/output data for
-// reading processes inside a security context.
-type slurmReadProcSecurityCtxData struct {
-	procs        []procfs.Proc
-	shardEnabled bool
-	mpsEnabled   bool
-	uuid         string
-	gres         *gres
-}
-
 type slurmCollector struct {
 	logger           *slog.Logger
 	cgroupManager    *cgroupManager
@@ -95,9 +85,6 @@ type slurmCollector struct {
 	procFS           procfs.FS
 	shardEnabled     bool
 	mpsEnabled       bool
-	jobGpuFlag       *prometheus.Desc
-	jobGpuNumSMs     *prometheus.Desc
-	collectError     *prometheus.Desc
 	securityContexts map[string]*security.SecurityContext
 }
 
@@ -277,43 +264,7 @@ func NewSlurmCollector(logger *slog.Logger) (Collector, error) {
 		shardEnabled:     shardEnabled,
 		mpsEnabled:       mpsEnabled,
 		securityContexts: map[string]*security.SecurityContext{slurmReadProcCtx: securityCtx},
-		jobGpuFlag: prometheus.NewDesc(
-			prometheus.BuildFQName(Namespace, genericSubsystem, "unit_gpu_index_flag"),
-			"A value > 0 indicates the job using current GPU",
-			[]string{
-				"manager",
-				"hostname",
-				"cgrouphostname",
-				"uuid",
-				"index",
-				"hindex",
-				"gpuuuid",
-				"gpuiid",
-			},
-			nil,
-		),
-		jobGpuNumSMs: prometheus.NewDesc(
-			prometheus.BuildFQName(Namespace, genericSubsystem, "unit_gpu_sm_count"),
-			"Number of SMs/CUs in the GPU instance",
-			[]string{
-				"manager",
-				"hostname",
-				"cgrouphostname",
-				"uuid",
-				"index",
-				"hindex",
-				"gpuuuid",
-				"gpuiid",
-			},
-			nil,
-		),
-		collectError: prometheus.NewDesc(
-			prometheus.BuildFQName(Namespace, genericSubsystem, "collect_error"),
-			"Indicates collection error, 0=no error, 1=error",
-			[]string{"manager", "hostname", "uuid"},
-			nil,
-		),
-		logger: logger,
+		logger:           logger,
 	}, nil
 }
 
@@ -330,14 +281,9 @@ func (c *slurmCollector) Update(ch chan<- prometheus.Metric) error {
 
 	wg.Go(func() {
 		// Update cgroup metrics
-		err := c.cgroupCollector.Update(ch, cgroups)
+		err := c.cgroupCollector.Update(ch, cgroups, c.gpuSMI)
 		if err != nil {
 			c.logger.Error("Failed to update cgroup stats", "err", err)
-		}
-
-		// Update slurm job GPU ordinals
-		if len(c.gpuSMI.Devices) > 0 {
-			c.updateDeviceMappers(ch)
 		}
 	})
 
@@ -413,100 +359,6 @@ func (c *slurmCollector) Stop(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-// updateDeviceMappers updates the device mapper metrics.
-func (c *slurmCollector) updateDeviceMappers(ch chan<- prometheus.Metric) {
-	// On the DCGM side, we need to use relabel magic to rename UUID
-	// and GPU_I_ID labels to gpuuuid and gpuiid and make operations
-	// on(gpuuuid,gpuiid)
-	for _, gpu := range c.gpuSMI.Devices {
-		// Update mappers for physical GPUs
-		for _, unit := range gpu.ComputeUnits {
-			// If sharing is available, estimate coefficient
-			value := 1.0
-			if gpu.CurrentShares > 0 && unit.NumShares > 0 {
-				value = float64(unit.NumShares) / float64(gpu.CurrentShares)
-			}
-
-			ch <- prometheus.MustNewConstMetric(
-				c.jobGpuFlag,
-				prometheus.GaugeValue,
-				value,
-				c.cgroupManager.name,
-				c.hostname,
-				unit.Hostname,
-				unit.UUID,
-				gpu.Index,
-				fmt.Sprintf("%s/gpu-%s", c.hostname, gpu.Index),
-				gpu.UUID,
-				"",
-			)
-
-			// Export number of SMs/CUs as well
-			// Currently we are not using them for AMD GPUs, so they
-			// will be zero.
-			if gpu.NumSMs > 0 {
-				ch <- prometheus.MustNewConstMetric(
-					c.jobGpuNumSMs,
-					prometheus.GaugeValue,
-					float64(gpu.NumSMs),
-					c.cgroupManager.name,
-					c.hostname,
-					unit.Hostname,
-					unit.UUID,
-					gpu.Index,
-					fmt.Sprintf("%s/gpu-%s", c.hostname, gpu.Index),
-					gpu.UUID,
-					"",
-				)
-			}
-		}
-
-		// Update mappers for instance GPUs
-		for _, inst := range gpu.Instances {
-			for _, unit := range inst.ComputeUnits {
-				// If sharing is available, estimate coefficient
-				value := 1.0
-				if inst.CurrentShares > 0 && unit.NumShares > 0 {
-					value = float64(unit.NumShares) / float64(inst.CurrentShares)
-				}
-
-				ch <- prometheus.MustNewConstMetric(
-					c.jobGpuFlag,
-					prometheus.GaugeValue,
-					value,
-					c.cgroupManager.name,
-					c.hostname,
-					unit.Hostname,
-					unit.UUID,
-					inst.Index,
-					fmt.Sprintf("%s/gpu-%s", c.hostname, inst.Index),
-					gpu.UUID,
-					strconv.FormatUint(inst.GPUInstID, 10),
-				)
-
-				// For GPU instances, export number of SMs/CUs as well
-				// Currently we are not using them for AMD GPUs, so they
-				// will be zero.
-				if inst.NumSMs > 0 {
-					ch <- prometheus.MustNewConstMetric(
-						c.jobGpuNumSMs,
-						prometheus.GaugeValue,
-						float64(inst.NumSMs),
-						c.cgroupManager.name,
-						c.hostname,
-						unit.Hostname,
-						unit.UUID,
-						inst.Index,
-						fmt.Sprintf("%s/gpu-%s", c.hostname, inst.Index),
-						gpu.UUID,
-						strconv.FormatUint(inst.GPUInstID, 10),
-					)
-				}
-			}
-		}
-	}
 }
 
 // updateGRESShares updates the compute unit's GRES shares based on available shares on each
@@ -693,13 +545,24 @@ func (c *slurmCollector) jobCgroups() ([]cgroup, error) {
 // jobGRESResources returns GRES resources bound to current job.
 func (c *slurmCollector) jobGRESResources(uuid string, procs []procfs.Proc) *gres {
 	// Read env vars in a security context that raises necessary capabilities
-	dataPtr := &slurmReadProcSecurityCtxData{
-		procs:        procs,
-		uuid:         uuid,
-		shardEnabled: c.shardEnabled,
-		mpsEnabled:   c.mpsEnabled,
+	dataPtr := &readProcSecurityCtxData{
+		procs: procs,
+		ignoreProc: func(envs []string) bool {
+			return !slices.Contains(envs, "SLURM_JOB_ID="+uuid)
+		},
+		targetEnvVars: []string{"SLURM_STEP_GPUS", "SLURM_JOB_GPUS"},
 	}
 
+	// Add more target env vars based on sharding and MPS
+	if c.shardEnabled {
+		dataPtr.targetEnvVars = append(dataPtr.targetEnvVars, "SLURM_SHARDS_ON_NODE")
+	}
+
+	if c.mpsEnabled {
+		dataPtr.targetEnvVars = append(dataPtr.targetEnvVars, "CUDA_MPS_ACTIVE_THREAD_PERCENTAGE")
+	}
+
+	// Get env var values
 	if securityCtx, ok := c.securityContexts[slurmReadProcCtx]; ok {
 		err := securityCtx.Exec(dataPtr)
 		if err != nil {
@@ -717,87 +580,8 @@ func (c *slurmCollector) jobGRESResources(uuid string, procs []procfs.Proc) *gre
 		return nil
 	}
 
-	// Emit warning when there are GPUs but no job to GPU map found
-	if len(dataPtr.gres.deviceIDs) == 0 {
-		c.logger.Warn("Failed to get GPU ordinals or job does not request GPU resources", "jobid", uuid)
-	} else {
-		c.logger.Debug(
-			"GPU ordinals", "jobid", uuid, "ordinals", strings.Join(dataPtr.gres.deviceIDs, ","),
-			"shards/mps", dataPtr.gres.numShares,
-		)
-	}
-
-	return dataPtr.gres
-}
-
-// readProcEnvirons reads the environment variables of processes and returns
-// GPU ordinals of job. This function will be executed in a security context.
-func readProcEnvirons(data any) error {
-	// Assert data is of slurmSecurityCtxData
-	var d *slurmReadProcSecurityCtxData
-
-	var ok bool
-	if d, ok = data.(*slurmReadProcSecurityCtxData); !ok {
-		return security.ErrSecurityCtxDataAssertion
-	}
-
-	var stepGPUs, jobGPUs []string
-
-	var numShares string
-
-	// Initialise gres to avoid accessing nil pointers downstream
-	d.gres = &gres{}
-
-	// Env var that we will search
-	jobIDEnv := "SLURM_JOB_ID=" + d.uuid
-
-	// Iterate through all procs and look for SLURM_JOB_ID env entry
-	// Here we have to sacrifice multi-threading for security. We cannot
-	// spawn go-routines inside as we will execute this function inside
-	// a security context locked to OS thread. Any new go routines spawned
-	// WILL NOT BE scheduled on this locked thread and hence will not
-	// have capabilities to read environment variables. So, we just do
-	// old school loop on procs and attempt to find target env variables.
-	for _, proc := range d.procs {
-		// If SLURM_JOB_GPUS env var is found, exit loop
-		if (len(jobGPUs) > 0 && !d.shardEnabled && !d.mpsEnabled) ||
-			(d.shardEnabled && len(jobGPUs) > 0 && numShares != "") ||
-			(d.mpsEnabled && len(jobGPUs) > 0 && numShares != "") {
-			break
-		}
-
-		// Read process environment variables
-		// NOTE: This needs CAP_SYS_PTRACE and CAP_DAC_READ_SEARCH caps
-		// on the current process
-		// Skip if we cannot read file or job ID env var is not found
-		environments, err := proc.Environ()
-		if err != nil || !slices.Contains(environments, jobIDEnv) {
-			continue
-		}
-
-		// When env var entry found, get all necessary env vars
-		for _, env := range environments {
-			if strings.Contains(env, "SLURM_STEP_GPUS") {
-				stepGPUs = strings.Split(strings.Split(env, "=")[1], ",")
-			}
-
-			if strings.Contains(env, "SLURM_JOB_GPUS") {
-				jobGPUs = strings.Split(strings.Split(env, "=")[1], ",")
-			}
-
-			// When GPU sharding is enabled, number of shards allocated to a job step
-			// is stored in this env var
-			if strings.Contains(env, "SLURM_SHARDS_ON_NODE") {
-				numShares = strings.Split(env, "=")[1]
-			}
-
-			// When MPS is enabled, number of threads allocated to a job step
-			// is stored in this env var
-			if strings.Contains(env, "CUDA_MPS_ACTIVE_THREAD_PERCENTAGE") {
-				numShares = strings.Split(env, "=")[1]
-			}
-		}
-	}
+	// Process the found env vars
+	var jobGPUs []string
 
 	// If both SLURM_STEP_GPUS and SLURM_JOB_GPUS are found, proritize
 	// SLURM_JOB_GPUS. We noticed that when both env vars are found,
@@ -808,23 +592,132 @@ func readProcEnvirons(data any) error {
 	// the case eversince we migrated to SLURM 23.11 on JZ. Maybe it is a
 	// side effect of Atos' patches?
 	// Relevant SLURM src: https://github.com/SchedMD/slurm/blob/d3e78848f72745ceb80e2a6bebdbcf3cfd7462b1/src/plugins/gres/common/gres_common.c#L262-L265
-	switch {
-	case len(jobGPUs) > 0:
-		d.gres.deviceIDs = jobGPUs
-	case len(stepGPUs) > 0:
-		d.gres.deviceIDs = stepGPUs
-	default:
-		d.gres.deviceIDs = []string{}
+	if val, ok := dataPtr.targetEnvVarValues["SLURM_JOB_GPUS"]; ok {
+		jobGPUs = strings.Split(val, ",")
+	} else if val, ok := dataPtr.targetEnvVarValues["SLURM_STEP_GPUS"]; ok {
+		jobGPUs = strings.Split(val, ",")
+	} else {
+		c.logger.Warn("Failed to get GPU ordinals or job does not request GPU resources", "jobid", uuid)
+	}
+
+	// Get shares if env vars are found
+	var numSharesStr string
+	if val, ok := dataPtr.targetEnvVarValues["SLURM_SHARDS_ON_NODE"]; ok {
+		numSharesStr = val
+	} else if val, ok := dataPtr.targetEnvVarValues["CUDA_MPS_ACTIVE_THREAD_PERCENTAGE"]; ok {
+		numSharesStr = val
 	}
 
 	// Convert numShares to uint64
-	val, err := strconv.ParseUint(numShares, 10, 64)
-	if err == nil {
-		d.gres.numShares = val
+	numShares, err := strconv.ParseUint(numSharesStr, 10, 64)
+	if err != nil {
+		c.logger.Warn("Failed to parse shards or MPS shares", "jobid", uuid, "shards/mps", numSharesStr)
 	}
 
-	return nil
+	// Emit logs with found GPU ordinals and shards and/or MPS shares
+	c.logger.Debug(
+		"GPU ordinals", "jobid", uuid, "ordinals", strings.Join(jobGPUs, ","),
+		"shards/mps", numShares,
+	)
+
+	return &gres{deviceIDs: jobGPUs, numShares: numShares}
 }
+
+// // readProcEnvirons reads the environment variables of processes and returns
+// // GPU ordinals of job. This function will be executed in a security context.
+// func readProcEnvirons(data any) error {
+// 	// Assert data is of slurmSecurityCtxData
+// 	var d *slurmReadProcSecurityCtxData
+
+// 	var ok bool
+// 	if d, ok = data.(*slurmReadProcSecurityCtxData); !ok {
+// 		return security.ErrSecurityCtxDataAssertion
+// 	}
+
+// 	var stepGPUs, jobGPUs []string
+
+// 	var numShares string
+
+// 	// Initialise gres to avoid accessing nil pointers downstream
+// 	d.gres = &gres{}
+
+// 	// Env var that we will search
+// 	jobIDEnv := "SLURM_JOB_ID=" + d.uuid
+
+// 	// Iterate through all procs and look for SLURM_JOB_ID env entry
+// 	// Here we have to sacrifice multi-threading for security. We cannot
+// 	// spawn go-routines inside as we will execute this function inside
+// 	// a security context locked to OS thread. Any new go routines spawned
+// 	// WILL NOT BE scheduled on this locked thread and hence will not
+// 	// have capabilities to read environment variables. So, we just do
+// 	// old school loop on procs and attempt to find target env variables.
+// 	for _, proc := range d.procs {
+// 		// If SLURM_JOB_GPUS env var is found, exit loop
+// 		if (len(jobGPUs) > 0 && !d.shardEnabled && !d.mpsEnabled) ||
+// 			(d.shardEnabled && len(jobGPUs) > 0 && numShares != "") ||
+// 			(d.mpsEnabled && len(jobGPUs) > 0 && numShares != "") {
+// 			break
+// 		}
+
+// 		// Read process environment variables
+// 		// NOTE: This needs CAP_SYS_PTRACE and CAP_DAC_READ_SEARCH caps
+// 		// on the current process
+// 		// Skip if we cannot read file or job ID env var is not found
+// 		environments, err := proc.Environ()
+// 		if err != nil || !slices.Contains(environments, jobIDEnv) {
+// 			continue
+// 		}
+
+// 		// When env var entry found, get all necessary env vars
+// 		for _, env := range environments {
+// 			if strings.Contains(env, "SLURM_STEP_GPUS") {
+// 				stepGPUs = strings.Split(strings.Split(env, "=")[1], ",")
+// 			}
+
+// 			if strings.Contains(env, "SLURM_JOB_GPUS") {
+// 				jobGPUs = strings.Split(strings.Split(env, "=")[1], ",")
+// 			}
+
+// 			// When GPU sharding is enabled, number of shards allocated to a job step
+// 			// is stored in this env var
+// 			if strings.Contains(env, "SLURM_SHARDS_ON_NODE") {
+// 				numShares = strings.Split(env, "=")[1]
+// 			}
+
+// 			// When MPS is enabled, number of threads allocated to a job step
+// 			// is stored in this env var
+// 			if strings.Contains(env, "CUDA_MPS_ACTIVE_THREAD_PERCENTAGE") {
+// 				numShares = strings.Split(env, "=")[1]
+// 			}
+// 		}
+// 	}
+
+// 	// If both SLURM_STEP_GPUS and SLURM_JOB_GPUS are found, proritize
+// 	// SLURM_JOB_GPUS. We noticed that when both env vars are found,
+// 	// SLURM_STEP_GPUS is not correctly set.
+// 	// Technically SLURM_JOB_GPUS should be set for jobs and SLURM_STEP_GPUS
+// 	// should be set for steps like `srun`. When they are both set
+// 	// SLURM_STEP_GPUS should be a subset of SLURM_JOB_GPUS but this is not
+// 	// the case eversince we migrated to SLURM 23.11 on JZ. Maybe it is a
+// 	// side effect of Atos' patches?
+// 	// Relevant SLURM src: https://github.com/SchedMD/slurm/blob/d3e78848f72745ceb80e2a6bebdbcf3cfd7462b1/src/plugins/gres/common/gres_common.c#L262-L265
+// 	switch {
+// 	case len(jobGPUs) > 0:
+// 		d.gres.deviceIDs = jobGPUs
+// 	case len(stepGPUs) > 0:
+// 		d.gres.deviceIDs = stepGPUs
+// 	default:
+// 		d.gres.deviceIDs = []string{}
+// 	}
+
+// 	// Convert numShares to uint64
+// 	val, err := strconv.ParseUint(numShares, 10, 64)
+// 	if err == nil {
+// 		d.gres.numShares = val
+// 	}
+
+// 	return nil
+// }
 
 // updateGPUAvailableShares parses SLURM's gres.conf file and returns updated devices slice.
 func updateGPUAvailableShares(content string, gresType string, hostname string, gpus []Device) ([]Device, bool) {

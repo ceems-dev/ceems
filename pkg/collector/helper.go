@@ -15,6 +15,7 @@ import (
 	"syscall"
 	"unique"
 
+	"github.com/ceems-dev/ceems/internal/security"
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/prometheus/procfs"
@@ -25,6 +26,15 @@ var (
 	metricNameRegex = regexp.MustCompile(`_*[^0-9A-Za-z_]+_*`)
 	reParens        = regexp.MustCompile(`\((.*)\)`)
 )
+
+// readProcSecurityCtxData contains the input/output data for
+// reading processes inside a security context.
+type readProcSecurityCtxData struct {
+	procs              []procfs.Proc
+	targetEnvVars      []string
+	ignoreProc         func([]string) bool
+	targetEnvVarValues map[string]string
+}
 
 // Nicked from https://github.com/isauran/logger/blob/master/adapters/gokit/logger.go
 // Ref: https://github.com/go-kit/log/issues/35
@@ -450,6 +460,64 @@ func perfEventsAvailable() error {
 	} else {
 		return fmt.Errorf("error opening /proc/sys/kernel/perf_event_paranoid file: %w", err)
 	}
+}
+
+// readProcEnvirons reads the environment variables of processes and returns
+// map of found env vars. This function will be executed in a security context.
+func readProcEnvirons(data any) error {
+	// Assert data is of readProcSecurityCtxData
+	var d *readProcSecurityCtxData
+
+	var ok bool
+	if d, ok = data.(*readProcSecurityCtxData); !ok {
+		return security.ErrSecurityCtxDataAssertion
+	}
+
+	// Initialise envVarValues map
+	d.targetEnvVarValues = make(map[string]string)
+
+	// Iterate through all procs and look for env entries
+	// Here we have to sacrifice multi-threading for security. We cannot
+	// spawn go-routines inside as we will execute this function inside
+	// a security context locked to OS thread. Any new go routines spawned
+	// WILL NOT BE scheduled on this locked thread and hence will not
+	// have capabilities to read environment variables. So, we just do
+	// old school loop on procs and attempt to find target env variables.
+	for _, proc := range d.procs {
+		// Make a slice of env var names that are yet to be fetched
+		var targetEnvVarsToFetch []string
+
+		for _, targetEnvVar := range d.targetEnvVars {
+			if _, ok := d.targetEnvVarValues[targetEnvVar]; !ok {
+				targetEnvVarsToFetch = append(targetEnvVarsToFetch, targetEnvVar)
+			}
+		}
+
+		// If there are no env vars to fetch, return
+		if len(targetEnvVarsToFetch) == 0 {
+			return nil
+		}
+
+		// Read process environment variables
+		// NOTE: This needs CAP_SYS_PTRACE and CAP_DAC_READ_SEARCH caps
+		// on the current process
+		// Skip if we cannot read file or given process must be ignored
+		environments, err := proc.Environ()
+		if err != nil || (d.ignoreProc != nil && d.ignoreProc(environments)) {
+			continue
+		}
+
+		// When env var entry found, get all necessary env vars
+		for _, env := range environments {
+			for _, targetEnvVar := range targetEnvVarsToFetch {
+				if strings.Contains(env, targetEnvVar) {
+					d.targetEnvVarValues[targetEnvVar] = strings.Split(env, "=")[1]
+				}
+			}
+		}
+	}
+
+	return nil
 }
 
 // // lookupIPs returns all the IP addresses of the current host.
