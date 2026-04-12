@@ -98,9 +98,11 @@ var (
 /*
 	For v1 possibilities are /cpuacct/lsf/cluster_name/job.42.34071.1775289779
 							 /memory/lsf/cluster_name/job.42.34071.1775289779
+							 /memory/lsf/cluster_name/job.42[2].34071.1775289779 for job arrays
 
 	For v2 possibilities are /lsf/cluster1/job.9.30675.1775295256
 							 /lsf/cluster1/job.9.30675.1775295256/leaf
+							 /lsf/cluster1/job.9[1].30675.1775295256/leaf for job arrays
 
 	Seems like there are no cgroups for each MPI task created by LSF. At least I am not
 	able to find proper settings to get them created
@@ -112,8 +114,8 @@ var (
 	/bin/bash /home/usr1/.lsbatch/1775296755.13.shell
 */
 var (
-	lsfCgroupV1PathRegex = regexp.MustCompile(`^.*/lsf/(?:(?P<cluster_name>.*?))/job\.(?P<id>[0-9]+)\.(?:(?P<int_id>[0-9]+))\.(?:(?P<ts>[0-9]+))(?:.*$)`)
-	lsfCgroupV2PathRegex = regexp.MustCompile(`^.*/lsf/(?:(?P<cluster_name>.*?))/job\.(?P<id>[0-9]+)\.(?:(?P<int_id>[0-9]+))\.(?:(?P<ts>[0-9]+))/leaf(?:.*$)`)
+	lsfCgroupV1PathRegex = regexp.MustCompile(`^.*/lsf/(?:(?P<cluster_name>.*?))/job\.(?P<id>[0-9]+(?:\[[0-9]+\])?)\.(?:(?P<int_id>[0-9]+))\.(?:(?P<ts>[0-9]+))(?:.*$)`)
+	lsfCgroupV2PathRegex = regexp.MustCompile(`^.*/lsf/(?:(?P<cluster_name>.*?))/job\.(?P<id>[0-9]+(?:\[[0-9]+\])?)\.(?:(?P<int_id>[0-9]+))\.(?:(?P<ts>[0-9]+))/leaf(?:.*$)`)
 	lsfIgnoreProcsRegex  = regexp.MustCompile("(.*)/.lsbatch/(.*)")
 )
 

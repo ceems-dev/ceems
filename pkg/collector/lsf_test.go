@@ -145,10 +145,10 @@ func TestLSFJobDevices(t *testing.T) {
 }
 
 func writeLSFEnvironFile(procFS string, jobid string, val string) error {
-	envs := []string{"LSB_JOBID=" + jobid, "CUDA_VISIBLE_DEVICES=" + val}
+	envs := []string{"LSB_BATCH_JID=" + jobid, "CUDA_VISIBLE_DEVICES=" + val}
 
 	return os.WriteFile(
-		procFS+"/"+jobid+"/environ",
+		procFS+"/"+strings.ReplaceAll(strings.ReplaceAll(jobid, "[", ""), "]", "")+"/environ",
 		[]byte(strings.Join(envs, "\000")+"\000"),
 		0o600,
 	)
@@ -443,20 +443,20 @@ func TestLSFJobDevicesCaching(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	for i := 19; i < 40; i++ {
-		dir := fmt.Sprintf("%s/cpuacct/lsf/cluster1/job.%d.12345.123443", cgroupsPath, i)
+	for i := 1; i <= 20; i++ {
+		dir := fmt.Sprintf("%s/cpuacct/lsf/cluster1/job.19[%d].12345.123443", cgroupsPath, i)
 
 		err = os.MkdirAll(dir, 0o750)
 		require.NoError(t, err)
 
 		err = os.WriteFile(
 			dir+"/cgroup.procs",
-			fmt.Appendf(nil, "%d\n", i),
+			fmt.Appendf(nil, "19%d\n", i),
 			0o600,
 		)
 		require.NoError(t, err)
 
-		procDir := fmt.Sprintf("%s/%d", procFS, i)
+		procDir := fmt.Sprintf("%s/19%d", procFS, i)
 
 		err = os.MkdirAll(procDir, 0o750)
 		require.NoError(t, err)
@@ -539,32 +539,32 @@ func TestLSFJobDevicesCaching(t *testing.T) {
 		NumJobs: 4,
 		Records: []LSFJobRecord{
 			{
-				ID:        "19",
+				ID:        "19[1]",
 				AllocSlot: "testhost-1.example.com:testhost-1.example.com:testhost-1.example.com:testhost-1.example.com",
 				GPUSlot:   "testhost-1.example.com:0,0,0,0",
 			},
 			{
-				ID:        "20",
+				ID:        "19[2]",
 				AllocSlot: "testhost-1.example.com:testhost-1.example.com:testhost-1.example.com:testhost-1.example.com",
 				GPUSlot:   "testhost-1.example.com:2,2,2,2",
 			},
 			{
-				ID:        "21",
+				ID:        "19[3]",
 				AllocSlot: "testhost-1.example.com:testhost-1.example.com:testhost-2.example.com:testhost-2.example.com",
 				GPUSlot:   `testhost-1.example.com:1:1\/0;testhost-2.example.com:0:1\/0`,
 			},
 			{
-				ID:        "22",
+				ID:        "19[4]",
 				AllocSlot: "testhost-1.example.com:testhost-1.example.com",
 				GPUSlot:   "testhost-1.example.com:0,2",
 			},
 			{
-				ID:        "23",
+				ID:        "19[5]",
 				AllocSlot: "testhost-1.example.com:testhost-1.example.com",
 				GPUSlot:   `testhost-1.example.com:3:13\/1`,
 			},
 			{
-				ID:        "24",
+				ID:        "19[6]",
 				AllocSlot: "testhost-1.example.com:testhost-1.example.com",
 				GPUSlot:   `testhost-1.example.com:3:13\/1`,
 			},
@@ -610,10 +610,10 @@ func TestLSFJobDevicesCaching(t *testing.T) {
 
 	// New expected jobs
 	expected = map[string][]ComputeUnit{
-		"0": {{UUID: "19", NumShares: 1}, {UUID: "22", NumShares: 1}},
-		"1": {{UUID: "21", NumShares: 1}},
-		"2": {{UUID: "20", NumShares: 1}, {UUID: "22", NumShares: 1}},
-		"5": {{UUID: "23", NumShares: 1}, {UUID: "24", NumShares: 1}},
+		"0": {{UUID: "19[1]", NumShares: 1}, {UUID: "19[4]", NumShares: 1}},
+		"1": {{UUID: "19[3]", NumShares: 1}},
+		"2": {{UUID: "19[2]", NumShares: 1}, {UUID: "19[4]", NumShares: 1}},
+		"5": {{UUID: "19[5]", NumShares: 1}, {UUID: "19[6]", NumShares: 1}},
 	}
 
 	for _, gpu := range c.gpuSMI.Devices {
