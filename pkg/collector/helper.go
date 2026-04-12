@@ -488,7 +488,7 @@ func readProcEnvirons(data any) error {
 		var targetEnvVarsToFetch []string
 
 		for _, targetEnvVar := range d.targetEnvVars {
-			if _, ok := d.targetEnvVarValues[targetEnvVar]; !ok {
+			if val, ok := d.targetEnvVarValues[targetEnvVar]; !ok || val == "" {
 				targetEnvVarsToFetch = append(targetEnvVarsToFetch, targetEnvVar)
 			}
 		}
@@ -510,8 +510,12 @@ func readProcEnvirons(data any) error {
 		// When env var entry found, get all necessary env vars
 		for _, env := range environments {
 			for _, targetEnvVar := range targetEnvVarsToFetch {
-				if strings.Contains(env, targetEnvVar) {
-					d.targetEnvVarValues[targetEnvVar] = strings.Split(env, "=")[1]
+				// Split env var name and value and compare the name with targetEnvVar.
+				// This is because if we have targetEnvVar as CUDA_VISIBLE_DEVICES and
+				// env is CUDA_VISIBLE_DEVICES_SOMEPREFIX, we will match targetEnvVar with
+				// CUDA_VISIBLE_DEVICES_SOMEPREFIX which is not we want.
+				if p := strings.Split(env, "="); (len(p) == 2 && p[0] == targetEnvVar) {
+					d.targetEnvVarValues[targetEnvVar] = p[1]
 				}
 			}
 		}

@@ -50,9 +50,11 @@ const (
 	lsfReadProcCtx = "lsf_read_procs"
 )
 
-// Regex to get physical GPU UUID and GPU_I_ID, GPU_C_ID from MIG device IDs.
 var (
+	// Regex to get physical GPU UUID and GPU_I_ID, GPU_C_ID from MIG device IDs.
 	migDeviceIDRegex = regexp.MustCompile("^MIG-(?P<GPU_UUID>.*?)/(?P<GPU_I_ID>[0-9]+?)/(?P<GPU_C_ID>[0-9]+)$")
+	// Regex to extract job index from job ID.
+	jobIndexRegex = regexp.MustCompile(`^(?P<id>[0-9]+)(?:\[(?P<index>[0-9]+)\])?$`)
 )
 
 // Cache interval.
@@ -66,6 +68,70 @@ type LSFJobRecord struct {
 	AllocSlot    string `json:"ALLOC_SLOT"`
 	NumAllocSlot string `json:"NALLOC_SLOT"`
 	GPUSlot      string `json:"GPU_ALLOC"`
+}
+
+// UnmarshalJSON unmarshals byte array into LSFJobRecord.
+func (r *LSFJobRecord) UnmarshalJSON(b []byte) error {
+	// Define a temporary type to avoid infinite looping
+	type LSFJobRecordTmp LSFJobRecord
+
+	type tmp struct {
+		LSFJobRecordTmp
+
+		Index string `json:"JOBINDEX"`
+	}
+
+	var s tmp
+
+	err := json.Unmarshal(b, &s)
+	if err != nil {
+		return err
+	}
+
+	*r = LSFJobRecord(s.LSFJobRecordTmp)
+
+	// If Index exists, attach it to job ID. So, if id is 6 and index is 2,
+	// the final id will be "6[2]" as appaears in cgroup paths
+	if s.Index != "" {
+		r.ID = fmt.Sprintf("%s[%s]", r.ID, s.Index)
+	}
+
+	return nil
+}
+
+// MarshalJSON marshals LSFJobRecord into byte array.
+func (r LSFJobRecord) MarshalJSON() ([]byte, error) {
+	// Define a temporary type to avoid infinite looping
+	type LSFJobRecordTmp LSFJobRecord
+
+	// Another tmp struct that contains job index
+	type tmp struct {
+		LSFJobRecordTmp
+
+		Index string `json:"JOBINDEX"`
+	}
+
+	var s tmp
+
+	s.LSFJobRecordTmp = LSFJobRecordTmp(r)
+
+	// If jobID has index inside it, extract it
+	match := jobIndexRegex.FindStringSubmatch(r.ID)
+	// If no matches found, return
+	if len(match) > 0 {
+		// Get index of the job
+		for i, name := range jobIndexRegex.SubexpNames() {
+			if name == "id" {
+				s.ID = strings.TrimSpace(match[i])
+			}
+
+			if name == "index" {
+				s.Index = strings.TrimSpace(match[i])
+			}
+		}
+	}
+
+	return json.Marshal(s)
 }
 
 // LSFJobsList contains list of all job records.
@@ -379,7 +445,7 @@ func (c *lsfCollector) jobResources(cgroups []cgroup) {
 	// Get job resources from bjobs command
 	cmdOut, err := osexec.ExecuteContext(
 		ctx, c.bjobsExePath,
-		[]string{"-u", "all", "-m", c.hostname, "-json", "-o", "jobid alloc_slot nalloc_slot gpu_alloc"},
+		[]string{"-u", "all", "-m", c.hostname, "-json", "-o", "jobid jobindex alloc_slot nalloc_slot gpu_alloc"},
 		nil,
 	)
 	if err != nil {
@@ -563,7 +629,8 @@ func (c *lsfCollector) jobGPUInstanceResources(uuid string, procs []procfs.Proc,
 	dataPtr := &readProcSecurityCtxData{
 		procs: procs,
 		ignoreProc: func(envs []string) bool {
-			return !slices.Contains(envs, "LSB_JOBID="+uuid)
+			// LSB_JOBID WILL NOT HAVE job index. LSB_BATCH_JID is more realiable
+			return !slices.Contains(envs, "LSB_BATCH_JID="+uuid)
 		},
 		// In the case of AMD GPUs, GPU_DEVICE_ORDINAL and GPU_DEVICE_ORDINAL1 are
 		// exported with "real" GPU minor numbers. But at the same time, bjobs
