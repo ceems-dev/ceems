@@ -514,7 +514,7 @@ func readProcEnvirons(data any) error {
 				// This is because if we have targetEnvVar as CUDA_VISIBLE_DEVICES and
 				// env is CUDA_VISIBLE_DEVICES_SOMEPREFIX, we will match targetEnvVar with
 				// CUDA_VISIBLE_DEVICES_SOMEPREFIX which is not we want.
-				if p := strings.Split(env, "="); (len(p) == 2 && p[0] == targetEnvVar) {
+				if p := strings.Split(env, "="); len(p) == 2 && p[0] == targetEnvVar {
 					d.targetEnvVarValues[targetEnvVar] = p[1]
 				}
 			}
