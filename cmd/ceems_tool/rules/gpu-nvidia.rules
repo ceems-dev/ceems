@@ -41,8 +41,8 @@ groups:
           ceems_compute_unit_gpu_index_flag{job="{{.Job}}"}
       
       # Total power (Watts) consumed by the GPU by accounting Power Usage Effectiveness (PUE) value.
-      - record: dev:DCGM_FI_DEV_POWER_USAGE_INSTANT:pue
-        expr: {{.PUE}} * {{ printf $labelreplace "DCGM_FI_DEV_POWER_USAGE_INSTANT" .GPUJob }}
+      - record: dev:{{ .GPUPowerMetric }}:pue
+        expr: {{.PUE}} * {{ printf $labelreplace .GPUPowerMetric .GPUJob }}
 
       # When profiling metrics are available, we split the total power consumed by physical
       # GPU among all MIG instances based on "effective" SM usage on each MIG instance. This
@@ -79,7 +79,7 @@ groups:
               )
             )
               * on (gpuuuid,gpuiid) group_left ()
-                dev:DCGM_FI_DEV_POWER_USAGE_INSTANT:pue{job="{{.GPUJob}}"}
+                dev:{{ .GPUPowerMetric }}:pue{job="{{.GPUJob}}"}
             * on (gpuuuid,gpuiid,uuid) group_right ()
               ceems_compute_unit_gpu_index_flag{job="{{.Job}}"}
 {{- else }}
@@ -88,10 +88,10 @@ groups:
             / on (gpuuuid) group_left ()
               (sum by (gpuuuid) (ceems_compute_unit_gpu_sm_count{job="{{.Job}}"}) > 0)
           )
-          * on (gpuuuid,gpuiid) group_left ()
-            dev:DCGM_FI_DEV_POWER_USAGE_INSTANT:pue{job="{{.GPUJob}}"}
-        * on (gpuuuid,gpuiid,uuid) group_right ()
-          ceems_compute_unit_gpu_index_flag{job="{{.Job}}"}
+            * on (gpuuuid,gpuiid) group_left ()
+              dev:{{ .GPUPowerMetric }}:pue{job="{{.GPUJob}}"}
+          * on (gpuuuid,gpuiid,uuid) group_right ()
+            ceems_compute_unit_gpu_index_flag{job="{{.Job}}"}
 {{- end }}
           
 {{- $numproviders := len .Providers -}}
