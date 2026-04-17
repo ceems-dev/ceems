@@ -35,7 +35,8 @@ const (
 )
 
 const (
-	dcgmPowerMetric              = "DCGM_FI_DEV_POWER_USAGE_INSTANT"
+	dcgmInstantPowerMetric       = "DCGM_FI_DEV_POWER_USAGE_INSTANT"
+	dcgmPowerMetric              = "DCGM_FI_DEV_POWER_USAGE"
 	amdSMIPowerMetric            = "amd_gpu_power"
 	amdDevExporterPkgPowerMetric = "gpu_package_power"
 )
@@ -52,6 +53,7 @@ var (
 		hwmonPowerMetric,
 		"ceems_emissions_gCo2_kWh",
 		dcgmPowerMetric,
+		dcgmInstantPowerMetric,
 		amdSMIPowerMetric,
 		amdDevExporterPkgPowerMetric, // AMD metrics device exporter
 		"ceems_compute_unit_gpu_index_flag",
@@ -101,6 +103,7 @@ type Config struct {
 
 type gpuTemplateData struct {
 	templateFile  string
+	powerMetric   string
 	metricPrefix  string
 	job           model.LabelValue
 	nvProfSeries  model.LabelValues
@@ -136,6 +139,14 @@ func (t *rulesTemplateData) GPUMetricPrefix() string {
 	}
 
 	return t.GPU.metricPrefix
+}
+
+func (t *rulesTemplateData) GPUPowerMetric() string {
+	if t.GPU == nil {
+		return ""
+	}
+
+	return t.GPU.powerMetric
 }
 
 func (t *rulesTemplateData) GPUJob() model.LabelValue {
@@ -493,11 +504,21 @@ func jobSeriesMetaData(ctx context.Context, api v1.API, start time.Time, end tim
 	gpuJobsMap := make(map[model.LabelValue]model.LabelValue)
 
 	for _, cpuJob := range seriesJobs["ceems_compute_unit_gpu_index_flag"] {
-		// Look for NVIDIA GPU associations
-		for _, gpuJob := range seriesJobs[dcgmPowerMetric] {
-			// If job instances between CEEMS job and GPU job matches, we mark it as an association
-			if foundInstances := intersection(jobInstances[gpuJob], jobInstances[cpuJob]); len(foundInstances) > 0 {
-				gpuJobsMap[cpuJob] = gpuJob
+		// Look for NVIDIA GPU associations. First check for instant power metric and if
+		// it is not enabled, check for regular power metrics which is averaged
+		if gpuJobs, ok := seriesJobs[dcgmInstantPowerMetric]; ok {
+			for _, gpuJob := range gpuJobs {
+				// If job instances between CEEMS job and GPU job matches, we mark it as an association
+				if foundInstances := intersection(jobInstances[gpuJob], jobInstances[cpuJob]); len(foundInstances) > 0 {
+					gpuJobsMap[cpuJob] = gpuJob
+				}
+			}
+		} else {
+			for _, gpuJob := range seriesJobs[dcgmPowerMetric] {
+				// If job instances between CEEMS job and GPU job matches, we mark it as an association
+				if foundInstances := intersection(jobInstances[gpuJob], jobInstances[cpuJob]); len(foundInstances) > 0 {
+					gpuJobsMap[cpuJob] = gpuJob
+				}
 			}
 		}
 
@@ -672,8 +693,21 @@ func gpuData(
 			`(%s - on (hostname) group_left () sum by (hostname) (label_replace(sum by (hostname) (%s{job="%s"}) / 1e6, "hostname", "$1", "instance","([^:]+):\\d+")))`,
 			hostPowerQuery, amdSMIPowerMetric, gpu.job,
 		)
+	case slices.Contains(jobSeries[gpu.job], dcgmInstantPowerMetric):
+		gpu.templateFile = "gpu-nvidia.rules"
+		gpu.powerMetric = dcgmInstantPowerMetric
+
+		// Host power query assuming GPU power is in host power
+		hostPowerOnlyQuery = fmt.Sprintf(
+			`(%s - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(%s{job="%s"}, "hostname", "$1", "Hostname","(.*)"))))`,
+			hostPowerQuery, dcgmInstantPowerMetric, gpu.job,
+		)
+
+		// For NVIDIA GPUs check if prof metrics are available
+		gpu.nvProfSeries = intersection(jobSeries[gpu.job], nvProfSeries)
 	case slices.Contains(jobSeries[gpu.job], dcgmPowerMetric):
 		gpu.templateFile = "gpu-nvidia.rules"
+		gpu.powerMetric = dcgmPowerMetric
 
 		// Host power query assuming GPU power is in host power
 		hostPowerOnlyQuery = fmt.Sprintf(
