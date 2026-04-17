@@ -173,6 +173,10 @@ is using CEEMS on their SLURM cluster for monitoring the energy consumption of u
 - [University of Surrey](https://www.surrey.ac.uk/) is using CEEMS on their
 [AISURREY](https://docs.pages.surrey.ac.uk/research_computing/hpc/clusters/aisurrey.html)
 compute infrastructure.
+- [LPTMS](https://www.lptms.universite-paris-saclay.fr/) lab is using
+CEEMS on their SLURM cluster for monitoring the energy consumption of the user jobs.
+- A Pediatric Cancer Research Hospital in Memphis, Tennessee has adopted CEEMS on their
+SLURM cluster to monitor energy consumption of CPU and GPU user jobs.
 
 ## 👍 Contributing
 
