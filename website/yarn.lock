@@ -4958,10 +4958,10 @@ dns-packet@^5.2.2:
   dependencies:
     "@leichtgewicht/ip-codec" "^2.0.1"
 
-docusaurus-plugin-openapi-docs@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/docusaurus-plugin-openapi-docs/-/docusaurus-plugin-openapi-docs-5.0.0.tgz#b3598714f365844d535d9cbbedb345198161d696"
-  integrity sha512-G77fm6cu61VuwFMSOgy7KRHbATPNqNenO2VXuULAO8AmiAMVJ0fx9hTy+UDzr+U9pzCE5ZRJRPngf6F2klFaLA==
+docusaurus-plugin-openapi-docs@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/docusaurus-plugin-openapi-docs/-/docusaurus-plugin-openapi-docs-5.0.1.tgz#2fe62b58fc1af11e3d947edc2f0d60e04f1aa149"
+  integrity sha512-OVfoDovRdiS78DQYWmr2BjuOF2A6kVmJ43mgkQaAEZxASyHbUft4zUIhvfa7gqema6KNL9pVKejDievZdZ3wGQ==
   dependencies:
     "@apidevtools/json-schema-ref-parser" "^15.3.3"
     "@redocly/openapi-core" "^2.25.2"
@@ -4979,10 +4979,10 @@ docusaurus-plugin-openapi-docs@^5.0.0:
     swagger2openapi "^7.0.8"
     xml-formatter "^3.6.6"
 
-docusaurus-theme-openapi-docs@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/docusaurus-theme-openapi-docs/-/docusaurus-theme-openapi-docs-5.0.0.tgz#9754dc9aab0ed8737555ed27e1beca58aad01f1d"
-  integrity sha512-5JXaBUCopCFsq0rpcl79UFziHuj7+FhhYxuqwf0GsyDa513Ns7db3d5ULUgfUg1qehCj9jJ9JIQpZUQEnX7aJw==
+docusaurus-theme-openapi-docs@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/docusaurus-theme-openapi-docs/-/docusaurus-theme-openapi-docs-5.0.1.tgz#a2c2c91346b6238f6d7862752cdb02611fb5396f"
+  integrity sha512-bVeb7hOqog9LKVrJzYXdNJ7/0N22lk0VE22QK+naAn5GuAvYo41JmpXW9hqLIPkEp2UbexTHoPW9SYVdUsyvvw==
   dependencies:
     "@hookform/error-message" "^2.0.1"
     "@reduxjs/toolkit" "^2.8.2"
@@ -10676,10 +10676,10 @@ typedarray-to-buffer@^3.1.5:
   dependencies:
     is-typedarray "^1.0.0"
 
-typescript@~6.0.2:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-6.0.2.tgz#0b1bfb15f68c64b97032f3d78abbf98bdbba501f"
-  integrity sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ==
+typescript@~6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-6.0.3.tgz#90251dc007916e972786cb94d74d15b185577d21"
+  integrity sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==
 
 undici-types@~6.19.8:
   version "6.19.8"
