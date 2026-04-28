@@ -15,11 +15,11 @@ import (
 	"google.golang.org/grpc"
 	v1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/util/httpstream"
-	"k8s.io/apimachinery/pkg/util/httpstream/spdy"
 	remotecommandconsts "k8s.io/apimachinery/pkg/util/remotecommand"
 	"k8s.io/client-go/tools/remotecommand"
 	podresourcesapi "k8s.io/kubelet/pkg/apis/podresources/v1"
+	"k8s.io/streaming/pkg/httpstream"
+	"k8s.io/streaming/pkg/httpstream/spdy"
 )
 
 type streamContext struct {
