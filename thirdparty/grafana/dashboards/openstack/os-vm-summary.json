@@ -1,7 +1,7 @@
 {
   "__inputs": [
     {
-      "name": "VAR_ORG_ID",
+      "name": "VAR_ORGID",
       "type": "constant",
       "label": "Organization ID",
       "value": "1",
@@ -16,7 +16,7 @@
       "pluginName": "Infinity"
     },
     {
-      "name": "VAR_CLUSTER_ID",
+      "name": "VAR_CLUSTERID",
       "type": "constant",
       "label": "CEEMS Cluster ID defined in CEEMS API server config",
       "value": "",
@@ -222,7 +222,7 @@
           "root_selector": "data",
           "source": "url",
           "type": "json",
-          "url": "/api/v1/usage/current${VAR_ENDPOINT}",
+          "url": "/api/v1/usage/current${endpoint}",
           "url_options": {
             "data": "",
             "headers": [],
@@ -242,7 +242,7 @@
               },
               {
                 "key": "cluster_id",
-                "value": "${VAR_CLUSTER_ID}"
+                "value": "${clusterId}"
               },
               {
                 "key": "user",
@@ -362,7 +362,7 @@
           "root_selector": "data",
           "source": "url",
           "type": "json",
-          "url": "/api/v1/usage/current${VAR_ENDPOINT}",
+          "url": "/api/v1/usage/current${endpoint}",
           "url_options": {
             "data": "",
             "headers": [],
@@ -370,7 +370,7 @@
             "params": [
               {
                 "key": "cluster_id",
-                "value": "${VAR_CLUSTER_ID}"
+                "value": "${clusterId}"
               },
               {
                 "key": "project",
@@ -556,7 +556,7 @@
           "root_selector": "data",
           "source": "url",
           "type": "json",
-          "url": "/api/v1/usage/current${VAR_ENDPOINT}",
+          "url": "/api/v1/usage/current${endpoint}",
           "url_options": {
             "data": "",
             "headers": [],
@@ -572,7 +572,7 @@
               },
               {
                 "key": "cluster_id",
-                "value": "${VAR_CLUSTER_ID}"
+                "value": "${clusterId}"
               },
               {
                 "key": "from",
@@ -809,7 +809,7 @@
               "root_selector": "data",
               "source": "url",
               "type": "json",
-              "url": "/api/v1/usage/current${VAR_ENDPOINT}",
+              "url": "/api/v1/usage/current${endpoint}",
               "url_options": {
                 "data": "",
                 "headers": [],
@@ -829,7 +829,7 @@
                   },
                   {
                     "key": "cluster_id",
-                    "value": "${VAR_CLUSTER_ID}"
+                    "value": "${clusterId}"
                   },
                   {
                     "key": "field",
@@ -944,7 +944,7 @@
               "root_selector": "data",
               "source": "url",
               "type": "json",
-              "url": "/api/v1/usage/current${VAR_ENDPOINT}",
+              "url": "/api/v1/usage/current${endpoint}",
               "url_options": {
                 "data": "",
                 "headers": [],
@@ -952,7 +952,7 @@
                 "params": [
                   {
                     "key": "cluster_id",
-                    "value": "${VAR_CLUSTER_ID}"
+                    "value": "${clusterId}"
                   },
                   {
                     "key": "project",
@@ -1138,7 +1138,7 @@
               "root_selector": "data",
               "source": "url",
               "type": "json",
-              "url": "/api/v1/usage/current${VAR_ENDPOINT}",
+              "url": "/api/v1/usage/current${endpoint}",
               "url_options": {
                 "data": "",
                 "headers": [],
@@ -1154,7 +1154,7 @@
                   },
                   {
                     "key": "cluster_id",
-                    "value": "${VAR_CLUSTER_ID}"
+                    "value": "${clusterId}"
                   },
                   {
                     "key": "from",
@@ -1375,6 +1375,13 @@
                   "type": "number"
                 }
               ],
+               "computed_columns": [
+                {
+                  "selector": "Host+GPU",
+                  "text": "Total",
+                  "type": "string"
+                }
+              ],
               "datasource": {
                 "type": "yesoreyeram-infinity-datasource",
                 "uid": "${DS_CEEMS-API}"
@@ -1387,7 +1394,7 @@
               "root_selector": "data",
               "source": "url",
               "type": "json",
-              "url": "/api/v1/usage/current${VAR_ENDPOINT}",
+              "url": "/api/v1/usage/current${endpoint}",
               "url_options": {
                 "data": "",
                 "headers": [],
@@ -1407,7 +1414,7 @@
                   },
                   {
                     "key": "cluster_id",
-                    "value": "${VAR_CLUSTER_ID}"
+                    "value": "${clusterId}"
                   },
                   {
                     "key": "user",
@@ -1432,28 +1439,14 @@
           "title": "⚡ Total Energy Consumption by users of ${account} ⚡",
           "transformations": [
             {
-              "id": "calculateField",
+              "id": "filterFieldsByName",
               "options": {
-                "alias": "Total",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "Host"
-                    }
-                  },
-                  "right": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "GPU"
-                    }
-                  }
-                },
-                "mode": "binary",
-                "reduce": {
-                  "reducer": "sum"
-                },
-                "replaceFields": false
+                "include": {
+                  "names": [
+                    "User",
+                    "Total"
+                  ]
+                }
               }
             }
           ],
@@ -1508,7 +1501,7 @@
               "calcs": [
                 "lastNotNull"
               ],
-              "fields": "/^Total$/",
+              "fields": "",
               "values": true
             },
             "tooltip": {
@@ -1521,14 +1514,54 @@
             {
               "columns": [
                 {
-                  "selector": "total_cpu_emissions_gms",
-                  "text": "Host",
-                  "type": "string"
+                  "selector": "total_cpu_emissions_gms.rte_total",
+                  "text": "HostRTE",
+                  "type": "number"
                 },
                 {
-                  "selector": "total_gpu_emissions_gms",
-                  "text": "GPU",
-                  "type": "string"
+                  "selector": "total_cpu_emissions_gms.emaps_total",
+                  "text": "HostEmaps",
+                  "type": "number"
+                },
+                {
+                  "selector": "total_cpu_emissions_gms.owid_total",
+                  "text": "HostOWID",
+                  "type": "number"
+                },
+                {
+                  "selector": "total_cpu_emissions_gms.wt_total",
+                  "text": "HostWT",
+                  "type": "number"
+                },
+                {
+                  "selector": "total_cpu_emissions_gms.global_total",
+                  "text": "HostGlobal",
+                  "type": "number"
+                },
+                {
+                  "selector": "total_gpu_emissions_gms.rte_total",
+                  "text": "GPURTE",
+                  "type": "number"
+                },
+                {
+                  "selector": "total_cpu_emissions_gms.emaps_total",
+                  "text": "GPUEmaps",
+                  "type": "number"
+                },
+                {
+                  "selector": "total_cpu_emissions_gms.owid_total",
+                  "text": "GPUOWID",
+                  "type": "number"
+                },
+                {
+                  "selector": "total_cpu_emissions_gms.wt_total",
+                  "text": "GPUWT",
+                  "type": "number"
+                },
+                {
+                  "selector": "total_cpu_emissions_gms.global_total",
+                  "text": "GPUGlobal",
+                  "type": "number"
                 },
                 {
                   "selector": "username",
@@ -1536,7 +1569,33 @@
                   "type": "string"
                 }
               ],
-              "computed_columns": [],
+              "computed_columns": [
+                {
+                  "selector": "HostRTE+GPURTE",
+                  "text": "rte",
+                  "type": "string"
+                },
+                {
+                  "selector": "HostEmaps+GPUEmaps",
+                  "text": "emaps",
+                  "type": "string"
+                },
+                {
+                  "selector": "HostOWID+GPUOWID",
+                  "text": "owid",
+                  "type": "string"
+                },
+                {
+                  "selector": "HostWT+GPUWT",
+                  "text": "wt",
+                  "type": "string"
+                },
+                {
+                  "selector": "HostGlobal+GPUGlobal",
+                  "text": "global",
+                  "type": "string"
+                }
+              ],
               "datasource": {
                 "type": "yesoreyeram-infinity-datasource",
                 "uid": "${DS_CEEMS-API}"
@@ -1550,7 +1609,7 @@
               "root_selector": "data",
               "source": "url",
               "type": "json",
-              "url": "/api/v1/usage/current${VAR_ENDPOINT}",
+              "url": "/api/v1/usage/current${endpoint}",
               "url_options": {
                 "data": "",
                 "headers": [],
@@ -1566,7 +1625,7 @@
                   },
                   {
                     "key": "cluster_id",
-                    "value": "${VAR_CLUSTER_ID}"
+                    "value": "${clusterId}"
                   },
                   {
                     "key": "from",
@@ -1595,101 +1654,12 @@
           "title": "👣 Total Equivalent Emissions  estimated using ${provider:text} by users of ${account} 👣",
           "transformations": [
             {
-              "id": "extractFields",
-              "options": {
-                "format": "json",
-                "jsonPaths": [
-                  {
-                    "alias": "Host rte",
-                    "path": "rte_total"
-                  },
-                  {
-                    "alias": "Host emaps",
-                    "path": "emaps_total"
-                  },
-                  {
-                    "alias": "Host owid",
-                    "path": "owid_total"
-                  },
-                  {
-                    "alias": "Host wt",
-                    "path": "wt_total"
-                  },
-                  {
-                    "alias": "Host global",
-                    "path": "global_total"
-                  }
-                ],
-                "source": "Host"
-              }
-            },
-            {
-              "id": "extractFields",
-              "options": {
-                "format": "json",
-                "jsonPaths": [
-                  {
-                    "alias": "GPU rte",
-                    "path": "rte_total"
-                  },
-                  {
-                    "alias": "GPU emaps",
-                    "path": "emaps_total"
-                  },
-                  {
-                    "alias": "GPU owid",
-                    "path": "owid_total"
-                  },
-                  {
-                    "alias": "GPU wt",
-                    "path": "wt_total"
-                  },
-                  {
-                    "alias": "GPU global",
-                    "path": "global_total"
-                  }
-                ],
-                "source": "GPU"
-              }
-            },
-            {
               "id": "filterFieldsByName",
               "options": {
                 "byVariable": false,
                 "include": {
-                  "pattern": "(((Host|GPU)\\s*${provider})|User)"
+                  "pattern": "(${provider}|User)"
                 }
-              }
-            },
-            {
-              "id": "calculateField",
-              "options": {
-                "alias": "Total",
-                "binary": {
-                  "left": {
-                    "matcher": {
-                      "id": "byType",
-                      "options": "number"
-                    }
-                  },
-                  "right": {
-                    "matcher": {
-                      "id": "byName",
-                      "options": "GPU"
-                    }
-                  }
-                },
-                "mode": "reduceRow",
-                "reduce": {
-                  "reducer": "sum"
-                }
-              }
-            },
-            {
-              "id": "renameByRegex",
-              "options": {
-                "regex": "(Host|GPU)(.*)",
-                "renamePattern": "$1"
               }
             }
           ],
@@ -1777,7 +1747,7 @@
                 {
                   "targetBlank": true,
                   "title": "Openstack VM Metrics Dashboard",
-                  "url": "/d/os-vm-metrics/_?orgId=${VAR_ORG_ID}﻿&var-uuid=${__data.fields.UUID}﻿﻿﻿﻿﻿&from=${__data.fields.from}﻿﻿﻿﻿&to=${__data.fields.to}&var-provider=rte&var-submit=﻿﻿﻿﻿﻿${__data.fields.created_at_ts}﻿﻿﻿﻿&var-start=﻿﻿﻿﻿﻿${__data.fields.started_at_ts}﻿&var-end=﻿﻿﻿﻿﻿${__data.fields.ended_at_ts}﻿&var-name=﻿﻿﻿﻿${__data.fields.Name}﻿﻿﻿﻿&var-state=﻿﻿﻿${__data.fields.State}﻿﻿﻿&var-elapsed=﻿﻿﻿${__data.fields.Elapsed}﻿﻿&var-account=﻿${account}﻿&var-cpu_usage=${__data.fields[\"CPU Usage (%)\"]}&var-cpumem_usage=${__data.fields[\"CPU Mem Usage (%)\"]}&var-cpu_energy=${__data.fields[\"Host Energy (kWh)\"]}&var-cpu_emissions_rte=${__data.fields[\"Host Emissions RTE (gms)\"]}&var-cpu_emissions_emaps=${__data.fields[\"Host Emissions EMaps (gms)\"]}&var-cpu_emissions_owid=${__data.fields[\"Host Emissions OWID (gms)\"]}&var-cpu_emissions_wt=${__data.fields[\"Host Emissions WTime (gms)\"]}&var-cpu_emissions_global=${__data.fields[\"Host Emissions World Avg. (gms)\"]}&var-gpu_usage=${__data.fields[\"GPU Usage (%)\"]}&var-gpumem_usage=${__data.fields[\"GPU Mem Usage (%)\"]}&var-gpu_energy=${__data.fields[\"GPU Energy (kWh)\"]}&var-gpu_emissions_rte=${__data.fields[\"GPU Emissions RTE (gms)\"]}&var-gpu_emissions_emaps=${__data.fields[\"GPU Emissions EMaps (gms)\"]}&var-gpu_emissions_owid=${__data.fields[\"GPU Emissions OWID (gms)\"]}&var-gpu_emissions_wt=${__data.fields[\"GPU Emissions WTime (gms)\"]}&var-gpu_emissions_global=${__data.fields[\"GPU Emissions World Avg. (gms)\"]}&var-total_energy=${__data.fields[\"Total Energy (kWh)\"]}&var-total_emissions_rte=${__data.fields[\"Total Emissions RTE (gms)\"]}&var-total_emissions_emaps=${__data.fields[\"Total Emissions EMaps (gms)\"]}&var-total_emissions_owid=${__data.fields[\"Total Emissions OWID (gms)\"]}&var-total_emissions_wt=${__data.fields[\"Total Emissions WTime (gms)\"]}&var-total_emissions_global=${__data.fields[\"Total Emissions World Avg. (gms)\"]}"
+                  "url": "/d/os-vm-metrics/_?orgId=${ordId}﻿&var-uuid=${__data.fields.UUID}﻿﻿﻿﻿﻿&from=${__data.fields.from}﻿﻿﻿﻿&to=${__data.fields.to}&var-provider=rte&var-submit=﻿﻿﻿﻿﻿${__data.fields.created_at_ts}﻿﻿﻿﻿&var-start=﻿﻿﻿﻿﻿${__data.fields.started_at_ts}﻿&var-end=﻿﻿﻿﻿﻿${__data.fields.ended_at_ts}﻿&var-name=﻿﻿﻿﻿${__data.fields.Name}﻿﻿﻿﻿&var-state=﻿﻿﻿${__data.fields.State}﻿﻿﻿&var-elapsed=﻿﻿﻿${__data.fields.Elapsed}﻿﻿&var-account=﻿${account}﻿&var-cpu_usage=${__data.fields[\"CPU Usage (%)\"]}&var-cpumem_usage=${__data.fields[\"CPU Mem Usage (%)\"]}&var-cpu_energy=${__data.fields[\"Host Energy (kWh)\"]}&var-cpu_emissions_rte=${__data.fields[\"Host Emissions RTE (gms)\"]}&var-cpu_emissions_emaps=${__data.fields[\"Host Emissions EMaps (gms)\"]}&var-cpu_emissions_owid=${__data.fields[\"Host Emissions OWID (gms)\"]}&var-cpu_emissions_wt=${__data.fields[\"Host Emissions WTime (gms)\"]}&var-cpu_emissions_global=${__data.fields[\"Host Emissions World Avg. (gms)\"]}&var-gpu_usage=${__data.fields[\"GPU Usage (%)\"]}&var-gpumem_usage=${__data.fields[\"GPU Mem Usage (%)\"]}&var-gpu_energy=${__data.fields[\"GPU Energy (kWh)\"]}&var-gpu_emissions_rte=${__data.fields[\"GPU Emissions RTE (gms)\"]}&var-gpu_emissions_emaps=${__data.fields[\"GPU Emissions EMaps (gms)\"]}&var-gpu_emissions_owid=${__data.fields[\"GPU Emissions OWID (gms)\"]}&var-gpu_emissions_wt=${__data.fields[\"GPU Emissions WTime (gms)\"]}&var-gpu_emissions_global=${__data.fields[\"GPU Emissions World Avg. (gms)\"]}&var-total_energy=${__data.fields[\"Total Energy (kWh)\"]}&var-total_emissions_rte=${__data.fields[\"Total Emissions RTE (gms)\"]}&var-total_emissions_emaps=${__data.fields[\"Total Emissions EMaps (gms)\"]}&var-total_emissions_owid=${__data.fields[\"Total Emissions OWID (gms)\"]}&var-total_emissions_wt=${__data.fields[\"Total Emissions WTime (gms)\"]}&var-total_emissions_global=${__data.fields[\"Total Emissions World Avg. (gms)\"]}"
                 }
               ]
             },
@@ -2196,7 +2166,7 @@
                   },
                   {
                     "key": "cluster_id",
-                    "value": "${VAR_CLUSTER_ID}"
+                    "value": "${clusterId}"
                   },
                   {
                     "key": "user",
@@ -2282,7 +2252,7 @@
             "root_selector": "data",
             "source": "url",
             "type": "json",
-            "url": "/api/v1/users${VAR_ENDPOINT}",
+            "url": "/api/v1/users${endpoint}",
             "url_options": {
               "data": "",
               "headers": [],
@@ -2290,7 +2260,7 @@
               "params": [
                 {
                   "key": "cluster_id",
-                  "value": "${VAR_CLUSTER_ID}"
+                  "value": "${clusterId}"
                 }
               ]
             }
@@ -2330,7 +2300,7 @@
             "source": "url",
             "type": "uql",
             "uql": "parse-json\n| scope \"data\"\n| jsonata \"[projects]\"",
-            "url": "/api/v1/users${VAR_ENDPOINT}",
+            "url": "/api/v1/users${endpoint}",
             "url_options": {
               "data": "",
               "headers": [],
@@ -2338,7 +2308,7 @@
               "params": [
                 {
                   "key": "cluster_id",
-                  "value": "${VAR_CLUSTER_ID}"
+                  "value": "${clusterId}"
                 },
                 {
                   "key": "user",
@@ -2385,6 +2355,66 @@
         ],
         "query": "RTE eCO2 Mix : rte, Electricity Maps : emaps, OWID : owid, IEA : global",
         "type": "custom"
+      },
+      {
+        "description": "Grafana Organization ID",
+        "hide": 2,
+        "name": "orgId",
+        "query": "${VAR_ORGID}",
+        "skipUrlSync": true,
+        "type": "constant",
+        "current": {
+          "value": "${VAR_ORGID}",
+          "text": "${VAR_ORGID}",
+          "selected": false
+        },
+        "options": [
+          {
+            "value": "${VAR_ORGID}",
+            "text": "${VAR_ORGID}",
+            "selected": false
+          }
+        ]
+      },
+      {
+        "description": "CEEMS Cluster ID defined in CEEMS API server config",
+        "hide": 2,
+        "name": "clusterId",
+        "query": "${VAR_CLUSTERID}",
+        "skipUrlSync": true,
+        "type": "constant",
+        "current": {
+          "value": "${VAR_CLUSTERID}",
+          "text": "${VAR_CLUSTERID}",
+          "selected": false
+        },
+        "options": [
+          {
+            "value": "${VAR_CLUSTERID}",
+            "text": "${VAR_CLUSTERID}",
+            "selected": false
+          }
+        ]
+      },
+      {
+        "description": "Set it to /admin for admin dashboards to consult usage statistics of any user. For user dashboards that restrict data to current logged user, set it to empty space.",
+        "hide": 2,
+        "name": "endpoint",
+        "query": "${VAR_ENDPOINT}",
+        "skipUrlSync": true,
+        "type": "constant",
+        "current": {
+          "value": "${VAR_ENDPOINT}",
+          "text": "${VAR_ENDPOINT}",
+          "selected": false
+        },
+        "options": [
+          {
+            "value": "${VAR_ENDPOINT}",
+            "text": "${VAR_ENDPOINT}",
+            "selected": false
+          }
+        ]
       }
     ]
   },

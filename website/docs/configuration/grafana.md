@@ -164,3 +164,10 @@ datasources:
       # IMPORTANT: Need $$ to escape $
       httpHeaderValue1: $${__user.login}
 ```
+
+## Grafana Dashboards
+
+Example dashboards for different resource managers are provided in the
+[repository](https://github.com/ceems-dev/ceems/tree/main/thirdparty/grafana). Please
+consult the [README](https://github.com/ceems-dev/ceems/blob/main/thirdparty/grafana/README.md)
+on how to use the provided dashboards.
