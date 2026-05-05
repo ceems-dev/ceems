@@ -1,7 +1,7 @@
 # Grafana
 
 This folder contains Grafana related data files like dashboards.
-In the folder [dashbaords](./dashboards/), we can find 3 sub folders:
+In the folder [dashbaords](./dashboards/), we can find 4 sub folders:
 
 - [admin](./dashboards/admin) folder contains the dashboards for admin operators
 - [slurm](./dashboards/slurm/) folder contains the dashboards for SLURM clusters
@@ -25,7 +25,10 @@ of single job. This dashboard is not meant to be used directly. The `List of Job
 [SLURM Job Summary](./dashboards/slurm/slurm-job-summary.json) creates hyperlinks to individual
 job metrics for each job and clicking the link in the table will redirect the users to
 `Single Job Metrics` dashboard with all the dashboard variables correctly populated with
-job metadata.
+job metadata. [SLURM Single Job Metrics with Pyroscope](./dashboards/slurm/slurm-single-job-metrics-with-pyroscope.json)
+should be used when continuously profiling is enabled. This dashboard is same as the
+[SLURM Single Job Metrics](./dashboards/slurm/slurm-single-job-metrics.json) with panels
+related to Pyroscope profiling included.
 - Similarly [Openstack VM Summary](./dashboards/openstack/os-vm-summary.json) and
 [k8s Pod Summary](./dashboards/k8s/k8s-pod-summary.json) provide VM and pod summary for
 Openstack and k8s clusters, respectively. Finally,
@@ -54,7 +57,7 @@ CEEMS (and DCGM/AMD SMI) exporters.
 - `Endpoint`: As briefed in [Dashboards](#dashboards) section, use `/admin` for creating Admin facing
 dashboards to consult usage statistics of _any_ user. For user facing dashboards, use an **empty space**.
 
-### [SLURM Single Job Metrics](./dashboards/slurm/slurm-single-job-metrics.json)
+### [SLURM Single Job Metrics](./dashboards/slurm/slurm-single-job-metrics.json) and [SLURM Single Job Metrics with Pyroscope](./dashboards/slurm/slurm-single-job-metrics-with-pyroscope.json)
 
 - `Prometheus datasource`: Choose the datasource corresponding to Prometheus server that is scrapping
 CEEMS (and DCGM/AMD SMI) exporters. If [CEEMS LB](https://ceems-dev.github.io/ceems/docs/components/ceems-lb)
@@ -89,7 +92,7 @@ enforcement.
 - `Endpoint`: As briefed in [Dashboards](#dashboards) section, use `/admin` for creating Admin facing
 dashboards to consult usage statistics of _any_ user. For user facing dashboards, use an **empty space**.
 
-### [k8s Single Pod Metrics](./dashboards/k8s/k8s-single-pod-metrics.json)
+### [k8s Single Pod Metrics](./dashboards/k8s/k8s-single-pod-metrics.json) and [k8s Single Pod Metrics with Pyroscope](./dashboards/k8s/k8s-single-pod-metrics-with-pyroscope.json)
 
 - `Prometheus datasource`: Choose the datasource corresponding to Prometheus server that is scrapping
 CEEMS (and DCGM/AMD SMI) exporters. If [CEEMS LB](https://ceems-dev.github.io/ceems/docs/components/ceems-lb)
