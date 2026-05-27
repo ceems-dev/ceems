@@ -185,6 +185,9 @@ func TestNewProfilers(t *testing.T) {
 	pids := collector.newProfilers(cgroups)
 	assert.ElementsMatch(t, pids, []int{os.Getpid()})
 
+	// Update state maps
+	collector.updateStateMaps(pids, []string{"1234"})
+
 	// update counters
 	err = collector.updateHardwareCounters("1234", []procfs.Proc{{PID: os.Getpid()}}, metrics)
 	require.NoError(t, err)
