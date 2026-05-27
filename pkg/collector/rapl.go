@@ -152,7 +152,8 @@ func (c *raplCollector) Update(ch chan<- prometheus.Metric) error {
 	wg.Go(func() {
 		err := c.updateLimits(zones, ch)
 		if err != nil {
-			c.logger.Error("Failed to update RAPL power limits", "err", err)
+			// Totally fine not to have power limit files. Stop spamming logs
+			c.logger.Debug("Failed to update RAPL power limits", "err", err)
 		}
 	})
 
