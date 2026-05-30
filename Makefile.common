@@ -277,7 +277,7 @@ $(PUBLISH_DOCKER_ARCHS): common-docker-publish-%:
 .PHONY: common-docker-sign $(SIGN_DOCKER_ARCHS)
 common-docker-sign: $(SIGN_DOCKER_ARCHS)
 $(SIGN_DOCKER_ARCHS): common-docker-sign-%:
-	cosign sign --yes $(DOCKER_REPO)/$(DOCKER_IMAGE_NAME)-linux-$*@$(shell docker inspect $(DOCKER_REPO)/$(DOCKER_IMAGE_NAME)-linux-$*:$(SANITIZED_DOCKER_IMAGE_TAG) --format "{{ .Digest }}")
+	cosign sign --yes $(DOCKER_REPO)/$(DOCKER_IMAGE_NAME)-linux-$*@$(shell docker inspect $(DOCKER_REPO)/$(DOCKER_IMAGE_NAME)-linux-$*:$(SANITIZED_DOCKER_IMAGE_TAG) --format='{{index .RepoDigests 0}}' | cut -d'@' -f2)
 
 DOCKER_MAJOR_VERSION_TAG = $(firstword $(subst ., ,$(shell cat VERSION)))
 .PHONY: common-docker-tag-latest $(TAG_DOCKER_ARCHS)
