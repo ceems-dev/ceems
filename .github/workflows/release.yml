@@ -109,7 +109,6 @@ jobs:
         uses: sigstore/gh-action-sigstore-python@v3.3.0
         with:
           inputs: .tarballs/*
-          staging: true
       
       - name: Publish release
         run: promu release .tarballs
