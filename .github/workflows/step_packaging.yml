@@ -43,12 +43,6 @@ jobs:
       - name: Test deb packages
         run: ./scripts/packaging.sh -v ${{ steps.vars.outputs.version }} -t
 
-      - name: Sign release artifacts with cosign
-        uses: sigstore/gh-action-sigstore-python@v3.3.0
-        with:
-          inputs: .tarballs/*
-          staging: true
-
       - name: Upload release artifacts
         uses: actions/upload-artifact@v7
         with:

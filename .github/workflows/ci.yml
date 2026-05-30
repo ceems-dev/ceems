@@ -69,8 +69,6 @@ jobs:
   packaging:
     needs: [build]
     uses: ./.github/workflows/step_packaging.yml
-    permissions:
-      id-token: write
 
   docker:
     needs: [build, test-e2e]
