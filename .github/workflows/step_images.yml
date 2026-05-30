@@ -29,6 +29,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@v4.0.0
+
       - name: Get step vars
         id: vars
         env:
@@ -69,6 +72,10 @@ jobs:
       - name: Test container images
         run: |
           make test-docker DOCKER_IMAGE_TAG=${{ steps.vars.outputs.branch_name }} DOCKER_REPO=${{ inputs.registry }}/${{ inputs.organization }}
+
+      - name: Sign container images
+        run: |
+          make docker-sign DOCKER_IMAGE_TAG=${{ steps.vars.outputs.branch_name }} DOCKER_REPO=${{ inputs.registry }}/${{ inputs.organization }}
 
       - name: Publish image for current branch/tag
         if: github.ref == 'refs/heads/main' || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))

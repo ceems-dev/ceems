@@ -69,10 +69,14 @@ jobs:
   packaging:
     needs: [build]
     uses: ./.github/workflows/step_packaging.yml
+    permissions:
+      id-token: write
 
   docker:
     needs: [build, test-e2e]
     uses: ./.github/workflows/step_images.yml
+    permissions:
+      id-token: write
     # Since workflow_dispatch inputs are only available on manual triggers
     # we need to set default values to the context vars here
     with:
@@ -98,6 +102,8 @@ jobs:
   quay:
     needs: [build, test-e2e]
     uses: ./.github/workflows/step_images.yml
+    permissions:
+      id-token: write
     # Since workflow_dispatch inputs are only available on manual triggers
     # we need to set default values to the context vars here
     with:

@@ -88,6 +88,7 @@ DOCKER_ARCHS            ?= amd64
 
 BUILD_DOCKER_ARCHS = $(addprefix common-docker-,$(DOCKER_ARCHS))
 PUBLISH_DOCKER_ARCHS = $(addprefix common-docker-publish-,$(DOCKER_ARCHS))
+SIGN_DOCKER_ARCHS = $(addprefix common-docker-sign-,$(DOCKER_ARCHS))
 TAG_DOCKER_ARCHS = $(addprefix common-docker-tag-latest-,$(DOCKER_ARCHS))
 PULL_DOCKER_ARCHS = $(addprefix common-docker-pull-,$(DOCKER_ARCHS))
 
@@ -272,6 +273,11 @@ $(BUILD_DOCKER_ARCHS): common-docker-%:
 common-docker-publish: $(PUBLISH_DOCKER_ARCHS)
 $(PUBLISH_DOCKER_ARCHS): common-docker-publish-%:
 	docker push "$(DOCKER_REPO)/$(DOCKER_IMAGE_NAME)-linux-$*:$(SANITIZED_DOCKER_IMAGE_TAG)"
+
+.PHONY: common-docker-sign $(SIGN_DOCKER_ARCHS)
+common-docker-sign: $(SIGN_DOCKER_ARCHS)
+$(SIGN_DOCKER_ARCHS): common-docker-sign-%:
+	cosign sign --yes $(DOCKER_REPO)/$(DOCKER_IMAGE_NAME)-linux-$*@$(shell docker inspect $(DOCKER_REPO)/$(DOCKER_IMAGE_NAME)-linux-$*:$(SANITIZED_DOCKER_IMAGE_TAG) --format "{{ .Digest }}")
 
 DOCKER_MAJOR_VERSION_TAG = $(firstword $(subst ., ,$(shell cat VERSION)))
 .PHONY: common-docker-tag-latest $(TAG_DOCKER_ARCHS)
