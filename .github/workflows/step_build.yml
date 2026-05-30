@@ -52,13 +52,15 @@ jobs:
       - name: Cross compile CGo packages
         run: CGO_APPS=1 make crossbuild-test
 
+      - name: Create tarballs and checksums
+        run: |
+          promu crossbuild tarballs
+          promu checksum .tarballs
+
       - name: Upload go build artifacts
         uses: actions/upload-artifact@v7
         with:
           name: build-artifacts
-          # Here we add .tarballs to path even if there is no .tarballs. This is to be
-          # consistent with cross-build step so that on download artifact we dont have to
-          # provide path argument.
           path: |
             .build
             .tarballs

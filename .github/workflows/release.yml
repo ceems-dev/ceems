@@ -50,6 +50,8 @@ jobs:
   publish-docker-images:
     needs: [cross-build]
     uses: ./.github/workflows/step_images.yml
+    permissions:
+      id-token: write
     # Since workflow_dispatch inputs are only available on manual triggers
     # we need to set default values to the context vars here
     with:
@@ -63,6 +65,8 @@ jobs:
   publish-quay-images:
     needs: [cross-build]
     uses: ./.github/workflows/step_images.yml
+    permissions:
+      id-token: write
     # Since workflow_dispatch inputs are only available on manual triggers
     # we need to set default values to the context vars here
     with:
@@ -78,6 +82,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -99,6 +104,11 @@ jobs:
         with:
           name: release-artifacts
           path: .tarballs
+
+      - name: Sign release artifacts with cosign
+        uses: sigstore/gh-action-sigstore-python@v3.3.0
+        with:
+          inputs: .tarballs/*
       
       - name: Publish release
         run: promu release .tarballs

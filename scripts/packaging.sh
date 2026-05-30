@@ -43,6 +43,7 @@ build () {
 	for packager in rpm deb; do
 			for app in ${CEEMS_COMPONENTS}; do
 					GOARCH=${arch} CEEMS_VERSION=${version} nfpm pkg --config build/package/${app}/nfpm.yml --packager ${packager} --target .tarballs/${app}-${version}-linux-${arch}.${packager}
+          cd .tarballs && sha256sum ${app}-${version}-linux-${arch}.${packager} >> sha256sums.txt && cd ..
 			done 
 	done 
 	done
