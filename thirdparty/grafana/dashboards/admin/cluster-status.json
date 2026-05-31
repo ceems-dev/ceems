@@ -2269,7 +2269,7 @@
                   }
                 ]
               },
-              "unit": "watt"
+              "unit": "binBps"
             },
             "overrides": []
           },
