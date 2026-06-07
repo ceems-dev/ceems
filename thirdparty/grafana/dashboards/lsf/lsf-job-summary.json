@@ -1806,7 +1806,7 @@
                 {
                   "selector": "uuid",
                   "text": "JobID",
-                  "type": "number"
+                  "type": "string"
                 },
                 {
                   "selector": "started_at",
