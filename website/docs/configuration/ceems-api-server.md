@@ -111,6 +111,14 @@ clusters:
     cli: 
       path: path/to/slurm/bin
 
+  - id: lsf-0
+    manager: lsf
+    updaters:
+      - tsdb-0
+      - tsdb-1
+    cli: 
+      path: path/to/lsf/bin
+
   - id: os-0
     manager: openstack
     updaters:
@@ -151,7 +159,7 @@ Essentially, it is a list of objects where each object describes a cluster.
 - `id`: A unique identifier for each cluster. The identifier must stay consistent across
 CEEMS components, especially for CEEMS LB. More details can be found in the
 [Configuring CEEMS LB](./ceems-lb.md) section.
-- `manager`: Resource manager kind. Currently, `slurm`, `openstack` and `k8s` are
+- `manager`: Resource manager kind. Currently, `slurm`, `lsf`, `openstack` and `k8s` are
 supported.
 - `updaters`: List of updaters to be used to update the aggregate metrics of
 compute units. The order is important as compute units are updated in the same order
@@ -160,8 +168,8 @@ operators to ensure that metrics updated by `tsdb-0` are not overridden by `tsdb
 More details on updaters can be found in the [Updaters Configuration](#updaters-configuration).
 - `cli`: If the resource manager uses CLI tools to fetch compute units, configuration related
 to those CLI tools can be provided here. For example, currently the CEEMS API server supports
-fetching SLURM jobs only using the `sacct` command, so it is essential to provide the
-path to the `bin` folder where the `sacct` command will be found. More options on the CLI section can
+fetching SLURM/LSF jobs only using the `sacct`/`bacct` commands, so it is essential to provide the
+path to the `bin` folder where the `sacct`/`bacct` commands will be found. More options on the CLI section can
 be found in the [Cluster Configuration Reference](./config-reference.md#cluster_config).
 - `web`: If the resource manager supports fetching compute units using an API, the client
 configuration to access API endpoints can be provided here. In this particular example,
@@ -206,6 +214,43 @@ clusters:
       path: /opt/slurm/bin
       environment_variables:
         ENVVAR_NAME: ENVVAR_VALUE
+```
+
+### LSF specific clusters configuration
+
+Currently LSF uses exactly same configuration as [SLURM](#slurm-specific-clusters-configuration).
+The path to LSF binaries must be provided as follows:
+
+```yaml
+clusters:
+  - id: lsf-0
+    manager: lsf
+    cli: 
+      path: /usr/share/lsf/10.1/linux3.10-glibc2.17-x86_64/bin
+```
+
+:::important[IMPORTANT]
+
+Ensure to set `LSF_LIBDIR`, `LD_LIBRARY_PATH`, `LSF_BINDIR`, `LSF_SERVERDIR` and
+`LSF_ENVDIR` environment variables to execute `bacct` and `bjobs` commands correctly.
+
+:::
+
+The `cli` section also has an `environment_variables` key to provide any environment variables
+while executing the `sacct` command in a sub-process. This section takes key-value pairs as values:
+
+```yaml
+clusters:
+  - id: lsf-0
+    manager: lsf
+    cli: 
+      path: /usr/share/lsf/10.1/linux3.10-glibc2.17-x86_64/bin
+      environment_variables:
+        LSF_LIBDIR: /usr/share/lsf/10.1/linux3.10-glibc2.17-x86_64/lib
+        LD_LIBRARY_PATH: /usr/share/lsf/10.1/linux3.10-glibc2.17-x86_64/lib
+        LSF_BINDIR: /usr/share/lsf/10.1/linux3.10-glibc2.17-x86_64/bin
+        LSF_SERVERDIR: /usr/share/lsf/10.1/linux3.10-glibc2.17-x86_64/etc
+        LSF_ENVDIR: /usr/share/lsf/conf
 ```
 
 ### OpenStack specific clusters configuration

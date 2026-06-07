@@ -10,13 +10,13 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: "Supports SLURM, Openstack, k8s",
+    title: "Supports SLURM, LSF, Openstack, k8s",
     Svg: require("@site/static/img/slurm_os_k8s.svg").default,
     description: (
       <>
         CEEMS was designed to be resource manager agnostic. Although
         thoeritically it can support many resource managers, we are focusing to
-        support SLURM, Openstack and Kubernetes.
+        support SLURM, LSF, Openstack and Kubernetes.
       </>
     ),
   },

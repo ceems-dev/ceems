@@ -10,7 +10,8 @@ The CEEMS exporter exports compute unit and node-level metrics to Prometheus. Ho
 not enough to be able to query the metrics from Prometheus efficiently. Especially, for
 batch jobs, we need at least the timestamps of when the job has started and ended and
 on which compute nodes to efficiently query the metrics. Storing these metadata of
-the compute units in Prometheus is not ideal as they are not time series, and using storing metadata as labels can increase the cardinality very rapidly.
+the compute units in Prometheus is not ideal as they are not time series, and using
+storing metadata as labels can increase the cardinality very rapidly.
 
 At the same time, we would like to show end users aggregated metrics of their usage
 which needs to make queries to Prometheus every time they load their dashboards. The
@@ -54,9 +55,7 @@ This allows end users to view the usage of their workloads in real time like CPU
 energy, emissions, _etc_.
 - To keep the latest copy of users and their associated projects to enforce access control.
 
-When coupled with the
-[JSON API DataSource](https://grafana.github.io/grafana-json-datasource/installation/) or
-[Infinity DataSource](https://grafana.com/grafana/plugins/yesoreyeram-infinity-datasource/)
+When coupled with the [Infinity DataSource](https://grafana.com/grafana/plugins/yesoreyeram-infinity-datasource/)
 of Grafana, we can list a user's compute units
 along with the metadata and aggregated metrics of each unit. The stored metadata in the
 CEEMS API server's DB will allow us to dynamically construct the URLs for the Grafana dashboards for
@@ -84,7 +83,7 @@ this translates to implementing two interfaces, one for fetching compute units a
 for fetching users and projects/namespaces/tenants data from the underlying resource
 manager.
 
-Currently, the CEEMS API server supports SLURM, Openstack and k8s resource managers.
+Currently, the CEEMS API server supports SLURM, LSF, Openstack and k8s resource managers.
 
 ### Updaters
 
@@ -108,7 +107,7 @@ metrics using the Prometheus TSDB server.
 A single CEEMS API server deployment must be able to fetch and serve aggregated metrics
 from multiple clusters, whether they use the same or different resource manager. This means a single
 CEEMS API server can store and serve metrics data
-of multiple SLURM, OpenStack, and Kubernetes clusters.
+of multiple SLURM, LSF, OpenStack, and Kubernetes clusters.
 
 Similarly, whether each cluster uses its own dedicated TSDB or a shared
 TSDB with other clusters, the updater subcomponent of the CEEMS API server is capable of

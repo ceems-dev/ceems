@@ -303,7 +303,7 @@ updaters:
 # 
 # If the resource manager supports fetching compute units data from a CLI tool,
 # this section can be used to configure the tool. This can be mainly used to configure
-# SLURM CLI utility tools that can be used to fetch job data.
+# SLURM and LSF CLI utility tools that can be used to fetch job data.
 #
 # When the SLURM resource manager is configured to fetch job data using the `sacct` command,
 # the execution mode of the command will be decided as follows:
@@ -327,6 +327,12 @@ updaters:
 #
 # If no `cli` and no `web` configuration is found, `ceems_api_server` will check
 # if CLI utilities like `sacct` exist on `PATH` and if found, will use them.
+#
+# In the case of LSF, no special privileges are required as LSF can provide the
+# jobs of all users using a unprivileged user. If the cluster has been configured
+# to be more restrainted, ie, if unprivileged user does not return jobs of all users
+# `ceems_api_server` must be run as a user that is capable of returning jobs of all
+# users.
 #
 # Systemd Unit File:
 # https://github.com/@ceemsOrg@/@ceemsRepo@/blob/main/build/package/ceems_api_server/ceems_api_server.service

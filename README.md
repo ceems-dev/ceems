@@ -35,7 +35,7 @@ continuous profiling of compute units.
 ## 🎯 Features
 
 - Monitors energy, performance, IO and network metrics for different types of resource
-managers (SLURM, Openstack, k8s)
+managers (SLURM, LSF, Openstack, k8s)
 - Supports different energy sources like RAPL, HWMON, Cray's PM Counters and BMC _via_ IPMI or Redfish
 - Supports NVIDIA (MIG, time sharing, MPS and vGPU) and AMD GPUs ([Partition](https://rocm.blogs.amd.com/software-tools-optimization/compute-memory-modes/README.html) like CPX, QPX, TPX, DPX). [Dynamic MIG](https://github.com/kubernetes-sigs/nvidia-dra-driver-gpu)
 offered by k8s [DRA](https://kubernetes.io/docs/concepts/scheduling-eviction/dynamic-resource-allocation/)
@@ -62,7 +62,7 @@ Installation instructions of CEEMS components can be found in
 <img src="https://raw.githubusercontent.com/ceems-dev/ceems/main/website/static/img/dashboards/demo_screenshot.png" alt="Access Demo">
 </a></p>
 
-Openstack and SLURM have been deployed on a small cloud instance and monitored using
+Openstack, SLURM, LSF and k8s have been deployed on a small cloud instance and monitored using
 CEEMS. As neither RAPL nor IPMI readings are available on cloud instances, energy
 consumption is estimated by assuming a Thermal Design Power (TDP) value and current
 usage of the instance. Several dashboards have been created in Grafana for visualizing

@@ -88,6 +88,7 @@ For LSF, ensure the following configuration is setup in `lsf.conf` file:
 
 ```ini
 LSB_RESOURCE_ENFORCE="cpu memory gpu" # Use gpu only when GPUs are present in the cluster
+LSB_DISPLAY_YEAR=Y
 LSF_PROCESS_TRACKING=Y
 LSF_LINUX_CGROUP_ACCT=Y
 ```
