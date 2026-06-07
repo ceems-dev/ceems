@@ -1,0 +1,71 @@
+#!/bin/bash
+
+echo '''{
+  "COMMAND":"bjobs",
+  "JOBS":1,
+  "RECORDS":[
+    {
+      "JOBID":"23",
+      "JOBINDEX":"0",
+      "USER":"ubuntu1",
+      "USER_GROUP":"ubuntugrp1",
+      "QUEUE":"interactive",
+      "JOB_NAME":"bash",
+      "PROJ_NAME":"default1",
+      "STAT":"RUN",
+      "ALLOC_SLOT":"nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com",
+      "NALLOC_SLOT":"32",
+      "SUBMIT_TIME":"Apr 12 18:20:00 2026",
+      "START_TIME":"Apr 12 18:20:55 2026",
+      "FINISH_TIME":"Apr 12 22:27:01 2026 L",
+      "RUN_TIME":"34 second(s)",
+      "EFFECTIVE_RESREQ":"select[type == local] order[r15s:pg] ",
+      "MEM":"9 Gbytes",
+      "MEMLIMIT":"",
+      "MEM_EFFICIENCY":"5.20%",
+      "EXEC_CWD":""
+    },
+    {
+      "JOBID":"24",
+      "JOBINDEX":"1",
+      "USER":"ubuntu2",
+      "USER_GROUP":"ubuntugrp2",
+      "QUEUE":"interactive",
+      "JOB_NAME":"bash",
+      "PROJ_NAME":"default2",
+      "STAT":"RUN",
+      "ALLOC_SLOT":"nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com",
+      "NALLOC_SLOT":"32",
+      "SUBMIT_TIME":"Apr 12 18:20:00 2026",
+      "START_TIME":"Apr 12 18:25:55 2026",
+      "FINISH_TIME":"Apr 12 22:27:01 2026 L",
+      "RUN_TIME":"34 second(s)",
+      "EFFECTIVE_RESREQ":"select[type == local] order[r15s:pg] ",
+      "MEM":"9 Gbytes",
+      "MEMLIMIT":"",
+      "MEM_EFFICIENCY":"5.20%",
+      "EXEC_CWD":""
+    },
+    {
+      "JOBID":"24",
+      "JOBINDEX":"2",
+      "USER":"ubuntu2",
+      "USER_GROUP":"ubuntugrp2",
+      "QUEUE":"interactive",
+      "JOB_NAME":"bash",
+      "PROJ_NAME":"default2",
+      "STAT":"RUN",
+      "ALLOC_SLOT":"nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-1.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com:nodes-2.example.com",
+      "NALLOC_SLOT":"32",
+      "SUBMIT_TIME":"Apr 12 18:20:00 2026",
+      "START_TIME":"Apr 12 18:25:55 2026",
+      "FINISH_TIME":"Apr 12 22:27:01 2026 L",
+      "RUN_TIME":"34 second(s)",
+      "EFFECTIVE_RESREQ":"select[type == local] order[r15s:pg] ",
+      "MEM":"9 Gbytes",
+      "MEMLIMIT":"",
+      "MEM_EFFICIENCY":"5.20%",
+      "EXEC_CWD":""
+    }
+  ]
+}'''

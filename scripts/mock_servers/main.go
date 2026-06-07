@@ -43,7 +43,7 @@ const (
 // Regex to capture query.
 var (
 	queryRegex = regexp.MustCompile("^(.*){")
-	regexpUUID = regexp.MustCompile("(?:.+?)[^gpu]uuid=[~]{0,1}\"(?P<uuid>[a-zA-Z0-9-|]+)\"(?:.*)")
+	regexpUUID = regexp.MustCompile(`(?:.+?)[^gpu]uuid=[~]{0,1}\"(?P<uuid>[a-zA-Z0-9-|\[\]]+)\"(?:.*)`)
 )
 
 // hash returns hash of a given string.

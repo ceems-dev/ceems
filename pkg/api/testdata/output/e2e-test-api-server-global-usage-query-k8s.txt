@@ -1,1 +1,1 @@
-{"status":"success","data":[]}
+{"status":"success","data":[{"cluster_id":"","resource_manager":"","num_units":1,"project":"ns1","groupname":"","username":"kusr1"}]}

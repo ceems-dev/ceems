@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ceems-dev/ceems/internal/common"
 	"github.com/ceems-dev/ceems/internal/osexec"
 	"github.com/ceems-dev/ceems/internal/security"
 	"github.com/prometheus/client_golang/prometheus"
@@ -50,96 +51,13 @@ const (
 	lsfReadProcCtx = "lsf_read_procs"
 )
 
-var (
-	// Regex to get physical GPU UUID and GPU_I_ID, GPU_C_ID from MIG device IDs.
-	migDeviceIDRegex = regexp.MustCompile("^MIG-(?P<GPU_UUID>.*?)/(?P<GPU_I_ID>[0-9]+?)/(?P<GPU_C_ID>[0-9]+)$")
-	// Regex to extract job index from job ID.
-	jobIndexRegex = regexp.MustCompile(`^(?P<id>[0-9]+)(?:\[(?P<index>[0-9]+)\])?$`)
-)
+// Regex to get physical GPU UUID and GPU_I_ID, GPU_C_ID from MIG device IDs.
+var migDeviceIDRegex = regexp.MustCompile("^MIG-(?P<GPU_UUID>.*?)/(?P<GPU_I_ID>[0-9]+?)/(?P<GPU_C_ID>[0-9]+)$")
 
 // Cache interval.
 var (
 	lsfCacheTTL = 15 * time.Minute
 )
-
-// LSFJobRecord contains job related infor for each job.
-type LSFJobRecord struct {
-	ID           string `json:"JOBID"`
-	AllocSlot    string `json:"ALLOC_SLOT"`
-	NumAllocSlot string `json:"NALLOC_SLOT"`
-	GPUSlot      string `json:"GPU_ALLOC"`
-}
-
-// UnmarshalJSON unmarshals byte array into LSFJobRecord.
-func (r *LSFJobRecord) UnmarshalJSON(b []byte) error {
-	// Define a temporary type to avoid infinite looping
-	type LSFJobRecordTmp LSFJobRecord
-
-	type tmp struct {
-		LSFJobRecordTmp
-
-		Index string `json:"JOBINDEX"`
-	}
-
-	var s tmp
-
-	err := json.Unmarshal(b, &s)
-	if err != nil {
-		return err
-	}
-
-	*r = LSFJobRecord(s.LSFJobRecordTmp)
-
-	// If Index exists, attach it to job ID. So, if id is 6 and index is 2,
-	// the final id will be "6[2]" as appaears in cgroup paths
-	if s.Index != "" {
-		r.ID = fmt.Sprintf("%s[%s]", r.ID, s.Index)
-	}
-
-	return nil
-}
-
-// MarshalJSON marshals LSFJobRecord into byte array.
-func (r LSFJobRecord) MarshalJSON() ([]byte, error) {
-	// Define a temporary type to avoid infinite looping
-	type LSFJobRecordTmp LSFJobRecord
-
-	// Another tmp struct that contains job index
-	type tmp struct {
-		LSFJobRecordTmp
-
-		Index string `json:"JOBINDEX"`
-	}
-
-	var s tmp
-
-	s.LSFJobRecordTmp = LSFJobRecordTmp(r)
-
-	// If jobID has index inside it, extract it
-	match := jobIndexRegex.FindStringSubmatch(r.ID)
-	// If no matches found, return
-	if len(match) > 0 {
-		// Get index of the job
-		for i, name := range jobIndexRegex.SubexpNames() {
-			if name == "id" {
-				s.ID = strings.TrimSpace(match[i])
-			}
-
-			if name == "index" {
-				s.Index = strings.TrimSpace(match[i])
-			}
-		}
-	}
-
-	return json.Marshal(s)
-}
-
-// LSFJobsList contains list of all job records.
-type LSFJobsList struct {
-	Command string         `json:"COMMAND"`
-	NumJobs int            `json:"JOBS"`
-	Records []LSFJobRecord `json:"RECORDS"`
-}
 
 type lsfCollector struct {
 	logger                     *slog.Logger
@@ -455,7 +373,7 @@ func (c *lsfCollector) jobResources(cgroups []cgroup) {
 	}
 
 	// Read command output into var
-	var bjobs LSFJobsList
+	var bjobs common.LSFJobsList
 
 	err = json.Unmarshal(cmdOut, &bjobs)
 	if err != nil {

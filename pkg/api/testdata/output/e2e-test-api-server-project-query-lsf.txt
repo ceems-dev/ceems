@@ -1,0 +1,1 @@
+{"status":"success","data":[{"cluster_id":"lsf-0","resource_manager":"lsf","name":"default1","users":["ubuntu1"]},{"cluster_id":"lsf-1","resource_manager":"lsf","name":"default1","users":["ubuntu1"]}]}

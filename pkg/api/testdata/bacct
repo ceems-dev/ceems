@@ -1,0 +1,166 @@
+#!/bin/bash
+
+echo """Accounting information about jobs that are:
+  - submitted by all users.
+  - accounted on all projects.
+  - completed normally or exited
+  - executed on all hosts.
+  - submitted to all queues.
+  - accounted on all service classes.
+  - accounted to all RC accounts.
+------------------------------------------------------------------------------
+
+Job <1>, User <usr1>, Project <prj1>, Status <EXIT>, Queue <interactive>, Interactive pseudo-terminal shell mode, Command <bash>
+Sun Apr 12 18:19:51 2026: Submitted from host <nodes-1.example.com>, CWD <$HOME>;
+Sun Apr 12 18:22:41 2026: Completed <exit>; TERM_OWNER: job killed by owner.
+
+Accounting information about this job:
+     CPU_T     WAIT     TURNAROUND   STATUS     HOG_FACTOR    MEM    SWAP
+      0.00      170            170     exit         0.0000     0M      0M
+     CPU_PEAK     CPU_PEAK_DURATION     CPU_PEAK_EFFICIENCY
+         0.00           0 second(s)                   0.00%
+     CPU_AVERAGE_EFFICIENCY      MEM_EFFICIENCY
+                      0.00%               0.00%
+------------------------------------------------------------------------------
+
+Job <3>, User <usr3>, Project <prj3>, Status <DONE>, Queue <interactive>, Interactive pseudo-terminal shell mode, Command <bash>, Share group charged </usr3>
+Sun Apr 12 18:23:38 2026: Submitted from host <nodes-1.example.com>, CWD <$HOME>;
+Sun Apr 12 18:23:39 2026: Dispatched 4 Task(s) on Host(s) <nodes-2.example.com> <nodes-2.example.com> <nodes-1.example.com> <nodes-1.example.com>, Allocated 4 Slot(s) on Host(s) <nodes-2.example.com> <nodes-2.example.com> <nodes-1.example.com> <nodes-1.example.com>, Effective RES_REQ <select[(type == any ) && (ngpus>0)] order[r15s:pg] rusage[ngpus_physical=2.00/host] span[ptile=2] >;
+Sun Apr 12 18:24:14 2026: Completed <done>.
+
+GPU_ALLOCATION:
+ HOST             TASK GPU_ID  GI_PLACEMENT/SIZE    CI_PLACEMENT/SIZE    MODEL        MTOTAL  FACTOR MRSV    SOCKET NVLINK/XGMI
+ nodes-1.example. 0    0       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+                  1    1       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+ nodes-2.example. 0    0       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+                  1    1       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+
+Accounting information about this job:
+     Share group charged </usr3>
+     CPU_T     WAIT     TURNAROUND   STATUS     HOG_FACTOR    MEM    SWAP
+      0.22        1             36     done         0.0060    11M      0M
+     CPU_PEAK     CPU_PEAK_DURATION     CPU_PEAK_EFFICIENCY
+         0.00           0 second(s)                   0.00%
+     CPU_AVERAGE_EFFICIENCY      MEM_EFFICIENCY
+                      0.00%               0.00%
+------------------------------------------------------------------------------
+
+Job <4>, User <usr2>, Project <prj3>, Status <DONE>, Queue <interactive>, Interactive pseudo-terminal shell mode, Command <bash>, Share group charged </usr2>
+Sun Apr 12 18:29:31 2026: Submitted from host <nodes-1.example.com>, CWD <$HOME>;
+Sun Apr 12 18:29:32 2026: Dispatched 8 Task(s) on Host(s) <nodes-1.example.com> <nodes-1.example.com> <nodes-1.example.com> <nodes-1.example.com> <nodes-2.example.com> <nodes-2.example.com> <nodes-2.example.com> <nodes-2.example.com>, Allocated 8 Slot(s) on Host(s) <nodes-1.example.com> <nodes-1.example.com> <nodes-1.example.com> <nodes-1.example.com> <nodes-2.example.com> <nodes-2.example.com> <nodes-2.example.com> <nodes-2.example.com>, Effective RES_REQ <select[(type == any ) && (ngpus>0)] order[r15s:pg] rusage[ngpus_physical=2.00/host] span[ptile=4] >;
+Sun Apr 12 18:29:47 2026: Completed <done>.
+
+GPU_ALLOCATION:
+ HOST             TASK GPU_ID  GI_PLACEMENT/SIZE    CI_PLACEMENT/SIZE    MODEL        MTOTAL  FACTOR MRSV    SOCKET NVLINK/XGMI
+ nodes-1.example. 0    0       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+                  1    1       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+                  2    0       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+                  3    1       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+ nodes-2.example. 0    0       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+                  1    1       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+                  2    0       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+                  3    1       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+
+Accounting information about this job:
+     Share group charged </usr2>
+     CPU_T     WAIT     TURNAROUND   STATUS     HOG_FACTOR    MEM    SWAP
+      0.12        1             16     done         0.0077    10M      0M
+     CPU_PEAK     CPU_PEAK_DURATION     CPU_PEAK_EFFICIENCY
+         0.00           0 second(s)                   0.70%
+     CPU_AVERAGE_EFFICIENCY      MEM_EFFICIENCY
+                      0.00%               0.00%
+------------------------------------------------------------------------------
+
+Job <6[1]>, Job Name <My_array[1]>, User <usr4>, Project <prj2>, Status <EXIT>, Queue <normal>, Command <#!/bin/sh;# embedded options to bsub - start with #BSUB;### -- set the job Name AND the job array --;#BSUB -J My_array[1-3];#BSUB -n 2 ;#BSUB -gpu "num=1/host:gvendor=amd" ;#BSUB -R "type==any span[ptile=2]"; #export CUDA_VISIBLE_DEVICES="MIG-GPU-956348bc-d43d-23ed-53d4-857749fa2b67/0/0";#export CUDA_VISIBLE_DEVICES_ORIG="MIG-GPU-956348bc-d43d-23ed-53d4-857749fa2b67/0/0";sleep 3000>, Share group charged </usr1>
+Sun Apr 12 18:24:00 2026: Submitted from host <nodes-1.example.com>, CWD <$HOME>;
+Sun Apr 12 18:24:00 2026: [1] dispatched 2 Task(s) on Host(s) <nodes-1.example.com> <nodes-1.example.com>, Allocated 2 Slot(s) on Host(s) <nodes-1.example.com> <nodes-1.example.com>, Effective RES_REQ <select[(type == any ) && (ngpus>0)] order[r15s:pg] rusage[ngpus_physical=1.00/host] span[ptile=2] >;
+Sun Apr 12 18:24:10 2026: Completed <exit>.
+
+GPU_ALLOCATION:
+ HOST             TASK GPU_ID  GI_PLACEMENT/SIZE    CI_PLACEMENT/SIZE    MODEL        MTOTAL  FACTOR MRSV    SOCKET NVLINK/XGMI
+ nodes-1.example. 0    0       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+                  1    0       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+
+Accounting information about this job:
+     Share group charged </usr1>
+     CPU_T     WAIT     TURNAROUND   STATUS     HOG_FACTOR    MEM    SWAP
+      0.00        0              0     exit         0.0000     0M      0M
+     CPU_PEAK     CPU_PEAK_DURATION     CPU_PEAK_EFFICIENCY
+         0.00           0 second(s)                   0.00%
+     CPU_AVERAGE_EFFICIENCY      MEM_EFFICIENCY
+                      0.00%               0.00%
+------------------------------------------------------------------------------
+
+Job <6[2]>, Job Name <My_array[2]>, User <usr4>, Project <prj2>, Status <EXIT>, Queue <normal>, Command <#!/bin/sh;# embedded options to bsub - start with #BSUB;### -- set the job Name AND the job array --;#BSUB -J My_array[1-3];#BSUB -n 2 ;#BSUB -gpu "num=1/host:gvendor=amd" ;#BSUB -R "type==any span[ptile=2]"; #export CUDA_VISIBLE_DEVICES="MIG-GPU-956348bc-d43d-23ed-53d4-857749fa2b67/0/0";#export CUDA_VISIBLE_DEVICES_ORIG="MIG-GPU-956348bc-d43d-23ed-53d4-857749fa2b67/0/0";sleep 3000>, Share group charged </usr1>
+Sun Apr 12 18:24:00 2026: Submitted from host <nodes-1.example.com>, CWD <$HOME>;
+Sun Apr 12 18:24:00 2026: [2] dispatched 2 Task(s) on Host(s) <nodes-1.example.com> <nodes-1.example.com>, Allocated 2 Slot(s) on Host(s) <nodes-1.example.com> <nodes-1.example.com>, Effective RES_REQ <select[(type == any ) && (ngpus>0)] order[r15s:pg] rusage[ngpus_physical=1.00/host] span[ptile=2] >;
+Sun Apr 12 18:25:16 2026: Completed <exit>; TERM_OWNER: job killed by owner.
+
+GPU_ALLOCATION:
+ HOST             TASK GPU_ID  GI_PLACEMENT/SIZE    CI_PLACEMENT/SIZE    MODEL        MTOTAL  FACTOR MRSV    SOCKET NVLINK/XGMI
+ nodes-1.example. 0    1       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+                  1    1       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+
+Accounting information about this job:
+     Share group charged </usr1>
+     CPU_T     WAIT     TURNAROUND   STATUS     HOG_FACTOR    MEM    SWAP
+      0.22        0             76     exit         0.0029     8M      0M
+     CPU_PEAK     CPU_PEAK_DURATION     CPU_PEAK_EFFICIENCY
+         0.00           0 second(s)                   0.00%
+     CPU_AVERAGE_EFFICIENCY      MEM_EFFICIENCY
+                      0.00%               0.88%
+------------------------------------------------------------------------------
+
+Job <6[3]>, Job Name <My_array[3]>, User <usr4>, Project <prj2>, Status <EXIT>, Queue <normal>, Command <#!/bin/sh;# embedded options to bsub - start with #BSUB;### -- set the job Name AND the job array --;#BSUB -J My_array[1-3];#BSUB -n 2 ;#BSUB -gpu "num=1/host:gvendor=amd" ;#BSUB -R "type==any span[ptile=2]"; #export CUDA_VISIBLE_DEVICES="MIG-GPU-956348bc-d43d-23ed-53d4-857749fa2b67/0/0";#export CUDA_VISIBLE_DEVICES_ORIG="MIG-GPU-956348bc-d43d-23ed-53d4-857749fa2b67/0/0";sleep 3000>, Share group charged </usr1>
+Sun Apr 12 18:24:00 2026: Submitted from host <nodes-1.example.com>, CWD <$HOME>;
+Sun Apr 12 18:24:00 2026: [3] dispatched 2 Task(s) on Host(s) <nodes-1.example.com> <nodes-1.example.com>, Allocated 2 Slot(s) on Host(s) <nodes-1.example.com> <nodes-1.example.com>, Effective RES_REQ <select[(type == any ) && (ngpus>0)] order[r15s:pg] rusage[ngpus_physical=1.00/host] span[ptile=2] >;
+Sun Apr 12 18:25:16 2026: Completed <exit>; TERM_OWNER: job killed by owner.
+
+GPU_ALLOCATION:
+ HOST             TASK GPU_ID  GI_PLACEMENT/SIZE    CI_PLACEMENT/SIZE    MODEL        MTOTAL  FACTOR MRSV    SOCKET NVLINK/XGMI
+ nodes-1.example. 0    2       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+                  1    2       -                    -                    RadeonInstin 31.9G   0.0    0M      0      -
+
+Accounting information about this job:
+     Share group charged </usr1>
+     CPU_T     WAIT     TURNAROUND   STATUS     HOG_FACTOR    MEM    SWAP
+      0.22        0             76     exit         0.0028     8M      0M
+     CPU_PEAK     CPU_PEAK_DURATION     CPU_PEAK_EFFICIENCY
+         0.00           0 second(s)                   0.00%
+     CPU_AVERAGE_EFFICIENCY      MEM_EFFICIENCY
+                      0.00%               0.00%
+------------------------------------------------------------------------------
+
+Job <10>, User <usr1>, Project <prj1>, Status <EXIT>, Queue <interactive>, Interactive pseudo-terminal shell mode, Command <bash>
+Sun Apr 12 18:15:08 2026: Submitted from host <nodes-1.example.com>, CWD <$HOME>;
+Sun Apr 12 18:15:12 2026: Completed <exit>; TERM_OWNER: job killed by owner.
+
+Accounting information about this job:
+     CPU_T     WAIT     TURNAROUND   STATUS     HOG_FACTOR    MEM    SWAP
+      0.00        4              4     exit         0.0000     0M      0M
+     CPU_PEAK     CPU_PEAK_DURATION     CPU_PEAK_EFFICIENCY
+         0.00           0 second(s)                   0.00%
+     CPU_AVERAGE_EFFICIENCY      MEM_EFFICIENCY
+                      0.00%               0.00%
+------------------------------------------------------------------------------
+
+SUMMARY:      ( time unit: second )
+ Total number of done jobs:       9      Total number of exited jobs:     7
+ Total CPU time consumed:       2.0      Average CPU time consumed:     0.1
+ Maximum CPU time of a job:     0.5      Minimum CPU time of a job:     0.0
+ Total wait time in queues:   199.0
+ Average wait time in queue:   12.4
+ Maximum wait time in queue:  170.0      Minimum wait time in queue:    0.0
+ Average turnaround time:        37 (seconds/job)
+ Maximum turnaround time:       170      Minimum turnaround time:         0
+ Average hog factor of a job:  0.00 ( cpu time / turnaround time )
+ Maximum hog factor of a job:  0.01      Minimum hog factor of a job:  0.00
+ Average expansion factor of a job:  12.83 ( turnaround time / run time )
+ Maximum expansion factor of a job:  170.00
+ Minimum expansion factor of a job:  0.00
+ Total Run time consumed:       397      Average Run time consumed:      24
+ Maximum Run time of a job:      76      Minimum Run time of a job:       0
+ Total throughput:            17.77 (jobs/hour)  during    0.90 hours
+ Beginning time:       Apr 12 18:22      Ending time:          Apr 12 19:16
+ Scheduler Efficiency for 16 jobs
+ Slot Utilization:          100.00%  Memory Utilization:            100.00%"""

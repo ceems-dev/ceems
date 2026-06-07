@@ -418,7 +418,7 @@ func NewCgroupManager(name manager, logger *slog.Logger) (*cgroupManager, error)
 		// Discover cgroup layout depending on if nova-libvirt uses systemd
 		var slicesPrefix string
 
-		switch manager.mode { //nolint:exhaustive
+		switch manager.mode {
 		case cgroups.Unified:
 			slicesPrefix = *cgroupfsPath
 		default:
@@ -582,7 +582,7 @@ func NewCgroupManager(name manager, logger *slog.Logger) (*cgroupManager, error)
 // String implements stringer interface of the struct.
 func (c *cgroupManager) String() string {
 	var mode string
-	switch c.mode { //nolint:exhaustive
+	switch c.mode {
 	case cgroups.Legacy:
 		mode = "v1/legacy"
 	case cgroups.Hybrid:
@@ -608,7 +608,7 @@ func (c *cgroupManager) String() string {
 func (c *cgroupManager) setMountPoints() {
 	switch c.id {
 	case slurm:
-		switch c.mode { //nolint:exhaustive
+		switch c.mode {
 		case cgroups.Unified:
 			// /sys/fs/cgroup/system.slice/slurmstepd.scope
 			// /sys/fs/cgroup/system.slice/node0_slurmstepd.scope
@@ -627,7 +627,7 @@ func (c *cgroupManager) setMountPoints() {
 			c.root = filepath.Join(c.root, c.activeController)
 		}
 	case lsf:
-		switch c.mode { //nolint:exhaustive
+		switch c.mode {
 		case cgroups.Unified:
 			// /sys/fs/cgroup/lsf
 			for _, slice := range c.slices {
@@ -643,7 +643,7 @@ func (c *cgroupManager) setMountPoints() {
 			c.root = filepath.Join(c.root, c.activeController)
 		}
 	case libvirt:
-		switch c.mode { //nolint:exhaustive
+		switch c.mode {
 		case cgroups.Unified:
 			// /sys/fs/cgroup/machine.slice
 			for _, slice := range c.slices {
@@ -659,7 +659,7 @@ func (c *cgroupManager) setMountPoints() {
 			c.root = filepath.Join(c.root, c.activeController)
 		}
 	case k8s:
-		switch c.mode { //nolint:exhaustive
+		switch c.mode {
 		case cgroups.Unified:
 			// /sys/fs/cgroup/kubepods
 			for _, slice := range c.slices {
@@ -1345,7 +1345,7 @@ func (c *cgroupCollector) cpusFromShares(path string) (int, error) {
 	// cpuweight must be read
 	var filePath string
 
-	switch c.cgroupManager.mode { //nolint:exhaustive
+	switch c.cgroupManager.mode {
 	case cgroups.Unified:
 		filePath = fmt.Sprintf("%s%s/cpu.weight", c.cgroupManager.root, path)
 	default:

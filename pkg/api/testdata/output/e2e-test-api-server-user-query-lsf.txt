@@ -1,0 +1,1 @@
+{"status":"success","data":[{"cluster_id":"lsf-0","resource_manager":"lsf","name":"usr4","projects":["prj2"]},{"cluster_id":"lsf-1","resource_manager":"lsf","name":"usr4","projects":["prj2"]},{"cluster_id":"slurm-0","resource_manager":"slurm","name":"usr4","projects":["acc4"]},{"cluster_id":"slurm-1","resource_manager":"slurm","name":"usr4","projects":["acc4"]}]}

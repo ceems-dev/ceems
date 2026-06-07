@@ -197,6 +197,10 @@ then
   then
     desc="/projects end point test with k8s"
     fixture='pkg/api/testdata/output/e2e-test-api-server-project-query-k8s.txt'
+  elif [ "${scenario}" = "api-project-query-lsf" ]
+  then
+    desc="/projects end point test with LSF"
+    fixture='pkg/api/testdata/output/e2e-test-api-server-project-query-lsf.txt'
   elif [ "${scenario}" = "api-user-query" ]
   then
     desc="/users end point test"
@@ -213,6 +217,10 @@ then
   then
     desc="/users end point test with k8s"
     fixture='pkg/api/testdata/output/e2e-test-api-server-user-query-k8s.txt'
+  elif [ "${scenario}" = "api-user-query-lsf" ]
+  then
+    desc="/users end point test with LSF"
+    fixture='pkg/api/testdata/output/e2e-test-api-server-user-query-lsf.txt'
   elif [ "${scenario}" = "api-cluster-admin-query" ]
   then
     desc="/clusters/admin end point test"
@@ -233,6 +241,10 @@ then
   then
     desc="/units end point test with k8s"
     fixture='pkg/api/testdata/output/e2e-test-api-server-query-k8s.txt'
+  elif [ "${scenario}" = "api-units-query-lsf" ]
+  then
+    desc="/units end point test with LSF"
+    fixture='pkg/api/testdata/output/e2e-test-api-server-query-lsf.txt'
   elif [ "${scenario}" = "api-admin-query" ]
   then
     desc="/units/admin end point test for admin query"
@@ -273,6 +285,10 @@ then
   then
     desc="/usage/current end point test with k8s"
     fixture='pkg/api/testdata/output/e2e-test-api-server-current-usage-query-k8s.txt'
+  elif [ "${scenario}" = "api-current-usage-query-lsf" ]
+  then
+    desc="/usage/current end point test with LSF"
+    fixture='pkg/api/testdata/output/e2e-test-api-server-current-usage-query-lsf.txt'
   elif [ "${scenario}" = "api-global-usage-admin-query" ]
   then
     desc="/usage/global/admin end point test"
@@ -293,6 +309,10 @@ then
   then
     desc="/usage/global end point test with k8s"
     fixture='pkg/api/testdata/output/e2e-test-api-server-global-usage-query-k8s.txt'
+  elif [ "${scenario}" = "api-global-usage-query-lsf" ]
+  then
+    desc="/usage/global end point test with LSF"
+    fixture='pkg/api/testdata/output/e2e-test-api-server-global-usage-query-lsf.txt'
   elif [ "${scenario}" = "api-verify-pass-query" ]
   then
     desc="/units/verify end point test with pass request"
@@ -1087,6 +1107,9 @@ then
   elif [ "${scenario}" = "api-project-query-k8s" ]
   then
     get -H "X-Grafana-User: rb1" "127.0.0.1:${port}/api/${api_version}/projects?project=ns2" > "${fixture_output}"
+  elif [ "${scenario}" = "api-project-query-lsf" ]
+  then
+    get -H "X-Grafana-User: ubuntu1" "127.0.0.1:${port}/api/${api_version}/projects?project=default1" > "${fixture_output}"
   elif [ "${scenario}" = "api-user-query" ]
   then
     get -H "X-Grafana-User: usr1" "127.0.0.1:${port}/api/${api_version}/users" > "${fixture_output}"
@@ -1099,6 +1122,9 @@ then
   elif [ "${scenario}" = "api-user-query-k8s" ]
   then
     get -H "X-Grafana-User: rb1" "127.0.0.1:${port}/api/${api_version}/users" > "${fixture_output}"
+  elif [ "${scenario}" = "api-user-query-lsf" ]
+  then
+    get -H "X-Grafana-User: usr4" "127.0.0.1:${port}/api/${api_version}/users" > "${fixture_output}"
   elif [ "${scenario}" = "api-cluster-admin-query" ]
   then
     get -H "X-Grafana-User: ceems-int-svc" "127.0.0.1:${port}/api/${api_version}/clusters/admin" > "${fixture_output}"
@@ -1114,6 +1140,9 @@ then
   elif [ "${scenario}" = "api-units-query-k8s" ]
   then
     get -H "X-Grafana-User: kusr2" "127.0.0.1:${port}/api/${api_version}/units?cluster_id=k8s-1&project=ns2&to=1751883060" > "${fixture_output}"
+  elif [ "${scenario}" = "api-units-query-lsf" ]
+  then
+    get -H "X-Grafana-User: usr4" "127.0.0.1:${port}/api/${api_version}/units?cluster_id=lsf-1&project=prj2&to=1776012000" > "${fixture_output}"
   elif [ "${scenario}" = "api-admin-query" ]
   then
     get -H "X-Grafana-User: grafana" "127.0.0.1:${port}/api/${api_version}/units/admin?user=usr3&cluster_id=slurm-0&project=acc3&from=1676934000&to=1677538800" > "${fixture_output}"
@@ -1141,6 +1170,9 @@ then
   elif [ "${scenario}" = "api-current-usage-query-k8s" ]
   then
     get -H "X-Grafana-User: kusr2" "127.0.0.1:${port}/api/${api_version}/usage/current?cluster_id=k8s-1&from=${usage_from}&to=${usage_to}&__terminated" > "${fixture_output}"
+  elif [ "${scenario}" = "api-current-usage-query-lsf" ]
+  then
+    get -H "X-Grafana-User: usr4" "127.0.0.1:${port}/api/${api_version}/usage/current?cluster_id=lsf-1&from=${usage_from}&to=${usage_to}&__terminated" > "${fixture_output}"
   elif [ "${scenario}" = "api-current-usage-admin-denied-query" ]
   then
     get -H "X-Grafana-User: usr1" "127.0.0.1:${port}/api/${api_version}/usage/global/admin?cluster_id=slurm-1&user=usr2" > "${fixture_output}"
@@ -1152,7 +1184,10 @@ then
     get -H "X-Grafana-User: grafana" "127.0.0.1:${port}/api/${api_version}/usage/global/admin?cluster_id=slurm-0&field=username&field=project&field=num_units" > "${fixture_output}"
   elif [ "${scenario}" = "api-global-usage-query-k8s" ]
   then
-    get -H "X-Grafana-User: kusr1" "127.0.0.1:${port}/api/${api_version}/usage/global?cluster_id=slurm-0&field=username&field=project&field=num_units" > "${fixture_output}"
+    get -H "X-Grafana-User: kusr1" "127.0.0.1:${port}/api/${api_version}/usage/global?cluster_id=k8s-0&field=username&field=project&field=num_units" > "${fixture_output}"
+  elif [ "${scenario}" = "api-global-usage-query-lsf" ]
+  then
+    get -H "X-Grafana-User: usr2" "127.0.0.1:${port}/api/${api_version}/usage/global?cluster_id=lsf-0&field=username&field=project&field=num_units" > "${fixture_output}"
   elif [ "${scenario}" = "api-current-stats-admin-query" ]
   then
     get -H "X-Grafana-User: grafana" "127.0.0.1:${port}/api/${api_version}/stats/current/admin?cluster_id=os-1&from=1728994800&to=1729005000" > "${fixture_output}"
