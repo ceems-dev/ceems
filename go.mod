@@ -15,11 +15,11 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/grafana/pyroscope/api v1.5.0
 	github.com/grafana/pyroscope/ebpf v0.4.11
-	github.com/jedib0t/go-pretty/v6 v6.7.10
+	github.com/jedib0t/go-pretty/v6 v6.8.0
 	github.com/jellydator/ttlcache/v3 v3.4.0
-	github.com/mattn/go-sqlite3 v1.14.44
+	github.com/mattn/go-sqlite3 v1.14.45
 	github.com/prometheus/client_golang v1.23.2
-	github.com/prometheus/common v0.68.0
+	github.com/prometheus/common v0.68.1
 	github.com/prometheus/exporter-toolkit v0.16.0
 	github.com/prometheus/procfs v0.20.1
 	github.com/steiler/acls v0.1.5
@@ -102,7 +102,7 @@ require (
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/mod v0.35.0 // indirect
-	golang.org/x/net v0.54.0 // indirect
+	golang.org/x/net v0.55.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
 	golang.org/x/term v0.43.0 // indirect
