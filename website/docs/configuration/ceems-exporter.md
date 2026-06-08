@@ -247,7 +247,8 @@ ceems_exporter --collector.lsf --collector.perf.hardware-events --collector.perf
 
 LSF collector uses `bjobs` command to fetch GPU devices for the jobs that are running
 on a given compute node. Ensure that `bjobs` command is available on `PATH` before
-starting exporter.
+starting exporter and ensure to set `LSF_LIBDIR`, `LD_LIBRARY_PATH`, `LSF_BINDIR`,
+`LSF_SERVERDIR` and `LSF_ENVDIR` environment variables to execute `bjobs` commands correctly.
 
 :::
 

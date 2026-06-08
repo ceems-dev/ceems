@@ -29,7 +29,10 @@ job metadata. [SLURM Single Job Metrics with Pyroscope](./dashboards/slurm/slurm
 should be used when continuously profiling is enabled. This dashboard is same as the
 [SLURM Single Job Metrics](./dashboards/slurm/slurm-single-job-metrics.json) with panels
 related to Pyroscope profiling included.
-- Similarly [Openstack VM Summary](./dashboards/openstack/os-vm-summary.json) and
+- Similarly, [LSF Job Summary](./dashboards/lsf/lsf-job-summary.json) and
+[LSF Single Job Metrics](./dashboards/lsf/lsf-single-job-metrics-with-pyroscope.json) are
+for LSF resource manager.
+- [Openstack VM Summary](./dashboards/openstack/os-vm-summary.json) and
 [k8s Pod Summary](./dashboards/k8s/k8s-pod-summary.json) provide VM and pod summary for
 Openstack and k8s clusters, respectively. Finally,
 [Openstack Single VM Metrics](./dashboards/openstack/os-single-vm-metrics.json) and
@@ -58,6 +61,25 @@ CEEMS (and DCGM/AMD SMI) exporters.
 dashboards to consult usage statistics of _any_ user. For user facing dashboards, use an **empty space**.
 
 ### [SLURM Single Job Metrics](./dashboards/slurm/slurm-single-job-metrics.json) and [SLURM Single Job Metrics with Pyroscope](./dashboards/slurm/slurm-single-job-metrics-with-pyroscope.json)
+
+- `Prometheus datasource`: Choose the datasource corresponding to Prometheus server that is scrapping
+CEEMS (and DCGM/AMD SMI) exporters. If [CEEMS LB](https://ceems-dev.github.io/ceems/docs/components/ceems-lb)
+has been enabled, choose the datasource corresponding to CEEMS LB as it ensures the access control
+enforcement.
+- `Pyroscope datasource`: Choose the datasource corresponding to Pyroscope server where continuous profiling
+data is stored. If [CEEMS LB](https://ceems-dev.github.io/ceems/docs/components/ceems-lb)
+has been enabled, choose the datasource corresponding to CEEMS LB as it ensures the access control.
+
+### [LSF Job Summary](./dashboards/lsf/lsf-job-summary.json)
+
+- `Organization ID`: Grafana organization ID. Default is 1.
+- `CEEMS API Server's datasource`: Choose the infinity datasource corresponding to CEEMS API server.
+- `CEEMS Cluster ID`: It must the same cluster ID as the one defined in
+[CEEMS API Server's cluster configuration](https://ceems-dev.github.io/ceems/docs/configuration/config-reference/#cluster_config)
+- `Endpoint`: As briefed in [Dashboards](#dashboards) section, use `/admin` for creating Admin facing
+dashboards to consult usage statistics of _any_ user. For user facing dashboards, use an **empty space**.
+
+### [LSF Single Job Metrics](./dashboards/lsf/lsf-single-job-metrics.json) and [LSF Single Job Metrics with Pyroscope](./dashboards/lsf/lsf-single-job-metrics-with-pyroscope.json)
 
 - `Prometheus datasource`: Choose the datasource corresponding to Prometheus server that is scrapping
 CEEMS (and DCGM/AMD SMI) exporters. If [CEEMS LB](https://ceems-dev.github.io/ceems/docs/components/ceems-lb)

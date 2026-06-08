@@ -12,6 +12,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/ceems-dev/ceems/internal/common"
 	"github.com/ceems-dev/ceems/internal/security"
 	"github.com/containerd/cgroups/v3"
 	"github.com/prometheus/client_golang/prometheus"
@@ -163,7 +164,7 @@ echo """%s"""`, content,
 	os.WriteFile(path, []byte(bjobsContent), 0o700)
 }
 
-func writeBjobsExe(path string, bjobs LSFJobsList) error {
+func writeBjobsExe(path string, bjobs common.LSFJobsList) error {
 	// Marhsall bjobs
 	bjobsOut, err := json.Marshal(bjobs)
 	if err != nil {
@@ -332,9 +333,9 @@ func TestLSFJobDevicesCaching(t *testing.T) {
 	}
 
 	// Fake jobs
-	bjobs := LSFJobsList{
+	bjobs := common.LSFJobsList{
 		NumJobs: 8,
-		Records: []LSFJobRecord{
+		Records: []common.LSFJobRecord{
 			{
 				ID:        "0",
 				AllocSlot: "testhost-1.example.com:testhost-1.example.com:testhost-1.example.com:testhost-1.example.com",
@@ -535,9 +536,9 @@ func TestLSFJobDevicesCaching(t *testing.T) {
 
 	// Binds GPUs to first jobs 19 to 24
 	// Fake jobs
-	bjobs = LSFJobsList{
+	bjobs = common.LSFJobsList{
 		NumJobs: 4,
-		Records: []LSFJobRecord{
+		Records: []common.LSFJobRecord{
 			{
 				ID:        "19[1]",
 				AllocSlot: "testhost-1.example.com:testhost-1.example.com:testhost-1.example.com:testhost-1.example.com",

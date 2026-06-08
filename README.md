@@ -35,7 +35,7 @@ continuous profiling of compute units.
 ## 🎯 Features
 
 - Monitors energy, performance, IO and network metrics for different types of resource
-managers (SLURM, Openstack, k8s)
+managers (SLURM, LSF, Openstack, k8s)
 - Supports different energy sources like RAPL, HWMON, Cray's PM Counters and BMC _via_ IPMI or Redfish
 - Supports NVIDIA (MIG, time sharing, MPS and vGPU) and AMD GPUs ([Partition](https://rocm.blogs.amd.com/software-tools-optimization/compute-memory-modes/README.html) like CPX, QPX, TPX, DPX). [Dynamic MIG](https://github.com/kubernetes-sigs/nvidia-dra-driver-gpu)
 offered by k8s [DRA](https://kubernetes.io/docs/concepts/scheduling-eviction/dynamic-resource-allocation/)
@@ -62,16 +62,18 @@ Installation instructions of CEEMS components can be found in
 <img src="https://raw.githubusercontent.com/ceems-dev/ceems/main/website/static/img/dashboards/demo_screenshot.png" alt="Access Demo">
 </a></p>
 
-Openstack and SLURM have been deployed on a small cloud instance and monitored using
+Openstack, SLURM, LSF and k8s have been deployed on a small cloud instance and monitored using
 CEEMS. As neither RAPL nor IPMI readings are available on cloud instances, energy
 consumption is estimated by assuming a Thermal Design Power (TDP) value and current
 usage of the instance. Several dashboards have been created in Grafana for visualizing
 metrics which are listed below.
 
-- [Overall usage of cluster](https://ceems-demo.myaddr.tools/d/adrenju36n2tcb/cluster-status?orgId=1&from=now-24h&to=now&var-job=openstack&var-host=$__all&var-provider=rte&var-country_code=FR&refresh=15m)
-- [Usage of different Projects/Accounts by SLURM and Openstack](https://ceems-demo.myaddr.tools/d/cdreu45pp9erkd/user-and-project-stats?orgId=1&from=now-90d&to=now&refresh=15m)
-- [Usage of Openstack resources by a given user and project](https://ceems-demo.myaddr.tools/d/be5x3it7gpx4wf/openstack-instance-summary?orgId=1&from=now-90d&to=now&var-user=gazoo&var-account=cornerstone&refresh=15m)
-- [Usage of SLURM resources by a given user and project](https://ceems-demo.myaddr.tools/d/fdsm8aom8hqf4fewfwe3123dascdsc/slurm-job-summary?orgId=1&from=now-90d&to=now&var-user=wilma&var-account=bedrock&refresh=15m)
+- [Overall usage of cluster](https://ceems-demo.myaddr.tools/d/adrenju36n2tcb/cluster-status?orgId=1&from=now-1h&to=now&timezone=browser&var-job=slurm&var-provider=rte&var-country_code=FR&refresh=15m)
+- [Usage of different Projects/Accounts by SLURM and Openstack](https://ceems-demo.myaddr.tools/d/cdreu45pp9erkd/user-and-project-stats?orgId=1&from=now-90d&to=now&timezone=browser&refresh=15m)
+- [Usage of Openstack resources by a given user and project](https://ceems-demo.myaddr.tools/d/be5x3it7gpx4wf/user-openstack-vm-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=pebbles&var-account=bedrock&var-provider=rte)
+- [Usage of k8s resources by a given user and project](https://ceems-demo.myaddr.tools/d/eethlvcs613wgf/user-k8s-pods-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=bedrock:unknown&var-account=bedrock&var-provider=rte)
+- [Usage of SLURM resources by a given user and project](https://ceems-demo.myaddr.tools/d/slurm-job-summary/user-slurm-job-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=arnold&var-account=bedrock&var-provider=rte)
+- [Usage of LSF resources by a given user and project](https://ceems-demo.myaddr.tools/d/lsf-job-summary/user-lsf-job-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=barney&var-account=bedrock&var-provider=owid)
 
 > [!WARNING]
 > All the dashboards provided in the demo instance are only meant to be for demonstrative

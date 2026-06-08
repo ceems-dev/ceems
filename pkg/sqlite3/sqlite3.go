@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"maps"
+	"slices"
 	"sync"
 
 	"github.com/ceems-dev/ceems/pkg/api/models"
@@ -39,6 +40,11 @@ func init() {
 				}
 
 				err = conn.RegisterFunc("avg_metric_map", avgMetricMap, true)
+				if err != nil {
+					return err
+				}
+
+				err = conn.RegisterFunc("merge_list", mergeList, true)
 				if err != nil {
 					return err
 				}
@@ -251,6 +257,68 @@ func avgMetricMap(existing, current string, existingWeight, currentWeight float6
 	}
 
 	return string(updatedMetricMapBytes)
+}
+
+// mergeList combines new and old lists based on replace argument. If replace is false,
+// new list is appended to old where as when replace is true, old list is replaced by
+// old.
+func mergeList(oldElement, newElement string, replace bool) string {
+	// If replace is true, nothing to do, return new
+	if replace {
+		return newElement
+	}
+
+	// Unmarshal strings into models.List type
+	var oldList, newList models.List
+
+	err := json.Unmarshal([]byte(oldElement), &oldList)
+	if err != nil {
+		panic(err)
+	}
+
+	err = json.Unmarshal([]byte(newElement), &newList)
+	if err != nil {
+		panic(err)
+	}
+
+	// If replace is false, append new to old and remove duplicates
+	newList = append(oldList, newList...)
+
+	// Remove duplicates
+	slices.SortFunc(newList, func(a, b any) int {
+		// Convert both a and b into strings
+		var strVals []string
+
+		for _, e := range []any{a, b} {
+			vm, err := json.Marshal(e)
+			if err == nil {
+				strVals = append(strVals, string(vm))
+			}
+		}
+
+		// If elements are uncomparable return 0. In this case it translates to
+		// failed marshalling
+		if len(strVals) < 2 {
+			return 0
+		}
+
+		if strVals[0] < strVals[1] {
+			return -1
+		} else if strVals[0] > strVals[1] {
+			return 1
+		}
+
+		return 0
+	})
+	newList = slices.Compact(newList)
+
+	// Finally, marshal the type into string and return
+	mergedListBytes, err := json.Marshal(newList)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(mergedListBytes)
 }
 
 // sumMetricMap aggregate sums MetricMaps.

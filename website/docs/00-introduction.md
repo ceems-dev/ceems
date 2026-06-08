@@ -26,7 +26,7 @@ of backward compatibility.
 ## Features
 
 - Monitors energy, performance, IO and network metrics for different types of resource
-managers (SLURM, Openstack, k8s)
+managers (SLURM, LSF, Openstack, k8s)
 - Supports different energy sources like RAPL, HWMON, Cray's PM Counters and BMC _via_ IPMI or Redfish
 - Supports NVIDIA (MIG, time sharing, MPS and vGPU) and AMD GPUs ([Partition](https://rocm.blogs.amd.com/software-tools-optimization/compute-memory-modes/README.html) like CPX, QPX, TPX, DPX). [Dynamic MIG](https://github.com/kubernetes-sigs/nvidia-dra-driver-gpu)
 offered by k8s [DRA](https://kubernetes.io/docs/concepts/scheduling-eviction/dynamic-resource-allocation/)
@@ -41,7 +41,7 @@ is also supported for NVIDIA GPUs.
 ## Components
 
 CEEMS provide a set of components that enable operators and end users to monitor the consumption of
-resources of the compute units of different resource managers like SLURM, Openstack and
+resources of the compute units of different resource managers like SLURM, LSF, Openstack and
 Kubernetes.
 
 - CEEMS Prometheus exporter is capable of exporting compute unit metrics including energy

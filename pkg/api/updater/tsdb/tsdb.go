@@ -42,52 +42,52 @@ var (
 var (
 	defaultQueries = map[string]map[string]string{
 		"avg_cpu_usage": {
-			"global": `avg_over_time(avg by (uuid) (uuid:ceems_cpu_usage:ratio_irate{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])`,
+			"global": "avg_over_time(avg by (uuid) (uuid:ceems_cpu_usage:ratio_irate{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])",
 		},
 		"avg_cpu_mem_usage": {
-			"global": `avg_over_time(avg by (uuid) (uuid:ceems_cpu_memory_usage:ratio{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])`,
+			"global": "avg_over_time(avg by (uuid) (uuid:ceems_cpu_memory_usage:ratio{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])",
 		},
 		"total_cpu_energy_usage_kwh": {
-			"total": `sum_over_time(sum by (uuid) (uuid:ceems_host_power_watts:pue{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9`,
+			"total": "sum_over_time(sum by (uuid) (uuid:ceems_host_power_watts:pue{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9",
 		},
 		"total_cpu_emissions_gms": {
-			"rte_total":    `sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
-			"emaps_total":  `sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
-			"wt_total":     `sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="wt"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
-			"owid_total":   `sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
-			"global_total": `sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="global"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
+			"rte_total":    "sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider=`rte`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
+			"emaps_total":  "sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider=`emaps`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
+			"wt_total":     "sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider=`wt`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
+			"owid_total":   "sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider=`owid`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
+			"global_total": "sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider=`global`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
 		},
 		"avg_gpu_usage": {
-			"global": `avg_over_time(avg by (uuid) (uuid:ceems_gpu_usage:ratio{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])`,
+			"global": "avg_over_time(avg by (uuid) (uuid:ceems_gpu_usage:ratio{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])",
 		},
 		"avg_gpu_mem_usage": {
-			"global": `avg_over_time(avg by (uuid) (uuid:ceems_gpu_memory_usage:ratio{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])`,
+			"global": "avg_over_time(avg by (uuid) (uuid:ceems_gpu_memory_usage:ratio{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])",
 		},
 		"total_gpu_energy_usage_kwh": {
-			"total": `sum_over_time(sum by (uuid) (uuid:ceems_gpu_power_watts:pue{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9`,
+			"total": "sum_over_time(sum by (uuid) (uuid:ceems_gpu_power_watts:pue{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9",
 		},
 		"total_gpu_emissions_gms": {
-			"rte_total":    `sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
-			"emaps_total":  `sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
-			"wt_total":     `sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="wt"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
-			"owid_total":   `sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
-			"global_total": `sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="global"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
+			"rte_total":    "sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider=`rte`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
+			"emaps_total":  "sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider=`emaps`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
+			"wt_total":     "sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider=`wt``} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
+			"owid_total":   "sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider=`owid`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
+			"global_total": "sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider=`global`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
 		},
 		"total_io_write_stats": {
-			"bytes_total":    `sum by (uuid) (increase(ceems_ebpf_write_bytes_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)`,
-			"requests_total": `sum by (uuid) (increase(ceems_ebpf_write_requests_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)`,
-			"errors_total":   `sum by (uuid) (increase(ceems_ebpf_write_errors_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)`,
+			"bytes_total":    "sum by (uuid) (increase(ceems_ebpf_write_bytes_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)",
+			"requests_total": "sum by (uuid) (increase(ceems_ebpf_write_requests_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)",
+			"errors_total":   "sum by (uuid) (increase(ceems_ebpf_write_errors_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)",
 		},
 		"total_io_read_stats": {
-			"bytes_total":    `sum by (uuid) (increase(ceems_ebpf_read_bytes_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)`,
-			"requests_total": `sum by (uuid) (increase(ceems_ebpf_read_requests_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)`,
-			"errors_total":   `sum by (uuid) (increase(ceems_ebpf_read_errors_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)`,
+			"bytes_total":    "sum by (uuid) (increase(ceems_ebpf_read_bytes_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)",
+			"requests_total": "sum by (uuid) (increase(ceems_ebpf_read_requests_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)",
+			"errors_total":   "sum by (uuid) (increase(ceems_ebpf_read_errors_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)",
 		},
 		"total_ingress_stats": {
-			"bytes_total": `sum by (uuid) (increase(ceems_ebpf_ingress_bytes_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)`,
+			"bytes_total": "sum by (uuid) (increase(ceems_ebpf_ingress_bytes_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)",
 		},
 		"total_egress_stats": {
-			"bytes_total": `sum by (uuid) (increase(ceems_ebpf_egress_bytes_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)`,
+			"bytes_total": "sum by (uuid) (increase(ceems_ebpf_egress_bytes_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)",
 		},
 	}
 )
@@ -289,8 +289,11 @@ func (t *tsdbUpdater) fetchAggMetrics(
 	}
 
 	// Template data
+	// LSF job arrays will have IDs like 300[1], 300[2], etc. Prometheus expects the
+	// square brackets to be escaped or else it will ignore the label values. This is
+	// due to the fact that it will use regex expression to match the label values.
 	tmplData := map[string]any{
-		"UUIDs":                   strings.Join(uuids, "|"),
+		"UUIDs":                   strings.ReplaceAll(strings.ReplaceAll(strings.Join(uuids, "|"), "[", `\[`), "]", `\]`),
 		"ScrapeInterval":          settings.ScrapeInterval,
 		"ScrapeIntervalMilli":     settings.ScrapeInterval.Milliseconds(),
 		"EvaluationInterval":      settings.EvaluationInterval,

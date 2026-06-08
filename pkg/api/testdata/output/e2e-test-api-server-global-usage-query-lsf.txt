@@ -1,0 +1,1 @@
+{"status":"success","data":[{"cluster_id":"","resource_manager":"","num_units":1,"project":"prj3","groupname":"","username":"usr2"},{"cluster_id":"","resource_manager":"","num_units":1,"project":"prj3","groupname":"","username":"usr3"}]}

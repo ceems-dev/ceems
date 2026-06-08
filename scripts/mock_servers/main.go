@@ -43,7 +43,7 @@ const (
 // Regex to capture query.
 var (
 	queryRegex = regexp.MustCompile("^(.*){")
-	regexpUUID = regexp.MustCompile("(?:.+?)[^gpu]uuid=[~]{0,1}\"(?P<uuid>[a-zA-Z0-9-|]+)\"(?:.*)")
+	regexpUUID = regexp.MustCompile(`(?:.+?)[^gpu]uuid=[~]{0,1}[\x60\"](?P<uuid>[a-zA-Z0-9-|\[\]\\]+)[\x60\"](?:.*)`)
 )
 
 // hash returns hash of a given string.
@@ -201,7 +201,8 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 			for uuid := range strings.SplitSeq(match[1], "|") {
 				// Ignore empty strings
 				if strings.TrimSpace(uuid) != "" && !slices.Contains(uuids, uuid) {
-					uuids = append(uuids, uuid)
+					// Remove backslashes from uuid strings
+					uuids = append(uuids, strings.ReplaceAll(uuid, `\`, ""))
 				}
 			}
 		}

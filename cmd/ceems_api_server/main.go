@@ -9,6 +9,7 @@ import (
 
 	"github.com/ceems-dev/ceems/pkg/api/cli"
 	_ "github.com/ceems-dev/ceems/pkg/api/resource/k8s"
+	_ "github.com/ceems-dev/ceems/pkg/api/resource/lsf"
 	_ "github.com/ceems-dev/ceems/pkg/api/resource/openstack"
 	_ "github.com/ceems-dev/ceems/pkg/api/resource/slurm"
 	_ "github.com/ceems-dev/ceems/pkg/api/updater/tsdb"

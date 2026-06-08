@@ -30,6 +30,21 @@ clusters:
     cli: 
       path: pkg/api/testdata
 
+  - id: lsf-0
+    manager: lsf
+    updaters:
+      - tsdb-0
+      - tsdb-1
+    cli: 
+      path: pkg/api/testdata
+
+  - id: lsf-1
+    manager: lsf
+    updaters:
+      - tsdb-0
+    cli: 
+      path: pkg/api/testdata
+
   - id: os-0
     manager: openstack
     updaters:

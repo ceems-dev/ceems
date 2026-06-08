@@ -130,6 +130,64 @@ func TestAddMetricMap(t *testing.T) {
 	}
 }
 
+func TestMergeList(t *testing.T) {
+	tests := []struct {
+		name     string
+		existing string
+		new      string
+		replace  bool
+		expected string
+	}{
+		{
+			name:     "when existing and new have same elements and replace is true",
+			existing: `["a", 1, "b", 2]`,
+			new:      `["a", 1, "b", 2]`,
+			replace:  true,
+			expected: `["a", 1, "b", 2]`,
+		},
+		{
+			name:     "when existing and new have same elements and replace is false",
+			existing: `["a", 1, "b", 2]`,
+			new:      `["a", 1, "b", 2]`,
+			replace:  false,
+			expected: `["a","b",1,2]`,
+		},
+		{
+			name:     "when existing and new have non-overlapping elements and replace is true",
+			existing: `["a", 1, "b", 2]`,
+			new:      `["aa", 11, "bb", 22]`,
+			replace:  true,
+			expected: `["aa", 11, "bb", 22]`,
+		},
+		{
+			name:     "when existing and new have non-overlapping elements and replace is false",
+			existing: `["a", 1, "b", 2]`,
+			new:      `["aa", 11, "bb", 22]`,
+			replace:  false,
+			expected: `["a","aa","b","bb",1,11,2,22]`,
+		},
+		{
+			name:     "when existing and new have overlapping elements and replace is true",
+			existing: `["a", 1, "b", 2]`,
+			new:      `["a", 1, "bb", 22]`,
+			replace:  true,
+			expected: `["a", 1, "bb", 22]`,
+		},
+		{
+			name:     "when existing and new have overlapping elements and replace is false",
+			existing: `["a", 1, "b", 2]`,
+			new:      `["a", 1, "bb", 22]`,
+			replace:  false,
+			expected: `["a","b","bb",1,2,22]`,
+		},
+	}
+
+	for _, test := range tests {
+		got := mergeList(test.existing, test.new, test.replace)
+		assert.Equal(t, test.expected, got, test.name)
+	}
+}
+
 func TestAvgMetricMap(t *testing.T) {
 	tests := []struct {
 		name           string
@@ -262,7 +320,7 @@ func TestAvgMetricMapAgg(t *testing.T) {
 	assert.Equal(t, expectedMap, aggMap)
 }
 
-func setupDB(ctx context.Context, tmpDir string, aggMetric bool, units []models.Unit) (models.MetricMap, models.MetricMap, error) {
+func setupUnitsDB(ctx context.Context, tmpDir string, aggMetric bool, units []models.Unit) (models.MetricMap, models.MetricMap, error) {
 	dbPath := filepath.Join(tmpDir, "test.db")
 
 	db, err := sql.Open(DriverName, dbPath)
@@ -286,14 +344,14 @@ CREATE UNIQUE INDEX uq_cluster_id_uuid_start ON units (uuid);`
 		return nil, nil, fmt.Errorf("failed to create table in DB: %w", err)
 	}
 
-	updateStmt := `
+	unitsUpdateStmt := `
 INSERT INTO units (uuid,total_time_seconds,avg_cpu_usage) VALUES(:uuid,:total_time_seconds,:avg_cpu_usage) ON CONFLICT(uuid) DO UPDATE SET
   total_time_seconds = add_metric_map(total_time_seconds, :total_time_seconds),
   avg_cpu_usage = avg_metric_map(avg_cpu_usage, :avg_cpu_usage, CAST(json_extract(total_time_seconds, '$.alloc_cputime') AS REAL), CAST(json_extract(:total_time_seconds, '$.alloc_cputime') AS REAL))`
 
-	sqlStmt, err := db.PrepareContext(ctx, updateStmt)
+	sqlStmt, err := db.PrepareContext(ctx, unitsUpdateStmt)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to prepare statement for table %w", err)
+		return nil, nil, fmt.Errorf("failed to prepare units statement for table %w", err)
 	}
 	defer sqlStmt.Close()
 
@@ -321,7 +379,7 @@ INSERT INTO units (uuid,total_time_seconds,avg_cpu_usage) VALUES(:uuid,:total_ti
 	return cpuUsage, totalTimes, nil
 }
 
-func TestCustomFuncsInDB(t *testing.T) {
+func TestCustomAggFuncsInDB(t *testing.T) {
 	tests := []struct {
 		name               string
 		aggMetric          bool
@@ -481,9 +539,110 @@ func TestCustomFuncsInDB(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		gotCPUUsage, gotTotalTimes, err := setupDB(t.Context(), t.TempDir(), test.aggMetric, test.units)
+		gotCPUUsage, gotTotalTimes, err := setupUnitsDB(t.Context(), t.TempDir(), test.aggMetric, test.units)
 		require.NoError(t, err)
 		assert.Equal(t, test.expectedCPUUsage, gotCPUUsage, test.name)
 		assert.Equal(t, test.expectedTotalTimes, gotTotalTimes, test.name)
+	}
+}
+
+func setupUsersDB(ctx context.Context, tmpDir string, replace bool, users []models.User) (models.List, error) {
+	dbPath := filepath.Join(tmpDir, "test.db")
+
+	db, err := sql.Open(DriverName, dbPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create DB: %w", err)
+	}
+
+	stmts := `
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE IF NOT EXISTS users (
+ "id" integer not null primary key,
+ "name" text,
+ "projects" text default '[]'
+);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_cluster_id_user ON users (name);`
+
+	_, err = db.ExecContext(ctx, stmts)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create table in DB: %w", err)
+	}
+
+	// Users update statement
+	usersUpdateStmt := `
+INSERT INTO users (name,projects) VALUES (:name,:projects) ON CONFLICT(name) DO UPDATE SET
+  name = :name,
+  projects = merge_list(projects, :projects, :replace)`
+
+	sqlStmt, err := db.PrepareContext(ctx, usersUpdateStmt)
+	if err != nil {
+		return nil, fmt.Errorf("failed to prepare users statement for table %w", err)
+	}
+	defer sqlStmt.Close()
+
+	for _, user := range users {
+		_, err := sqlStmt.ExecContext(
+			ctx,
+			sql.Named("name", user.Name),
+			sql.Named("projects", user.Projects),
+			sql.Named("replace", replace),
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to insert data for table %w", err)
+		}
+	}
+
+	// Make user projects query
+	var projects models.List
+
+	_ = db.QueryRowContext(ctx, "SELECT projects FROM users").Scan(&projects)
+
+	return projects, nil
+}
+
+func TestCustomMergeFuncsInDB(t *testing.T) {
+	tests := []struct {
+		name             string
+		replace          bool
+		users            []models.User
+		expectedProjects models.List
+	}{
+		{
+			name: "Replace projects",
+			users: []models.User{
+				{
+					Name:     "usr1",
+					Projects: models.List{"prj1", "prj2"},
+				},
+				{
+					Name:     "usr1",
+					Projects: models.List{"prj3"},
+				},
+			},
+			replace:          true,
+			expectedProjects: models.List{"prj3"},
+		},
+		{
+			name: "Append projects",
+			users: []models.User{
+				{
+					Name:     "usr1",
+					Projects: models.List{"prj1", "prj2"},
+				},
+				{
+					Name:     "usr1",
+					Projects: models.List{"prj3"},
+				},
+			},
+			replace:          false,
+			expectedProjects: models.List{"prj1", "prj2", "prj3"},
+		},
+	}
+
+	for _, test := range tests {
+		gotProjects, err := setupUsersDB(t.Context(), t.TempDir(), test.replace, test.users)
+		require.NoError(t, err)
+		assert.Equal(t, test.expectedProjects, gotProjects, test.name)
 	}
 }
