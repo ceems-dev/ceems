@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.14.0 / 2026-06-08
+
+- [FEAT] LSF support for API server [#518](https://github.com/ceems-dev/ceems/pull/518) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump dependencies [#515](https://github.com/ceems-dev/ceems/pull/515), [#516](https://github.com/ceems-dev/ceems/pull/516), [#517](https://github.com/ceems-dev/ceems/pull/517), [#519](https://github.com/ceems-dev/ceems/pull/519), [#520](https://github.com/ceems-dev/ceems/pull/520) ([@dependabot](https://github.com/dependabot))
+
 ## 0.13.0 / 2026-05-30
 
 - [CI] ci: Sign binaries and container images using cosign [#514](https://github.com/ceems-dev/ceems/pull/514) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
