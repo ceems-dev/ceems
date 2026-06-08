@@ -289,8 +289,11 @@ func (t *tsdbUpdater) fetchAggMetrics(
 	}
 
 	// Template data
+	// LSF job arrays will have IDs like 300[1], 300[2], etc. Prometheus expects the
+	// square brackets to be escaped or else it will ignore the label values. This is
+	// due to the fact that it will use regex expression to match the label values.
 	tmplData := map[string]any{
-		"UUIDs":                   strings.Join(uuids, "|"),
+		"UUIDs":                   strings.ReplaceAll(strings.ReplaceAll(strings.Join(uuids, "|"), "[", `\[`), "]", `\]`),
 		"ScrapeInterval":          settings.ScrapeInterval,
 		"ScrapeIntervalMilli":     settings.ScrapeInterval.Milliseconds(),
 		"EvaluationInterval":      settings.EvaluationInterval,
@@ -403,7 +406,7 @@ func (t *tsdbUpdater) update(
 			}
 		}
 
-		allUnitUUIDs[j] = strings.ReplaceAll(strings.ReplaceAll(uuid, "[", `\[`), "]", `\]`)
+		allUnitUUIDs[j] = uuid
 		j++
 	}
 
