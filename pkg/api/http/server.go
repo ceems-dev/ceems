@@ -337,7 +337,7 @@ func New(c *Config) (*CEEMSServer, error) {
 //	@description	must send a user-agent header.
 //	@description
 //	@description	A demo instance of CEEMS API server is provided for the users to test. This
-//	@description	instance is running at `https://ceems-demo.myaddr.tools:7443` and it is the
+//	@description	instance is running at `https://ceems-demo.myaddr.tools:6443` and it is the
 //	@description	default server that will serve the requests originating from current OAS client.
 //	@description
 //	@description	Some of the valid users for this demo instance are:
@@ -371,7 +371,7 @@ func New(c *Config) (*CEEMSServer, error) {
 //
 //	@securityDefinitions.basic	BasicAuth
 //
-//	@host						ceems-demo.myaddr.tools:7443
+//	@host						ceems-demo.myaddr.tools:6443
 //	@BasePath					/api/v1
 //
 //	@schemes					https

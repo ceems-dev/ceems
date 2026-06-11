@@ -158,6 +158,15 @@ cacct  --starttime="2025-01-01" --endtime="2025-03-22"
 └─────────┴─────────┴──────────┴────────┴────────┴──────────┴─────────────┴────────────┴───────────┴────────┴────────┴──────────┴─────────────┴────────────┴───────────┘
 ```
 
+## 📜 Publications
+
+- Paipuri, M. (2026). A Unified I/O Monitoring Framework Using eBPF. In: Neuwirth, S., Paul, A.K., Weinzierl, T., Carson, E.C. (eds)
+High Performance Computing. ISC High Performance 2025. Lecture Notes in Computer Science, vol 16091. Springer, Cham.
+https://doi.org/10.1007/978-3-032-07612-0_3
+- Paipuri, M. (2025). CEEMS: A Resource Manager Agnostic Energy and Emissions Monitoring Stack.
+In Proceedings of the SC '24 Workshops of the International Conference on High Performance Computing, Network, Storage, and Analysis (SC-W '24).
+IEEE Press, 1862–1866. https://doi.org/10.1109/SCW63240.2024.00233
+
 ## ⚡️ Talks and Demos
 
 - [eBPF based I/O monitoring at ISC 2025](https://docs.google.com/presentation/d/11eqA9Bxf1hyKpGAXtZBN6mrm-X6YEZSllVNZ8dEkfnE/edit?usp=sharing)

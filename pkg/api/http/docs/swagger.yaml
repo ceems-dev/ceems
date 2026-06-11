@@ -649,7 +649,7 @@ definitions:
     type: object
 externalDocs:
   url: https://ceems-dev.github.io/ceems/
-host: ceems-demo.myaddr.tools:7443
+host: ceems-demo.myaddr.tools:6443
 info:
   contact:
     email: mahendra.paipuri@gmail.com
@@ -667,7 +667,7 @@ info:
     must send a user-agent header.
 
     A demo instance of CEEMS API server is provided for the users to test. This
-    instance is running at `https://ceems-demo.myaddr.tools:7443` and it is the
+    instance is running at `https://ceems-demo.myaddr.tools:6443` and it is the
     default server that will serve the requests originating from current OAS client.
 
     Some of the valid users for this demo instance are:
