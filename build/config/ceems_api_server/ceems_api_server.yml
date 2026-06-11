@@ -233,6 +233,7 @@ clusters: []
 
   #   # Resource manager of the cluster. Currently supported managers:
   #   #  - `slurm`
+  #   #  - `lsf` 
   #   #  - `openstack`
   #   #  - `k8s` 
   #   #
@@ -281,6 +282,13 @@ clusters: []
   #   # `ceems_api_server` must be run as a user that is capable of returning jobs of all
   #   # users.
   #   #
+  #   # In the case of LSF, no special privileges are required as LSF can provide the
+  #   # jobs of all users using a unprivileged user. If the cluster has been configured
+  #   # to be more restrainted, ie, if unprivileged user does not return jobs of all users
+  #   # `ceems_api_server` must be run as a user that is capable of returning jobs of all
+  #   # users.
+
+  #   #
   #   # Systemd Unit File:
   #   # https://github.com/ceems-dev/ceems/blob/main/build/package/ceems_api_server/ceems_api_server.service
   #   #
@@ -291,6 +299,14 @@ clusters: []
 
   #     # An object of environment variables that will be injected while executing the 
   #     # CLI utilities to fetch compute unit data. 
+  #     #
+  #     # In the case of LSF, certain environment variables like `LSF_LIBDIR`, `LD_LIBRARY_PATH`, 
+  #     # `LSF_BINDIR`, `LSF_SERVERDIR` and `LSF_ENVDIR` are necessary for executing
+  #     # `bacct` and `bjobs` commands. They can be setup here as well.
+  #     #
+  #     # This is handy when executing CLI tools like `keystone` for OpenStack or `kubectl` 
+  #     # for k8s needs to source admin credentials. Those credentials can be set manually
+  #     # here in this section. 
   #     #
   #     environment_variables: {}
   #       # NAME: value  # Environment variable name value pair
@@ -763,62 +779,62 @@ updaters: []
   #     # queries:
   #     # # Average CPU utilisation
   #     # avg_cpu_usage:
-  #     #   global: avg_over_time(avg by (uuid) (uuid:ceems_cpu_usage:ratio_irate{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
+  #     #   global: avg_over_time(avg by (uuid) (uuid:ceems_cpu_usage:ratio_irate{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])
 
   #     # # Average CPU Memory utilisation
   #     # avg_cpu_mem_usage:
-  #     #   global: avg_over_time(avg by (uuid) (uuid:ceems_cpu_memory_usage:ratio{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
+  #     #   global: avg_over_time(avg by (uuid) (uuid:ceems_cpu_memory_usage:ratio{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])
          
   #     # # Total CPU energy usage in kWh
   #     # total_cpu_energy_usage_kwh: 
-  #     #   total: sum_over_time(sum by (uuid) (uuid:ceems_host_power_watts:pue{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
+  #     #   total: sum_over_time(sum by (uuid) (uuid:ceems_host_power_watts:pue{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
 
   #     # # Total CPU emissions in gms
   #     # total_cpu_emissions_gms: 
   #     #   rte_total: |
-  #     #     sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+  #     #     sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
   #     #   emaps_total: |
-  #     #     sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+  #     #     sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
   #     #   owid_total: |
-  #     #     sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+  #     #     sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
 
   #     # # Average GPU utilization
   #     # avg_gpu_usage: 
-  #     #   global: avg_over_time(avg by (uuid) (uuid:ceems_gpu_usage:ratio{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
+  #     #   global: avg_over_time(avg by (uuid) (uuid:ceems_gpu_usage:ratio{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])
 
   #     # # Average GPU memory utilization
   #     # avg_gpu_mem_usage: 
-  #     #   global: avg_over_time(avg by (uuid) (uuid:ceems_gpu_memory_usage:ratio{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
+  #     #   global: avg_over_time(avg by (uuid) (uuid:ceems_gpu_memory_usage:ratio{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])
 
   #     # # Total GPU energy usage in kWh
   #     # total_gpu_energy_usage_kwh: 
-  #     #   total: sum_over_time(sum by (uuid) (uuid:ceems_gpu_power_watts:pue{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
+  #     #   total: sum_over_time(sum by (uuid) (uuid:ceems_gpu_power_watts:pue{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
 
   #     # # Total GPU emissions in gms
   #     # total_gpu_emissions_gms: 
   #     #   rte_total: |
-  #     #     sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+  #     #     sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
   #     #   emaps_total: |
-  #     #     sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+  #     #     sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
   #     #   owid_total: |
-  #     #     sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+  #     #     sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
 
   #     # # Total IO write stats
   #     # total_io_write_stats: 
-  #     #   bytes_total: sum by (uuid) (increase(ceems_ebpf_write_bytes_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)
-  #     #   requests_total: sum by (uuid) (increase(ceems_ebpf_write_requests_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)
+  #     #   bytes_total: sum by (uuid) (increase(ceems_ebpf_write_bytes_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
+  #     #   requests_total: sum by (uuid) (increase(ceems_ebpf_write_requests_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
 
   #     # # Total IO read stats
   #     # total_io_read_stats:
-  #     #   bytes_total: sum by (uuid) (increase(ceems_ebpf_read_bytes_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf) 
-  #     #   requests_total: sum by (uuid) (increase(ceems_ebpf_read_requests_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)
+  #     #   bytes_total: sum by (uuid) (increase(ceems_ebpf_read_bytes_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf) 
+  #     #   requests_total: sum by (uuid) (increase(ceems_ebpf_read_requests_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
 
   #     # # Total ingress traffic stats
   #     # total_ingress_stats:
-  #     #   bytes_total: sum by (uuid) (increase(ceems_ebpf_ingress_bytes_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)
-  #     #   packets_total: sum by (uuid) (increase(ceems_ebpf_ingress_packets_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)
+  #     #   bytes_total: sum by (uuid) (increase(ceems_ebpf_ingress_bytes_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
+  #     #   packets_total: sum by (uuid) (increase(ceems_ebpf_ingress_packets_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
 
   #     # # Total egress traffic stats
   #     # total_egress_stats:
-  #     #   bytes_total:  sum by (uuid) (increase(ceems_ebpf_egress_bytes_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)
-  #     #   packets_total: sum by (uuid) (increase(ceems_ebpf_egress_packets_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)
+  #     #   bytes_total:  sum by (uuid) (increase(ceems_ebpf_egress_bytes_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
+  #     #   packets_total: sum by (uuid) (increase(ceems_ebpf_egress_packets_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
