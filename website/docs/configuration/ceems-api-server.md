@@ -456,7 +456,7 @@ updaters:
         # Average CPU utilization
         avg_cpu_usage: 
           global: |
-            avg_over_time(avg by (uuid) (uuid:ceems_cpu_usage:ratio_irate{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
+            avg_over_time(avg by (uuid) (uuid:ceems_cpu_usage:ratio_irate{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])
 ```
 
 Similar to `clusters`, `updaters` is also a list of objects where each object
@@ -481,6 +481,14 @@ section.
     the aggregate metrics of each compute unit. The example config shows the query
     to estimate average CPU usage of the compute unit. All the supported queries can
     be consulted from the [Updaters Configuration Reference](./config-reference.md#updater_config).
+
+:::important[IMPORTANT]
+
+In order to use `extra_config.queries` in `updaters` config, certain recording rules
+must be generated and added to Prometheus server. More details on this is described in
+detail in the [repository docs](https://github.com/ceems-dev/ceems/tree/main/etc/prometheus).
+
+:::
 
 ## Examples
 
@@ -543,6 +551,17 @@ clusters:
             password: supersecret
 ```
 
+:::important[IMPORTANT]
+
+The `extra_config.queries` in `updaters` config, can be easily generated using
+[`ceems_tool`](../usage/ceems-tool.md#ceems-tsdb-updater-queries) instead of manually
+writing them.
+
+In the case of writing custom own rules, it is very important to enclose the template
+variables for `.UUID` in "backticks" like shown below when LSF scheduler is being used.
+
+:::
+
 Assuming CEEMS exporter is deployed on the compute nodes of both SLURM
 and OpenStack clusters and metrics are scrapped by a Prometheus running
 at `https://prometheus.example.com`, we can add the updater config to
@@ -598,68 +617,68 @@ updaters:
         # Average CPU utilization
         avg_cpu_usage:
           global: |
-            avg_over_time(avg by (uuid) (uuid:ceems_cpu_usage:ratio_irate{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
+            avg_over_time(avg by (uuid) (uuid:ceems_cpu_usage:ratio_irate{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])
             
         # Average CPU Memory utilization
         avg_cpu_mem_usage:
           global: |
-            avg_over_time(avg by (uuid) (uuid:ceems_memory_usage:ratio{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
+            avg_over_time(avg by (uuid) (uuid:ceems_memory_usage:ratio{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])
             
         # Total CPU energy usage in kWh
         total_cpu_energy_usage_kwh:
           total: |
-            sum_over_time(sum by (uuid) (uuid:ceems_host_power_watts:pue{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
+            sum_over_time(sum by (uuid) (uuid:ceems_host_power_watts:pue{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
             
         # Total CPU emissions in gms
         total_cpu_emissions_gms:
           # If RTE emission factor provider is enabled         
           rte_total: |
-            sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+            sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
           # If Electricity Maps emission factor provider is enabled
           emaps_total: |
-            sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+            sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
           # If Watt Time emission factor provider is enabled
           wt_total: |
-            sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="wt"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+            sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="wt"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
           # If OWID static emission factor provider is enabled
           owid_total: |
-            sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+            sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
           # If World average (IEA) emission factor provider is enabled
           global_total: |
-            sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="global"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+            sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="global"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
             
         # Average GPU utilization
         avg_gpu_usage:
           global: |
-            avg_over_time(avg by (uuid) (uuid:ceems_gpu_usage:ratio{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
+            avg_over_time(avg by (uuid) (uuid:ceems_gpu_usage:ratio{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])
             
         # Average GPU memory utilization
         avg_gpu_mem_usage:
           global: |
-            avg_over_time(avg by (uuid) (uuid:ceems_gpu_memory_usage:ratio{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
+            avg_over_time(avg by (uuid) (uuid:ceems_gpu_memory_usage:ratio{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])
             
         # Total GPU energy usage in kWh
         total_gpu_energy_usage_kwh:
           total: |
-            sum_over_time(sum by (uuid) (uuid:ceems_gpu_power_watts:pue{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
+            sum_over_time(sum by (uuid) (uuid:ceems_gpu_power_watts:pue{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
             
         # Total GPU emissions in gms
         total_gpu_emissions_gms:            
           # If RTE emission factor provider is enabled         
           rte_total: |
-            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
           # If Electricity Maps emission factor provider is enabled
           emaps_total: |
-            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
           # If Watt Time emission factor provider is enabled
           wt_total: |
-            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="wt"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="wt"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
           # If OWID static emission factor provider is enabled
           owid_total: |
-            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
           # If World average (IEA) emission factor provider is enabled
           global_total: |
-            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="global"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3        
+            sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="global"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3        
 ```
 
 The above configuration assumes that GPU compute nodes possess NVIDIA GPUs and the

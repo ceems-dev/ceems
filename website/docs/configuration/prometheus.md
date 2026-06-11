@@ -4,10 +4,22 @@ sidebar_position: 6
 
 # Prometheus
 
+## Recording rules
+
+CEEMS exporters export raw metrics to Prometheus and [recording rules](https://prometheus.io/docs/prometheus/latest/configuration/recording_rules/)
+functionality is leveraged to estimate energy consumption and emissions of individual
+compute units. More details on how to generate recording rules are described in the
+[repository](https://github.com/ceems-dev/ceems/tree/main/etc/prometheus).
+
+It is **highly** recommended to use [`ceems_tool`](../usage/ceems-tool.md#prometheus-recording-rules) to
+generate recording rules instead of manually writing them up.
+
+## Relabeling
+
 :::important[IMPORTANT]
 
 From version `v0.11.0`, this configuration is not anymore necessary and if recording
-rules are generated [`ceems_tool`](../usage/ceems-tool.md), the relabeling will be
+rules are generated using [`ceems_tool`](../usage/ceems-tool.md), the relabeling will be
 handled directly in the rules.
 
 :::

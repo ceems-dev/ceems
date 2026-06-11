@@ -345,6 +345,10 @@ cli:
   # An object of environment variables that will be injected while executing the 
   # CLI utilities to fetch compute unit data. 
   #
+  # In the case of LSF, certain environment variables like `LSF_LIBDIR`, `LD_LIBRARY_PATH`, 
+  # `LSF_BINDIR`, `LSF_SERVERDIR` and `LSF_ENVDIR` are necessary for executing
+  # `bacct` and `bjobs` commands. They can be setup here as well.
+  #
   # This is handy when executing CLI tools like `keystone` for OpenStack or `kubectl` 
   # for k8s needs to source admin credentials. Those credentials can be set manually
   # here in this section. 
@@ -591,7 +595,7 @@ A `queries_config` allows configuring PromQL queries for the TSDB updater of the
 # Default value:
 #
 # global:
-#   avg_over_time(avg by (uuid) (uuid:ceems_cpu_usage:ratio_irate{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
+#   avg_over_time(avg by (uuid) (uuid:ceems_cpu_usage:ratio_irate{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])
 avg_cpu_usage:
   [ <string>: <promql_query> ... ]
   
@@ -601,7 +605,7 @@ avg_cpu_usage:
 # Default value:
 #
 # global:
-#   avg_over_time(avg by (uuid) (uuid:ceems_cpu_memory_usage:ratio{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
+#   avg_over_time(avg by (uuid) (uuid:ceems_cpu_memory_usage:ratio{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])
 avg_cpu_mem_usage:
   [ <string>: <promql_query> ... ]
   
@@ -611,7 +615,7 @@ avg_cpu_mem_usage:
 # Default value:
 #
 # total:
-#   sum_over_time(sum by (uuid) (uuid:ceems_host_power_watts:pue{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
+#   sum_over_time(sum by (uuid) (uuid:ceems_host_power_watts:pue{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
 total_cpu_energy_usage_kwh:
   [ <string>: <promql_query> ... ]
   
@@ -621,11 +625,11 @@ total_cpu_energy_usage_kwh:
 # Default value:
 #
 # rte_total: |
-#   sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+#   sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
 # emaps_total: |
-#   sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+#   sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
 # owid_total: |
-#   sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+#   sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
 total_cpu_emissions_gms:
   [ <string>: <promql_query> ... ]
   
@@ -635,7 +639,7 @@ total_cpu_emissions_gms:
 # Default value:
 #
 # global:
-#   avg_over_time(avg by (uuid) (uuid:ceems_gpu_usage:ratio{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
+#   avg_over_time(avg by (uuid) (uuid:ceems_gpu_usage:ratio{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])
 avg_gpu_usage:
   [ <string>: <promql_query> ... ]
   
@@ -645,7 +649,7 @@ avg_gpu_usage:
 # Default value:
 #
 # global:
-#   avg_over_time(avg by (uuid) (uuid:ceems_gpu_memory_usage:ratio{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:])
+#   avg_over_time(avg by (uuid) (uuid:ceems_gpu_memory_usage:ratio{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])
 avg_gpu_mem_usage:
   [ <string>: <promql_query> ... ]
   
@@ -655,7 +659,7 @@ avg_gpu_mem_usage:
 # Default value:
 #
 # total:
-#   sum_over_time(sum by (uuid) (uuid:ceems_gpu_power_watts:pue{uuid=~"{{.UUIDs}}"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
+#   sum_over_time(sum by (uuid) (uuid:ceems_gpu_power_watts:pue{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9
 total_gpu_energy_usage_kwh:
   [ <string>: <promql_query> ... ]
   
@@ -665,11 +669,11 @@ total_gpu_energy_usage_kwh:
 # Default value:
 #
 # rte_total: |
-#   sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+#   sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="rte"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
 # emaps_total: |
-#   sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+#   sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="emaps"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
 # owid_total: |
-#   sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~"{{.UUIDs}}",provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
+#   sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider="owid"} >= 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
 total_gpu_emissions_gms:
   [ <string>: <promql_query> ... ]
   
@@ -679,11 +683,11 @@ total_gpu_emissions_gms:
 # Default value:
 #
 # bytes_total: |
-#   sum by (uuid) (increase(ceems_ebpf_write_bytes_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)
+#   sum by (uuid) (increase(ceems_ebpf_write_bytes_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
 # requests_total: |
-#   sum by (uuid) (increase(ceems_ebpf_write_requests_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)
+#   sum by (uuid) (increase(ceems_ebpf_write_requests_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
 # errors_total: |
-#   sum by (uuid) (increase(ceems_ebpf_write_errors_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)
+#   sum by (uuid) (increase(ceems_ebpf_write_errors_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
 total_io_write_stats:
   [ <string>: <promql_query> ... ]
 
@@ -692,11 +696,11 @@ total_io_write_stats:
 # Default value:
 #
 # bytes_total: |
-#   sum by (uuid) (increase(ceems_ebpf_read_bytes_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)
+#   sum by (uuid) (increase(ceems_ebpf_read_bytes_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
 # requests_total: |
-#   sum by (uuid) (increase(ceems_ebpf_read_requests_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)
+#   sum by (uuid) (increase(ceems_ebpf_read_requests_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
 # errors_total: |
-#   sum by (uuid) (increase(ceems_ebpf_read_errors_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)
+#   sum by (uuid) (increase(ceems_ebpf_read_errors_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
 total_io_read_stats:
   [ <string>: <promql_query> ... ]
 
@@ -705,7 +709,7 @@ total_io_read_stats:
 # Default value:
 #
 # bytes_total: |
-#   sum by (uuid) (increase(ceems_ebpf_ingress_bytes_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)
+#   sum by (uuid) (increase(ceems_ebpf_ingress_bytes_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
 total_ingress_stats:
   [ <string>: <promql_query> ... ]
 
@@ -714,7 +718,7 @@ total_ingress_stats:
 # Default value:
 #
 # bytes_total: |
-#   sum by (uuid) (increase(ceems_ebpf_egress_bytes_total{uuid=~"{{.UUIDs}}"}[{{.Range}}]) >= 0 < inf)
+#   sum by (uuid) (increase(ceems_ebpf_egress_bytes_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
 total_egress_stats:
   [ <string>: <promql_query> ... ]
 ```
