@@ -26,65 +26,73 @@ var tsdbQueries = map[string]map[string]TSDBQuery{
 	"avg_cpu_usage": {
 		"global": TSDBQuery{
 			Series: "uuid:ceems_cpu_usage:ratio_irate",
-			Query:  `avg_over_time(avg by (uuid) (%s{uuid=~"{{.UUIDs}}"} > 0 < inf)[{{.Range}}:])`,
+			Query:  "avg_over_time(avg by (uuid) (%s{uuid=~`{{.UUIDs}}`} > 0 < inf)[{{.Range}}:])",
 		},
 	},
 	"avg_cpu_mem_usage": {
 		"global": TSDBQuery{
 			Series: "uuid:ceems_cpu_memory_usage:ratio",
-			Query:  `avg_over_time(avg by (uuid) (%s{uuid=~"{{.UUIDs}}"} > 0 < inf)[{{.Range}}:])`,
+			Query:  "avg_over_time(avg by (uuid) (%s{uuid=~`{{.UUIDs}}`} > 0 < inf)[{{.Range}}:])",
 		},
 	},
 	"total_cpu_energy_usage_kwh": {
 		"total": TSDBQuery{
 			Series: "uuid:ceems_host_power_watts:pue",
-			Query:  `sum_over_time(sum by (uuid) (%s{uuid=~"{{.UUIDs}}"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9`,
+			Query:  "sum_over_time(sum by (uuid) (%s{uuid=~`{{.UUIDs}}`} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9",
 		},
 	},
 	"total_cpu_emissions_gms": {
 		"rte_total": TSDBQuery{
 			Series: "uuid:ceems_host_emissions_g_s:pue",
-			Query:  `sum_over_time(sum by (uuid) (%s{uuid=~"{{.UUIDs}}",provider="rte"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
+			Query:  "sum_over_time(sum by (uuid) (%s{uuid=~`{{.UUIDs}}`,provider=`rte`} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
 		},
 		"emaps_total": TSDBQuery{
 			Series: "uuid:ceems_host_emissions_g_s:pue",
-			Query:  `sum_over_time(sum by (uuid) (%s{uuid=~"{{.UUIDs}}",provider="emaps"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
+			Query:  "sum_over_time(sum by (uuid) (%s{uuid=~`{{.UUIDs}}`,provider=`emaps`} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
+		},
+		"wt_total": TSDBQuery{
+			Series: "uuid:ceems_host_emissions_g_s:pue",
+			Query:  "sum_over_time(sum by (uuid) (%s{uuid=~`{{.UUIDs}}`,provider=`wt`} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
 		},
 		"owid_total": TSDBQuery{
 			Series: "uuid:ceems_host_emissions_g_s:pue",
-			Query:  `sum_over_time(sum by (uuid) (%s{uuid=~"{{.UUIDs}}",provider="owid"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
+			Query:  "sum_over_time(sum by (uuid) (%s{uuid=~`{{.UUIDs}}`,provider=`owid`} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
 		},
 	},
 	"avg_gpu_usage": {
 		"global": TSDBQuery{
 			Series: "uuid:ceems_gpu_usage:ratio",
-			Query:  `avg_over_time(avg by (uuid) (%s{uuid=~"{{.UUIDs}}"} > 0 < inf)[{{.Range}}:])`,
+			Query:  "avg_over_time(avg by (uuid) (%s{uuid=~`{{.UUIDs}}`} > 0 < inf)[{{.Range}}:])",
 		},
 	},
 	"avg_gpu_mem_usage": {
 		"global": TSDBQuery{
 			Series: "uuid:ceems_gpu_memory_usage:ratio",
-			Query:  `avg_over_time(avg by (uuid) (%s{uuid=~"{{.UUIDs}}"} > 0 < inf)[{{.Range}}:])`,
+			Query:  "avg_over_time(avg by (uuid) (%s{uuid=~`{{.UUIDs}}`} > 0 < inf)[{{.Range}}:])",
 		},
 	},
 	"total_gpu_energy_usage_kwh": {
 		"total": TSDBQuery{
 			Series: "uuid:ceems_gpu_power_watts:pue",
-			Query:  `sum_over_time(sum by (uuid) (%s{uuid=~"{{.UUIDs}}"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9`,
+			Query:  "sum_over_time(sum by (uuid) (%s{uuid=~`{{.UUIDs}}`} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 3.6e9",
 		},
 	},
 	"total_gpu_emissions_gms": {
 		"rte_total": TSDBQuery{
 			Series: "uuid:ceems_gpu_emissions_g_s:pue",
-			Query:  `sum_over_time(sum by (uuid) (%s{uuid=~"{{.UUIDs}}",provider="rte"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
+			Query:  "sum_over_time(sum by (uuid) (%s{uuid=~`{{.UUIDs}}`,provider=`rte`} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
 		},
 		"emaps_total": TSDBQuery{
 			Series: "uuid:ceems_gpu_emissions_g_s:pue",
-			Query:  `sum_over_time(sum by (uuid) (%s{uuid=~"{{.UUIDs}}",provider="emaps"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
+			Query:  "sum_over_time(sum by (uuid) (%s{uuid=~`{{.UUIDs}}`,provider=`emaps`} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
+		},
+		"wt_total": TSDBQuery{
+			Series: "uuid:ceems_gpu_emissions_g_s:pue",
+			Query:  "sum_over_time(sum by (uuid) (%s{uuid=~`{{.UUIDs}}`,provider=`wt`} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
 		},
 		"owid_total": TSDBQuery{
 			Series: "uuid:ceems_gpu_emissions_g_s:pue",
-			Query:  `sum_over_time(sum by (uuid) (%s{uuid=~"{{.UUIDs}}",provider="owid"} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3`,
+			Query:  "sum_over_time(sum by (uuid) (%s{uuid=~`{{.UUIDs}}`,provider=`owid`} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3",
 		},
 	},
 }
