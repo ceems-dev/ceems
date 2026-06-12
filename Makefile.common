@@ -291,7 +291,7 @@ common-docker-pull: $(PULL_DOCKER_ARCHS)
 $(PULL_DOCKER_ARCHS): common-docker-pull-%:
 	docker pull "$(DOCKER_REPO)/$(DOCKER_IMAGE_NAME)-linux-$*:$(SANITIZED_DOCKER_IMAGE_TAG)"
 
-# Starting from Docker CLI v29, seems like provenance is defaulfed to true and hence,
+# Starting from Docker CLI v29, seems like provenance is defaulted to true and hence,
 # create manifest does not work anymore as there is no one provenance layer even in
 # single layered image.
 # Ref: https://github.com/docker/build-push-action/issues/1459
