@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.14.1 / 2026-06-13
+
+- [BUGFIX] Use backticks in updater queries in `ceems_tool` [#523](https://github.com/ceems-dev/ceems/pull/523) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump dependencies [#522](https://github.com/ceems-dev/ceems/pull/522), [#524](https://github.com/ceems-dev/ceems/pull/524) ([@dependabot](https://github.com/dependabot))
+
 ## 0.14.0 / 2026-06-08
 
 - [FEAT] LSF support for API server [#518](https://github.com/ceems-dev/ceems/pull/518) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
