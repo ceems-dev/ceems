@@ -25,6 +25,7 @@ import (
 	"github.com/grafana/pyroscope/ebpf/symtab"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/config"
+	"github.com/prometheus/prometheus/model/labels"
 )
 
 type eBPFProfiler struct {
@@ -276,12 +277,12 @@ func (p *eBPFProfiler) collectProfiles(ctx context.Context, profiles chan *pushv
 
 		// Setup profile sample labels
 		protoLabels := make([]*typesv1.LabelPair, 0, builder.Labels.Len()+len(p.externalLabels))
-		for _, label := range builder.Labels {
+		builder.Labels.Range(func(l labels.Label) {
 			protoLabels = append(protoLabels, &typesv1.LabelPair{
-				Name:  label.Name,
-				Value: label.Value,
+				Name:  l.Name,
+				Value: l.Value,
 			})
-		}
+		})
 
 		protoLabels = append(protoLabels, p.externalLabels...)
 

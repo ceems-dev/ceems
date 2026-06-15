@@ -57,6 +57,7 @@ linters:
     gomoddirectives:
       replace-allow-list:
         - github.com/grafana/pyroscope/ebpf
+        - github.com/go-openapi/testify/v2/assert/yaml
   exclusions:
     generated: lax
     presets:
