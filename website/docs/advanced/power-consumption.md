@@ -46,7 +46,7 @@ limitation of BMC measurements has smaller impact here.
 
 For instance, when both RAPL CPU and DRAM energy counters are available, the power usage
 of each individual workload is estimated using the following approach: As most of the
-modern servers are disless, the power consumption of local storage is assumed to be negligible.
+modern servers are diskless, the power consumption of local storage is assumed to be negligible.
 Furthermore, 90% of the total energy consumption is attributed to CPU and DRAM and rest
 of 10% to other peripheral components based on
 [survey study on compute servers](https://ieeexplore.ieee.org/document/7279063).
@@ -62,7 +62,7 @@ among CPU cores and DRAM based on RAPL package and DRAM counters.
 Now we have power usage at node level for CPU and DRAM. We split it further at the
 individual workload level using CPU time and DRAM usage by the compute unit. For rest of
 of the power usage like network, storage, we split it equally among all workloads
-that running on the node at a given time.
+that are running on the node at a given time.
 
 Compute Unit CPU Power = Total CPU Power * (Compute Unit CPU Time / Total Node CPU Time)
 Compute Unit Memory Power = Total DRAM Power * (Compute Unit Memory / Total Node Memory)
@@ -73,7 +73,7 @@ Total Compute Unit Host Power = Compute Unit CPU Power + Compute Unit Memory Pow
 
 As provides power consumption of CPU cores, DRAM and total power consumption, there is
 no need to make any assumptions to split the total power consumption. The consumption of
-other components are estimated substracting the power consumption of CPU cores and DRAM
+other components are estimated subtracting the power consumption of CPU cores and DRAM
 from the total power consumption. Once we have total CPU, DRAM and rest of power consumptions,
 we estimate the power consumption of individual compute units using the same approach as
 above using CPU time and DRAM of individual compute units and total node CPU time and DRAM.
