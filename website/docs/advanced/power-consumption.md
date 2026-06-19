@@ -121,8 +121,8 @@ MIG instances in the ratio of their SMs and their usage respectively. For exampl
 power consumption is `P` Watts, and if there are two other compute units using instance `1g.5gb` and `4g.20gb`,
 the power consumption of each MIG profile will be estimated as follows:
 
-- `1g.5gb`: P * (1 * SM_USAGE(`1g.5gb`) * SM_OCC(`1g.5gb`))/((1 * SM_USAGE(`1g.5gb`) * SM_OCC(`1g.5gb`) + (7 * SM_USAGE(`4g.20gb`) * SM_OCC(`4g.20gb`))))
-- `4g.20gb`: P * (7 * SM_USAGE(`4g.20gb`) * SM_OCC(`4g.20gb`))/((1 * SM_USAGE(`1g.5gb`) * SM_OCC(`1g.5gb`) + (7 * SM_USAGE(`4g.20gb`) * SM_OCC(`4g.20gb`))))
+- `1g.5gb`: P * (1 * SM_USAGE(`1g.5gb`) * SM_OCC(`1g.5gb`))/((1 * SM_USAGE(`1g.5gb`) * SM_OCC(`1g.5gb`) + (4 * SM_USAGE(`4g.20gb`) * SM_OCC(`4g.20gb`))))
+- `4g.20gb`: P * (4 * SM_USAGE(`4g.20gb`) * SM_OCC(`4g.20gb`))/((1 * SM_USAGE(`1g.5gb`) * SM_OCC(`1g.5gb`) + (4 * SM_USAGE(`4g.20gb`) * SM_OCC(`4g.20gb`))))
 
 where `SM_USAGE` and `SM_OCC` are SMs usage and occupancy, respectively. The above formula
 saying that the total power usage of each instance is the effective usage of SMs by one instance
