@@ -4,9 +4,81 @@ sidebar_position: 1
 
 # Energy consumption estimation
 
-## CPU
+## Servers
 
-TODO
+There are different sources to get the power consumption of CPUs and memory on the servers
+and each source has different scope. A quick summary of the power consumption sources supported
+by CEEMS are as follows:
+
+- [Intel RAPL](https://greencompute.uk/Measurement/RAPL): Supported by most of the Intel
+processors and some newer AMD processors. They report power consumption of CPU cores and
+in some cases DRAM.
+- [BMC](https://www.supermicro.com/en/glossary/baseboard-management-controller): Every
+server comes with a Baseboard Management Controller (BMC) embedded into the motherboard
+to have an out-of-the-bound access for controlling the server. Power measurement devices
+are included into the BMCs which provides the "Total power consumption" of the server
+including CPU cores, DRAM, motherboard, Network Interface Controllers (NICs), storage
+devices, PCIe, and any other peripheral components. Depending on the vendor and server
+model, sometimes BMCs power measurement include power consumption of GPUs as well. These
+power measurements are exposed via [IPMI DCMI](https://www.intel.com/content/dam/www/public/us/en/documents/technical-specifications/dcmi-v1-5-rev-spec.pdf)
+or [Redfish](https://www.dmtf.org/standards/redfish) which are supported by CEEMS.
+- [Cray PMC](https://support.hpe.com/hpesc/public/docDisplay?docId=dp00007635en_us&page=common/PM_Counters.html): Cray
+supercomputers expose Performance Monitoring Counters which include power consumption of
+several components of the server like CPU cores, memory, accelerators and total
+power consumption. They are exposed in-band in the `/sys` file system like RAPL counters
+which are very convenient to read.
+- [HWMon](https://www.kernel.org/doc/Documentation/hwmon/sysfs-interface): Certain models,
+especially with ARM processors, expose power measurements using HWMon interface. Like
+RAPL and Cray PMC, the power and energy reported by these counters are for individual
+components like sockets and it is up to the vendor to implement it for different components
+of the server.
+
+As it is clear from the above summary, different power sources on the servers have different
+scopes and it is important to normalize the counters from different sources before
+estimating power consumption of the individual compute units. As stated above, power
+consumption from BMC is the most reliable option as every server comes with BMC
+equipped. The downside of BMC measurements is that they are not very powerful and it is
+not advisable to flood BMC with sub-second power measurement calls. However, CEEMS is
+meant to be a monitoring solution and sub-second scrapes is unrealistic and hence, the
+limitation of BMC measurements has smaller impact here.
+
+### When BMC and RAPL counters are available
+
+For instance, when both RAPL CPU and DRAM energy counters are available, the power usage
+of each individual workload is estimated using the following approach: As most of the
+modern servers are disless, the power consumption of local storage is assumed to be negligible.
+Furthermore, 90% of the total energy consumption is attributed to CPU and DRAM and rest
+of 10% to other peripheral components based on [survey study on compute servers](https://ieeexplore.ieee.org/document/7279063).
+
+At node level, power consumed by CPU and DRAM can be estimated as:
+
+Total CPU Power = 0.9 * Total Power * (RAPL Package / (RAPL Package + RAPL DRAM))
+Total DRAM Power = 0.9 * Total Power * (RAPL DRAM / (RAPL Package + RAPL DRAM))
+
+The above formulae are self-explanatory where 90% of total power consumption is split
+among CPU cores and DRAM based on RAPL package and DRAM counters.
+
+Now we have power usage at node level for CPU and DRAM. We split it further at the
+individual workload level using CPU time and DRAM usage by the compute unit. For rest of
+of the power usage like network, storage, we split it equally among all workloads
+that running on the node at a given time.
+
+Compute Unit CPU Power = Total CPU Power * (Compute Unit CPU Time / Total Node CPU Time)
+Compute Unit Memory Power = Total DRAM Power * (Compute Unit Memory / Total Node Memory)
+Misc Power Usage by Compute Unit = 0.1 * Total Power / Number of Compute Units
+Total Compute Unit Host Power = Compute Unit CPU Power + Compute Unit Memory Power + Misc Power Usage by Compute Unit
+
+### When Cray PMC are available
+
+As provides power consumption of CPU cores, DRAM and total power consumption, there is
+no need to make any assumptions to split the total power consumption. The consumption of
+other components are estimated substracting the power consumption of CPU cores and DRAM
+from the total power consumption. Once we have total CPU, DRAM and rest of power consumptions,
+we estimate the power consumption of individual compute units using the same approach as
+above using CPU time and DRAM of individual compute units and total node CPU time and DRAM.
+
+More details on how power estimation is done for different sources can be consulted
+in the [repository](https://github.com/ceems-dev/ceems/tree/main/etc/prometheus).
 
 ## GPU
 
