@@ -15,7 +15,7 @@ processors and some newer AMD processors. They report power consumption of CPU c
 in some cases DRAM.
 - [BMC](https://www.supermicro.com/en/glossary/baseboard-management-controller): Every
 server comes with a Baseboard Management Controller (BMC) embedded into the motherboard
-to have an out-of-the-bound access for controlling the server. Power measurement devices
+to have an out-of-band access for controlling the server. Power measurement devices
 are included into the BMCs which provides the "Total power consumption" of the server
 including CPU cores, DRAM, motherboard, Network Interface Controllers (NICs), storage
 devices, PCIe, and any other peripheral components. Depending on the vendor and server
@@ -61,7 +61,7 @@ among CPU cores and DRAM based on RAPL package and DRAM counters.
 
 Now we have power usage at node level for CPU and DRAM. We split it further at the
 individual workload level using CPU time and DRAM usage by the compute unit. For rest of
-of the power usage like network, storage, we split it equally among all workloads
+the power usage like network, storage, we split it equally among all workloads
 that are running on the node at a given time.
 
 Compute Unit CPU Power = Total CPU Power * (Compute Unit CPU Time / Total Node CPU Time)
@@ -71,7 +71,7 @@ Total Compute Unit Host Power = Compute Unit CPU Power + Compute Unit Memory Pow
 
 ### When Cray PMC are available
 
-As provides power consumption of CPU cores, DRAM and total power consumption, there is
+As Cray PMC provides power consumption of CPU cores, DRAM and total power consumption, there is
 no need to make any assumptions to split the total power consumption. The consumption of
 other components are estimated subtracting the power consumption of CPU cores and DRAM
 from the total power consumption. Once we have total CPU, DRAM and rest of power consumptions,
@@ -121,8 +121,8 @@ MIG instances in the ratio of their SMs and their usage respectively. For exampl
 power consumption is `P` Watts, and if there are two other compute units using instance `1g.5gb` and `4g.20gb`,
 the power consumption of each MIG profile will be estimated as follows:
 
-- `1g.5gb`: P * (1 * SM_USAGE(`1g.5gb`) * SM_OCC(`1g.5gb`))/((1 * SM_USAGE(`1g.5gb`) * SM_OCC(`1g.5gb`) + (7 * SM_USAGE(`4g.20gb`) * SM_OCC(`4g.20gb`))))
-- `4g.20gb`: P * (7 * SM_USAGE(`4g.20gb`) * SM_OCC(`4g.20gb`))/((1 * SM_USAGE(`1g.5gb`) * SM_OCC(`1g.5gb`) + (7 * SM_USAGE(`4g.20gb`) * SM_OCC(`4g.20gb`))))
+- `1g.5gb`: P * (1 * SM_USAGE(`1g.5gb`) * SM_OCC(`1g.5gb`))/((1 * SM_USAGE(`1g.5gb`) * SM_OCC(`1g.5gb`) + (4 * SM_USAGE(`4g.20gb`) * SM_OCC(`4g.20gb`))))
+- `4g.20gb`: P * (4 * SM_USAGE(`4g.20gb`) * SM_OCC(`4g.20gb`))/((1 * SM_USAGE(`1g.5gb`) * SM_OCC(`1g.5gb`) + (4 * SM_USAGE(`4g.20gb`) * SM_OCC(`4g.20gb`))))
 
 where `SM_USAGE` and `SM_OCC` are SMs usage and occupancy, respectively. The above formula
 saying that the total power usage of each instance is the effective usage of SMs by one instance
