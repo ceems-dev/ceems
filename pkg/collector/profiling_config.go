@@ -141,6 +141,7 @@ type ProfilerConfig struct {
 	Profiler CEEMSProfilerConfig `yaml:"ceems_profiler"`
 }
 
+// profilerConfig is the configuration provided on the CLI arguments.
 type profilerConfig struct {
 	logger                  *slog.Logger
 	logLevel                string
