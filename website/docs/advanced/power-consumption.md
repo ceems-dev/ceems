@@ -15,7 +15,7 @@ processors and some newer AMD processors. They report power consumption of CPU c
 in some cases DRAM.
 - [BMC](https://www.supermicro.com/en/glossary/baseboard-management-controller): Every
 server comes with a Baseboard Management Controller (BMC) embedded into the motherboard
-to have an out-of-the-bound access for controlling the server. Power measurement devices
+to have an out-of-band access for controlling the server. Power measurement devices
 are included into the BMCs which provides the "Total power consumption" of the server
 including CPU cores, DRAM, motherboard, Network Interface Controllers (NICs), storage
 devices, PCIe, and any other peripheral components. Depending on the vendor and server
