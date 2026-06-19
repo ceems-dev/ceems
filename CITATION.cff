@@ -1,0 +1,29 @@
+cff-version: 0.14.1
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Paipuri"
+    given-names: "Mahendra"
+    orcid: "https://orcid.org/0000-0002-1300-0216"
+title: "Compute Energy & Emissions Monitoring Stack (CEEMS)"
+version: 0.14.1
+doi: 10.5281/zenodo.20679555
+date-released: 2026-06-13
+repository-code: "https://github.com/ceems-dev/ceems"
+url: "https://ceems-dev.github.io/ceems/"
+repository-artifact: "https://github.com/ceems-dev/ceems/releases"
+license: GPL-3.0+
+
+preferred-citation:
+  type: conference-paper
+  title: "CEEMS: A Resource Manager Agnostic Energy and Emissions Monitoring Stack"
+  authors:
+    - family-names: "Paipuri"
+      given-names: "Mahendra"
+      orcid: "https://orcid.org/0000-0002-1300-0216"
+  booktitle: "SC24-W: Workshops of the International Conference for High Performance Computing, Networking, Storage and Analysis"
+  series: "Proceedings of SC24-W: Workshops of the International Conference for High Performance Computing, Networking, Storage and Analysis"
+  volume:
+  pages: "1862-1866"
+  year: 2024
+  url: "https://ieeexplore.ieee.org/document/10820816"
+  doi: 10.1109/SCW63240.2024.00233
