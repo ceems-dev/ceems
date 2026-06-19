@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.14.2 / 2026-06-19
+
+- [MAINT] chore: Add CITATION.cff [#537](https://github.com/ceems-dev/ceems/pull/537) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [BUGFIX] fix: Check for done ctx in profiles ingest loop [#536](https://github.com/ceems-dev/ceems/pull/536) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [BUGFIX] fix: Correct ebfspy.SessionOptions initialization [#533](https://github.com/ceems-dev/ceems/pull/533) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [DOCS] docs: Update section on server power consumption [#532](https://github.com/ceems-dev/ceems/pull/532) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [SECURITY] security: Bump prometheus to address CVE [#528](https://github.com/ceems-dev/ceems/pull/528) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump dependencies [#525](https://github.com/ceems-dev/ceems/pull/525), [#526](https://github.com/ceems-dev/ceems/pull/526), [#529](https://github.com/ceems-dev/ceems/pull/529), [#531](https://github.com/ceems-dev/ceems/pull/531), [#533](https://github.com/ceems-dev/ceems/pull/533), [#534](https://github.com/ceems-dev/ceems/pull/534) ([@dependabot](https://github.com/dependabot))
+
 ## 0.14.1 / 2026-06-13
 
 - [BUGFIX] Use backticks in updater queries in `ceems_tool` [#523](https://github.com/ceems-dev/ceems/pull/523) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
