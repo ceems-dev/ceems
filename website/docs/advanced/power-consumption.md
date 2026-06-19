@@ -61,7 +61,7 @@ among CPU cores and DRAM based on RAPL package and DRAM counters.
 
 Now we have power usage at node level for CPU and DRAM. We split it further at the
 individual workload level using CPU time and DRAM usage by the compute unit. For rest of
-of the power usage like network, storage, we split it equally among all workloads
+the power usage like network, storage, we split it equally among all workloads
 that are running on the node at a given time.
 
 Compute Unit CPU Power = Total CPU Power * (Compute Unit CPU Time / Total Node CPU Time)
