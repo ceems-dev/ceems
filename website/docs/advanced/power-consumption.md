@@ -48,7 +48,8 @@ For instance, when both RAPL CPU and DRAM energy counters are available, the pow
 of each individual workload is estimated using the following approach: As most of the
 modern servers are disless, the power consumption of local storage is assumed to be negligible.
 Furthermore, 90% of the total energy consumption is attributed to CPU and DRAM and rest
-of 10% to other peripheral components based on [survey study on compute servers](https://ieeexplore.ieee.org/document/7279063).
+of 10% to other peripheral components based on
+[survey study on compute servers](https://ieeexplore.ieee.org/document/7279063).
 
 At node level, power consumed by CPU and DRAM can be estimated as:
 
@@ -78,7 +79,7 @@ we estimate the power consumption of individual compute units using the same app
 above using CPU time and DRAM of individual compute units and total node CPU time and DRAM.
 
 More details on how power estimation is done for different sources can be consulted
-in the [repository](https://github.com/ceems-dev/ceems/tree/main/etc/prometheus).
+in the [repository](https://github.com/@ceemsOrg@/@ceemsRepo@/tree/main/etc/prometheus).
 
 ## GPU
 

@@ -30,7 +30,10 @@
 		},
     {
 			"pattern": "https://medium.com/"
-		}
+		},
+    {
+      "pattern": "https://www.supermicro.com/en/glossary/baseboard-management-controller"
+    }
   ],
   "replacementPatterns": [
     {
