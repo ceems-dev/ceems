@@ -53,8 +53,10 @@ of 10% to other peripheral components based on
 
 At node level, power consumed by CPU and DRAM can be estimated as:
 
+```text
 Total CPU Power = 0.9 * Total Power * (RAPL Package / (RAPL Package + RAPL DRAM))
 Total DRAM Power = 0.9 * Total Power * (RAPL DRAM / (RAPL Package + RAPL DRAM))
+```
 
 The above formulae are self-explanatory where 90% of total power consumption is split
 among CPU cores and DRAM based on RAPL package and DRAM counters.
@@ -64,10 +66,12 @@ individual workload level using CPU time and DRAM usage by the compute unit. For
 the power usage like network, storage, we split it equally among all workloads
 that are running on the node at a given time.
 
+```text
 Compute Unit CPU Power = Total CPU Power * (Compute Unit CPU Time / Total Node CPU Time)
 Compute Unit Memory Power = Total DRAM Power * (Compute Unit Memory / Total Node Memory)
 Misc Power Usage by Compute Unit = 0.1 * Total Power / Number of Compute Units
 Total Compute Unit Host Power = Compute Unit CPU Power + Compute Unit Memory Power + Misc Power Usage by Compute Unit
+```
 
 ### When Cray PMC are available
 
@@ -121,8 +125,10 @@ MIG instances in the ratio of their SMs and their usage respectively. For exampl
 power consumption is `P` Watts, and if there are two other compute units using instance `1g.5gb` and `4g.20gb`,
 the power consumption of each MIG profile will be estimated as follows:
 
-- `1g.5gb`: P * (1 * SM_USAGE(`1g.5gb`) * SM_OCC(`1g.5gb`))/((1 * SM_USAGE(`1g.5gb`) * SM_OCC(`1g.5gb`) + (4 * SM_USAGE(`4g.20gb`) * SM_OCC(`4g.20gb`))))
-- `4g.20gb`: P * (4 * SM_USAGE(`4g.20gb`) * SM_OCC(`4g.20gb`))/((1 * SM_USAGE(`1g.5gb`) * SM_OCC(`1g.5gb`) + (4 * SM_USAGE(`4g.20gb`) * SM_OCC(`4g.20gb`))))
+```text
+1g.5gb: P * (1 * SM_USAGE(1g.5gb) * SM_OCC(1g.5gb))/((1 * SM_USAGE(1g.5gb) * SM_OCC(1g.5gb) + (4 * SM_USAGE(4g.20gb) * SM_OCC(4g.20gb))))
+4g.20gb: P * (4 * SM_USAGE(4g.20gb) * SM_OCC(4g.20gb))/((1 * SM_USAGE(1g.5gb) * SM_OCC(1g.5gb) + (4 * SM_USAGE(4g.20gb) * SM_OCC(4g.20gb))))
+```
 
 where `SM_USAGE` and `SM_OCC` are SMs usage and occupancy, respectively. The above formula
 saying that the total power usage of each instance is the effective usage of SMs by one instance

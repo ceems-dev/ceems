@@ -234,7 +234,7 @@ func (p *eBPFProfiler) Start(ctx context.Context) error {
 				p.logger.Error("Failed to collect profiles", "err", err)
 			}
 		case <-ctx.Done():
-			p.logger.Error("Context done. Stopping profiling")
+			p.logger.Info("Context done. Stopping profiling")
 
 			// Stop tickers.
 			discoverTicker.Stop()
@@ -329,11 +329,16 @@ func (p *eBPFProfiler) ingest(ctx context.Context, profiles chan *pushv1.PushReq
 	client := pushv1connect.NewPusherServiceClient(httpClient, p.config.Profiler.Pyroscope.URL)
 
 	for {
-		it := <-profiles
+		select {
+		case <-ctx.Done():
+			p.logger.Info("Context done. Stopping ingesting profiles")
 
-		_, err := client.Push(ctx, connect.NewRequest(it))
-		if err != nil {
-			p.logger.Error("Failed to push profile sample", "err", err)
+			return nil
+		case it := <-profiles:
+			_, err := client.Push(ctx, connect.NewRequest(it))
+			if err != nil {
+				p.logger.Error("Failed to push profile sample", "err", err)
+			}
 		}
 	}
 }
