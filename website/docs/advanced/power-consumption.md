@@ -46,7 +46,7 @@ limitation of BMC measurements has smaller impact here.
 
 For instance, when both RAPL CPU and DRAM energy counters are available, the power usage
 of each individual workload is estimated using the following approach: As most of the
-modern servers are disless, the power consumption of local storage is assumed to be negligible.
+modern servers are diskless, the power consumption of local storage is assumed to be negligible.
 Furthermore, 90% of the total energy consumption is attributed to CPU and DRAM and rest
 of 10% to other peripheral components based on
 [survey study on compute servers](https://ieeexplore.ieee.org/document/7279063).
