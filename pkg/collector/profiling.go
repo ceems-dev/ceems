@@ -386,8 +386,8 @@ func convertSessionOptions(c *ProfilerConfig) ebpfspy.SessionOptions {
 		SampleRate:      c.Profiler.Session.SampleRate,
 		VerifierLogSize: 1024 * 1024 * 1024,
 		BPFMapsOptions: ebpfspy.BPFMapsOptions{
-			PIDMapSize:     c.Profiler.Session.SymbolsMapSize,
-			SymbolsMapSize: c.Profiler.Session.PIDMapSize,
+			PIDMapSize:     c.Profiler.Session.PIDMapSize,
+			SymbolsMapSize: c.Profiler.Session.SymbolsMapSize,
 		},
 	}
 }
