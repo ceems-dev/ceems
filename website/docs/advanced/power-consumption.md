@@ -71,7 +71,7 @@ Total Compute Unit Host Power = Compute Unit CPU Power + Compute Unit Memory Pow
 
 ### When Cray PMC are available
 
-As provides power consumption of CPU cores, DRAM and total power consumption, there is
+As Cray PMC provides power consumption of CPU cores, DRAM and total power consumption, there is
 no need to make any assumptions to split the total power consumption. The consumption of
 other components are estimated subtracting the power consumption of CPU cores and DRAM
 from the total power consumption. Once we have total CPU, DRAM and rest of power consumptions,
