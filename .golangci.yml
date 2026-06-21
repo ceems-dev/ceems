@@ -83,6 +83,7 @@ linters:
       - third_party$
       - builtin$
       - examples$
+      - website$
 formatters:
   enable:
     - gci
@@ -95,3 +96,4 @@ formatters:
       - third_party$
       - builtin$
       - examples$
+      - website$

@@ -26,7 +26,7 @@ a consistent styling. They will be removed in `v1.0.0`.
 The following collectors are supported by the Prometheus exporter and they can be configured
 from CLI arguments as briefed below:
 
-### Slurm collector
+### SLURM collector
 
 Although fetching metrics from cgroups does not need any additional privileges, getting
 GPU ordinal to job ID needs extra privileges. This is due to the fact that this
@@ -230,13 +230,13 @@ are discussed in the [Security](./security.md) section.
 
 The LSF collector is meant to be used on [IBM Spectrum LSF](https://www.ibm.com/docs/en/spectrum-lsf)
 clusters. Most of the options applicable to SLURM are applicable to lsf as well.
-The exporter can be launched as follows to enable the lsf collector:
+The exporter can be launched as follows to enable the LSF collector:
 
 ```bash
 ceems_exporter --collector.lsf
 ```
 
-Both eBPF and perf sub-collectors are supported by the lsf collector and they can
+Both eBPF and perf sub-collectors are supported by the LSF collector and they can
 be enabled as follows:
 
 ```bash
@@ -251,6 +251,26 @@ starting exporter and ensure to set `LSF_LIBDIR`, `LD_LIBRARY_PATH`, `LSF_BINDIR
 `LSF_SERVERDIR` and `LSF_ENVDIR` environment variables to execute `bjobs` commands correctly.
 
 :::
+
+Both perf and eBPF sub-collectors need extra privileges to work and the necessary privileges
+are discussed in the [Security](./security.md) section.
+
+### OpenPBS collector
+
+The OpenPBS collector is meant to be used on [OpenPBS](https://www.openpbs.org/)
+clusters. Most of the options applicable to SLURM and LSF are applicable to OpenPBS as well.
+The exporter can be launched as follows to enable the openPBS collector:
+
+```bash
+ceems_exporter --collector.openpbs
+```
+
+Both eBPF and perf sub-collectors are supported by the openPBS collector and they can
+be enabled as follows:
+
+```bash
+ceems_exporter --collector.openpbs --collector.perf.hardware-events --collector.perf.software-events --collector.perf.hardware-cache-events --collector.ebpf.io-metrics --collector.ebpf.network-metrics
+```
 
 Both perf and eBPF sub-collectors need extra privileges to work and the necessary privileges
 are discussed in the [Security](./security.md) section.

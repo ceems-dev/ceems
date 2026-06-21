@@ -1708,7 +1708,7 @@ func parseTopologyProperties(path string, re *regexp.Regexp) (uint64, error) {
 		return strconv.ParseUint(match[1], 10, 64)
 	}
 
-	return 0, fmt.Errorf("no property found in the file match %s", re.String())
+	return 0, fmt.Errorf("no property found in the file match %s: %w", re.String(), scanner.Err())
 }
 
 // parseBusID parses PCIe bus ID string to BusID struct.

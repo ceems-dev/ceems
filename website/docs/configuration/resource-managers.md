@@ -96,6 +96,30 @@ LSF_LINUX_CGROUP_ACCT=Y
 The above configuration ensures that jobs usage accounting information will be available
 in the cgroups. More information can be consulted in [docs](https://www.ibm.com/docs/en/spectrum-lsf/10.1.0?topic=lsfconf-lsb-resource-enforce).
 
+## OpenPBS
+
+cgroups hook must be enabled in the OpenPBS for the collector to export job metrics. It
+can be enabled using:
+
+```bash
+qmgr -c 'set hook pbs_cgroups enabled=True'
+```
+
+:::important[IMPORTANT]
+
+Ensure to enable at least `cpuacct`, `cpuset`, `memory` and `devices` (when GPUs are present)
+in the cgroups hook for the job accounting information.
+
+:::
+
+In addition, job history must also be enabled to fetch the historical jobs for the
+CEEMS API server. It can be enabled using:
+
+```bash
+qmgr -c 'set server job_history_enable=true'
+qmgr -c 'set server job_history_duration=720:00:00'  # Duration can be changed according to cluster requirements
+```
+
 ## Libvirt
 
 The libvirt collector is meant to be used for OpenStack clusters. There is no
