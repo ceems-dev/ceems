@@ -3,6 +3,6 @@ INSERT INTO users (uid,cluster_id,resource_manager,name,projects,tags,last_updat
   cluster_id = :cluster_id,
   resource_manager = :resource_manager,
   name = :name,
-  projects = merge_list(projects, :projects, false),
+  projects = merge_list(projects, :projects, :replace_projects),
   tags = :tags,
   last_updated_at = :last_updated_at 
