@@ -262,11 +262,10 @@ func TestReadProcEnvirons(t *testing.T) {
 			name: "Existing env vars without proc filter",
 			dataPtr: &readProcSecurityCtxData{
 				procs:         procs,
-				targetEnvVars: []string{"CUDA_VISIBLE_DEVICES", "CUDA_VISIBLE_DEVICES1"},
+				targetEnvVars: []string{"GOLANG_VERSION", "CUDA_VISIBLE_DEVICES2"},
 			},
 			expected: map[string]string{
-				"CUDA_VISIBLE_DEVICES1": "MIG-GPU-956348bc-d43d-23ed-53d4-857749fa2b67/1/0,MIG-GPU-feba7e40-d724-01ff-b00f-3a439a28a6c7/1/0",
-				"CUDA_VISIBLE_DEVICES":  "GPU-1d4d0f3e-b51a-4040-96e3-bf380f7c5728,GPU-61a65011-6571-a6d2-5ab8-66cbb6f7f9c3",
+				"GOLANG_VERSION": "1.12.5",
 			},
 		},
 		{
