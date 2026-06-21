@@ -116,9 +116,9 @@ func (s *lsfScheduler) FetchUsersProjects(
 		s.logger.Info("LSF user account data fetched", "cluster_id", s.cluster.ID, "num_users", len(users), "num_accounts", len(projects))
 
 		return []models.ClusterUsers{
-				{Cluster: s.cluster, Users: users},
+				{Cluster: s.cluster, Users: users, Append: true},
 			}, []models.ClusterProjects{
-				{Cluster: s.cluster, Projects: projects},
+				{Cluster: s.cluster, Projects: projects, Append: true},
 			}, nil
 	}
 

@@ -404,10 +404,12 @@ type ClusterUnits struct {
 type ClusterProjects struct {
 	Cluster  Cluster
 	Projects []Project
+	Append   bool // Append to the existing list
 }
 
 // ClusterUsers is the container for the users for a given cluster.
 type ClusterUsers struct {
 	Cluster Cluster
 	Users   []User
+	Append  bool // Append to the existing list
 }

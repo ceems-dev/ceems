@@ -795,6 +795,7 @@ func (s *stats) execStatements(
 				sql.Named(base.UsersDBTableStructFieldColNameMap["Projects"], user.Projects),
 				sql.Named(base.UsersDBTableStructFieldColNameMap["Tags"], user.Tags),
 				sql.Named(base.UsersDBTableStructFieldColNameMap["LastUpdatedAt"], user.LastUpdatedAt),
+				sql.Named("replace_projects", !cluster.Append),
 			)
 			if err != nil {
 				s.logger.Error("Failed to insert user in DB", "cluster_id", cluster.Cluster.ID, "user", user.Name, "err", err)
@@ -814,6 +815,7 @@ func (s *stats) execStatements(
 				sql.Named(base.ProjectsDBTableStructFieldColNameMap["Users"], project.Users),
 				sql.Named(base.ProjectsDBTableStructFieldColNameMap["Tags"], project.Tags),
 				sql.Named(base.ProjectsDBTableStructFieldColNameMap["LastUpdatedAt"], project.LastUpdatedAt),
+				sql.Named("replace_users", !cluster.Append),
 			)
 			if err != nil {
 				s.logger.Error("Failed to insert project in DB", "cluster_id", cluster.Cluster.ID, "project", project.Name, "err", err)
