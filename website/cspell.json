@@ -110,5 +110,9 @@
                 "/^\\s*```[\\s\\S]*?^\\s*```/gm"
             ]
         }
+    ],
+    // Ignore paths
+    "ignorePaths": [
+        "docs/99-CHANGELOG.md"
     ]
 } 
