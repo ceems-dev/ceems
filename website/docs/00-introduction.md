@@ -36,7 +36,9 @@ offered by k8s [DRA](https://kubernetes.io/docs/concepts/scheduling-eviction/dyn
 - Realtime access to metrics _via_ Grafana dashboards or a simple CLI tool
 - Multi-tenancy and access control to Prometheus and Pyroscope datasources in Grafana
 - Stores aggregated metrics in a separate DB that can be retained for long time
-- CEEMS apps are [capability aware](https://tbhaxor.com/understanding-linux-capabilities/)
+- CEEMS apps are [capability aware](https://man7.org/linux/man-pages/man7/capabilities.7.html).
+CEEMS uses [libcap](https://sites.google.com/site/fullycapable/) to manage the privileges
+required by the apps without needing to run as `root`.
 
 ## Components
 
