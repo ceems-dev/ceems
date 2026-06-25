@@ -1,13 +1,13 @@
-cff-version: 0.14.2
+cff-version: 0.14.3
 message: "If you use this software, please cite it as below."
 authors:
   - family-names: "Paipuri"
     given-names: "Mahendra"
     orcid: "https://orcid.org/0000-0002-1300-0216"
 title: "Compute Energy & Emissions Monitoring Stack (CEEMS)"
-version: 0.14.2
+version: 0.14.3
 doi: 10.5281/zenodo.20679555
-date-released: 2026-06-19
+date-released: 2026-06-25
 repository-code: "https://github.com/ceems-dev/ceems"
 url: "https://ceems-dev.github.io/ceems/"
 repository-artifact: "https://github.com/ceems-dev/ceems/releases"
