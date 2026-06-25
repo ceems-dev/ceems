@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.14.3 / 2026-06-25
+
+- [BUGFIX] fix: Ensure users and projects are replaced correctly in DB [#540](https://github.com/ceems-dev/ceems/pull/540) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump dependencies [#541](https://github.com/ceems-dev/ceems/pull/541), [#542](https://github.com/ceems-dev/ceems/pull/542), [#543](https://github.com/ceems-dev/ceems/pull/543) ([@dependabot](https://github.com/dependabot))
+
 ## 0.14.2 / 2026-06-19
 
 - [MAINT] chore: Add CITATION.cff [#537](https://github.com/ceems-dev/ceems/pull/537) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
