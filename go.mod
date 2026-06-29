@@ -6,7 +6,7 @@ require (
 	connectrpc.com/connect v1.20.0
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/ceems-dev/perf-utils v0.0.0-20250716113832-99ba71e88ef4
-	github.com/cilium/ebpf v0.21.0
+	github.com/cilium/ebpf v0.22.0
 	github.com/containerd/cgroups/v3 v3.1.3
 	github.com/go-chi/httprate v0.15.0
 	github.com/go-kit/log v0.2.1
@@ -16,12 +16,12 @@ require (
 	github.com/grafana/pyroscope/api v1.5.0
 	github.com/grafana/pyroscope/ebpf v0.4.11
 	github.com/jedib0t/go-pretty/v6 v6.8.1
-	github.com/jellydator/ttlcache/v3 v3.4.0
+	github.com/jellydator/ttlcache/v3 v3.4.1
 	github.com/mattn/go-sqlite3 v1.14.47
 	github.com/prometheus/client_golang v1.23.2
 	github.com/prometheus/common v0.69.0
 	github.com/prometheus/exporter-toolkit v0.16.0
-	github.com/prometheus/procfs v0.20.1
+	github.com/prometheus/procfs v0.21.0
 	github.com/prometheus/prometheus v0.312.0
 	github.com/steiler/acls v0.1.5
 	github.com/stmcginnis/gofish v0.22.0
