@@ -76,7 +76,7 @@ require (
 	github.com/godbus/dbus/v5 v5.1.0 // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/google/gnostic v0.7.1 // indirect
-	github.com/google/gnostic-models v0.7.0 // indirect
+	github.com/google/gnostic-models v0.7.1 // indirect
 	github.com/google/pprof v0.0.0-20260507013755-92041b743c96 // indirect
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674 // indirect
 	github.com/grafana/regexp v0.0.0-20250905093917-f7b3be9d1853 // indirect
@@ -132,6 +132,6 @@ require (
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
 
-replace github.com/grafana/pyroscope/ebpf => github.com/ceems-dev/pyroscope/ebpf v0.4.12-0.20260313092338-1f2c9b9f6fef
+replace github.com/grafana/pyroscope/ebpf => github.com/ceems-dev/pyroscope/ebpf v0.4.12-0.20260702194024-a1416acd7464
 
 replace github.com/go-openapi/testify/v2/assert/yaml => github.com/go-openapi/testify/enable/yaml/v2 v2.5.1
