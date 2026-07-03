@@ -132,6 +132,6 @@ require (
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
 
-replace github.com/grafana/pyroscope/ebpf => github.com/ceems-dev/pyroscope/ebpf v0.4.12-0.20260702194024-a1416acd7464
+replace github.com/grafana/pyroscope/ebpf => github.com/ceems-dev/pyroscope/ebpf v0.4.12-0.20260703124214-043c38d9bd02
 
 replace github.com/go-openapi/testify/v2/assert/yaml => github.com/go-openapi/testify/enable/yaml/v2 v2.5.1
