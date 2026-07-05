@@ -17,6 +17,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        # Seems like it is very important as without it the push step attempts to
+        # use the GITHUB_TOKEN instead of the token we are creating using GH app.
+        with:
+          persist-credentials: false
 
       - name: Update citation in CITATION.cff
         run: ./scripts/update-citation.sh
