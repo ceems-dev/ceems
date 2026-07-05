@@ -614,7 +614,7 @@ systemctl start ceems_api_server.service
 ```
 
 Once the API server has started, we can check for its health by hitting endpoint
-`http://localhost:9020/api/v1/health` assuming we are on the host where API server
+`http://localhost:9020/health` assuming we are on the host where API server
 has been deployed.
 
 Once the Prometheus and CEEMS API server are up and running, we can configure Grafana

@@ -122,14 +122,14 @@ const config: Config = {
         docsPluginId: "classic", // configured for preset-classic
         config: {
           ceems: {
-            specPath: "../pkg/api/http/docs/swagger.yaml",
+            specPath: "../pkg/api/docs/swagger.yaml",
             outputDir: "docs/api",
             sidebarOptions: {
               groupPathsBy: "tag",
               categoryLinkSource: "tag",
             },
             template: "api.mustache", // Customize API MDX with mustache template
-            // showSchemas: true,
+            showSchemas: true,
             markdownGenerators: { createApiPageMD: myCustomApiMdGenerator }, // customize MDX with markdown generator
           } satisfies OpenApiPlugin.Options,
         }

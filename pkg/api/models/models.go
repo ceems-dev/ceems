@@ -145,13 +145,13 @@ func (s Stat) TagMap(keyTag string, valueTag string) map[string]string {
 // Project is the container for a given account/tenant/namespace of cluster.
 type Project struct {
 	ID              int64  `example:"1"         json:"-"                sql:"id"               sqlitetype:"integer not null primary key"`
-	UID             string `example:"1000"      json:"uid,omitempty"    sql:"uid"              sqlitetype:"text"`                                                    // Unique identifier of the project provided by cluster
-	ClusterID       string `example:"slurm-0"   json:"cluster_id"       sql:"cluster_id"       sqlitetype:"text"`                                                    // Identifier of the resource manager that owns project. It is used to differentiate multiple clusters of same resource manager.
-	ResourceManager string `example:"slurm"     json:"resource_manager" sql:"resource_manager" sqlitetype:"text"`                                                    // Name of the resource manager that owns project. Eg slurm, openstack, kubernetes, etc
-	Name            string `example:"prj1"      json:"name"             sql:"name"             sqlitetype:"text"`                                                    // Name of the project
-	Users           List   `example:"usr1,usr2" json:"users"            sql:"users"            sqlitetype:"text"                         swaggertype:"array,string"` // List of users of the project
-	Tags            List   `example:"tag1,tag2" json:"tags,omitempty"   sql:"tags"             sqlitetype:"text"                         swaggertype:"array,string"` // List of meta data tags of the project
-	LastUpdatedAt   string `json:"-"            sql:"last_updated_at"   sqlitetype:"text"`                                                                           // Last Updated time
+	UID             string `example:"1000"      json:"uid,omitempty"    sql:"uid"              sqlitetype:"text"` // Unique identifier of the project provided by cluster
+	ClusterID       string `example:"slurm-0"   json:"cluster_id"       sql:"cluster_id"       sqlitetype:"text"` // Identifier of the resource manager that owns project. It is used to differentiate multiple clusters of same resource manager.
+	ResourceManager string `example:"slurm"     json:"resource_manager" sql:"resource_manager" sqlitetype:"text"` // Name of the resource manager that owns project. Eg slurm, openstack, kubernetes, etc
+	Name            string `example:"prj1"      json:"name"             sql:"name"             sqlitetype:"text"` // Name of the project
+	Users           List   `example:"usr1,usr2" json:"users"            sql:"users"            sqlitetype:"text"` // List of users of the project
+	Tags            List   `example:"tag1,tag2" json:"tags,omitempty"   sql:"tags"             sqlitetype:"text"` // List of meta data tags of the project
+	LastUpdatedAt   string `json:"-"            sql:"last_updated_at"   sqlitetype:"text"`                        // Last Updated time
 }
 
 // TableName returns the table which admin users list is stored into.
@@ -172,14 +172,14 @@ func (p Project) TagMap(keyTag string, valueTag string) map[string]string {
 
 // User is the container for a given user of cluster.
 type User struct {
-	ID              int64  `example:"1"         json:"-"                          sql:"id"               sqlitetype:"integer not null primary key"`
-	UID             string `example:"1000"      json:"uid,omitempty"              sql:"uid"              sqlitetype:"text"`                                                    // Unique identifier of the user provided by cluster
-	ClusterID       string `example:"slurm-0"   json:"cluster_id"                 sql:"cluster_id"       sqlitetype:"text"`                                                    // Identifier of the resource manager that owns user. It is used to differentiate multiple clusters of same resource manager.
-	ResourceManager string `example:"slurm"     json:"resource_manager,omitempty" sql:"resource_manager" sqlitetype:"text"`                                                    // Name of the resource manager that owns user. Eg slurm, openstack, kubernetes, etc
-	Name            string `example:"usr1"      json:"name"                       sql:"name"             sqlitetype:"text"`                                                    // Name of the user
-	Projects        List   `example:"prj1,prj2" json:"projects,omitempty"         sql:"projects"         sqlitetype:"text"                         swaggertype:"array,string"` // List of projects of the user
-	Tags            List   `example:"tag1,tag2" json:"tags,omitempty"             sql:"tags"             sqlitetype:"text"                         swaggertype:"array,string"` // List of meta data tags of the user
-	LastUpdatedAt   string `json:"-"            sql:"last_updated_at"             sqlitetype:"text"`                                                                           // Last Updated time
+	ID              int64  `example:"1"         json:"-"                sql:"id"               sqlitetype:"integer not null primary key"`
+	UID             string `example:"1000"      json:"uid,omitempty"    sql:"uid"              sqlitetype:"text"` // Unique identifier of the user provided by cluster
+	ClusterID       string `example:"slurm-0"   json:"cluster_id"       sql:"cluster_id"       sqlitetype:"text"` // Identifier of the resource manager that owns user. It is used to differentiate multiple clusters of same resource manager.
+	ResourceManager string `example:"slurm"     json:"resource_manager" sql:"resource_manager" sqlitetype:"text"` // Name of the resource manager that owns user. Eg slurm, openstack, kubernetes, etc
+	Name            string `example:"usr1"      json:"name"             sql:"name"             sqlitetype:"text"` // Name of the user
+	Projects        List   `example:"prj1,prj2" json:"projects"         sql:"projects"         sqlitetype:"text"` // List of projects of the user
+	Tags            List   `example:"tag1,tag2" json:"tags,omitempty"   sql:"tags"             sqlitetype:"text"` // List of meta data tags of the user
+	LastUpdatedAt   string `json:"-"            sql:"last_updated_at"   sqlitetype:"text"`                        // Last Updated time
 }
 
 // TableName returns the table which admin users list is stored into.

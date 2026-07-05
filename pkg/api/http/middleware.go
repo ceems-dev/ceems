@@ -22,12 +22,13 @@ type authenticationMiddleware struct {
 	logger          *slog.Logger
 	whitelistedURLs *regexp.Regexp
 	db              *sql.DB
+	cors            *cors
 	headers         []string
 	adminUsers      func(context.Context, *sql.DB) ([]string, error)
 }
 
 // newAuthenticationMiddleware returns a new instance authenticationMiddleware.
-func newAuthenticationMiddleware(routePrefix string, headers []string, db *sql.DB, logger *slog.Logger) (*authenticationMiddleware, error) {
+func newAuthenticationMiddleware(routePrefix string, headers []string, db *sql.DB, cors *cors, logger *slog.Logger) (*authenticationMiddleware, error) {
 	// Playground: https://regex101.com/r/lkmsWz/3
 	urlsRegex, err := regexp.Compile(
 		fmt.Sprintf("^(?:(%s)?)/(swagger|debug|health|demo)(.*)", strings.TrimSuffix(routePrefix, "/")),
@@ -45,6 +46,7 @@ func newAuthenticationMiddleware(routePrefix string, headers []string, db *sql.D
 		logger:          logger,
 		whitelistedURLs: urlsRegex,
 		db:              db,
+		cors:            cors,
 		headers:         headers,
 		adminUsers:      AdminUserNames,
 	}, nil
@@ -52,7 +54,7 @@ func newAuthenticationMiddleware(routePrefix string, headers []string, db *sql.D
 
 // Middleware function, which will be called for each request.
 func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return http.HandlerFunc(amw.cors.wrap(func(w http.ResponseWriter, r *http.Request) {
 		var loggedUser string
 
 		var admUsers []string
@@ -129,7 +131,7 @@ func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler 
 	end:
 		// Pass down the request to the next middleware (or final handler)
 		next.ServeHTTP(w, r)
-	})
+	}))
 }
 
 // getAuthenticatedUserFromHeader looks different headers for the presence of value

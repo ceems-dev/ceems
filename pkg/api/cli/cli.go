@@ -83,6 +83,60 @@ func NewCEEMSServer() (*CEEMSServer, error) {
 }
 
 // Main is the entry point of the `ceems_server` command.
+//
+//	@title			CEEMS API
+//	@version		1.0
+//	@description	OpenAPI specification (OAS) for the CEEMS REST API.
+//	@description
+//	@description	See the Interactive Docs to try CEEMS API methods without writing code, and get
+//	@description	the complete schema of resources exposed by the API.
+//	@description
+//	@description	If basic auth is enabled, all the endpoints require authentication.
+//	@description
+//	@description	All the endpoints, except `health`, `swagger`, `debug` and `demo`,
+//	@description	must send a user-agent header.
+//	@description
+//	@description	A demo instance of CEEMS API server is provided for the users to test. This
+//	@description	instance is running at `https://ceems-demo.myaddr.tools:6443` and it is the
+//	@description	default server that will serve the requests originating from current OAS client.
+//	@description
+//	@description	Some of the valid users for this demo instance are:
+//	@description	- arnold
+//	@description	- betty
+//	@description	- edna
+//	@description	- gazoo
+//	@description	- wilma
+//	@description
+//	@description	Every request must contain a `X-Grafana-User` header with one of the usernames
+//	@description	above as the value to the header. This is how CEEMS API server recognise the user.
+//	@description
+//	@description	Some of the valid projects for this demo instance are:
+//	@description	- bedrock
+//	@description	- cornerstone
+//	@description
+//	@description	Demo instance have CORS enabled to allow cross-domain communication from the browser.
+//	@description	All responses have a wildcard same-origin which makes them completely public and
+//	@description	accessible to everyone, including any code on any site.
+//	@description
+//	@description	To test admin resources, users can use `admin` as `X-Grafana-User`.
+//	@description
+//	@description				Timestamps must be specified in milliseconds, unless otherwise specified.
+//
+//	@contact.name				Mahendra Paipuri
+//	@contact.url				https://github.com/ceems-dev/ceems/issues
+//	@contact.email				mahendra.paipuri@gmail.com
+//
+//	@license.name				GPL-3.0 license
+//	@license.url				https://www.gnu.org/licenses/gpl-3.0.en.html
+//
+//	@securityDefinitions.basic	BasicAuth
+//
+//	@servers.url				https://ceems-demo.myaddr.tools:6443/api/v1
+//	@servers.description		Test CEEMS API server URL.
+//
+//	@externalDocs.url			https://ceems-dev.github.io/ceems/
+//
+//	@x-logo						{"url": "https://raw.githubusercontent.com/ceems-dev/ceems/refs/heads/main/website/static/img/logo.png", "altText": "CEEMS logo"}
 func (b *CEEMSServer) Main() error {
 	// CLI vars
 	var (

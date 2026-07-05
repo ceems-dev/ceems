@@ -219,7 +219,7 @@ common-build: promu swag bpf
 ifeq ($(RELEASE_BUILD), 0)
 ifeq ($(CGO_APPS), 1)
 	@echo ">> updating swagger docs"
-	$(SWAG) init -d $(SWAGGER_DIR) -g $(SWAGGER_MAIN) -o $(SWAGGER_DIR)/docs --pd --quiet
+	$(SWAG) init -d $(SWAGGER_DIR) -g $(SWAGGER_MAIN) -o $(SWAGGER_DIR)/docs --pd --v3.1 --quiet
 	$(SWAG) fmt -d $(SWAGGER_DIR) -g $(SWAGGER_MAIN)
 endif
 	@echo ">> building test binaries"
@@ -369,7 +369,7 @@ swag: $(SWAG)
 $(SWAG):
 ifeq ($(RELEASE_BUILD), 0)
 ifeq ($(CGO_APPS), 1)
-	$(GO) install github.com/swaggo/swag/cmd/swag@v1.16.3
+	$(GO) install github.com/swaggo/swag/v2/cmd/swag@2.0.0-rc5
 endif
 endif
 
