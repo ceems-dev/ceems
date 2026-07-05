@@ -3,6 +3,9 @@ run-name: Unit Tests
 
 on:
   workflow_call:
+    secrets:
+      app_private_key:
+        required: true
 
 jobs:
   unit-tests:
@@ -80,7 +83,7 @@ jobs:
         if: steps.verify-changed-files.outputs.files_changed == 'true'
         with:
           client-id: 4221824
-          private-key: ${{ secrets.APP_UPDATE_README_HELPER_PRIVATE_KEY }}
+          private-key: ${{ secrets.app_private_key }}
 
       - name: Commit changes
         if: steps.verify-changed-files.outputs.files_changed == 'true'
