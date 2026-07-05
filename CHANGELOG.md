@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.14.4 / 2026-07-05
+
+- [CI] Fix app token creation in reusable workflow [#550](https://github.com/ceems-dev/ceems/pull/550) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] refactor: Misc improvements and fixes for API server [#549](https://github.com/ceems-dev/ceems/pull/549) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump dependencies [#545](https://github.com/ceems-dev/ceems/pull/545), [#546](https://github.com/ceems-dev/ceems/pull/546), [#547](https://github.com/ceems-dev/ceems/pull/547) ([@dependabot](https://github.com/dependabot))
+
 ## 0.14.3 / 2026-06-25
 
 - [BUGFIX] fix: Ensure users and projects are replaced correctly in DB [#540](https://github.com/ceems-dev/ceems/pull/540) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
