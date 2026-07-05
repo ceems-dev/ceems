@@ -369,7 +369,7 @@ swag: $(SWAG)
 $(SWAG):
 ifeq ($(RELEASE_BUILD), 0)
 ifeq ($(CGO_APPS), 1)
-	$(GO) install github.com/swaggo/swag/v2/cmd/swag@2.0.0-rc5
+	$(GO) install github.com/swaggo/swag/v2/cmd/swag@v2.0.0-rc5
 endif
 endif
 
