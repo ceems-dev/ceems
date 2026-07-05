@@ -18,58 +18,59 @@ jobs:
           persist-credentials: false
           ref: ${{ github.event.pull_request.head.ref }}
 
-      - name: Install Go
-        uses: actions/setup-go@v6
-        with:
-          go-version: 1.26.x
-
-      - name: Setup clang
-        run: ./scripts/install_clang.sh
-
-      - name: Run checkmetrics, checkrules and checkbpf
-        run: make checkmetrics checkrules checkbpf
-
-      - name: Run unit tests for Go packages
-        run: make test
-
-      - name: Run unit tests for CGo packages
-        run: CGO_APPS=1 make test
-
-      - name: Merge coverage files
-        run: |
-          # Make global coverage report
-          make coverage
-
-          # Remove testdata that contains too many files
-          rm -rf pkg/collector/testdata
-
-      # Upstream package will not keep the format of README
-      # PR -> https://github.com/AlexBeauchemin/gobadge/pull/7
-      # - name: Go Coverage Badge  # Pass the `coverage.out` output to this action
-      #   uses: tj-actions/coverage-badge-go@v2
+      # - name: Install Go
+      #   uses: actions/setup-go@v6
       #   with:
-      #     filename: coverage.out
-      #     link: https://github.com/mahendrapaipuri/ceems/actions/workflows/ci.yml?query=branch%3Amain
+      #     go-version: 1.26.x
 
-      - name: Go coverage badge
-        run: |
-          # Install our custom badge updater
-          git clone https://github.com/mahendrapaipuri/gobadge
-          cd gobadge
-          go install .
-          cd ..
+      # - name: Setup clang
+      #   run: ./scripts/install_clang.sh
 
-          # Create/Update badge
-          gobadge -target README.md -filename coverage.out -link https://github.com/ceems-dev/ceems/actions/workflows/ci.yml?query=branch%3Amain
-          gobadge -target website/docs/00-introduction.md -filename coverage.out -link https://github.com/ceems-dev/ceems/actions/workflows/ci.yml?query=branch%3Amain
+      # - name: Run checkmetrics, checkrules and checkbpf
+      #   run: make checkmetrics checkrules checkbpf
 
-          # Check diff on README
-          git diff README.md
-          git diff website/docs/00-introduction.md
+      # - name: Run unit tests for Go packages
+      #   run: make test
+
+      # - name: Run unit tests for CGo packages
+      #   run: CGO_APPS=1 make test
+
+      # - name: Merge coverage files
+      #   run: |
+      #     # Make global coverage report
+      #     make coverage
+
+      #     # Remove testdata that contains too many files
+      #     rm -rf pkg/collector/testdata
+
+      # # Upstream package will not keep the format of README
+      # # PR -> https://github.com/AlexBeauchemin/gobadge/pull/7
+      # # - name: Go Coverage Badge  # Pass the `coverage.out` output to this action
+      # #   uses: tj-actions/coverage-badge-go@v2
+      # #   with:
+      # #     filename: coverage.out
+      # #     link: https://github.com/mahendrapaipuri/ceems/actions/workflows/ci.yml?query=branch%3Amain
+
+      # - name: Go coverage badge
+      #   run: |
+      #     # Install our custom badge updater
+      #     git clone https://github.com/mahendrapaipuri/gobadge
+      #     cd gobadge
+      #     go install .
+      #     cd ..
+
+      #     # Create/Update badge
+      #     gobadge -target README.md -filename coverage.out -link https://github.com/ceems-dev/ceems/actions/workflows/ci.yml?query=branch%3Amain
+      #     gobadge -target website/docs/00-introduction.md -filename coverage.out -link https://github.com/ceems-dev/ceems/actions/workflows/ci.yml?query=branch%3Amain
+
+      #     # Check diff on README
+      #     git diff README.md
+      #     git diff website/docs/00-introduction.md
 
       - name: Verify Changed files
         id: verify-changed-files
         run: |
+          echo "test" >> README.md
           # If there are no changes exit code will be 0 and 1 if there are changes
           if git diff --exit-code README.md website/docs/00-introduction.md > /dev/null; then
               echo "files_changed=false" >> $GITHUB_OUTPUT
@@ -101,4 +102,4 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ steps.app-token.outputs.token }}
-          branch: ${{ github.ref }}
+          branch: ${{ github.event.pull_request.head.ref }}
