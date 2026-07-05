@@ -39,11 +39,11 @@ jobs:
         id: app-token
         if: steps.verify-changed-files.outputs.files_changed == 'true' && github.ref == 'refs/heads/main'
         with:
-          app-id: 4221824
+          client-id: 4221824
           private-key: ${{ secrets.APP_UPDATE_README_HELPER_PRIVATE_KEY }}
 
       - name: Commit changes
-        if: steps.verify-changed-files.outputs.files_changed == 'true' && && github.ref == 'refs/heads/main'
+        if: steps.verify-changed-files.outputs.files_changed == 'true' && github.ref == 'refs/heads/main'
         run: |
           git config --local user.email "bot@ceems.com"
           git config --local user.name "CEEMS bot"
@@ -51,7 +51,7 @@ jobs:
           git commit -m "chore: Update version in CITATION.cff" -s
 
       - name: Push changes
-        if: steps.verify-changed-files.outputs.files_changed == 'true' && && github.ref == 'refs/heads/main'
+        if: steps.verify-changed-files.outputs.files_changed == 'true' && github.ref == 'refs/heads/main'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ steps.app-token.outputs.token }}
