@@ -58,6 +58,7 @@ linters:
       replace-allow-list:
         - github.com/grafana/pyroscope/ebpf
         - github.com/go-openapi/testify/v2/assert/yaml
+        - github.com/swaggo/http-swagger/v2
   exclusions:
     generated: lax
     presets:
@@ -79,6 +80,11 @@ linters:
           - unqueryvet
         # text: "(G705: XSS via taint analysis|G704: SSRF via taint analysis|G703: Path traversal via taint analysis|G702: Command injection via taint analysis|G306: Expect WriteFile permissions to be 0600 or less|G120: Parsing form data without limiting request body size can allow memory exhaustion (use http.MaxBytesReader)|net/http/httptest.NewRequest must not be called. use net/http/httptest.NewRequestWithContext)"
         path: scripts/mock_servers
+      - linters: 
+          - exhaustive
+          - intrange
+          - nilnil
+        path: website
     paths:
       - third_party$
       - builtin$
@@ -95,3 +101,4 @@ formatters:
       - third_party$
       - builtin$
       - examples$
+      - website$

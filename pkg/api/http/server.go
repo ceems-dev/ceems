@@ -27,7 +27,7 @@ import (
 	"github.com/ceems-dev/ceems/internal/common"
 	"github.com/ceems-dev/ceems/pkg/api/base"
 	"github.com/ceems-dev/ceems/pkg/api/db"
-	"github.com/ceems-dev/ceems/pkg/api/http/docs"
+	"github.com/ceems-dev/ceems/pkg/api/docs"
 	"github.com/ceems-dev/ceems/pkg/api/models"
 	"github.com/ceems-dev/ceems/pkg/sqlite3"
 	"github.com/go-chi/httprate"
@@ -299,7 +299,7 @@ func New(c *Config) (*CEEMSServer, error) {
 	}
 
 	// Add a middleware that verifies headers and pass them in requests
-	amw, err := newAuthenticationMiddleware(routePrefix, c.Web.UserHeaderNames, server.db, c.Logger)
+	amw, err := newAuthenticationMiddleware(routePrefix, c.Web.UserHeaderNames, server.db, cors, c.Logger)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create middleware: %w", err)
 	}
@@ -322,66 +322,10 @@ func New(c *Config) (*CEEMSServer, error) {
 	return server, nil
 }
 
-// Start launches CEEMS HTTP server godoc
-//
-//	@title			CEEMS API
-//	@version		1.0
-//	@description	OpenAPI specification (OAS) for the CEEMS REST API.
-//	@description
-//	@description	See the Interactive Docs to try CEEMS API methods without writing code, and get
-//	@description	the complete schema of resources exposed by the API.
-//	@description
-//	@description	If basic auth is enabled, all the endpoints require authentication.
-//	@description
-//	@description	All the endpoints, except `health`, `swagger`, `debug` and `demo`,
-//	@description	must send a user-agent header.
-//	@description
-//	@description	A demo instance of CEEMS API server is provided for the users to test. This
-//	@description	instance is running at `https://ceems-demo.myaddr.tools:6443` and it is the
-//	@description	default server that will serve the requests originating from current OAS client.
-//	@description
-//	@description	Some of the valid users for this demo instance are:
-//	@description	- arnold
-//	@description	- betty
-//	@description	- edna
-//	@description	- gazoo
-//	@description	- wilma
-//	@description
-//	@description	Every request must contain a `X-Grafana-User` header with one of the usernames
-//	@description	above as the value to the header. This is how CEEMS API server recognise the user.
-//	@description
-//	@description	Some of the valid projects for this demo instance are:
-//	@description	- bedrock
-//	@description	- cornerstone
-//	@description
-//	@description	Demo instance have CORS enabled to allow cross-domain communication from the browser.
-//	@description	All responses have a wildcard same-origin which makes them completely public and
-//	@description	accessible to everyone, including any code on any site.
-//	@description
-//	@description	To test admin resources, users can use `admin` as `X-Grafana-User`.
-//	@description
-//	@description				Timestamps must be specified in milliseconds, unless otherwise specified.
-//
-//	@contact.name				Mahendra Paipuri
-//	@contact.url				https://github.com/ceems-dev/ceems/issues
-//	@contact.email				mahendra.paipuri@gmail.com
-//
-//	@license.name				GPL-3.0 license
-//	@license.url				https://www.gnu.org/licenses/gpl-3.0.en.html
-//
-//	@securityDefinitions.basic	BasicAuth
-//
-//	@host						ceems-demo.myaddr.tools:6443
-//	@BasePath					/api/v1
-//
-//	@schemes					https
-//
-//	@externalDocs.url			https://ceems-dev.github.io/ceems/
-//
-//	@x-logo						{"url": "https://raw.githubusercontent.com/ceems-dev/ceems/refs/heads/main/website/static/img/logo.png", "altText": "CEEMS logo"}
+// Start launches CEEMS HTTP server godoc.
 func (s *CEEMSServer) Start(_ context.Context) error {
 	// Set swagger info
-	docs.SwaggerInfo.BasePath = "/api/" + base.APIVersion
+	// docs.SwaggerInfo.BasePath = "/api/" + base.APIVersion
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 	docs.SwaggerInfo.Host = s.server.Addr
 
@@ -466,7 +410,26 @@ func (s *CEEMSServer) setWriteDeadline(deadline time.Duration, w http.ResponseWr
 	}
 }
 
-// Check status of server.
+// Health check    godoc
+//
+//	@Summary		Health check endpoint for API server.
+//	@Description	This health endpoint can be used to check on the health of the API server
+//	@Description	in containerised and Kubernetes environments.
+//	@Description
+//	@Description			This endpoint does not need any user header. However, if basic auth
+//	@Description			is enabled, authentication header must be provided to get status.
+//	@servers.url			https://ceems-demo.myaddr.tools:6443
+//	@servers.description	Test CEEMS API server URL for health, swagger and debug endpoints only.
+//	@Security				BasicAuth
+//	@Tags					health
+//	@Produce				plain
+//	@Success				200	{string}	string	"OK"
+//	@Failure				401	{string}	string	"Unauthorized"
+//	@Failure				503	{string}	string	"KO"
+//	@Router					/health [get]
+//
+// GET /health
+// Get health status of the server.
 func (s *CEEMSServer) health(w http.ResponseWriter, r *http.Request) {
 	if !s.healthCheck(r.Context(), s.db, s.logger) {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
@@ -849,7 +812,7 @@ queryUnits:
 //	@Param			timezone		query		string		false	"Time zone in IANA format"
 //	@Param			field			query		[]string	false	"Fields to return in response"	collectionFormat(multi)
 //	@Success		200				{object}	Response[models.Unit]
-//	@Failure		401				{object}	Response[any]
+//	@Failure		401				{string}	string	"Unauthorized"
 //	@Failure		403				{object}	Response[any]
 //	@Failure		500				{object}	Response[any]
 //	@Router			/units/admin [get]
@@ -902,7 +865,7 @@ func (s *CEEMSServer) unitsAdmin(w http.ResponseWriter, r *http.Request) {
 //	@Param			timezone		query		string		false	"Time zone in IANA format"
 //	@Param			field			query		[]string	false	"Fields to return in response"	collectionFormat(multi)
 //	@Success		200				{object}	Response[models.Unit]
-//	@Failure		401				{object}	Response[any]
+//	@Failure		401				{string}	string	"Unauthorized"
 //	@Failure		403				{object}	Response[any]
 //	@Failure		500				{object}	Response[any]
 //	@Router			/units [get]
@@ -953,7 +916,7 @@ func (s *CEEMSServer) units(w http.ResponseWriter, r *http.Request) {
 //	@Param			uuid			query		[]string	false	"Unit UUID"		collectionFormat(multi)
 //	@Param			cluster_id		query		[]string	false	"Cluster ID"	collectionFormat(multi)
 //	@Success		200				{object}	Response[any]
-//	@Failure		401				{object}	Response[any]
+//	@Failure		401				{string}	string	"Unauthorized"
 //	@Failure		403				{object}	Response[any]
 //	@Failure		500				{object}	Response[any]
 //	@Router			/units/verify [get]
@@ -1016,7 +979,8 @@ func (s *CEEMSServer) verifyUnitsOwnership(w http.ResponseWriter, r *http.Reques
 //	@Produce	json
 //	@Param		X-Grafana-User	header		string	true	"Current user name"
 //	@Success	200				{object}	Response[models.Cluster]
-//	@Failure	401				{object}	Response[any]
+//	@Failure	401				{string}	string	"Unauthorized"
+//	@Failure	403				{object}	Response[any]
 //	@Failure	500				{object}	Response[any]
 //	@Router		/clusters/admin [get]
 //
@@ -1172,7 +1136,7 @@ func (s *CEEMSServer) usersQuerier(users []string, w http.ResponseWriter, r *htt
 //	@Param		X-Grafana-User	header		string		true	"Current user name"
 //	@Param		cluster_id		query		[]string	false	"Cluster ID"	collectionFormat(multi)
 //	@Success	200				{object}	Response[models.User]
-//	@Failure	401				{object}	Response[any]
+//	@Failure	401				{string}	string	"Unauthorized"
 //	@Failure	500				{object}	Response[any]
 //	@Router		/users [get]
 //
@@ -1218,7 +1182,8 @@ func (s *CEEMSServer) users(w http.ResponseWriter, r *http.Request) {
 //	@Param		cluster_id		query		[]string	false	"Cluster ID"	collectionFormat(multi)
 //	@Param		role			query		string		false	"User role"
 //	@Success	200				{object}	Response[models.User]
-//	@Failure	401				{object}	Response[any]
+//	@Failure	401				{string}	string	"Unauthorized"
+//	@Failure	403				{object}	Response[any]
 //	@Failure	500				{object}	Response[any]
 //	@Router		/users/admin [get]
 //
@@ -1322,7 +1287,7 @@ func (s *CEEMSServer) projectsQuerier(users []string, w http.ResponseWriter, r *
 //	@Param		project			query		[]string	false	"Project"		collectionFormat(multi)
 //	@Param		cluster_id		query		[]string	false	"Cluster ID"	collectionFormat(multi)
 //	@Success	200				{object}	Response[models.Project]
-//	@Failure	401				{object}	Response[any]
+//	@Failure	401				{string}	string	"Unauthorized"
 //	@Failure	500				{object}	Response[any]
 //	@Router		/projects [get]
 //
@@ -1363,7 +1328,8 @@ func (s *CEEMSServer) projects(w http.ResponseWriter, r *http.Request) {
 //	@Param		project			query		[]string	false	"Project"		collectionFormat(multi)
 //	@Param		cluster_id		query		[]string	false	"Cluster ID"	collectionFormat(multi)
 //	@Success	200				{object}	Response[models.Project]
-//	@Failure	401				{object}	Response[any]
+//	@Failure	401				{string}	string	"Unauthorized"
+//	@Failure	403				{object}	Response[any]
 //	@Failure	500				{object}	Response[any]
 //	@Router		/projects/admin [get]
 //
@@ -1730,7 +1696,7 @@ func (s *CEEMSServer) globalUsage(users []string, queriedFields []string, w http
 //	@Param			to				query		string		false	"To timestamp"
 //	@Param			field			query		[]string	false	"Fields to return in response"	collectionFormat(multi)
 //	@Success		200				{object}	Response[models.Usage]
-//	@Failure		401				{object}	Response[any]
+//	@Failure		401				{string}	string	"Unauthorized"
 //	@Failure		500				{object}	Response[any]
 //	@Router			/usage/{mode} [get]
 //
@@ -1832,7 +1798,7 @@ func (s *CEEMSServer) usage(w http.ResponseWriter, r *http.Request) {
 //	@Param			to				query		string		false	"To timestamp"
 //	@Param			field			query		[]string	false	"Fields to return in response"	collectionFormat(multi)
 //	@Success		200				{object}	Response[models.Usage]
-//	@Failure		401				{object}	Response[any]
+//	@Failure		401				{string}	string	"Unauthorized"
 //	@Failure		403				{object}	Response[any]
 //	@Failure		500				{object}	Response[any]
 //	@Router			/usage/{mode}/admin [get]
@@ -2039,7 +2005,7 @@ func (s *CEEMSServer) globalStats(users []string, w http.ResponseWriter, r *http
 //	@Param		from			query		string		false	"From timestamp"
 //	@Param		to				query		string		false	"To timestamp"
 //	@Success	200				{object}	Response[models.Stat]
-//	@Failure	401				{object}	Response[any]
+//	@Failure	401				{string}	string	"Unauthorized"
 //	@Failure	403				{object}	Response[any]
 //	@Failure	500				{object}	Response[any]
 //	@Router		/stats/{mode}/admin [get]

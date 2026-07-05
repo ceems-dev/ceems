@@ -29,8 +29,8 @@ CGO_APPS                ?= 0
 RELEASE_BUILD           ?= 0
 
 # Swagger docs
-SWAGGER_DIR     ?= pkg/api/http
-SWAGGER_MAIN    ?= server.go
+SWAGGER_DIR     ?= pkg/api
+SWAGGER_MAIN    ?= cli/cli.go
 
 include Makefile.common
 
