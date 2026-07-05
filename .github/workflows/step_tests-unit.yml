@@ -80,13 +80,13 @@ jobs:
       # to push the changes to remote
       - uses: actions/create-github-app-token@v3
         id: app-token
-        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        if: steps.verify-changed-files.outputs.files_changed == 'true' && github.ref == 'refs/heads/main'
         with:
           client-id: 4221824
           private-key: ${{ secrets.app_private_key }}
 
       - name: Commit changes
-        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        if: steps.verify-changed-files.outputs.files_changed == 'true' && github.ref == 'refs/heads/main'
         run: |
           git config --local user.email "bot@ceems.com"
           git config --local user.name "CEEMS Bot"
@@ -94,8 +94,8 @@ jobs:
           git commit -m "chore: Updated coverage badge" -s
 
       - name: Push changes
-        if: steps.verify-changed-files.outputs.files_changed == 'true'
+        if: steps.verify-changed-files.outputs.files_changed == 'true' && github.ref == 'refs/heads/main'
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ steps.app-token.outputs.token }}
-          branch: ${{ github.ref }}
+          branch: ${{ github.head_ref }}
