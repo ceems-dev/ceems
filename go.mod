@@ -8,6 +8,7 @@ require (
 	github.com/ceems-dev/perf-utils v0.0.0-20250716113832-99ba71e88ef4
 	github.com/cilium/ebpf v0.22.0
 	github.com/containerd/cgroups/v3 v3.1.3
+	github.com/go-chi/chi/v5 v5.3.0
 	github.com/go-chi/httprate v0.16.0
 	github.com/go-kit/log v0.2.1
 	github.com/golang-migrate/migrate/v4 v4.19.1
