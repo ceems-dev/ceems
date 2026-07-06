@@ -30,6 +30,7 @@ import (
 	"github.com/ceems-dev/ceems/pkg/api/docs"
 	"github.com/ceems-dev/ceems/pkg/api/models"
 	"github.com/ceems-dev/ceems/pkg/sqlite3"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httprate"
 	"github.com/gorilla/mux"
 	"github.com/jellydator/ttlcache/v3"
@@ -295,7 +296,10 @@ func New(c *Config) (*CEEMSServer, error) {
 	// Rate limit requests by RealIP
 	if c.Web.RequestsLimit > 0 {
 		c.Logger.Debug("Rate limiting settings", "reqs_per_minute", c.Web.RequestsLimit)
-		router.Use(httprate.LimitByRealIP(c.Web.RequestsLimit, time.Minute))
+		router.Use(middleware.ClientIPFromXFF())
+		router.Use(httprate.LimitBy(c.Web.RequestsLimit, time.Minute, func(r *http.Request) (string, error) {
+			return httprate.CanonicalizeIP(middleware.GetClientIP(r.Context())), nil
+		}))
 	}
 
 	// Add a middleware that verifies headers and pass them in requests
