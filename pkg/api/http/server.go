@@ -15,6 +15,7 @@ import (
 	"net"
 	"net/http"
 	_ "net/http/pprof" // #nosec
+	"net/netip"
 	"net/url"
 	"path/filepath"
 	"regexp"
@@ -68,6 +69,7 @@ type WebConfig struct {
 	ExternalURL       *url.URL
 	RoutePrefix       string
 	MaxQueryPeriod    model.Duration
+	TrustedIPPrefixes []string
 	RequestsLimit     int
 	CORSOrigin        *regexp.Regexp
 	EnableCompression bool
@@ -253,33 +255,30 @@ func New(c *Config) (*CEEMSServer, error) {
 		httpSwagger.DomID("swagger-ui"),
 	))
 
-	// Setup CORS
-	cors := newCORS(c.Web.CORSOrigin, c.Web.UserHeaderNames)
-
 	// Health endpoint
-	router.HandleFunc("/health", cors.wrap(server.health))
+	router.HandleFunc("/health", server.health)
 
 	// Create a sub router with apiVersion as PathPrefix
 	// Allow only GET and OPTIONS methods
 	subRouter := router.Methods(http.MethodGet, http.MethodOptions).PathPrefix(routePrefix).Subrouter()
 
 	// Allow only GET methods
-	subRouter.HandleFunc("/"+usersResourceName, cors.wrap(server.users))
-	subRouter.HandleFunc("/"+projectsResourceName, cors.wrap(server.projects))
-	subRouter.HandleFunc("/"+unitsResourceName, cors.wrap(server.units))
-	subRouter.HandleFunc(fmt.Sprintf("/%s/{mode:(?:current|global)}", usageResourceName), cors.wrap(server.usage))
-	subRouter.HandleFunc(fmt.Sprintf("/%s/verify", unitsResourceName), cors.wrap(server.verifyUnitsOwnership))
+	subRouter.HandleFunc("/"+usersResourceName, server.users)
+	subRouter.HandleFunc("/"+projectsResourceName, server.projects)
+	subRouter.HandleFunc("/"+unitsResourceName, server.units)
+	subRouter.HandleFunc(fmt.Sprintf("/%s/{mode:(?:current|global)}", usageResourceName), server.usage)
+	subRouter.HandleFunc(fmt.Sprintf("/%s/verify", unitsResourceName), server.verifyUnitsOwnership)
 
 	// Admin end points
-	subRouter.HandleFunc(fmt.Sprintf("/%s/admin", usersResourceName), cors.wrap(server.usersAdmin))
-	subRouter.HandleFunc(fmt.Sprintf("/%s/admin", projectsResourceName), cors.wrap(server.projectsAdmin))
-	subRouter.HandleFunc(fmt.Sprintf("/%s/admin", clustersResourceName), cors.wrap(server.clustersAdmin))
-	subRouter.HandleFunc(fmt.Sprintf("/%s/admin", unitsResourceName), cors.wrap(server.unitsAdmin))
-	subRouter.HandleFunc(fmt.Sprintf("/%s/{mode:(?:current|global)}/admin", usageResourceName), cors.wrap(server.usageAdmin))
-	subRouter.HandleFunc(fmt.Sprintf("/%s/{mode:(?:current|global)}/admin", statsResourceName), cors.wrap(server.statsAdmin))
+	subRouter.HandleFunc(fmt.Sprintf("/%s/admin", usersResourceName), server.usersAdmin)
+	subRouter.HandleFunc(fmt.Sprintf("/%s/admin", projectsResourceName), server.projectsAdmin)
+	subRouter.HandleFunc(fmt.Sprintf("/%s/admin", clustersResourceName), server.clustersAdmin)
+	subRouter.HandleFunc(fmt.Sprintf("/%s/admin", unitsResourceName), server.unitsAdmin)
+	subRouter.HandleFunc(fmt.Sprintf("/%s/{mode:(?:current|global)}/admin", usageResourceName), server.usageAdmin)
+	subRouter.HandleFunc(fmt.Sprintf("/%s/{mode:(?:current|global)}/admin", statsResourceName), server.statsAdmin)
 
 	// A demo end point that returns mocked data for units and/or usage tables
-	subRouter.HandleFunc("/demo/{resource:(?:units|usage)}", cors.wrap(server.demo))
+	subRouter.HandleFunc("/demo/{resource:(?:units|usage)}", server.demo)
 
 	// Open DB connection
 	dsn := fmt.Sprintf(
@@ -296,14 +295,24 @@ func New(c *Config) (*CEEMSServer, error) {
 	// Rate limit requests by RealIP
 	if c.Web.RequestsLimit > 0 {
 		c.Logger.Debug("Rate limiting settings", "reqs_per_minute", c.Web.RequestsLimit)
-		router.Use(middleware.ClientIPFromXFF())
+		// If TrustedIpPrefixes are provided, check if they are valid
+		// middleware.ClientIPFromXFF panics if Ip prefix is not valid and hence, we
+		// are obliged to test it before passing it to it.
+		for _, ip := range c.Web.TrustedIPPrefixes {
+			_, err := netip.ParsePrefix(ip)
+			if err != nil {
+				return nil, fmt.Errorf("failed to parse IP prefix %s: %w", ip, err)
+			}
+		}
+
+		router.Use(middleware.ClientIPFromXFF(c.Web.TrustedIPPrefixes...))
 		router.Use(httprate.LimitBy(c.Web.RequestsLimit, time.Minute, func(r *http.Request) (string, error) {
 			return httprate.CanonicalizeIP(middleware.GetClientIP(r.Context())), nil
 		}))
 	}
 
 	// Add a middleware that verifies headers and pass them in requests
-	amw, err := newAuthenticationMiddleware(routePrefix, c.Web.UserHeaderNames, server.db, cors, c.Logger)
+	amw, err := newAuthenticationMiddleware(routePrefix, c.Web.CORSOrigin, c.Web.UserHeaderNames, server.db, c.Logger)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create middleware: %w", err)
 	}

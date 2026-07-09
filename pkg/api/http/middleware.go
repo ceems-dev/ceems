@@ -28,7 +28,10 @@ type authenticationMiddleware struct {
 }
 
 // newAuthenticationMiddleware returns a new instance authenticationMiddleware.
-func newAuthenticationMiddleware(routePrefix string, headers []string, db *sql.DB, cors *cors, logger *slog.Logger) (*authenticationMiddleware, error) {
+func newAuthenticationMiddleware(routePrefix string, corsOrigin *regexp.Regexp, headers []string, db *sql.DB, logger *slog.Logger) (*authenticationMiddleware, error) {
+	// Setup CORS
+	cors := newCORS(corsOrigin, headers)
+
 	// Playground: https://regex101.com/r/lkmsWz/3
 	urlsRegex, err := regexp.Compile(
 		fmt.Sprintf("^(?:(%s)?)/(swagger|debug|health|demo)(.*)", strings.TrimSuffix(routePrefix, "/")),
