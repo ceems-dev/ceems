@@ -143,7 +143,7 @@ func (b *CEEMSServer) Main() error {
 		configFile, webConfigFile, routePrefix, corsOrigin, maxQueryPeriod, runAsUser string
 		enableDebugServer, skipDeleteOldUnits, disableChecks                          bool
 		dropPrivs, systemdSocket, compression, disableCapAwareness                    bool
-		webListenAddresses, userHeaders                                               []string
+		webListenAddresses, userHeaders, trustedIPPrefixes                            []string
 		requestsLimit, maxProcs, compressionLevel                                     int
 		externalURL                                                                   *url.URL
 	)
@@ -180,6 +180,11 @@ func (b *CEEMSServer) Main() error {
 			"Request headers True-Client-IP, X-Real-IP and X-Forwarded-For are looked up to get the real client IP address."+
 			"By default no limit is applied.",
 	).Default("0").IntVar(&requestsLimit)
+	b.App.Flag(
+		"web.trusted-ip-prefix",
+		"IP prefix of trusted IP addresses. The string can be in the form `192.168.1.0/24` or `2001:db8::/32`, the CIDR notation defined in RFC 4632 and RFC 4291. "+
+			"Rate limiting will not be applied for the requests coming from these matching IP addresses.",
+	).StringsVar(&trustedIPPrefixes)
 	b.App.Flag(
 		"web.cors.origin",
 		"Regex for CORS origin. It is fully anchored. Example: 'https?://(domain1|domain2)\\.com'.",
@@ -344,6 +349,7 @@ func (b *CEEMSServer) Main() error {
 			EnableCompression: compression,
 			CompressionLevel:  compressionLevel,
 			RequestsLimit:     requestsLimit,
+			TrustedIPPrefixes: trustedIPPrefixes,
 			MaxQueryPeriod:    period,
 			LandingConfig: &web.LandingConfig{
 				Name:        b.App.Name,

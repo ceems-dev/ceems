@@ -20,11 +20,8 @@ func mockAdminUsers(_ context.Context, _ *sql.DB) ([]string, error) {
 }
 
 func setupMiddleware() (http.Handler, error) {
-	// Setup CORS
-	cors := newCORS(regexp.MustCompile("^(?:.*)$"), []string{"X-Grafana-User"})
-
 	// Setup middileware
-	amw, err := newAuthenticationMiddleware("/api/v1", []string{base.GrafanaUserHeader}, nil, cors, noOpLogger)
+	amw, err := newAuthenticationMiddleware("/api/v1", regexp.MustCompile("^(?:.*)$"), []string{base.GrafanaUserHeader}, nil, noOpLogger)
 	if err != nil {
 		return nil, err
 	}
@@ -40,19 +37,16 @@ func setupMiddleware() (http.Handler, error) {
 }
 
 func TestNewMiddleware(t *testing.T) {
-	// Setup CORS
-	cors := newCORS(regexp.MustCompile("^(?:.*)$"), []string{"X-Grafana-User"})
-
 	// Valid route prefix
-	_, err := newAuthenticationMiddleware("/api/v1", []string{base.GrafanaUserHeader}, nil, cors, noOpLogger)
+	_, err := newAuthenticationMiddleware("/api/v1", regexp.MustCompile("^(?:.*)$"), []string{base.GrafanaUserHeader}, nil, noOpLogger)
 	require.NoError(t, err)
 
 	// Invald route prefix
-	_, err = newAuthenticationMiddleware("/(?!\\/)", []string{base.GrafanaUserHeader}, nil, cors, noOpLogger)
+	_, err = newAuthenticationMiddleware("/(?!\\/)", regexp.MustCompile("^(?:.*)$"), []string{base.GrafanaUserHeader}, nil, noOpLogger)
 	require.Error(t, err)
 
 	// No user headers
-	_, err = newAuthenticationMiddleware("/api/v1", nil, nil, cors, noOpLogger)
+	_, err = newAuthenticationMiddleware("/api/v1", regexp.MustCompile("^(?:.*)$"), nil, nil, noOpLogger)
 	require.Error(t, err)
 }
 
