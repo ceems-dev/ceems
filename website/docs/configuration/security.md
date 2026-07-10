@@ -23,7 +23,7 @@ executes the piece of code that needs privileges in a separate thread and destro
 after finishing the execution to ensure no other goroutine will be scheduled on that thread.
 This ensures the whole exporter code runs as an unprivileged process most of the time and
 raises privileges only when necessary. This strategy makes CEEMS apps
-[capability aware](https://tbhaxor.com/understanding-linux-capabilities/).
+capability aware using [libcap](https://sites.google.com/site/fullycapable/).
 
 :::important[IMPORTANT]
 
@@ -50,6 +50,8 @@ with device `/dev/ipmi0`.
 file.
 - `slurm`: `cap_sys_ptrace` and `cap_dac_read_search` to be able to access processes'
 environment variables to get GPU indices of a given compute job.
+- `lsf`: `cap_sys_ptrace` and `cap_dac_read_search` to be able to access processes'
+environment variables to get GPU indices of a given compute job when NVIDIA MIG is enabled.
 - `libvirt`: `cap_dac_read_search` to be able to read instance's XML file.
 - `perf`: `cap_perfmon` to be able to open perf events. `cap_sys_ptrace` and `cap_dac_read_search`
 to be able to access processes' environment variables when `--collector.perf.env-var` is
