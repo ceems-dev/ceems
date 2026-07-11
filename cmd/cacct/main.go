@@ -209,6 +209,7 @@ var (
 
 	defaultFields = []string{
 		"jobid",
+		"user",
 		"account",
 		"elapsed",
 		"cpuusage",
@@ -441,7 +442,7 @@ func main() {
 		"job", "Comma separated list of jobs to display information. Default is all jobs in the period.",
 	).StringVar(&jobsFlag)
 	cacctApp.Flag(
-		"user", "Comma separated list of user names to select jobs to display. By default, the running user is used.",
+		"user", "Comma separated list of user names to select jobs to display. A special value `all` can be used to fetch jobs of all users when querying user has enough privileges. By default, the running user is used.",
 	).StringVar(&usersFlag)
 	cacctApp.Flag(
 		"format", "Comma separated list of fields (Use --helpformat for list of available fields).",
@@ -740,7 +741,7 @@ func newTable(currentUser string, users []string, units []models.Unit, usages []
 	t.AppendSeparator()
 
 	for _, usage := range usages {
-		if usage.User == currentUser || slices.Contains(users, usage.User) {
+		if usage.User == currentUser || slices.Contains(users, usage.User) || slices.Contains(users, "all") {
 			// Check if elapsed time in non zero
 			var totalElapsedTime string
 			if usage.TotalTime["walltime"] > 0 {

@@ -196,6 +196,7 @@ test-e2e: $(PROMTOOL) build pkg/collector/testdata/sys/.unpacked pkg/collector/t
 	./scripts/e2e-test.sh -s cacct-long-format
 	./scripts/e2e-test.sh -s cacct-custom-format
 	./scripts/e2e-test.sh -s cacct-admin-user
+	./scripts/e2e-test.sh -s cacct-admin-user-all-users
 	./scripts/e2e-test.sh -s cacct-forbid-query
 	./scripts/e2e-test.sh -s cacct-invalid-config
 	./scripts/e2e-test.sh -s cacct-tsdata
@@ -292,6 +293,7 @@ test-e2e-update: build pkg/collector/testdata/sys/.unpacked pkg/collector/testda
 	./scripts/e2e-test.sh -s cacct-long-format -u || true 
 	./scripts/e2e-test.sh -s cacct-custom-format -u || true
 	./scripts/e2e-test.sh -s cacct-admin-user -u || true
+	./scripts/e2e-test.sh -s cacct-admin-user-all-users -u || true
 	./scripts/e2e-test.sh -s cacct-forbid-query -u || true
 	./scripts/e2e-test.sh -s cacct-invalid-config -u || true
 	./scripts/e2e-test.sh -s cacct-tsdata -u || true

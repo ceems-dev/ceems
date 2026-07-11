@@ -14,7 +14,7 @@ sidebar_position: 4
 | `--starttime`  | Select jobs eligible after this time. Valid format is YYYY-MM-DD[THH\:MM[\:SS]]  | Today midnight |
 | `--endtime`    | Select jobs eligible before this time. Valid format is YYYY-MM-DD[THH\:MM[\:SS]] | Current time   |
 | `--job`        | Comma separated list of jobs to display information                            |                |
-| `--user`       | Comma separated list of user names to select jobs to display                   |                |
+| `--user`       | Comma separated list of user names to select jobs to display.A special value `all` can be used to fetch jobs of all users when querying user has enough privileges. By default, the running user is used.                   |                |
 | `--format`     | Comma separated list of fields                                                 |                |
 | `--helpformat` | List of available fields                                                       |                |
 | `--ts`         | Time series data of jobs are saved in CSV format                               | `false`        |

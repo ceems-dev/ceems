@@ -96,8 +96,13 @@ func stats(
 	var unitsReqURL, usageReqURL string
 
 	if len(userNames) > 0 {
-		for _, user := range userNames {
-			urlValues.Add("user", user)
+		// If --user flag does not contain special value "all", add them to the query.
+		// If "all" is provided in the --user flag, dont add any query parameters so
+		// that API server returns jobs of all users.
+		if !slices.Contains(userNames, "all") {
+			for _, user := range userNames {
+				urlValues.Add("user", user)
+			}
 		}
 
 		unitsReqURL = apiURL.JoinPath("/api/v1/units/admin").String()
