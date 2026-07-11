@@ -61,6 +61,10 @@ of other users, an empty response will be returned.
 
 :::
 
+The CLI argument `--user` takes a special value `all` when provided, it `cacct` will
+return the statistics of all users. However, the user who is making the request must be
+still declared as admin user in the CEEMS API server.
+
 ## Time Series Data
 
 Besides aggregate accounting statistics, `cacct` is capable of fetching time series

@@ -235,7 +235,7 @@ Now, every time `cacct` is invoked, it will have privileges of the `ceems` user/
 
 Similarly, if system logging is desired, the `cacct` binary should keep the group ownership of `ceems`
 while end user launches the application. This way the log file will be owned by `ceems` user preventing
-regular end users to access it. 
+regular end users to access it.
 
 ```bash
 # Create a directory to place system level log file

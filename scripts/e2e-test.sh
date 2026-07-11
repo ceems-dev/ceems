@@ -433,6 +433,10 @@ then
   then
     desc="cacct by admin user"
     fixture='cmd/cacct/testdata/output/e2e-test-cacct-admin-user.txt'
+  elif [ "${scenario}" = "cacct-admin-user-all-users" ]
+  then
+    desc="cacct by admin user for all users"
+    fixture='cmd/cacct/testdata/output/e2e-test-cacct-admin-user-all-users.txt'
   elif [ "${scenario}" = "cacct-forbid-query" ]
   then
     desc="cacct by normal user attempt to admin query"
@@ -1651,6 +1655,9 @@ then
   elif [ "${scenario}" = "cacct-admin-user" ]
   then
     ./bin/cacct --current-user=grafana --config-path="cmd/cacct/testdata" --starttime="2022-02-20" --endtime="2022-03-20" --user=usr1,usr2 > "${fixture_output}" 2>&1
+  elif [ "${scenario}" = "cacct-admin-user-all-users" ]
+  then
+    ./bin/cacct --current-user=grafana --config-path="cmd/cacct/testdata" --starttime="2022-02-20" --endtime="2023-03-20" --user=all > "${fixture_output}" 2>&1
   elif [ "${scenario}" = "cacct-forbid-query" ]
   then
     ./bin/cacct --current-user=usr3 --config-path="cmd/cacct/testdata" --starttime="2022-02-20" --endtime="2022-03-20" --user=usr1,usr2 > "${fixture_output}" 2>&1 || true
