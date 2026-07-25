@@ -593,6 +593,46 @@ func (t *tsdbUpdater) update(
 				}
 			}
 		}
+
+		if metrics, mExists := aggMetrics["total_custom_stats"]; mExists {
+			units[i].TotalCustomStats = make(models.MetricMap)
+
+			for name, metric := range metrics {
+				if value, exists := metric[uuid]; exists {
+					units[i].TotalCustomStats[name] = sanitizeValue(value)
+				}
+			}
+		}
+
+		if metrics, mExists := aggMetrics["avg_custom_stats"]; mExists {
+			units[i].AveCustomStats = make(models.MetricMap)
+
+			for name, metric := range metrics {
+				if value, exists := metric[uuid]; exists {
+					units[i].AveCustomStats[name] = sanitizeValue(value)
+				}
+			}
+		}
+
+		if metrics, mExists := aggMetrics["min_custom_stats"]; mExists {
+			units[i].MinCustomStats = make(models.MetricMap)
+
+			for name, metric := range metrics {
+				if value, exists := metric[uuid]; exists {
+					units[i].MinCustomStats[name] = sanitizeValue(value)
+				}
+			}
+		}
+
+		if metrics, mExists := aggMetrics["max_custom_stats"]; mExists {
+			units[i].MaxCustomStats = make(models.MetricMap)
+
+			for name, metric := range metrics {
+				if value, exists := metric[uuid]; exists {
+					units[i].MaxCustomStats[name] = sanitizeValue(value)
+				}
+			}
+		}
 	}
 
 	// If delete_ignored is set to `true`, drop all the labels with uuid

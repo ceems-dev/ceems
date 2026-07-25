@@ -91,7 +91,19 @@ queries:
       bytes: foo
       packets: bar
       drops: foo
-      errors: bar`
+      errors: bar
+    total_custom_stats:
+      custom_1: foo
+      custom_2: bar
+    avg_custom_stats:
+      custom_1: foo
+      custom_2: bar
+    min_custom_stats:
+      custom_1: foo
+      custom_2: bar
+    max_custom_stats:
+      custom_1: foo
+      custom_2: bar`
 
 	var extraConfig yaml.Node
 
@@ -235,6 +247,22 @@ func TestTSDBUpdateSuccessSingleInstance(t *testing.T) {
 				"drops":   models.JSONFloat(1.1),
 				"errors":  models.JSONFloat(1.1),
 			},
+			TotalCustomStats: models.MetricMap{
+				"custom_1": models.JSONFloat(1.1),
+				"custom_2": models.JSONFloat(1.1),
+			},
+			AveCustomStats: models.MetricMap{
+				"custom_1": models.JSONFloat(1.1),
+				"custom_2": models.JSONFloat(1.1),
+			},
+			MinCustomStats: models.MetricMap{
+				"custom_1": models.JSONFloat(1.1),
+				"custom_2": models.JSONFloat(1.1),
+			},
+			MaxCustomStats: models.MetricMap{
+				"custom_1": models.JSONFloat(1.1),
+				"custom_2": models.JSONFloat(1.1),
+			},
 		},
 		{
 			UUID:        "2",
@@ -269,6 +297,22 @@ func TestTSDBUpdateSuccessSingleInstance(t *testing.T) {
 				"drops":   models.JSONFloat(2.2),
 				"errors":  models.JSONFloat(2.2),
 			},
+			TotalCustomStats: models.MetricMap{
+				"custom_1": models.JSONFloat(2.2),
+				"custom_2": models.JSONFloat(2.2),
+			},
+			AveCustomStats: models.MetricMap{
+				"custom_1": models.JSONFloat(2.2),
+				"custom_2": models.JSONFloat(2.2),
+			},
+			MinCustomStats: models.MetricMap{
+				"custom_1": models.JSONFloat(2.2),
+				"custom_2": models.JSONFloat(2.2),
+			},
+			MaxCustomStats: models.MetricMap{
+				"custom_1": models.JSONFloat(2.2),
+				"custom_2": models.JSONFloat(2.2),
+			},
 		},
 		{
 			UUID:        "3",
@@ -294,6 +338,10 @@ func TestTSDBUpdateSuccessSingleInstance(t *testing.T) {
 			TotalIOReadStats:    models.MetricMap{},
 			TotalIngressStats:   models.MetricMap{},
 			TotalEgressStats:    models.MetricMap{},
+			TotalCustomStats:    models.MetricMap{},
+			AveCustomStats:      models.MetricMap{},
+			MinCustomStats:      models.MetricMap{},
+			MaxCustomStats:      models.MetricMap{},
 		},
 	}
 

@@ -1,0 +1,12 @@
+ALTER TABLE daily_usage DROP COLUMN max_custom_stats;
+ALTER TABLE daily_usage DROP COLUMN min_custom_stats;
+ALTER TABLE daily_usage DROP COLUMN avg_custom_stats;
+ALTER TABLE daily_usage DROP COLUMN total_custom_stats;
+ALTER TABLE usage DROP COLUMN max_custom_stats;
+ALTER TABLE usage DROP COLUMN min_custom_stats;
+ALTER TABLE usage DROP COLUMN avg_custom_stats;
+ALTER TABLE usage DROP COLUMN total_custom_stats;
+ALTER TABLE units DROP COLUMN max_custom_stats;
+ALTER TABLE units DROP COLUMN min_custom_stats;
+ALTER TABLE units DROP COLUMN avg_custom_stats;
+ALTER TABLE units DROP COLUMN total_custom_stats;

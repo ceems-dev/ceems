@@ -392,6 +392,16 @@ const docTemplate = `{
                         },
                         "type": "object"
                     },
+                    "avg_custom_stats": {
+                        "additionalProperties": {
+                            "type": "number"
+                        },
+                        "description": "Average statistics of misc custom metrics of unit. These metrics can be anything where average value is relevant",
+                        "example": {
+                            "mem_bw_avg": 2545
+                        },
+                        "type": "object"
+                    },
                     "avg_gpu_mem_usage": {
                         "additionalProperties": {
                             "type": "number"
@@ -446,6 +456,26 @@ const docTemplate = `{
                         "description": "User group",
                         "example": "grp1",
                         "type": "string"
+                    },
+                    "max_custom_stats": {
+                        "additionalProperties": {
+                            "type": "number"
+                        },
+                        "description": "Maximum statistics of misc custom metrics of unit. These metrics can be anything where maxoimum value is relevant",
+                        "example": {
+                            "gpu_power_max": 454
+                        },
+                        "type": "object"
+                    },
+                    "min_custom_stats": {
+                        "additionalProperties": {
+                            "type": "number"
+                        },
+                        "description": "Minimum statistics of misc custom metrics of unit. These metrics can be anything where minimum value is relevant",
+                        "example": {
+                            "host_pwr_min": 36
+                        },
+                        "type": "object"
                     },
                     "name": {
                         "description": "Name of compute unit",
@@ -507,6 +537,17 @@ const docTemplate = `{
                         "description": "Total CPU energy usage(s) in kWh during lifetime of unit",
                         "example": {
                             "total": 0.73
+                        },
+                        "type": "object"
+                    },
+                    "total_custom_stats": {
+                        "additionalProperties": {
+                            "type": "number"
+                        },
+                        "description": "Total statistics of misc custom metrics of unit. These metrics can be anything where total value is relevant",
+                        "example": {
+                            "cycles_total": 23232323,
+                            "instr_total": 454342323
                         },
                         "type": "object"
                     },
@@ -624,6 +665,16 @@ const docTemplate = `{
                         },
                         "type": "object"
                     },
+                    "avg_custom_stats": {
+                        "additionalProperties": {
+                            "type": "number"
+                        },
+                        "description": "Average statistics of misc custom metrics during lifetime of project. These metrics can be anything where average value is relevant",
+                        "example": {
+                            "mem_bw_avg": 2545
+                        },
+                        "type": "object"
+                    },
                     "avg_gpu_mem_usage": {
                         "additionalProperties": {
                             "type": "number"
@@ -653,6 +704,26 @@ const docTemplate = `{
                         "description": "User group",
                         "example": "grp1",
                         "type": "string"
+                    },
+                    "max_custom_stats": {
+                        "additionalProperties": {
+                            "type": "number"
+                        },
+                        "description": "Maximum statistics of misc custom metrics during lifetime of project. These metrics can be anything where maxoimum value is relevant",
+                        "example": {
+                            "gpu_power_max": 454
+                        },
+                        "type": "object"
+                    },
+                    "min_custom_stats": {
+                        "additionalProperties": {
+                            "type": "number"
+                        },
+                        "description": "Minimum statistics of misc custom metrics during lifetime of project. These metrics can be anything where minimum value is relevant",
+                        "example": {
+                            "host_pwr_min": 36
+                        },
+                        "type": "object"
                     },
                     "num_units": {
                         "description": "Number of consumed units",
@@ -690,11 +761,22 @@ const docTemplate = `{
                         },
                         "type": "object"
                     },
+                    "total_custom_stats": {
+                        "additionalProperties": {
+                            "type": "number"
+                        },
+                        "description": "Total statistics of misc custom metrics during lifetime of project. These metrics can be anything where total value is relevant",
+                        "example": {
+                            "cycles_total": 23232323,
+                            "instr_total": 454342323
+                        },
+                        "type": "object"
+                    },
                     "total_egress_stats": {
                         "additionalProperties": {
                             "type": "number"
                         },
-                        "description": "Total Egress statistics of unit",
+                        "description": "Total Egress statistics of project",
                         "example": {
                             "bytes_total": 454342323,
                             "packets_total": 23232323
@@ -726,7 +808,7 @@ const docTemplate = `{
                         "additionalProperties": {
                             "type": "number"
                         },
-                        "description": "Total Ingress statistics of unit",
+                        "description": "Total Ingress statistics of project",
                         "example": {
                             "bytes_total": 8503405,
                             "packets_total": 43423
@@ -737,7 +819,7 @@ const docTemplate = `{
                         "additionalProperties": {
                             "type": "number"
                         },
-                        "description": "Total IO read statistics during lifetime of unit",
+                        "description": "Total IO read statistics during lifetime of project",
                         "example": {
                             "bytes_total": 245000000,
                             "requests_total": 49423
@@ -748,7 +830,7 @@ const docTemplate = `{
                         "additionalProperties": {
                             "type": "number"
                         },
-                        "description": "Total IO write statistics during lifetime of unit",
+                        "description": "Total IO write statistics during lifetime of project",
                         "example": {
                             "bytes_total": 12000000,
                             "requests_total": 13923
