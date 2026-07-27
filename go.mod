@@ -19,8 +19,8 @@ require (
 	github.com/jedib0t/go-pretty/v6 v6.8.3
 	github.com/jellydator/ttlcache/v3 v3.4.1
 	github.com/mattn/go-sqlite3 v1.14.48
-	github.com/prometheus/client_golang v1.23.2
-	github.com/prometheus/common v0.70.0
+	github.com/prometheus/client_golang v1.24.1
+	github.com/prometheus/common v0.70.1
 	github.com/prometheus/exporter-toolkit v0.17.1
 	github.com/prometheus/procfs v0.21.1
 	github.com/prometheus/prometheus v0.313.1
@@ -36,11 +36,11 @@ require (
 	google.golang.org/grpc v1.82.1
 	google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/api v0.36.2
-	k8s.io/apimachinery v0.36.2
-	k8s.io/client-go v0.36.2
-	k8s.io/kubelet v0.36.2
-	k8s.io/streaming v0.36.2
+	k8s.io/api v0.36.3
+	k8s.io/apimachinery v0.36.3
+	k8s.io/client-go v0.36.3
+	k8s.io/kubelet v0.36.3
+	k8s.io/streaming v0.36.3
 	kernel.org/pub/linux/libs/security/libcap/cap v1.2.78
 )
 
@@ -84,7 +84,7 @@ require (
 	github.com/ianlancetaylor/demangle v0.0.0-20251118225945-96ee0021ea0f // indirect
 	github.com/jpillora/backoff v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/klauspost/compress v1.18.6 // indirect
+	github.com/klauspost/compress v1.19.1 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.10 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/mdlayher/socket v0.6.0 // indirect
@@ -112,7 +112,7 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/net v0.56.0 // indirect
+	golang.org/x/net v0.57.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sync v0.22.0 // indirect
 	golang.org/x/term v0.45.0 // indirect
@@ -128,7 +128,7 @@ require (
 	kernel.org/pub/linux/libs/security/libcap/psx v1.2.78 // indirect
 	sigs.k8s.io/json v0.0.0-20250730193827-2d320260d730 // indirect
 	sigs.k8s.io/randfill v1.0.0 // indirect
-	sigs.k8s.io/structured-merge-diff/v6 v6.3.2 // indirect
+	sigs.k8s.io/structured-merge-diff/v6 v6.3.3 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
 
