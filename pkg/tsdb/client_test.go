@@ -19,7 +19,7 @@ import (
 
 var (
 	expectedSeries             Response[[]model.LabelSet]
-	expectedLabels             Response[[]string]
+	expectedLabels             Response[model.LabelNames]
 	expectedQueryLookback      model.Duration
 	expectedQueryRangeLookback model.Duration
 )
@@ -82,11 +82,9 @@ func testTSDBServer(emptyResponse bool) *httptest.Server {
 		},
 	}
 
-	expectedLabels = Response[[]string]{
+	expectedLabels = Response[model.LabelNames]{
 		Status: "success",
-		Data: []string{
-			"job", "instance", "__name__",
-		},
+		Data:   model.LabelNames{"job", "instance", "__name__"},
 	}
 
 	expectedQuery := Response[any]{
