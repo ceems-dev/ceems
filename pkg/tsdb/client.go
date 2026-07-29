@@ -209,7 +209,7 @@ func (t *Client) Series(ctx context.Context, matchers []string, start time.Time,
 }
 
 // Labels makes a Client query to get list of labels.
-func (t *Client) Labels(ctx context.Context, matchers []string, start time.Time, end time.Time) ([]string, error) {
+func (t *Client) Labels(ctx context.Context, matchers []string, start time.Time, end time.Time) (model.LabelNames, error) {
 	// Make API request to get labels
 	labels, warnings, err := t.API.LabelNames(ctx, matchers, start, end)
 	if err != nil {
