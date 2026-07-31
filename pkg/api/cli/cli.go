@@ -145,7 +145,7 @@ func NewCEEMSServer() (*CEEMSServer, error) {
 //
 // @externalDocs.url			https://ceems-dev.github.io/ceems/
 //
-// @x-logo						{"url": "https://raw.githubusercontent.com/ceems-dev/ceems/refs/heads/main/website/static/img/logo.png", "altText": "CEEMS logo"}.
+// @x-logo						{"url": "https://raw.githubusercontent.com/ceems-dev/ceems/refs/heads/main/website/static/img/logo.png", "altText": "CEEMS logo"}
 func (b *CEEMSServer) Main() error {
 	// CLI vars
 	var (
