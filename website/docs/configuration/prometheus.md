@@ -11,7 +11,7 @@ functionality is leveraged to estimate energy consumption and emissions of indiv
 compute units. More details on how to generate recording rules are described in the
 [repository](https://github.com/@ceemsOrg@/@ceemsRepo@/tree/main/etc/prometheus).
 
-:::IMPORTANT[IMPORTANT]
+:::important[IMPORTANT]
 
 Always use an `evaluation_interval` that is same as the `scrape_interval` while generating
 recording rules using `ceems_tool`. Having an `evaluation_interval` bigger than `scrape_interval`
