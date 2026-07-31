@@ -47,8 +47,15 @@ be eventually used in the Grafana dashboards. Once Prometheus has been configure
 target nodes, we can use `ceems_tool` as follows:
 
 ```bash
-ceems_tool tsdb create-recording-rules --url=http://localhost:9090 --country-code=FR
+ceems_tool tsdb create-recording-rules --url=http://localhost:9090 --country-code=FR --eval-interval=30s
 ```
+
+:::important[IMPORTANT]
+
+As a rule of thumb, use a `--eval-interval` same as the scrape interval of the scrape targets
+that produce the metrics used in recording rules.
+
+:::
 
 :::important[IMPORTANT]
 

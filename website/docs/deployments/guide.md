@@ -385,6 +385,7 @@ The scrape jobs configuration would be as follows:
 # A list of scrape configurations.
 scrape_configs:
   - job_name: cpu-nodes
+    scrape_interval: 30s
     scheme: http
     metrics_path: /metrics
     basic_auth:
@@ -395,6 +396,7 @@ scrape_configs:
         - compute-0:9010
 
   - job_name: gpu-nodes
+    scrape_interval: 30s
     scheme: http
     metrics_path: /metrics
     basic_auth:
@@ -409,6 +411,7 @@ scrape_configs:
   # on service node to pull real-time emission factors
   # from RTE eCo2 mix and/or Electricity Maps
   - job_name: service-nodes
+    scrape_interval: 30s
     scheme: http
     metrics_path: /metrics
     basic_auth:
@@ -467,7 +470,7 @@ there is no need to make calculation each time we want to make queries.
 Recording rules can be created using `ceems_tool` using the following command:
 
 ```bash
-./bin/ceems_tool tsdb create-recording-rules --url=http://<PROMETHEUS_BASIC_AUTH_USERNAME>:<PROMETHEUS_BASIC_AUTH_PASSWORD>@service-0:9090 --country-code=FR
+./bin/ceems_tool tsdb create-recording-rules --url=http://<PROMETHEUS_BASIC_AUTH_USERNAME>:<PROMETHEUS_BASIC_AUTH_PASSWORD>@service-0:9090 --country-code=FR --eval-interval=30s
 ```
 
 :::important[IMPORTANT]
@@ -491,6 +494,14 @@ files in the current directory inside a folder named `rules`. Copy these rules f
 rule_files:
   - /etc/prometheus/rules/*.rules
 ```
+
+:::important[IMPORTANT]
+
+In the current example, the `scrape_configs` use a `scrape_interval` of `30s`. Hence, the
+CLI flag `--eval-interval` set to `30s` as well. As a rule of thumb, use `evaluate_interval`
+on the recording rules same as `scrape_interval` as the scrape targets.
+
+:::
 
 Reload Prometheus and verify the rules are being evaluated and recorded correctly.
 
@@ -576,7 +587,8 @@ updaters:
         username: <PROMETHEUS_BASIC_AUTH_USERNAME>
         password: <PROMETHEUS_BASIC_AUTH_PASSWORD>
     extra_config:
-      queries: <QUERIES_OUTPUT>
+      scrape_interval: 30s
+      evaluation_interval: 30s
 ```
 
 Finally, we need to configure `clusters` section in the configuration file. `clusters`
@@ -604,6 +616,13 @@ clusters:
     cli:
       path: /usr/bin
 ```
+
+:::important[IMPORTANT]
+
+It is highly recommended to use `ceems_api_server.data.update_interval` at least 10 times
+bigger than TSDB's scrape interval for best results.
+
+:::
 
 With the above `clusters` and `updaters` configurations in-place in
 `/etc/ceems_api_server/config.yml`, we can enable and start the CEEMS API server

@@ -338,7 +338,7 @@ func New(c *Config) (*CEEMSServer, error) {
 // Start launches CEEMS HTTP server godoc.
 func (s *CEEMSServer) Start(_ context.Context) error {
 	// Set swagger info
-	// docs.SwaggerInfo.BasePath = "/api/" + base.APIVersion
+	docs.SwaggerInfo.BasePath = "/api/" + base.APIVersion
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 	docs.SwaggerInfo.Host = s.server.Addr
 
@@ -429,17 +429,25 @@ func (s *CEEMSServer) setWriteDeadline(deadline time.Duration, w http.ResponseWr
 //	@Description	This health endpoint can be used to check on the health of the API server
 //	@Description	in containerised and Kubernetes environments.
 //	@Description
-//	@Description			This endpoint does not need any user header. However, if basic auth
-//	@Description			is enabled, authentication header must be provided to get status.
-//	@servers.url			https://ceems-demo.myaddr.tools:6443
-//	@servers.description	Test CEEMS API server URL for health, swagger and debug endpoints only.
-//	@Security				BasicAuth
-//	@Tags					health
-//	@Produce				plain
-//	@Success				200	{string}	string	"OK"
-//	@Failure				401	{string}	string	"Unauthorized"
-//	@Failure				503	{string}	string	"KO"
-//	@Router					/health [get]
+//	@Description				This endpoint does not need any user header. However, if basic auth
+//	@Description				is enabled, authentication header must be provided to get status.
+//	@servers.url				https://ceems-demo.myaddr.tools:6443
+//	@servers.description		Demo CEEMS API server URL for health, swagger and debug endpoints only.
+//	@servers.url				{scheme}://{host}:{port}{basepath}
+//	@servers.description		Current CEEMS API server URL for health, swagger and debug endpoints only.
+//	@servers.variables.enum		scheme http
+//	@servers.variables.enum		scheme https
+//	@servers.variables.default	scheme http
+//	@servers.variables.default	host localhost
+//	@servers.variables.default	port 9020
+//	@servers.variables.default	basepath /api/v1
+//	@Security					BasicAuth
+//	@Tags						health
+//	@Produce					plain
+//	@Success					200	{string}	string	"OK"
+//	@Failure					401	{string}	string	"Unauthorized"
+//	@Failure					503	{string}	string	"KO"
+//	@Router						/health [get]
 //
 // GET /health
 // Get health status of the server.

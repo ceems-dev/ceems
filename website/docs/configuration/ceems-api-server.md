@@ -450,6 +450,10 @@ updaters:
     web:
       url: http://localhost:9090
     extra_config:
+      query_max_series: 50
+      query_min_samples: 0.5
+      scrape_interval: 15s
+      evaluation_interval: 15s
       cutoff_duration: 5m
       delete_ignored: true
       queries:
@@ -458,6 +462,14 @@ updaters:
           global: |
             avg_over_time(avg by (uuid) (uuid:ceems_cpu_usage:ratio_irate{uuid=~`{{.UUIDs}}`} >= 0 < inf)[{{.Range}}:])
 ```
+
+:::important[IMPORTANT]
+
+When `tsdb` updater has been configured to update unit metrics, it is highly recommended to
+use an `ceems_api_server.data.update_interval` at least 10 times the TSDB's scrape interval to
+have reliable estimation of metrics.
+
+:::
 
 Similar to `clusters`, `updaters` is also a list of objects where each object
 describes an `updater`. Currently, only the **TSDB** updater is supported to update
@@ -469,6 +481,17 @@ section.
 - `updater`: Name of the updater. Currently, only `tsdb` is allowed.
 - `web`: Web client configuration of the updater server.
 - `extra_config`: The `extra_config` allows to further configure the TSDB.
+  - `extra_config.query_max_series`: Number of different series used in the `extra_config.queries`
+    section. It will be used to estimate the batch size of TSDB updater.
+  - `extra_config.query_min_samples`: Minimum number of samples that are guaranteed to available
+    for executing the queries of the updater. It is expressed as proportion of `query_max_series`
+    and takes a value between 0 to 1. A smaller value means smaller batch sizes.
+  - `extra_config.scrape_interval`: Scrape interval corresponding to the scrape targets
+    that generate metrics provided in`queries` section. If not provided, global scrape interval
+    of TSDB will be used. HIGHLY RECOMMENDED TO CONFIGURE THIS WITH APPROPRIATE SCRAPE INTERVAL.
+  - `extra_config.evaluation_interval`: Evaluation interval corresponding to the recording rules
+    that generate metrics provided in`queries` section. If not provided, global evaluation interval
+    of TSDB will be used. HIGHLY RECOMMENDED TO CONFIGURE THIS WITH APPROPRIATE EVALUATION INTERVAL.
   - `extra_config.cutoff_duration`: The time series data of compute units that have
     a total elapsed time less than this period will be marked as ignored in the CEEMS API server database.
   - `extra_config.delete_ignored`: The compute units' labels that are marked as ignored
@@ -613,6 +636,8 @@ updaters:
       url: http://tsdb-0
     extra_config:
       cutoff_duration: 5m
+      scrape_interval: 15s
+      evaluation_interval: 15s
       queries:
         # Average CPU utilization
         avg_cpu_usage:

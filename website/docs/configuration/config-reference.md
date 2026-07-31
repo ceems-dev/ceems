@@ -520,6 +520,24 @@ extra_config:
   #
   [ query_min_samples: <float>  | default: 0.5 ]
 
+  # Scrape interval corresponding to the scrape targets that generate metrics provided in
+  # `queries` section.
+  # 
+  # Default value `0s` means global scrape interval of the TSDB instance will be used.
+  # 
+  # Units Supported: y, w, d, h, m, s, ms.
+  # 
+  [ scrape_interval: <duration> | default: 0s ]
+
+  # Evaluation interval corresponding to the recording rules that generate metrics provided in
+  # `queries` section.
+  # 
+  # Default value `0s` means global evaluation interval of the TSDB instance will be used.
+  # 
+  # Units Supported: y, w, d, h, m, s, ms.
+  # 
+  [ evaluation_interval: <duration> | default: 0s ]
+
   # Compute units that have a total lifetime less than this value will be deleted from 
   # TSDB to reduce the number of labels and cardinality.
   #

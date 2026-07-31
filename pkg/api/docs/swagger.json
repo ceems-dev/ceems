@@ -1008,8 +1008,12 @@
                 ],
                 "servers": [
                     {
-                        "description": "Test CEEMS API server URL for health, swagger and debug endpoints only.",
+                        "description": "Demo CEEMS API server URL for health, swagger and debug endpoints only.",
                         "url": "https://ceems-demo.myaddr.tools:6443"
+                    },
+                    {
+                        "description": "Current CEEMS API server URL for health, swagger and debug endpoints only.",
+                        "url": "{scheme}://{host}:{port}{basepath}"
                     }
                 ],
                 "summary": "Health check endpoint for API server.",
@@ -2132,8 +2136,30 @@
     "openapi": "3.1.0",
     "servers": [
         {
-            "description": "Test CEEMS API server URL.",
+            "description": "Demo CEEMS API server URL.",
             "url": "https://ceems-demo.myaddr.tools:6443/api/v1"
+        },
+        {
+            "description": "Current CEEMS API server URL.",
+            "url": "{scheme}://{host}:{port}{basepath}",
+            "variables": {
+                "basepath": {
+                    "default": "/api/v1"
+                },
+                "host": {
+                    "default": "localhost"
+                },
+                "port": {
+                    "default": "9020"
+                },
+                "scheme": {
+                    "default": "http",
+                    "enum": [
+                        "http",
+                        "https"
+                    ]
+                }
+            }
         }
     ]
 }

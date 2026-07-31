@@ -94,13 +94,15 @@ var (
 
 // config is the container for the configuration of a given TSDB instance.
 type tsdbConfig struct {
-	QueryMaxSeries  int64                        `yaml:"query_max_series"`
-	QueryMinSamples float64                      `yaml:"query_min_samples"`
-	CutoffDuration  model.Duration               `yaml:"cutoff_duration"`
-	QueryTimeout    model.Duration               `yaml:"query_timeout"`
-	DeleteIgnore    bool                         `yaml:"delete_ignored"`
-	Queries         map[string]map[string]string `yaml:"queries"`
-	LabelsToDrop    []string                     `yaml:"labels_to_drop"`
+	QueryMaxSeries     int64                        `yaml:"query_max_series"`
+	QueryMinSamples    float64                      `yaml:"query_min_samples"`
+	ScrapeInterval     model.Duration               `yaml:"scrape_interval"`
+	EvaluationInterval model.Duration               `yaml:"evaluation_interval"`
+	CutoffDuration     model.Duration               `yaml:"cutoff_duration"`
+	QueryTimeout       model.Duration               `yaml:"query_timeout"`
+	DeleteIgnore       bool                         `yaml:"delete_ignored"`
+	Queries            map[string]map[string]string `yaml:"queries"`
+	LabelsToDrop       []string                     `yaml:"labels_to_drop"`
 }
 
 // defaults set struct fields to default values.
@@ -155,6 +157,14 @@ func (c *tsdbConfig) validate() error {
 		return errors.New("query_timeout must be a valid time duration")
 	}
 
+	if c.ScrapeInterval < 0 {
+		return errors.New("scrape_interval must be a valid time duration")
+	}
+
+	if c.EvaluationInterval < 0 {
+		return errors.New("evaluation_interval must be a valid time duration")
+	}
+
 	return nil
 }
 
@@ -198,6 +208,11 @@ func New(instance updater.Instance, logger *slog.Logger) (updater.Updater, error
 		logger.Error("Failed to validate TSDB updater config", "instance_id", instance.ID, "err", err)
 
 		return nil, err
+	}
+
+	// Emit warning if scrape and evaluation intervals have not been configured
+	if config.ScrapeInterval <= 0 || config.EvaluationInterval <= 0 {
+		logger.Warn("No values configured for scrape_interval and/or evaluation_interval. It is highly recommended to configure updater with appropriate values for scrape_interval and evaluation_interval")
 	}
 
 	// Check HTTP client config
@@ -270,6 +285,8 @@ func (t *tsdbUpdater) fetchAggMetrics(
 
 	// If duration is less than rateInterval bail
 	if duration < settings.RateInterval {
+		t.Logger.Warn("Skipping updating units with TSDB updater as update_interval is too small. Use an update_interval that is > 10 * scrape interval of TSDB", "update_interval", duration, "scrape_interval", settings.ScrapeInterval)
+
 		return aggMetrics
 	}
 
@@ -359,6 +376,8 @@ func (t *tsdbUpdater) update(
 ) []models.Unit {
 	// Bail if TSDB is unavailable or there are no units to update
 	if !t.Available() || len(units) == 0 {
+		t.Logger.Warn("TSDB server unavailable or no units to update", "tsdb_server_available", t.Available(), "num_units", len(units))
+
 		return units
 	}
 
@@ -413,6 +432,21 @@ func (t *tsdbUpdater) update(
 	// Get current TSDB settings
 	// Get rate and scrape intervals
 	settings := t.Settings(ctx)
+
+	// If scrape and evaluation intervals have been provided, use them instead of global value
+	if t.config.ScrapeInterval > 0 {
+		settings.ScrapeInterval = time.Duration(t.config.ScrapeInterval)
+		settings.RateInterval = 4 * time.Duration(t.config.ScrapeInterval)
+	}
+
+	if t.config.EvaluationInterval > 0 {
+		settings.EvaluationInterval = time.Duration(t.config.EvaluationInterval)
+	}
+
+	// Emit a warning if evaluation interval is larger than scrape interval
+	if t.config.EvaluationInterval > t.config.ScrapeInterval {
+		t.Logger.Warn("evaluation_interval is found to be greater than scrape_interval. It is recommended to use evalution_interval same as scrape_interval on TSDB server")
+	}
 
 	// Estimate a batch size based on scrape interval, duration, query max samples and total time series
 	samplesPerSeries := max(int64(duration.Seconds()/settings.ScrapeInterval.Seconds()), 1)

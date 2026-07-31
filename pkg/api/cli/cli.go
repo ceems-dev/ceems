@@ -132,11 +132,20 @@ func NewCEEMSServer() (*CEEMSServer, error) {
 //	@securityDefinitions.basic	BasicAuth
 //
 //	@servers.url				https://ceems-demo.myaddr.tools:6443/api/v1
-//	@servers.description		Test CEEMS API server URL.
+//	@servers.description		Demo CEEMS API server URL.
 //
-//	@externalDocs.url			https://ceems-dev.github.io/ceems/
+// @servers.url				{scheme}://{host}:{port}{basepath}
+// @servers.description		Current CEEMS API server URL.
+// @servers.variables.enum		scheme http
+// @servers.variables.enum		scheme https
+// @servers.variables.default	scheme http
+// @servers.variables.default	host localhost
+// @servers.variables.default	port 9020
+// @servers.variables.default	basepath /api/v1
 //
-//	@x-logo						{"url": "https://raw.githubusercontent.com/ceems-dev/ceems/refs/heads/main/website/static/img/logo.png", "altText": "CEEMS logo"}
+// @externalDocs.url			https://ceems-dev.github.io/ceems/
+//
+// @x-logo						{"url": "https://raw.githubusercontent.com/ceems-dev/ceems/refs/heads/main/website/static/img/logo.png", "altText": "CEEMS logo"}
 func (b *CEEMSServer) Main() error {
 	// CLI vars
 	var (
