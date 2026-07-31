@@ -131,8 +131,14 @@ func NewCEEMSServer() (*CEEMSServer, error) {
 //
 //	@securityDefinitions.basic	BasicAuth
 //
+//	@servers.url				http://localhost:9020/api/v1
+//	@servers.description		Current CEEMS API server URL.
+//
+//	@servers.url				https://{host}:{port}/{basepath}
+//	@servers.description		Current CEEMS API server URL with non default host and port.
+//
 //	@servers.url				https://ceems-demo.myaddr.tools:6443/api/v1
-//	@servers.description		Test CEEMS API server URL.
+//	@servers.description		Demo CEEMS API server URL.
 //
 //	@externalDocs.url			https://ceems-dev.github.io/ceems/
 //

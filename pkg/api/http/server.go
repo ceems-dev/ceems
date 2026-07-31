@@ -338,7 +338,7 @@ func New(c *Config) (*CEEMSServer, error) {
 // Start launches CEEMS HTTP server godoc.
 func (s *CEEMSServer) Start(_ context.Context) error {
 	// Set swagger info
-	// docs.SwaggerInfo.BasePath = "/api/" + base.APIVersion
+	docs.SwaggerInfo.BasePath = "/api/" + base.APIVersion
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 	docs.SwaggerInfo.Host = s.server.Addr
 
@@ -431,8 +431,12 @@ func (s *CEEMSServer) setWriteDeadline(deadline time.Duration, w http.ResponseWr
 //	@Description
 //	@Description			This endpoint does not need any user header. However, if basic auth
 //	@Description			is enabled, authentication header must be provided to get status.
+//	@servers.url			http://localhost:9020/api/v1
+//	@servers.description	Current CEEMS API server URL for health, swagger and debug endpoints only.
+//	@servers.url			https://{host}:{port}/{basepath}
+//	@servers.description	Current CEEMS API server URL with non default host and port for health, swagger and debug endpoints only.
 //	@servers.url			https://ceems-demo.myaddr.tools:6443
-//	@servers.description	Test CEEMS API server URL for health, swagger and debug endpoints only.
+//	@servers.description	Demo CEEMS API server URL for health, swagger and debug endpoints only.
 //	@Security				BasicAuth
 //	@Tags					health
 //	@Produce				plain
