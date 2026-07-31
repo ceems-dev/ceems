@@ -13,6 +13,9 @@ being scrapped by Prometheus successfully. We recommend to this tool to generate
 recording rules for your deployment. More details on how to generate rules can be
 found in [docs](https://ceems-dev.github.io/ceems/docs/usage/ceems-tool).
 
+> [!IMPORTANT]
+> ALWAYS USE `evaluation_interval` THAT IS SAME AS THE `scrape_interval` FOR BEST RESULTS.
+
 ## Rules
 
 The following recording rules files are provided for reference purposes and `ceems_tool`
