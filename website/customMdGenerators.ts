@@ -20,6 +20,10 @@ ${servers
     if (!server.description) {
       server.description = 'Demo';
     }
+    // Ignore placeholder server
+    if (server.url.startsWith("{scheme}")) {
+      return
+    }
     return `| ${server.url} | ${server.description} | `.replace(/\n/g, "<br/>");
   })
   .join("\n")}

@@ -1015,16 +1015,12 @@ const docTemplate = `{
                 ],
                 "servers": [
                     {
-                        "description": "Current CEEMS API server URL for health, swagger and debug endpoints only.",
-                        "url": "http://localhost:9020/api/v1"
-                    },
-                    {
-                        "description": "Current CEEMS API server URL with non default host and port for health, swagger and debug endpoints only.",
-                        "url": "https://{host}:{port}/{basepath}"
-                    },
-                    {
                         "description": "Demo CEEMS API server URL for health, swagger and debug endpoints only.",
                         "url": "https://ceems-demo.myaddr.tools:6443"
+                    },
+                    {
+                        "description": "Current CEEMS API server URL for health, swagger and debug endpoints only.",
+                        "url": "{scheme}://{host}:{port}{basepath}"
                     }
                 ],
                 "summary": "Health check endpoint for API server.",
@@ -2147,27 +2143,30 @@ const docTemplate = `{
     "openapi": "3.1.0",
     "servers": [
         {
-            "description": "Current CEEMS API server URL.",
-            "url": "http://localhost:9020/api/v1"
-        },
-        {
-            "description": "Current CEEMS API server URL with non default host and port.",
-            "url": "https://{host}:{port}/{basepath}",
-            "variables": {
-                "basepath": {
-                    "default": ""
-                },
-                "host": {
-                    "default": ""
-                },
-                "port": {
-                    "default": ""
-                }
-            }
-        },
-        {
             "description": "Demo CEEMS API server URL.",
             "url": "https://ceems-demo.myaddr.tools:6443/api/v1"
+        },
+        {
+            "description": "Current CEEMS API server URL.",
+            "url": "{scheme}://{host}:{port}{basepath}",
+            "variables": {
+                "basepath": {
+                    "default": "/api/v1"
+                },
+                "host": {
+                    "default": "localhost"
+                },
+                "port": {
+                    "default": "9020"
+                },
+                "scheme": {
+                    "default": "http",
+                    "enum": [
+                        "http",
+                        "https"
+                    ]
+                }
+            }
         }
     ]
 }`
