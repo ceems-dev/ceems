@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.15.0 / 2026-08-04
+
+- [MAINT] Document the constraints around TSDB scrape interval and CEEMS API server's update interval [#575](https://github.com/ceems-dev/ceems/pull/575) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [FEAT] feat: Support querying all users in cacct for admins [#556](https://github.com/ceems-dev/ceems/pull/556) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Add trusted IP prefixes to API server CLI args [#554](https://github.com/ceems-dev/ceems/pull/554) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump dependencies [#552](https://github.com/ceems-dev/ceems/pull/552), [#560](https://github.com/ceems-dev/ceems/pull/560), [#561](https://github.com/ceems-dev/ceems/pull/561), [#562](https://github.com/ceems-dev/ceems/pull/562), [#563](https://github.com/ceems-dev/ceems/pull/563), [#564](https://github.com/ceems-dev/ceems/pull/564), [#565](https://github.com/ceems-dev/ceems/pull/565), [#567](https://github.com/ceems-dev/ceems/pull/567), [#568](https://github.com/ceems-dev/ceems/pull/568), [#569](https://github.com/ceems-dev/ceems/pull/569), [#570](https://github.com/ceems-dev/ceems/pull/570), [#571](https://github.com/ceems-dev/ceems/pull/571), [#572](https://github.com/ceems-dev/ceems/pull/572), [#576](https://github.com/ceems-dev/ceems/pull/576), [#577](https://github.com/ceems-dev/ceems/pull/577), [#578](https://github.com/ceems-dev/ceems/pull/578), [#579](https://github.com/ceems-dev/ceems/pull/579), [#580](https://github.com/ceems-dev/ceems/pull/580) ([@dependabot](https://github.com/dependabot))
+
 ## 0.14.4 / 2026-07-05
 
 - [CI] Fix app token creation in reusable workflow [#550](https://github.com/ceems-dev/ceems/pull/550) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
