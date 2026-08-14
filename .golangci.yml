@@ -92,6 +92,7 @@ linters:
       - third_party$
       - builtin$
       - examples$
+      - website$
 formatters:
   enable:
     - gci

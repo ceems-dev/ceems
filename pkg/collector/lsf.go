@@ -446,7 +446,8 @@ func (c *lsfCollector) jobResources(cgroups []cgroup) {
 		}
 	}
 
-	// If no MIG devices found, nothing to do here
+	// If MIG is enabled, we need privileges to read proc environ files to get MIG
+	// device IDs
 	if nvidiaMIGEnabled && len(c.securityContexts) == 0 {
 		c.logger.Warn("GPU Instances enabled but collector does not have enough permissions to fetch job MIG devices. Please restart the exporter")
 	}

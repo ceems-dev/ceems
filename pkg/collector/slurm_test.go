@@ -37,8 +37,9 @@ func mockGPUDevices(numDevs int, migInst []int) []Device {
 		}
 
 		if slices.Contains(migInst, i) {
-			for _, inst := range migInstances {
+			for iinst, inst := range migInstances {
 				inst.Index = strconv.Itoa(idev)
+				inst.UUID = fmt.Sprintf("MIG-%d-%d", i, iinst)
 				devs[i].Instances = append(devs[i].Instances, inst)
 				idev++
 			}

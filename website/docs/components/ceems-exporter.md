@@ -17,8 +17,9 @@ eBPF based continuous profiling of compute units.
 
 These collectors export metrics from different resource managers.
 
-- Slurm collector: Exports SLURM job metrics like CPU, memory and GPU indices to job ID maps.
-- Lsf collector: Exports LSF job metrics like CPU, memory and GPU indices to job ID maps.
+- SLURM collector: Exports SLURM job metrics like CPU, memory and GPU indices to job ID maps.
+- LSF collector: Exports LSF job metrics like CPU, memory and GPU indices to job ID maps.
+- OpenPBS collector: Exports OpenPBS job metrics like CPU, memory and GPU indices to job ID maps.
 - Libvirt collector: Exports libvirt managed VMs metrics like CPU, memory, IO, _etc_.
 - k8s collector: Exports k8s managed pods metrics like CPU, memory, IO, _etc_.
 
@@ -261,9 +262,9 @@ of RDMA very well.
 
 ## Collectors
 
-### Slurm collector
+### SLURM collector
 
-Slurm collector exports the job related metrics like usage of CPU, DRAM, RDMA, _etc_.
+SLURM collector exports the job related metrics like usage of CPU, DRAM, RDMA, _etc_.
 This is done by walking through the cgroups created by SLURM daemon on compute node on
 every scrape request. As walking through the cgroups pseudo file system is _very cheap_,
 this will have zero to negligible impact on the actual job. The exporter has been
@@ -279,7 +280,7 @@ and `memory` accounting information, it is not possible to estimate energy consu
 of the job.
 
 More details on how to configure SLURM to get accounting information from cgroups can
-be found in [Configuration](../configuration/resource-managers.md) section.
+be found in [Configuration](../configuration/resource-managers.md#slurm) section.
 
 :::
 
@@ -317,7 +318,7 @@ and [eBPF](./ceems-exporter.md#ebpf-sub-collector) sub-collectors. Hence, in
 addition to the above stated metrics, all the metrics available in the sub-collectors
 can also be reported for each cgroup.
 
-### Lsf collector
+### LSF collector
 
 LSF collector exports the job related metrics like usage of CPU, DRAM, RDMA, _etc_.
 It works exactly like Slurm collector and it supports both cgroups **v1** and **v2**.
@@ -325,12 +326,12 @@ It works exactly like Slurm collector and it supports both cgroups **v1** and **
 :::warning[WARNING]
 
 LSF must be configured to use cgroup controllers for the collector to work properly.
-More details on how to configure SLURM to get accounting information from cgroups can
-be found in [Configuration](../configuration/resource-managers.md) section.
+More details on how to configure LSF to get accounting information from cgroups can
+be found in [Configuration](../configuration/resource-managers.md#lsf) section.
 
 :::
 
-Currently, the list of job related metrics exported by SLURM exporter are as follows:
+Currently, the list of job related metrics exported by LSF exporter are as follows:
 
 - Job current CPU time in user and system mode
 - Job CPUs limit (Number of CPUs allocated to the job)
@@ -352,7 +353,50 @@ More information on the metrics can be found in kernel documentation of
 [cgroups v1](https://www.kernel.org/doc/Documentation/cgroup-v1/memory.txt) and
 [cgroups v2](https://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git/tree/Documentation/admin-guide/cgroup-v2.rst).
 
-Lsf collector supports [perf](./ceems-exporter.md#perf-sub-collector)
+LSF collector supports [perf](./ceems-exporter.md#perf-sub-collector)
+and [eBPF](./ceems-exporter.md#ebpf-sub-collector) sub-collectors. Hence, in
+addition to the above stated metrics, all the metrics available in the sub-collectors
+can also be reported for each cgroup.
+
+### OpenPBS collector
+
+:::note[NOTE]
+
+Currently, OpenPBS supports only cgroups **v1**.
+
+:::
+
+OpenPBS collector exports the job related metrics like usage of CPU, DRAM, _etc_.
+It works exactly like SLURM and LSF collectors and it supports both cgroups only **v1**.
+
+:::warning[WARNING]
+
+OpenPBS must be configured to use cgroup hook for the collector to work properly.
+More details on how to configure OpenPBS to get accounting information from cgroups can
+be found in [Configuration](../configuration/resource-managers.md#openpbs) section.
+
+:::
+
+Currently, the list of job related metrics exported by OpenPBS exporter are as follows:
+
+- Job current CPU time in user and system mode
+- Job CPUs limit (Number of CPUs allocated to the job)
+- Job current total memory usage
+- Job total memory limit (Memory allocated to the job)
+- Job current RSS memory usage
+- Job current cache memory usage
+- Job current number of memory usage hits limits
+- Job current memory and swap usage
+- Job current memory and swap usage hits limits
+- Job total memory and swap limit
+- Job CPU and memory pressures
+- Job to GPU ordinal mapping (when GPUs found on the compute node)
+- Current number of jobs on the compute node
+
+More information on the metrics can be found in kernel documentation of
+[cgroups v1](https://www.kernel.org/doc/Documentation/cgroup-v1/memory.txt).
+
+OpenPBS collector supports [perf](./ceems-exporter.md#perf-sub-collector)
 and [eBPF](./ceems-exporter.md#ebpf-sub-collector) sub-collectors. Hence, in
 addition to the above stated metrics, all the metrics available in the sub-collectors
 can also be reported for each cgroup.
@@ -396,7 +440,7 @@ Currently, the list of metrics exported by Libvirt exporter are as follows:
 - Instance to GPU ordinal mapping (when GPUs found on the compute node)
 - Current number of instances on the compute node
 
-Similar to Slurm, libvirt exporter supports
+Similar to SLURM, LSF and OpenPBS collectors, libvirt exporter supports
 [perf](./ceems-exporter.md#perf-sub-collector)
 and [eBPF](./ceems-exporter.md#ebpf-sub-collector) sub-collectors.
 
@@ -441,7 +485,7 @@ Currently, the list of metrics exported by Libvirt exporter are as follows:
 - Pod to GPU ordinal mapping (when GPUs found on the compute node)
 - Current number of pods on the compute node
 
-Similar to Slurm and libvirt collectors, k8s collector supports
+Similar to SLURM, LS, OpenPBS and libvirt collectors, k8s collector supports
 [perf](./ceems-exporter.md#perf-sub-collector)
 and [eBPF](./ceems-exporter.md#ebpf-sub-collector) sub-collectors.
 

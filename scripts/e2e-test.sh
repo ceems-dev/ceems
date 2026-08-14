@@ -95,6 +95,11 @@ then
     cgroups_mode="unified"
     desc="Cgroups V2 enabling all available cgroups metrics"
     fixture='pkg/collector/testdata/output/exporter/e2e-test-cgroupsv2-all-metrics-output.txt'
+  elif [ "${scenario}" = "exporter-cgroups-v1-openpbs" ]
+  then
+    cgroups_mode="legacy"
+    desc="Cgroups V1 with OpenPBS"
+    fixture='pkg/collector/testdata/output/exporter/e2e-test-cgroupsv1-openpbs-output.txt'
   elif [ "${scenario}" = "exporter-cgroups-v1-lsf" ]
   then
     cgroups_mode="legacy"
@@ -789,6 +794,26 @@ then
         --collector.redfish \
         --collector.redfish.config.file="pkg/collector/testdata/redfish/config.yml" \
         --collector.redfish.config.file.expand-env-vars \
+        --collector.rapl \
+        --collector.force-hostname="testhost-1" \
+        --web.listen-address "127.0.0.1:${port}" \
+        --web.disable-exporter-metrics \
+        --log.level="debug" > "${logfile}" 2>&1 &
+  elif [ "${scenario}" = "exporter-cgroups-v1-openpbs" ] 
+  then
+      ./bin/ceems_exporter \
+        --path.sysfs="pkg/collector/testdata/sys" \
+        --path.cgroupfs="pkg/collector/testdata/sys/fs/cgroup" \
+        --path.procfs="pkg/collector/testdata/proc" \
+        --collector.cgroups.force-version="v1" \
+        --collector.openpbs \
+        --collector.gpu.type="nvidia" \
+        --collector.gpu.nvidia-smi-path="pkg/collector/testdata/nvidia-smi" \
+        --collector.openpbs.swap-memory-metrics \
+        --collector.openpbs.psi-metrics \
+        --collector.ipmi \
+        --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/capmc/capmc" \
+        --collector.ipmi.test-mode \
         --collector.rapl \
         --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:${port}" \

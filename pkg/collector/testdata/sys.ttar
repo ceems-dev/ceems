@@ -15571,6 +15571,695 @@ Path: sys/fs/cgroup/cpu,cpuacct/machine.slice/tasks
 Lines: 0
 Mode: 644
 # ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Directory: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service
+Mode: 775
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Directory: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid
+Mode: 775
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Directory: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1
+Mode: 775
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cgroup.clone_children
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cgroup.procs
+Lines: 2
+462311
+462811
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cpu.cfs_period_us
+Lines: 1
+100000
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cpu.cfs_quota_us
+Lines: 1
+-1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cpu.shares
+Lines: 1
+128
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cpu.stat
+Lines: 3
+nr_periods 0
+nr_throttled 0
+throttled_time 0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cpu.uclamp.max
+Lines: 1
+max
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cpu.uclamp.min
+Lines: 1
+0.00
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cpuacct.stat
+Lines: 2
+user 271589
+system 31
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cpuacct.usage
+Lines: 1
+2716070378491
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cpuacct.usage_all
+Lines: 65
+cpu user system
+0 3617941 0
+1 3466674 0
+2 2464381 0
+3 110727 0
+4 117087 0
+5 107376 0
+6 31139737432 0
+7 103156 0
+8 952534 0
+9 256544 0
+10 101791 0
+11 100726 0
+12 102520 0
+13 4091795 0
+14 302000014076 0
+15 937170 0
+16 10404013056 0
+17 102176 0
+18 318676237460 0
+19 102781 0
+20 318565202290 0
+21 113043 0
+22 98298 0
+23 106840 0
+24 98128 0
+25 56832 0
+26 100919 0
+27 111584 0
+28 98625 0
+29 100357 0
+30 101949 0
+31 3573016 0
+32 1334160 0
+33 33278831 0
+34 112800 0
+35 99583 0
+36 349442723800 0
+37 678407958302 0
+38 26587974146 0
+39 103749 0
+40 106118 0
+41 1880427 0
+42 106070 0
+43 10426005 0
+44 97570 0
+45 176452 0
+46 104389 0
+47 2197981631 0
+48 103295 0
+49 678404433572 0
+50 100911 0
+51 136282204 0
+52 98864 0
+53 108312 0
+54 98822 0
+55 104815 0
+56 97639 0
+57 4991351 0
+58 98431 0
+59 103667 0
+60 99958 0
+61 198049 0
+62 101236 0
+63 32394048 0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cpuacct.usage_percpu
+Lines: 1
+3617941 3466674 2464381 110727 117087 107376 31139737432 103156 952534 256544 101791 100726 102520 4091795 302000014076 937170 10404013056 102176 318676237460 102781 318565202290 113043 98298 106840 98128 56832 100919 111584 98625 100357 101949 3573016 1334160 33278831 112800 99583 349442723800 678407958302 26587974146 103749 106118 1880427 106070 10426005 97570 176452 104389 2197981631 103295 678404433572 100911 136282204 98864 108312 98822 104815 97639 4991351 98431 103667 99958 198049 101236 32394048 
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cpuacct.usage_percpu_sys
+Lines: 1
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cpuacct.usage_percpu_user
+Lines: 1
+3617941 3466674 2464381 110727 117087 107376 31139737432 103156 952534 256544 101791 100726 102520 4091795 302000014076 937170 10404013056 102176 318676237460 102781 318565202290 113043 98298 106840 98128 56832 100919 111584 98625 100357 101949 3573016 1334160 33278831 112800 99583 349442723800 678407958302 26587974146 103749 106118 1880427 106070 10426005 97570 176452 104389 2197981631 103295 678404433572 100911 136282204 98864 108312 98822 104815 97639 4991351 98431 103667 99958 198049 101236 32394048 
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cpuacct.usage_sys
+Lines: 1
+0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/cpuacct.usage_user
+Lines: 1
+2716070378491
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/notify_on_release
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009248.testhost-1/tasks
+Lines: 16
+35399
+35407
+35408
+35411
+35412
+35413
+35414
+35415
+35416
+35417
+35418
+35419
+35420
+35421
+35422
+35423
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Directory: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1
+Mode: 775
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cgroup.clone_children
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cgroup.procs
+Lines: 2
+46235
+46236
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cpu.cfs_period_us
+Lines: 1
+100000
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cpu.cfs_quota_us
+Lines: 1
+-1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cpu.shares
+Lines: 1
+32
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cpu.stat
+Lines: 3
+nr_periods 0
+nr_throttled 0
+throttled_time 0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cpu.uclamp.max
+Lines: 1
+max
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cpu.uclamp.min
+Lines: 1
+0.00
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuacct.stat
+Lines: 2
+user 260803
+system 12
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuacct.usage
+Lines: 1
+2608072837534
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuacct.usage_all
+Lines: 65
+cpu user system
+0 31682413973 0
+1 0 0
+2 324444826510 0
+3 0 0
+4 327749710546 0
+5 0 0
+6 620608955611 0
+7 0 0
+8 0 0
+9 0 0
+10 0 0
+11 0 0
+12 0 0
+13 3982543 0
+14 0 0
+15 0 0
+16 0 0
+17 0 0
+18 0 0
+19 0 0
+20 0 0
+21 0 0
+22 0 0
+23 0 0
+24 0 0
+25 0 0
+26 0 0
+27 0 0
+28 0 0
+29 0 0
+30 0 0
+31 0 0
+32 651763642983 0
+33 0 0
+34 651781530339 0
+35 0 0
+36 12296 0
+37 0 0
+38 37762733 0
+39 0 0
+40 0 0
+41 0 0
+42 0 0
+43 0 0
+44 0 0
+45 0 0
+46 0 0
+47 0 0
+48 0 0
+49 0 0
+50 0 0
+51 0 0
+52 0 0
+53 0 0
+54 0 0
+55 0 0
+56 0 0
+57 0 0
+58 0 0
+59 0 0
+60 0 0
+61 0 0
+62 0 0
+63 0 0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuacct.usage_percpu
+Lines: 1
+31682413973 0 324444826510 0 327749710546 0 620608955611 0 0 0 0 0 0 3982543 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 651763642983 0 651781530339 0 12296 0 37762733 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuacct.usage_percpu_sys
+Lines: 1
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuacct.usage_percpu_user
+Lines: 1
+31682413973 0 324444826510 0 327749710546 0 620608955611 0 0 0 0 0 0 3982543 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 651763642983 0 651781530339 0 12296 0 37762733 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuacct.usage_sys
+Lines: 1
+0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuacct.usage_user
+Lines: 1
+2608072837534
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/notify_on_release
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[0].testhost-1/tasks
+Lines: 16
+35464
+35475
+35476
+35479
+35480
+35481
+35482
+35483
+35484
+35485
+35486
+35487
+35488
+35489
+35490
+35491
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Directory: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1
+Mode: 775
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cgroup.clone_children
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cgroup.procs
+Lines: 2
+26242
+46233
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cpu.cfs_period_us
+Lines: 1
+100000
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cpu.cfs_quota_us
+Lines: 1
+-1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cpu.shares
+Lines: 1
+32
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cpu.stat
+Lines: 3
+nr_periods 0
+nr_throttled 0
+throttled_time 0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cpu.uclamp.max
+Lines: 1
+max
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cpu.uclamp.min
+Lines: 1
+0.00
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuacct.stat
+Lines: 2
+user 248349
+system 10
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuacct.usage
+Lines: 1
+2483616433633
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuacct.usage_all
+Lines: 65
+cpu user system
+0 0 0
+1 0 0
+2 0 0
+3 0 0
+4 0 0
+5 0 0
+6 0 0
+7 0 0
+8 620688044645 0
+9 0 0
+10 620667779891 0
+11 0 0
+12 620660140246 0
+13 0 0
+14 318579209808 0
+15 0 0
+16 0 0
+17 0 0
+18 0 0
+19 0 0
+20 0 0
+21 0 0
+22 0 0
+23 0 0
+24 0 0
+25 0 0
+26 0 0
+27 0 0
+28 0 0
+29 0 0
+30 0 0
+31 0 0
+32 0 0
+33 0 0
+34 0 0
+35 0 0
+36 0 0
+37 0 0
+38 0 0
+39 0 0
+40 845095554 0
+41 0 0
+42 5540991 0
+43 0 0
+44 302102645537 0
+45 4220958 0
+46 63756003 0
+47 0 0
+48 0 0
+49 0 0
+50 0 0
+51 0 0
+52 0 0
+53 0 0
+54 0 0
+55 0 0
+56 0 0
+57 0 0
+58 0 0
+59 0 0
+60 0 0
+61 0 0
+62 0 0
+63 0 0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuacct.usage_percpu
+Lines: 1
+0 0 0 0 0 0 0 0 620688044645 0 620667779891 0 620660140246 0 318579209808 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 845095554 0 5540991 0 302102645537 4220958 63756003 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuacct.usage_percpu_sys
+Lines: 1
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuacct.usage_percpu_user
+Lines: 1
+0 0 0 0 0 0 0 0 620688044645 0 620667779891 0 620660140246 0 318579209808 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 845095554 0 5540991 0 302102645537 4220958 63756003 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuacct.usage_sys
+Lines: 1
+0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuacct.usage_user
+Lines: 1
+2483616433633
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/notify_on_release
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/1009249[1].testhost-1/tasks
+Lines: 16
+35526
+35543
+35544
+35547
+35548
+35549
+35550
+35551
+35552
+35553
+35554
+35555
+35556
+35557
+35558
+35559
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cgroup.clone_children
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cgroup.procs
+Lines: 0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cpu.cfs_period_us
+Lines: 1
+100000
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cpu.cfs_quota_us
+Lines: 1
+-1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cpu.shares
+Lines: 1
+1024
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cpu.stat
+Lines: 3
+nr_periods 0
+nr_throttled 0
+throttled_time 0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cpu.uclamp.max
+Lines: 1
+max
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cpu.uclamp.min
+Lines: 1
+0.00
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cpuacct.stat
+Lines: 2
+user 780742
+system 54
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cpuacct.usage
+Lines: 1
+7807711502608
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cpuacct.usage_all
+Lines: 65
+cpu user system
+0 31686031914 0
+1 3466674 0
+2 324447290891 0
+3 110727 0
+4 327749827633 0
+5 107376 0
+6 651748693043 0
+7 103156 0
+8 620688997179 0
+9 256544 0
+10 620667881682 0
+11 100726 0
+12 620660242766 0
+13 8074338 0
+14 620579223884 0
+15 937170 0
+16 10404013056 0
+17 102176 0
+18 318676237460 0
+19 102781 0
+20 318565202290 0
+21 113043 0
+22 98298 0
+23 106840 0
+24 98128 0
+25 56832 0
+26 100919 0
+27 111584 0
+28 98625 0
+29 100357 0
+30 101949 0
+31 3573016 0
+32 651764977143 0
+33 33278831 0
+34 651781643139 0
+35 99583 0
+36 349442736096 0
+37 678407958302 0
+38 26625736879 0
+39 103749 0
+40 845054016 0
+41 1880427 0
+42 5647061 0
+43 10426005 0
+44 302102743107 0
+45 4397410 0
+46 63860392 0
+47 2197981631 0
+48 103295 0
+49 678404433572 0
+50 100911 0
+51 136282204 0
+52 98864 0
+53 108312 0
+54 98822 0
+55 104815 0
+56 97639 0
+57 4991351 0
+58 98431 0
+59 103667 0
+60 99958 0
+61 198049 0
+62 101236 0
+63 32394048 0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cpuacct.usage_percpu
+Lines: 1
+31686031914 3466674 324447290891 110727 327749827633 107376 651748693043 103156 620688997179 256544 620667881682 100726 620660242766 8074338 620579223884 937170 10404013056 102176 318676237460 102781 318565202290 113043 98298 106840 98128 56832 100919 111584 98625 100357 101949 3573016 651764977143 33278831 651781643139 99583 349442736096 678407958302 26625736879 103749 845054016 1880427 5647061 10426005 302102743107 4397410 63860392 2197981631 103295 678404433572 100911 136282204 98864 108312 98822 104815 97639 4991351 98431 103667 99958 198049 101236 32394048 
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cpuacct.usage_percpu_sys
+Lines: 1
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cpuacct.usage_percpu_user
+Lines: 1
+31686031914 3466674 324447290891 110727 327749827633 107376 651748693043 103156 620688997179 256544 620667881682 100726 620660242766 8074338 620579223884 937170 10404013056 102176 318676237460 102781 318565202290 113043 98298 106840 98128 56832 100919 111584 98625 100357 101949 3573016 651764977143 33278831 651781643139 99583 349442736096 678407958302 26625736879 103749 845054016 1880427 5647061 10426005 302102743107 4397410 63860392 2197981631 103295 678404433572 100911 136282204 98864 108312 98822 104815 97639 4991351 98431 103667 99958 198049 101236 32394048 
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cpuacct.usage_sys
+Lines: 1
+0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/cpuacct.usage_user
+Lines: 1
+7807711502608
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/notify_on_release
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpu,cpuacct/pbs_jobs.service/jobid/tasks
+Lines: 0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Directory: sys/fs/cgroup/cpu,cpuacct/slurm
 Mode: 775
 # ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -18809,6 +19498,437 @@ Lines: 1
 Mode: 644
 # ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Path: sys/fs/cgroup/cpuset/lsf/tasks
+Lines: 0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Directory: sys/fs/cgroup/cpuset/pbs_jobs.service
+Mode: 775
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Directory: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid
+Mode: 775
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Directory: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1
+Mode: 775
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/cgroup.clone_children
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/cgroup.procs
+Lines: 12
+35464
+35475
+35479
+35480
+35484
+35485
+35486
+35487
+35488
+35489
+35490
+35491
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/cpuset.cpu_exclusive
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/cpuset.cpus
+Lines: 1
+0,2,4,6,32,34,36,38
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/cpuset.effective_cpus
+Lines: 1
+0,2,4,6,32,34,36,38
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/cpuset.effective_mems
+Lines: 1
+0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/cpuset.mem_exclusive
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/cpuset.mem_hardwall
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/cpuset.memory_migrate
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/cpuset.memory_pressure
+Lines: 1
+0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/cpuset.memory_spread_page
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/cpuset.memory_spread_slab
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/cpuset.mems
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/cpuset.sched_load_balance
+Lines: 1
+1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/cpuset.sched_relax_domain_level
+Lines: 1
+-1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/notify_on_release
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009248.testhost-1/tasks
+Lines: 16
+35464
+35475
+35476
+35479
+35480
+35481
+35482
+35483
+35484
+35485
+35486
+35487
+35488
+35489
+35490
+35491
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Directory: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1
+Mode: 775
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/cgroup.clone_children
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/cgroup.procs
+Lines: 12
+35526
+35543
+35547
+35548
+35552
+35553
+35554
+35555
+35556
+35557
+35558
+35559
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuset.cpu_exclusive
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuset.cpus
+Lines: 1
+8,10,12,14,40,42,44,46
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuset.effective_cpus
+Lines: 1
+8,10,12,14,40,42,44,46
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuset.effective_mems
+Lines: 1
+0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuset.mem_exclusive
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuset.mem_hardwall
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuset.memory_migrate
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuset.memory_pressure
+Lines: 1
+0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuset.memory_spread_page
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuset.memory_spread_slab
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuset.mems
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuset.sched_load_balance
+Lines: 1
+1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/cpuset.sched_relax_domain_level
+Lines: 1
+-1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/notify_on_release
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[0].testhost-1/tasks
+Lines: 16
+35526
+35543
+35544
+35547
+35548
+35549
+35550
+35551
+35552
+35553
+35554
+35555
+35556
+35557
+35558
+35559
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Directory: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1
+Mode: 775
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/cgroup.clone_children
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/cgroup.procs
+Lines: 12
+35526
+35543
+35547
+35548
+35552
+35553
+35554
+35555
+35556
+35557
+35558
+35559
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuset.cpu_exclusive
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuset.cpus
+Lines: 1
+8,10,12,14,40
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuset.effective_cpus
+Lines: 1
+8,10,12,14,40,42,44,46
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuset.effective_mems
+Lines: 1
+0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuset.mem_exclusive
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuset.mem_hardwall
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuset.memory_migrate
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuset.memory_pressure
+Lines: 1
+0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuset.memory_spread_page
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuset.memory_spread_slab
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuset.mems
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuset.sched_load_balance
+Lines: 1
+1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/cpuset.sched_relax_domain_level
+Lines: 1
+-1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/notify_on_release
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/1009249[1].testhost-1/tasks
+Lines: 16
+35526
+35543
+35544
+35547
+35548
+35549
+35550
+35551
+35552
+35553
+35554
+35555
+35556
+35557
+35558
+35559
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/cgroup.clone_children
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/cgroup.procs
+Lines: 0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/cpuset.cpu_exclusive
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/cpuset.cpus
+Lines: 1
+0-63
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/cpuset.effective_cpus
+Lines: 1
+0-63
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/cpuset.effective_mems
+Lines: 1
+0-1
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/cpuset.mem_exclusive
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/cpuset.mem_hardwall
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/cpuset.memory_migrate
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/cpuset.memory_pressure
+Lines: 1
+0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/cpuset.memory_spread_page
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/cpuset.memory_spread_slab
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/cpuset.mems
+Lines: 1
+0-1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/cpuset.sched_load_balance
+Lines: 1
+1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/cpuset.sched_relax_domain_level
+Lines: 1
+-1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/notify_on_release
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/cpuset/pbs_jobs.service/jobid/tasks
 Lines: 0
 Mode: 644
 # ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -49027,6 +50147,856 @@ Lines: 0
 Mode: 644
 # ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Path: sys/fs/cgroup/memory/machine.slice/tasks
+Lines: 0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Directory: sys/fs/cgroup/memory/pbs_jobs.service
+Mode: 775
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Directory: sys/fs/cgroup/memory/pbs_jobs.service/jobid
+Mode: 775
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Directory: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1
+Mode: 775
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/cgroup.clone_children
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/cgroup.procs
+Lines: 12
+35399
+35407
+35411
+35412
+35416
+35417
+35418
+35419
+35420
+35421
+35422
+35423
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.failcnt
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.kmem.failcnt
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.kmem.limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.kmem.max_usage_in_bytes
+Lines: 1
+5664768
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.kmem.slabinfo
+Lines: 41
+slabinfo - version: 2.1
+# name            <active_objs> <num_objs> <objsize> <objperslab> <pagesperslab> : tunables <limit> <batchcount> <sharedfactor> : slabdata <active_slabs> <num_slabs> <sharedavail>
+TCPv6                 13     13   2432   13    8 : tunables    0    0    0 : slabdata      1      1      0
+UDPv6                 24     24   1344   24    8 : tunables    0    0    0 : slabdata      1      1      0
+shmem_inode_cache     45     45    720   45    8 : tunables    0    0    0 : slabdata      1      1      0
+kmalloc-256            0      0    256   32    2 : tunables    0    0    0 : slabdata      0      0      0
+pde_opener           204    204     40  102    1 : tunables    0    0    0 : slabdata      2      2      0
+kmalloc-rcl-64         0      0     64   64    1 : tunables    0    0    0 : slabdata      0      0      0
+kmalloc-96            84     84     96   42    1 : tunables    0    0    0 : slabdata      2      2      0
+kmalloc-2k            32     32   2048   16    8 : tunables    0    0    0 : slabdata      2      2      0
+kmalloc-32           256    256     32  128    1 : tunables    0    0    0 : slabdata      2      2      0
+sighand_cache        120    120   2112   15    8 : tunables    0    0    0 : slabdata      8      8      0
+files_cache          368    368    704   46    8 : tunables    0    0    0 : slabdata      8      8      0
+task_delay_info      459    459     80   51    1 : tunables    0    0    0 : slabdata      9      9      0
+task_struct           40     40   7808    4    8 : tunables    0    0    0 : slabdata     10     10      0
+kmalloc-1k           128    128   1024   32    8 : tunables    0    0    0 : slabdata      4      4      0
+kmalloc-192          168    168    192   42    2 : tunables    0    0    0 : slabdata      4      4      0
+signal_cache         252    252   1152   28    8 : tunables    0    0    0 : slabdata      9      9      0
+mm_struct            300    300   1088   30    8 : tunables    0    0    0 : slabdata     10     10      0
+tw_sock_TCP            0      0    248   33    2 : tunables    0    0    0 : slabdata      0      0      0
+TCP                   28     28   2240   14    8 : tunables    0    0    0 : slabdata      2      2      0
+radix_tree_node       56     56    584   56    8 : tunables    0    0    0 : slabdata      1      1      0
+proc_inode_cache     528    528    680   48    8 : tunables    0    0    0 : slabdata     11     11      0
+buffer_head          156    156    104   39    1 : tunables    0    0    0 : slabdata      4      4      0
+ext4_inode_cache      87     87   1096   29    8 : tunables    0    0    0 : slabdata      3      3      0
+kmalloc-64           768    768     64   64    1 : tunables    0    0    0 : slabdata     12     12      0
+cred_jar             504    504    192   42    2 : tunables    0    0    0 : slabdata     12     12      0
+kmalloc-16           256    256     16  256    1 : tunables    0    0    0 : slabdata      1      1      0
+kmalloc-512           64     64    512   32    4 : tunables    0    0    0 : slabdata      2      2      0
+skbuff_head_cache      0      0    256   32    2 : tunables    0    0    0 : slabdata      0      0      0
+eventpoll_pwq         56     56     72   56    1 : tunables    0    0    0 : slabdata      1      1      0
+anon_vma            1170   1170    104   39    1 : tunables    0    0    0 : slabdata     30     30      0
+anon_vma_chain      2368   2368     64   64    1 : tunables    0    0    0 : slabdata     37     37      0
+vm_area_struct      2886   2886    208   39    2 : tunables    0    0    0 : slabdata     74     74      0
+UNIX                  60     60   1088   30    8 : tunables    0    0    0 : slabdata      2      2      0
+sock_inode_cache     234    234    832   39    8 : tunables    0    0    0 : slabdata      6      6      0
+kmalloc-4k            24     24   4096    8    8 : tunables    0    0    0 : slabdata      3      3      0
+pid                  320    320    128   32    1 : tunables    0    0    0 : slabdata     10     10      0
+filp                 727    896    256   32    2 : tunables    0    0    0 : slabdata     28     28      0
+inode_cache          212    212    608   53    8 : tunables    0    0    0 : slabdata      4      4      0
+dentry              1176   1176    192   42    2 : tunables    0    0    0 : slabdata     28     28      0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.kmem.tcp.failcnt
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.kmem.tcp.limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.kmem.tcp.max_usage_in_bytes
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.kmem.tcp.usage_in_bytes
+Lines: 1
+0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.kmem.usage_in_bytes
+Lines: 1
+5550080
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.max_usage_in_bytes
+Lines: 1
+19398656
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.move_charge_at_immigrate
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.numa_stat
+Lines: 8
+total=2772 N0=63 N1=2957
+file=330 N0=0 N1=351
+anon=2442 N0=63 N1=2606
+unevictable=0 N0=0 N1=0
+hierarchical_total=2772 N0=63 N1=2957
+hierarchical_file=330 N0=0 N1=351
+hierarchical_anon=2442 N0=63 N1=2606
+hierarchical_unevictable=0 N0=0 N1=0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.oom_control
+Lines: 3
+oom_kill_disable 0
+under_oom 0
+oom_kill 0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.soft_limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.stat
+Lines: 33
+cache 1351680
+rss 10076160
+rss_huge 0
+shmem 0
+mapped_file 0
+dirty 0
+writeback 0
+pgpgin 3201
+pgpgout 309
+pgfault 4785
+pgmajfault 0
+inactive_anon 0
+active_anon 10002432
+inactive_file 135168
+active_file 1216512
+unevictable 0
+hierarchical_memory_limit 9223372036854771712
+total_cache 1351680
+total_rss 10076160
+total_rss_huge 0
+total_shmem 0
+total_mapped_file 0
+total_dirty 0
+total_writeback 0
+total_pgpgin 3201
+total_pgpgout 309
+total_pgfault 4785
+total_pgmajfault 0
+total_inactive_anon 0
+total_active_anon 10002432
+total_inactive_file 135168
+total_active_file 1216512
+total_unevictable 0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.swappiness
+Lines: 1
+60
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.usage_in_bytes
+Lines: 1
+18341888
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/memory.use_hierarchy
+Lines: 1
+1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/notify_on_release
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009248.testhost-1/tasks
+Lines: 16
+35399
+35407
+35408
+35411
+35412
+35413
+35414
+35415
+35416
+35417
+35418
+35419
+35420
+35421
+35422
+35423
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Directory: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1
+Mode: 775
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/cgroup.clone_children
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/cgroup.procs
+Lines: 12
+35464
+35475
+35479
+35480
+35484
+35485
+35486
+35487
+35488
+35489
+35490
+35491
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.failcnt
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.kmem.failcnt
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.kmem.limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.kmem.max_usage_in_bytes
+Lines: 1
+4554752
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.kmem.slabinfo
+Lines: 39
+slabinfo - version: 2.1
+# name            <active_objs> <num_objs> <objsize> <objperslab> <pagesperslab> : tunables <limit> <batchcount> <sharedfactor> : slabdata <active_slabs> <num_slabs> <sharedavail>
+TCPv6                 13     13   2432   13    8 : tunables    0    0    0 : slabdata      1      1      0
+UDPv6                 24     24   1344   24    8 : tunables    0    0    0 : slabdata      1      1      0
+shmem_inode_cache     45     45    720   45    8 : tunables    0    0    0 : slabdata      1      1      0
+kmalloc-256            0      0    256   32    2 : tunables    0    0    0 : slabdata      0      0      0
+pde_opener           204    204     40  102    1 : tunables    0    0    0 : slabdata      2      2      0
+kmalloc-96            84     84     96   42    1 : tunables    0    0    0 : slabdata      2      2      0
+kmalloc-2k            32     32   2048   16    8 : tunables    0    0    0 : slabdata      2      2      0
+kmalloc-32           256    256     32  128    1 : tunables    0    0    0 : slabdata      2      2      0
+sighand_cache         60     60   2112   15    8 : tunables    0    0    0 : slabdata      4      4      0
+files_cache          184    184    704   46    8 : tunables    0    0    0 : slabdata      4      4      0
+task_delay_info      204    204     80   51    1 : tunables    0    0    0 : slabdata      4      4      0
+task_struct           20     20   7808    4    8 : tunables    0    0    0 : slabdata      5      5      0
+kmalloc-1k            96     96   1024   32    8 : tunables    0    0    0 : slabdata      3      3      0
+kmalloc-192          126    126    192   42    2 : tunables    0    0    0 : slabdata      3      3      0
+signal_cache         140    140   1152   28    8 : tunables    0    0    0 : slabdata      5      5      0
+mm_struct            180    180   1088   30    8 : tunables    0    0    0 : slabdata      6      6      0
+TCP                   28     28   2240   14    8 : tunables    0    0    0 : slabdata      2      2      0
+radix_tree_node       56     56    584   56    8 : tunables    0    0    0 : slabdata      1      1      0
+proc_inode_cache     384    384    680   48    8 : tunables    0    0    0 : slabdata      8      8      0
+buffer_head          117    117    104   39    1 : tunables    0    0    0 : slabdata      3      3      0
+ext4_inode_cache      87     87   1096   29    8 : tunables    0    0    0 : slabdata      3      3      0
+kmalloc-64           448    448     64   64    1 : tunables    0    0    0 : slabdata      7      7      0
+cred_jar             294    294    192   42    2 : tunables    0    0    0 : slabdata      7      7      0
+kmalloc-16           256    256     16  256    1 : tunables    0    0    0 : slabdata      1      1      0
+kmalloc-512           64     64    512   32    4 : tunables    0    0    0 : slabdata      2      2      0
+skbuff_head_cache      0      0    256   32    2 : tunables    0    0    0 : slabdata      0      0      0
+eventpoll_pwq        112    112     72   56    1 : tunables    0    0    0 : slabdata      2      2      0
+anon_vma            1014   1014    104   39    1 : tunables    0    0    0 : slabdata     26     26      0
+anon_vma_chain      2112   2112     64   64    1 : tunables    0    0    0 : slabdata     33     33      0
+vm_area_struct      2769   2769    208   39    2 : tunables    0    0    0 : slabdata     71     71      0
+UNIX                  60     60   1088   30    8 : tunables    0    0    0 : slabdata      2      2      0
+sock_inode_cache     195    195    832   39    8 : tunables    0    0    0 : slabdata      5      5      0
+kmalloc-4k            24     24   4096    8    8 : tunables    0    0    0 : slabdata      3      3      0
+pid                  160    160    128   32    1 : tunables    0    0    0 : slabdata      5      5      0
+filp                 516    736    256   32    2 : tunables    0    0    0 : slabdata     23     23      0
+inode_cache          159    159    608   53    8 : tunables    0    0    0 : slabdata      3      3      0
+dentry               756    756    192   42    2 : tunables    0    0    0 : slabdata     18     18      0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.kmem.tcp.failcnt
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.kmem.tcp.limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.kmem.tcp.max_usage_in_bytes
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.kmem.tcp.usage_in_bytes
+Lines: 1
+0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.kmem.usage_in_bytes
+Lines: 1
+4378624
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.max_usage_in_bytes
+Lines: 1
+16252928
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.move_charge_at_immigrate
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.numa_stat
+Lines: 8
+total=2541 N0=2649 N1=4
+file=0 N0=27 N1=0
+anon=2541 N0=2622 N1=4
+unevictable=0 N0=0 N1=0
+hierarchical_total=2541 N0=2649 N1=4
+hierarchical_file=0 N0=27 N1=0
+hierarchical_anon=2541 N0=2622 N1=4
+hierarchical_unevictable=0 N0=0 N1=0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.oom_control
+Lines: 3
+oom_kill_disable 0
+under_oom 0
+oom_kill 0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.soft_limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.stat
+Lines: 33
+cache 0
+rss 10428416
+rss_huge 0
+shmem 0
+mapped_file 0
+dirty 0
+writeback 0
+pgpgin 3036
+pgpgout 269
+pgfault 4752
+pgmajfault 0
+inactive_anon 0
+active_anon 10407936
+inactive_file 0
+active_file 0
+unevictable 0
+hierarchical_memory_limit 9223372036854771712
+total_cache 0
+total_rss 10428416
+total_rss_huge 0
+total_shmem 0
+total_mapped_file 0
+total_dirty 0
+total_writeback 0
+total_pgpgin 3036
+total_pgpgout 269
+total_pgfault 4752
+total_pgmajfault 0
+total_inactive_anon 0
+total_active_anon 10407936
+total_inactive_file 0
+total_active_file 0
+total_unevictable 0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.swappiness
+Lines: 1
+60
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.usage_in_bytes
+Lines: 1
+15867904
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/memory.use_hierarchy
+Lines: 1
+1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/notify_on_release
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[0].testhost-1/tasks
+Lines: 16
+35464
+35475
+35476
+35479
+35480
+35481
+35482
+35483
+35484
+35485
+35486
+35487
+35488
+35489
+35490
+35491
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Directory: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1
+Mode: 775
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/cgroup.clone_children
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/cgroup.procs
+Lines: 12
+35526
+35543
+35547
+35548
+35552
+35553
+35554
+35555
+35556
+35557
+35558
+35559
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.failcnt
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.kmem.failcnt
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.kmem.limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.kmem.max_usage_in_bytes
+Lines: 1
+4526080
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.kmem.slabinfo
+Lines: 39
+slabinfo - version: 2.1
+# name            <active_objs> <num_objs> <objsize> <objperslab> <pagesperslab> : tunables <limit> <batchcount> <sharedfactor> : slabdata <active_slabs> <num_slabs> <sharedavail>
+TCPv6                 13     13   2432   13    8 : tunables    0    0    0 : slabdata      1      1      0
+UDPv6                 24     24   1344   24    8 : tunables    0    0    0 : slabdata      1      1      0
+shmem_inode_cache     45     45    720   45    8 : tunables    0    0    0 : slabdata      1      1      0
+kmalloc-256            0      0    256   32    2 : tunables    0    0    0 : slabdata      0      0      0
+pde_opener           102    102     40  102    1 : tunables    0    0    0 : slabdata      1      1      0
+kmalloc-96            84     84     96   42    1 : tunables    0    0    0 : slabdata      2      2      0
+kmalloc-2k            32     32   2048   16    8 : tunables    0    0    0 : slabdata      2      2      0
+kmalloc-32           128    128     32  128    1 : tunables    0    0    0 : slabdata      1      1      0
+sighand_cache         75     75   2112   15    8 : tunables    0    0    0 : slabdata      5      5      0
+files_cache          230    230    704   46    8 : tunables    0    0    0 : slabdata      5      5      0
+task_delay_info      255    255     80   51    1 : tunables    0    0    0 : slabdata      5      5      0
+task_struct           24     24   7808    4    8 : tunables    0    0    0 : slabdata      6      6      0
+kmalloc-1k            64     64   1024   32    8 : tunables    0    0    0 : slabdata      2      2      0
+kmalloc-192           84     84    192   42    2 : tunables    0    0    0 : slabdata      2      2      0
+signal_cache         140    140   1152   28    8 : tunables    0    0    0 : slabdata      5      5      0
+mm_struct            180    180   1088   30    8 : tunables    0    0    0 : slabdata      6      6      0
+TCP                   28     28   2240   14    8 : tunables    0    0    0 : slabdata      2      2      0
+radix_tree_node       56     56    584   56    8 : tunables    0    0    0 : slabdata      1      1      0
+proc_inode_cache     288    288    680   48    8 : tunables    0    0    0 : slabdata      6      6      0
+buffer_head          117    117    104   39    1 : tunables    0    0    0 : slabdata      3      3      0
+ext4_inode_cache      87     87   1096   29    8 : tunables    0    0    0 : slabdata      3      3      0
+kmalloc-64           448    448     64   64    1 : tunables    0    0    0 : slabdata      7      7      0
+cred_jar             294    294    192   42    2 : tunables    0    0    0 : slabdata      7      7      0
+kmalloc-16           256    256     16  256    1 : tunables    0    0    0 : slabdata      1      1      0
+kmalloc-512           64     64    512   32    4 : tunables    0    0    0 : slabdata      2      2      0
+skbuff_head_cache      0      0    256   32    2 : tunables    0    0    0 : slabdata      0      0      0
+eventpoll_pwq        112    112     72   56    1 : tunables    0    0    0 : slabdata      2      2      0
+anon_vma            1053   1053    104   39    1 : tunables    0    0    0 : slabdata     27     27      0
+anon_vma_chain      2176   2176     64   64    1 : tunables    0    0    0 : slabdata     34     34      0
+vm_area_struct      2808   2808    208   39    2 : tunables    0    0    0 : slabdata     72     72      0
+UNIX                  60     60   1088   30    8 : tunables    0    0    0 : slabdata      2      2      0
+sock_inode_cache     156    156    832   39    8 : tunables    0    0    0 : slabdata      4      4      0
+kmalloc-4k            16     16   4096    8    8 : tunables    0    0    0 : slabdata      2      2      0
+pid                  160    160    128   32    1 : tunables    0    0    0 : slabdata      5      5      0
+filp                 549    736    256   32    2 : tunables    0    0    0 : slabdata     23     23      0
+inode_cache          106    106    608   53    8 : tunables    0    0    0 : slabdata      2      2      0
+dentry               756    756    192   42    2 : tunables    0    0    0 : slabdata     18     18      0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.kmem.tcp.failcnt
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.kmem.tcp.limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.kmem.tcp.max_usage_in_bytes
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.kmem.tcp.usage_in_bytes
+Lines: 1
+0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.kmem.usage_in_bytes
+Lines: 1
+4296704
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.max_usage_in_bytes
+Lines: 1
+16179200
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.move_charge_at_immigrate
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.numa_stat
+Lines: 8
+total=2541 N0=2630 N1=4
+file=0 N0=28 N1=0
+anon=2541 N0=2602 N1=4
+unevictable=0 N0=0 N1=0
+hierarchical_total=2541 N0=2630 N1=4
+hierarchical_file=0 N0=28 N1=0
+hierarchical_anon=2541 N0=2602 N1=4
+hierarchical_unevictable=0 N0=0 N1=0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.oom_control
+Lines: 3
+oom_kill_disable 0
+under_oom 0
+oom_kill 0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.soft_limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.stat
+Lines: 33
+cache 0
+rss 10420224
+rss_huge 0
+shmem 0
+mapped_file 0
+dirty 0
+writeback 0
+pgpgin 2937
+pgpgout 352
+pgfault 4752
+pgmajfault 0
+inactive_anon 0
+active_anon 10407936
+inactive_file 0
+active_file 0
+unevictable 0
+hierarchical_memory_limit 9223372036854771712
+total_cache 0
+total_rss 10420224
+total_rss_huge 0
+total_shmem 0
+total_mapped_file 0
+total_dirty 0
+total_writeback 0
+total_pgpgin 2937
+total_pgpgout 352
+total_pgfault 4752
+total_pgmajfault 0
+total_inactive_anon 0
+total_active_anon 10407936
+total_inactive_file 0
+total_active_file 0
+total_unevictable 0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.swappiness
+Lines: 1
+60
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.usage_in_bytes
+Lines: 1
+15839232
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/memory.use_hierarchy
+Lines: 1
+1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/notify_on_release
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/1009249[1].testhost-1/tasks
+Lines: 16
+35526
+35543
+35544
+35547
+35548
+35549
+35550
+35551
+35552
+35553
+35554
+35555
+35556
+35557
+35558
+35559
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/cgroup.clone_children
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/cgroup.procs
+Lines: 0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.failcnt
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.kmem.failcnt
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.kmem.limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.kmem.max_usage_in_bytes
+Lines: 1
+14454784
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.kmem.slabinfo
+Lines: 0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.kmem.tcp.failcnt
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.kmem.tcp.limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.kmem.tcp.max_usage_in_bytes
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.kmem.tcp.usage_in_bytes
+Lines: 1
+0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.kmem.usage_in_bytes
+Lines: 1
+14225408
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.max_usage_in_bytes
+Lines: 1
+50479104
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.move_charge_at_immigrate
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.numa_stat
+Lines: 8
+total=0 N0=0 N1=0
+file=0 N0=0 N1=0
+anon=0 N0=0 N1=0
+unevictable=0 N0=0 N1=0
+hierarchical_total=7854 N0=5342 N1=2965
+hierarchical_file=330 N0=55 N1=351
+hierarchical_anon=7524 N0=5287 N1=2614
+hierarchical_unevictable=0 N0=0 N1=0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.oom_control
+Lines: 3
+oom_kill_disable 0
+under_oom 0
+oom_kill 0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.soft_limit_in_bytes
+Lines: 1
+9223372036854771712
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.stat
+Lines: 33
+cache 0
+rss 0
+rss_huge 0
+shmem 0
+mapped_file 0
+dirty 0
+writeback 0
+pgpgin 0
+pgpgout 0
+pgfault 0
+pgmajfault 0
+inactive_anon 0
+active_anon 0
+inactive_file 0
+active_file 0
+unevictable 0
+hierarchical_memory_limit 9223372036854771712
+total_cache 1351680
+total_rss 30924800
+total_rss_huge 0
+total_shmem 0
+total_mapped_file 0
+total_dirty 0
+total_writeback 0
+total_pgpgin 9174
+total_pgpgout 930
+total_pgfault 14289
+total_pgmajfault 0
+total_inactive_anon 0
+total_active_anon 30818304
+total_inactive_file 135168
+total_active_file 1216512
+total_unevictable 0
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.swappiness
+Lines: 1
+60
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.usage_in_bytes
+Lines: 1
+50049024
+Mode: 444
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/memory.use_hierarchy
+Lines: 1
+1
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/notify_on_release
+Lines: 1
+0
+Mode: 644
+# ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Path: sys/fs/cgroup/memory/pbs_jobs.service/jobid/tasks
 Lines: 0
 Mode: 644
 # ttar - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

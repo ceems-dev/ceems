@@ -42,7 +42,8 @@ const (
 
 // Custom errors.
 var (
-	errUnknownManager = errors.New("unknown resource manager")
+	errUnknownManager     = errors.New("unknown resource manager")
+	errUnsupportedCgroups = errors.New("cgroups version not supported")
 )
 
 type manager int
@@ -52,6 +53,7 @@ const (
 	_ manager = iota
 	slurm
 	lsf
+	openpbs
 	libvirt
 	k8s
 )
@@ -60,6 +62,7 @@ const (
 var rmNames = map[manager]string{
 	slurm:   "slurm",
 	lsf:     "lsf",
+	openpbs: "openpbs",
 	libvirt: "libvirt",
 	k8s:     "k8s",
 }
@@ -117,6 +120,27 @@ var (
 	lsfCgroupV1PathRegex = regexp.MustCompile(`^.*/lsf/(?:(?P<cluster_name>.*?))/job\.(?P<id>[0-9]+(?:\[[0-9]+\])?)\.(?:(?P<int_id>[0-9]+))\.(?:(?P<ts>[0-9]+))(?:.*$)`)
 	lsfCgroupV2PathRegex = regexp.MustCompile(`^.*/lsf/(?:(?P<cluster_name>.*?))/job\.(?P<id>[0-9]+(?:\[[0-9]+\])?)\.(?:(?P<int_id>[0-9]+))\.(?:(?P<ts>[0-9]+))/leaf(?:.*$)`)
 	lsfIgnoreProcsRegex  = regexp.MustCompile("(.*)/.lsbatch/(.*)")
+)
+
+// Regular expressions of cgroup paths for Open PBS.
+// ^.*/(?:(.*?)_)?slurm(?:_(.*?)/)?(?:.*?)/job_([0-9]+)(?:.*$)
+// ^.*/slurm(?:_(.*?))?/(?:.*?)/job_([0-9]+)(?:.*$)
+/*
+	For v1 possibilities are /cpuacct/pbs_jobs.service/jobid/2025.ceems-open-pbs/
+							 /memory/pbs_jobs.service/jobid/2025.ceems-open-pbs/
+							 /memory/pbs_jobs.service/jobid/2025\[0\].ceems-open-pbs/ for job arrays
+
+	Currently Open PBS supports only cgroups v1.
+
+	Ignored processes are of form:
+
+	/var/spool/pbs/mom_priv/jobs/2027[0].ceems-open-pbs.SC
+	/bin/bash /home/usr1/.lsbatch/1775296755.13
+	/bin/bash /home/usr1/.lsbatch/1775296755.13.shell
+*/
+var (
+	openpbsCgroupV1PathRegex = regexp.MustCompile(`^.*/(?:(?P<cgroups_prefix>.*?))/jobid/(?P<id>[^/]+)(?:.*)$`)
+	openpbsIgnoreProcsRegex  = regexp.MustCompile("(.*)/mom_priv/(.*)")
 )
 
 // Ref: https://libvirt.org/cgroups.html#legacy-cgroups-layout
@@ -387,6 +411,51 @@ func NewCgroupManager(name manager, logger *slog.Logger) (*cgroupManager, error)
 
 		return manager, nil
 
+	case openpbs:
+		if (*forceCgroupsVersion == "" && cgroups.Mode() == cgroups.Unified) || *forceCgroupsVersion == "v2" {
+			logger.Error("OpenPBS does not support cgroups v2", "err", errUnsupportedCgroups)
+
+			return nil, fmt.Errorf("openpbs does not support cgroups v2: %w", errUnsupportedCgroups)
+		}
+
+		// cgroups v1 or hybrid mode
+		var mode cgroups.CGMode
+		if *forceCgroupsVersion == "v1" {
+			mode = cgroups.Legacy
+		} else {
+			mode = cgroups.Mode()
+		}
+
+		// Resolve subsystem
+		activeSubsystem := resolveSubsystem(*activeController)
+
+		manager = &cgroupManager{
+			logger:           logger,
+			fs:               fs,
+			mode:             mode,
+			root:             *cgroupfsPath,
+			idRegex:          openpbsCgroupV1PathRegex,
+			activeController: activeSubsystem,
+			slices:           []string{"pbs_jobs.service"},
+		}
+
+		// Add manager field
+		manager.id = name
+		manager.name = rmNames[name]
+
+		// For the moment, we are not sure if there are any child cgroups created
+		manager.isChild = func(_ string) bool {
+			return false
+		}
+		manager.ignoreProc = func(p string) bool {
+			return openpbsIgnoreProcsRegex.MatchString(p)
+		}
+
+		// Set mountpoints
+		manager.setMountPoints()
+
+		return manager, nil
+
 	case libvirt:
 		if (*forceCgroupsVersion == "" && cgroups.Mode() == cgroups.Unified) || *forceCgroupsVersion == "v2" {
 			manager = &cgroupManager{
@@ -642,6 +711,14 @@ func (c *cgroupManager) setMountPoints() {
 			// For cgroups v1 we need to shift root to /sys/fs/cgroup/cpuacct
 			c.root = filepath.Join(c.root, c.activeController)
 		}
+	case openpbs:
+		// /sys/fs/cgroup/cpuacct/pbs_jobs.service
+		for _, slice := range c.slices {
+			c.mountPoints = append(c.mountPoints, filepath.Join(c.root, c.activeController, slice))
+		}
+
+		// For cgroups v1 we need to shift root to /sys/fs/cgroup/cpuacct
+		c.root = filepath.Join(c.root, c.activeController)
 	case libvirt:
 		switch c.mode { //nolint: exhaustive
 		case cgroups.Unified:
@@ -1401,7 +1478,7 @@ func (c *cgroupCollector) cpusFromShares(path string) (int, error) {
 // getCPUs returns number of milli CPUs in the cgroup.
 func (c *cgroupCollector) getCPUs(path string, ncpusDefault int) (int, error) {
 	switch c.cgroupManager.id {
-	case slurm:
+	case slurm, openpbs:
 		return c.cpusFromCPUSet(path)
 	case lsf:
 		return c.cpusFromCPUSetUsingDefault(path, ncpusDefault)
@@ -1739,5 +1816,5 @@ func parseCgroupSubSysIds() ([]cgroupController, error) {
 		idx++
 	}
 
-	return cgroupControllers, nil
+	return cgroupControllers, fscanner.Err()
 }
