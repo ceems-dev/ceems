@@ -43,6 +43,16 @@ var (
 	).Hidden().Default("").String()
 )
 
+// User facing opts.
+var (
+	nvidiaGPUSMCount = CEEMSExporterApp.Flag(
+		"collector.gpu.nvidia.sm-count",
+		`SM count for NVIDIA GPUs. 
+It should be of format <gpu_minor>: <sm_count> delimited by ",".
+Example: 0:160,1:160.`,
+	).Default("").String()
+)
+
 // Regexes.
 var (
 	pciBusIDRegex = regexp.MustCompile(`(?P<domain>[0-9a-fA-F]+):(?P<bus>[0-9a-fA-F]+):(?P<slot>[0-9a-fA-F]+)\.(?P<function>[0-9a-fA-F]+)`)
@@ -66,6 +76,7 @@ var (
 
 // Nvidia SM count for different architectures
 // Fetched from https://www.techpowerup.com/gpu-specs/
+// and https://cputronic.com/gpu
 var (
 	nvidiaSMCount = map[string]uint64{
 		"V100": 80,
@@ -80,7 +91,7 @@ var (
 		"H200": 132,
 		"H800": 114,
 		"B100": 132,
-		"B200": 132,
+		"B200": 160,
 	}
 )
 
@@ -910,6 +921,11 @@ func (g *GPUSMI) nvidiaGPUDevices(vendor vendor) ([]Device, error) {
 				return nil, err
 			}
 
+			// Emit a warning log if SM count is not supplied by the user
+			if *nvidiaGPUSMCount == "" {
+				g.logger.Warn("--collector.gpu.nvidia.sm-count is not provided by the user. Using a default value which might not be accurate.", "gpu_model", device.Name, "current_sm_value", device.NumSMs)
+			}
+
 			return parseNvidiaSmiListOutput(string(nvidiaSmiListOutput), devices), nil
 		}
 	}
@@ -1107,6 +1123,36 @@ func parseNvidiaSmiOutput(cmdOutput []byte) ([]Device, error) {
 		return nil, fmt.Errorf("failed to parse nvidia-smi xml log %w", err)
 	}
 
+	// If nvidiaGPUSMCount is provided, use it instead of default values
+	userSuppliedSMCount := make(map[int]uint64)
+
+	if *nvidiaGPUSMCount != "" {
+		for smCountMap := range strings.SplitSeq(*nvidiaGPUSMCount, ",") {
+			countMap := strings.Split(smCountMap, ":")
+			if len(countMap) < 2 {
+				return nil, fmt.Errorf(`--collector.gpu.nvidia.sm-count %s is invalid. It should be of format <gpu_minor>:<sm_count> delimited by ","`, *nvidiaGPUSMCount)
+			}
+
+			// Convert minor to int and count to unin64
+			minor, err := strconv.Atoi(countMap[0])
+			if err != nil {
+				return nil, fmt.Errorf(`--collector.gpu.nvidia.sm-count %s is invalid. Failed to convert minor to int: %w`, *nvidiaGPUSMCount, err)
+			}
+
+			count, err := strconv.ParseUint(countMap[1], 10, 64)
+			if err != nil {
+				return nil, fmt.Errorf(`--collector.gpu.nvidia.sm-count %s is invalid. Failed to convert sm count to uint64: %w`, *nvidiaGPUSMCount, err)
+			}
+
+			userSuppliedSMCount[minor] = count
+		}
+
+		// Check if SM count for all GPUs are provided
+		if len(userSuppliedSMCount) < len(nvidiaSMILog.GPUs) {
+			return nil, fmt.Errorf("--collector.gpu.nvidia.sm-count %s does not provide sm count for all gpus. Detected %d gpus whereas sm count is provided for %d gpus", *nvidiaGPUSMCount, len(nvidiaSMILog.GPUs), len(userSuppliedSMCount))
+		}
+	}
+
 	// NOTE: Ensure that we sort the devices using PCI address
 	// Seems like nvidia-smi most of the times returns them in correct order.
 	var globalIndex uint64
@@ -1121,20 +1167,24 @@ func parseNvidiaSmiOutput(cmdOutput []byte) ([]Device, error) {
 		}
 
 		// Attempt to get total number of SMs
-		for model, numSMs := range nvidiaSMCount {
-			// Model names can be as follows:
-			// Telsa V100-PCIe-40GB
-			// NVIDIA A100-SXM-80GB
-			// NVIDIA H100 80GB HB3
-			// NVIDIA B100 and so on..
-			// So we try to split by "space" and hypen and attempt to test
-			// against model names
-			for s := range strings.SplitSeq(gpu.ProductName, " ") {
-				for ss := range strings.SplitSeq(s, "-") {
-					if strings.TrimSpace(ss) == model {
-						dev.NumSMs = numSMs
+		if len(userSuppliedSMCount) > 0 {
+			dev.NumSMs = userSuppliedSMCount[igpu]
+		} else {
+			for model, numSMs := range nvidiaSMCount {
+				// Model names can be as follows:
+				// Telsa V100-PCIe-40GB
+				// NVIDIA A100-SXM-80GB
+				// NVIDIA H100 80GB HB3
+				// NVIDIA B100 and so on..
+				// So we try to split by "space" and hypen and attempt to test
+				// against model names
+				for s := range strings.SplitSeq(gpu.ProductName, " ") {
+					for ss := range strings.SplitSeq(s, "-") {
+						if strings.TrimSpace(ss) == model {
+							dev.NumSMs = numSMs
 
-						break
+							break
+						}
 					}
 				}
 			}
@@ -1706,6 +1756,11 @@ func parseTopologyProperties(path string, re *regexp.Regexp) (uint64, error) {
 		}
 
 		return strconv.ParseUint(match[1], 10, 64)
+	}
+
+	// If there is any error scanning the file, return it
+	if scanner.Err() != nil {
+		return 0, scanner.Err()
 	}
 
 	return 0, fmt.Errorf("no property found in the file match %s", re.String())
