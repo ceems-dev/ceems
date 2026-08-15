@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.15.1 / 2026-08-15
+
+- [MAINT] refactor: Support user supplied SM count for NVIDIA GPUs [#582](https://github.com/ceems-dev/ceems/pull/582) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump dependencies [#581](https://github.com/ceems-dev/ceems/pull/581) ([@dependabot](https://github.com/dependabot))
+
 ## 0.15.0 / 2026-08-04
 
 - [MAINT] Document the constraints around TSDB scrape interval and CEEMS API server's update interval [#575](https://github.com/ceems-dev/ceems/pull/575) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
