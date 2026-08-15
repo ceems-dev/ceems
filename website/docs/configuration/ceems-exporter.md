@@ -21,6 +21,30 @@ a consistent styling. They will be removed in `v1.0.0`.
 
 :::
 
+## GPUs
+
+When MIG is enabled on NVIDIA GPUs, current exporter will need the total number of SMs
+in each MIG partition and physical GPU to be able to estimate the fraction of GPU compute
+used by the MIG instance. Currently, `nvidia-smi` reports only the SM counts for each
+MIG instance and it does not report the SM count for entire physical GPU. If MIG is enabled
+on the NVIDIA GPUs, we **strongly recommend** the users to provide the SM count for each
+GPU using `--collector.gpu.nvidia.sm-count` CLI flag. It takes the format
+`<gpu_minor>:<sm_count>` delimited by ",".
+For example, if there are 2 GPUs on the node with 140 SMs on each GPU, then the CLI flag
+must be configured as follows:
+
+```bash
+ceems_exporter --collector.gpu.nvidia.sm-count="0:140,1:140" --collector.slurm
+```
+
+if CLI flag is not provided, exporter will use a default value based on the GPU model.
+However, same GPU model can have different SM count based on the form factor. For instance,
+[H100 PCIe 80GB](https://www.techpowerup.com/gpu-specs/h100-pcie-80-gb.c3899) model has
+114 SMs whereas [H100 SXM5 80GB](https://www.techpowerup.com/gpu-specs/h100-sxm5-80-gb.c3900) has
+132 SMs. Exporter will always use a default value of 132 SMs for H100 GPUs regardless of
+form factor which affects the power estimation for MIG instance. To know more about
+power estimation modelling when MIG is enabled, please consult [power estimation docs](../advanced/power-consumption.md).
+
 ## Collectors
 
 The following collectors are supported by the Prometheus exporter and they can be configured

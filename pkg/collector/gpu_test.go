@@ -310,6 +310,74 @@ func TestParseNvidiaSmiOutput(t *testing.T) {
 	}
 }
 
+func TestParseNvidiaSmiOutputWithCustomSMCount(t *testing.T) {
+	_, err := CEEMSExporterApp.Parse(
+		[]string{
+			"--collector.gpu.nvidia-smi-path", "testdata/nvidia-smi",
+			"--collector.gpu.type", "nvidia",
+			"--collector.gpu.nvidia.sm-count", "0:108,1:108,2:160,3:160,4:108,5:108,6:108,7:108",
+		},
+	)
+	require.NoError(t, err)
+
+	g, err := NewGPUSMI(nil, noOpLogger)
+	require.NoError(t, err)
+
+	// Select nvidia vendor
+	for _, vendor := range g.vendors {
+		if vendor.id == nvidia {
+			gpuDevices, err := g.nvidiaGPUDevices(vendor)
+			require.NoError(t, err)
+			assert.Equal(t, uint64(160), gpuDevices[2].NumSMs)
+			assert.Equal(t, uint64(108), gpuDevices[4].NumSMs)
+		}
+	}
+}
+
+func TestParseNvidiaSmiOutputWithCustomSMCountFails(t *testing.T) {
+	_, err := CEEMSExporterApp.Parse(
+		[]string{
+			"--collector.gpu.nvidia-smi-path", "testdata/nvidia-smi",
+			"--collector.gpu.type", "nvidia",
+			"--collector.gpu.nvidia.sm-count", "0:108,1:108,2:160,4:108,5:108,6:108,7:108",
+		},
+	)
+	require.NoError(t, err)
+
+	g, err := NewGPUSMI(nil, noOpLogger)
+	require.NoError(t, err)
+
+	// Select nvidia vendor
+	for _, vendor := range g.vendors {
+		if vendor.id == nvidia {
+			// Fewer GPUs in SM count than actual number of GPUs
+			_, err := g.nvidiaGPUDevices(vendor)
+			require.Error(t, err)
+		}
+	}
+
+	_, err = CEEMSExporterApp.Parse(
+		[]string{
+			"--collector.gpu.nvidia-smi-path", "testdata/nvidia-smi",
+			"--collector.gpu.type", "nvidia",
+			"--collector.gpu.nvidia.sm-count", "0:108,1:108,2:160,3:1084:108,5:108,6:108,7:108",
+		},
+	)
+	require.NoError(t, err)
+
+	g, err = NewGPUSMI(nil, noOpLogger)
+	require.NoError(t, err)
+
+	// Select nvidia vendor
+	for _, vendor := range g.vendors {
+		if vendor.id == nvidia {
+			// Malformed string
+			_, err := g.nvidiaGPUDevices(vendor)
+			require.Error(t, err)
+		}
+	}
+}
+
 func TestNvidiaMIGAtLowerAddr(t *testing.T) {
 	nvidiaSmiLog := `<?xml version="1.0" ?>
 <!DOCTYPE nvidia_smi_log SYSTEM "nvsmi_device_v12.dtd">
