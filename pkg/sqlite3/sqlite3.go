@@ -44,6 +44,16 @@ func init() {
 					return err
 				}
 
+				err = conn.RegisterFunc("min_metric_map", minMetricMap, true)
+				if err != nil {
+					return err
+				}
+
+				err = conn.RegisterFunc("max_metric_map", maxMetricMap, true)
+				if err != nil {
+					return err
+				}
+
 				err = conn.RegisterFunc("merge_list", mergeList, true)
 				if err != nil {
 					return err
@@ -252,6 +262,82 @@ func avgMetricMap(existing, current string, existingWeight, currentWeight float6
 
 	// Finally, marshal the type into string and return
 	updatedMetricMapBytes, err := json.Marshal(avgMetricMap)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(updatedMetricMapBytes)
+}
+
+// minMetricMap returns minimum between a existing metricMap and a newMetricMap using
+// weights.
+func minMetricMap(existing, current string) string {
+	// Unmarshal strings into MetricMap type
+	var existingMetricMap, currentMetricMap models.MetricMap
+
+	err := json.Unmarshal([]byte(existing), &existingMetricMap)
+	if err != nil {
+		panic(err)
+	}
+
+	err = json.Unmarshal([]byte(current), &currentMetricMap)
+	if err != nil {
+		panic(err)
+	}
+
+	// Make a deep copy of existingMetricMap into updatedMetricMap
+	updatedMetricMap := make(models.MetricMap)
+	maps.Copy(updatedMetricMap, existingMetricMap)
+
+	// Walk through new map and update existing with new.
+	for metricName, newMetricValue := range currentMetricMap {
+		if existingMetricValue, ok := existingMetricMap[metricName]; ok {
+			updatedMetricMap[metricName] = min(newMetricValue, existingMetricValue)
+		} else {
+			updatedMetricMap[metricName] = newMetricValue
+		}
+	}
+
+	// Finally, marshal the type into string and return
+	updatedMetricMapBytes, err := json.Marshal(updatedMetricMap)
+	if err != nil {
+		panic(err)
+	}
+
+	return string(updatedMetricMapBytes)
+}
+
+// maxMetricMap returns maximum between a existing metricMap and a newMetricMap using
+// weights.
+func maxMetricMap(existing, current string) string {
+	// Unmarshal strings into MetricMap type
+	var existingMetricMap, currentMetricMap models.MetricMap
+
+	err := json.Unmarshal([]byte(existing), &existingMetricMap)
+	if err != nil {
+		panic(err)
+	}
+
+	err = json.Unmarshal([]byte(current), &currentMetricMap)
+	if err != nil {
+		panic(err)
+	}
+
+	// Make a deep copy of existingMetricMap into updatedMetricMap
+	updatedMetricMap := make(models.MetricMap)
+	maps.Copy(updatedMetricMap, existingMetricMap)
+
+	// Walk through new map and update existing with new.
+	for metricName, newMetricValue := range currentMetricMap {
+		if existingMetricValue, ok := existingMetricMap[metricName]; ok {
+			updatedMetricMap[metricName] = max(newMetricValue, existingMetricValue)
+		} else {
+			updatedMetricMap[metricName] = newMetricValue
+		}
+	}
+
+	// Finally, marshal the type into string and return
+	updatedMetricMapBytes, err := json.Marshal(updatedMetricMap)
 	if err != nil {
 		panic(err)
 	}

@@ -1,0 +1,12 @@
+ALTER TABLE units ADD COLUMN total_custom_stats DEFAULT '{}';
+ALTER TABLE units ADD COLUMN avg_custom_stats DEFAULT '{}';
+ALTER TABLE units ADD COLUMN min_custom_stats DEFAULT '{}';
+ALTER TABLE units ADD COLUMN max_custom_stats DEFAULT '{}';
+ALTER TABLE usage ADD COLUMN total_custom_stats DEFAULT '{}';
+ALTER TABLE usage ADD COLUMN avg_custom_stats DEFAULT '{}';
+ALTER TABLE usage ADD COLUMN min_custom_stats DEFAULT '{}';
+ALTER TABLE usage ADD COLUMN max_custom_stats DEFAULT '{}';
+ALTER TABLE daily_usage ADD COLUMN total_custom_stats DEFAULT '{}';
+ALTER TABLE daily_usage ADD COLUMN avg_custom_stats DEFAULT '{}';
+ALTER TABLE daily_usage ADD COLUMN min_custom_stats DEFAULT '{}';
+ALTER TABLE daily_usage ADD COLUMN max_custom_stats DEFAULT '{}';

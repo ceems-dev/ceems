@@ -856,3 +856,19 @@ updaters: []
   #     # total_egress_stats:
   #     #   bytes_total:  sum by (uuid) (increase(ceems_ebpf_egress_bytes_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
   #     #   packets_total: sum by (uuid) (increase(ceems_ebpf_egress_packets_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
+
+  #     # # Total stats of any custom metrics
+  #     # total_custom_stats:
+  #     #   cpucycles_total:  sum by (uuid) (increase(ceems_perf_cpucycles_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
+
+  #     # # Average stats of any custom metrics
+  #     # avg_custom_stats:
+  #     #   cpucycles_avg:  avg by (uuid) (increase(ceems_perf_cpucycles_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
+
+  #     # # Minimum of stats of any custom metrics
+  #     # min_custom_stats:
+  #     #   cpucycles_min:  min by (uuid) (increase(ceems_perf_cpucycles_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)
+
+  #     # # Maximum of stats of any custom metrics
+  #     # max_custom_stats:
+  #     #   cpucycles_max:  max by (uuid) (increase(ceems_perf_cpucycles_total{uuid=~`{{.UUIDs}}`}[{{.Range}}]) >= 0 < inf)

@@ -1,4 +1,4 @@
-INSERT INTO units (cluster_id,resource_manager,uuid,name,project,groupname,username,created_at,started_at,ended_at,created_at_ts,started_at_ts,ended_at_ts,elapsed,state,allocation,total_time_seconds,avg_cpu_usage,avg_cpu_mem_usage,total_cpu_energy_usage_kwh,total_cpu_emissions_gms,avg_gpu_usage,avg_gpu_mem_usage,total_gpu_energy_usage_kwh,total_gpu_emissions_gms,total_io_write_stats,total_io_read_stats,total_ingress_stats,total_egress_stats,tags,ignore,num_updates,last_updated_at) VALUES (:cluster_id,:resource_manager,:uuid,:name,:project,:groupname,:username,:created_at,:started_at,:ended_at,:created_at_ts,:started_at_ts,:ended_at_ts,:elapsed,:state,:allocation,:total_time_seconds,:avg_cpu_usage,:avg_cpu_mem_usage,:total_cpu_energy_usage_kwh,:total_cpu_emissions_gms,:avg_gpu_usage,:avg_gpu_mem_usage,:total_gpu_energy_usage_kwh,:total_gpu_emissions_gms,:total_io_write_stats,:total_io_read_stats,:total_ingress_stats,:total_egress_stats,:tags,:ignore,:num_updates,:last_updated_at) ON CONFLICT(cluster_id,uuid,started_at) DO UPDATE SET
+INSERT INTO units (cluster_id,resource_manager,uuid,name,project,groupname,username,created_at,started_at,ended_at,created_at_ts,started_at_ts,ended_at_ts,elapsed,state,allocation,total_time_seconds,avg_cpu_usage,avg_cpu_mem_usage,total_cpu_energy_usage_kwh,total_cpu_emissions_gms,avg_gpu_usage,avg_gpu_mem_usage,total_gpu_energy_usage_kwh,total_gpu_emissions_gms,total_io_write_stats,total_io_read_stats,total_ingress_stats,total_egress_stats,total_custom_stats,avg_custom_stats,min_custom_stats,max_custom_stats,tags,ignore,num_updates,last_updated_at) VALUES (:cluster_id,:resource_manager,:uuid,:name,:project,:groupname,:username,:created_at,:started_at,:ended_at,:created_at_ts,:started_at_ts,:ended_at_ts,:elapsed,:state,:allocation,:total_time_seconds,:avg_cpu_usage,:avg_cpu_mem_usage,:total_cpu_energy_usage_kwh,:total_cpu_emissions_gms,:avg_gpu_usage,:avg_gpu_mem_usage,:total_gpu_energy_usage_kwh,:total_gpu_emissions_gms,:total_io_write_stats,:total_io_read_stats,:total_ingress_stats,:total_egress_stats,:total_custom_stats,:avg_custom_stats,:min_custom_stats,:max_custom_stats,:tags,:ignore,:num_updates,:last_updated_at) ON CONFLICT(cluster_id,uuid,started_at) DO UPDATE SET
   ended_at = :ended_at,
   ended_at_ts = :ended_at_ts,
   elapsed = :elapsed,
@@ -16,6 +16,10 @@ INSERT INTO units (cluster_id,resource_manager,uuid,name,project,groupname,usern
   total_io_read_stats = add_metric_map(total_io_read_stats, :total_io_read_stats),
   total_ingress_stats = add_metric_map(total_ingress_stats, :total_ingress_stats),
   total_egress_stats = add_metric_map(total_egress_stats, :total_egress_stats),
+  total_custom_stats = add_metric_map(total_custom_stats, :total_custom_stats),
+  avg_custom_stats = avg_metric_map(avg_custom_stats, :avg_custom_stats, CAST(json_extract(total_time_seconds, '$.walltime') AS REAL), CAST(json_extract(:total_time_seconds, '$.walltime') AS REAL)),
+  min_custom_stats = min_metric_map(min_custom_stats, :min_custom_stats),
+  max_custom_stats = max_metric_map(max_custom_stats, :max_custom_stats),
   tags = :tags,
   ignore = :ignore,
   num_updates = num_updates + :num_updates,

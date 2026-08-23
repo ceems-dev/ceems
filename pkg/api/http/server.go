@@ -169,7 +169,15 @@ func init() {
 		case strings.HasPrefix(col, "total"):
 			aggUsageQueries[col] = `{{- $mn := .MetricName -}}json_object({{range $i, $r := .MetricKeys}}{{if $i}},{{end}}'{{$r.Name}}',(SUM({{$mn}}_{{$r.Name}}.value)){{end}}) AS {{.MetricName}}||{{range $i, $r := .MetricKeys}}{{if $i}}|{{end}}json_each({{$mn}},'$.{{$r.Name}}') AS {{$mn}}_{{$r.Name}}{{end}}`
 		case strings.HasPrefix(col, "avg"):
-			aggUsageQueries[col] = `{{- $mn := .MetricName -}}{{- $mw := .MetricWeight -}}{{- $tmn := .TimesMetricName -}}json_object({{range $i, $r := .MetricKeys}}{{if $i}},{{end}}'{{$r.Name}}',(SUM({{$mn}}_{{$r.Name}}.value*{{$tmn}}_{{$mw}}.value) / SUM({{$tmn}}_{{$mw}}.value)){{end}}) AS {{.MetricName}}||{{range $i, $r := .MetricKeys}}{{if $i}}|{{end}}json_each({{$mn}},'$.{{$r.Name}}') AS {{$mn}}_{{$r.Name}}{{end}}|json_each({{$tmn}},'$.{{$mw}}') AS {{$tmn}}_{{$mw}}`
+			if strings.Contains(col, "custom") {
+				aggUsageQueries[col] = `{{- $mn := .MetricName -}}json_object({{range $i, $r := .MetricKeys}}{{if $i}},{{end}}'{{$r.Name}}',(AVG({{$mn}}_{{$r.Name}}.value)){{end}}) AS {{.MetricName}}||{{range $i, $r := .MetricKeys}}{{if $i}}|{{end}}json_each({{$mn}},'$.{{$r.Name}}') AS {{$mn}}_{{$r.Name}}{{end}}`
+			} else {
+				aggUsageQueries[col] = `{{- $mn := .MetricName -}}{{- $mw := .MetricWeight -}}{{- $tmn := .TimesMetricName -}}json_object({{range $i, $r := .MetricKeys}}{{if $i}},{{end}}'{{$r.Name}}',(SUM({{$mn}}_{{$r.Name}}.value*{{$tmn}}_{{$mw}}.value) / SUM({{$tmn}}_{{$mw}}.value)){{end}}) AS {{.MetricName}}||{{range $i, $r := .MetricKeys}}{{if $i}}|{{end}}json_each({{$mn}},'$.{{$r.Name}}') AS {{$mn}}_{{$r.Name}}{{end}}|json_each({{$tmn}},'$.{{$mw}}') AS {{$tmn}}_{{$mw}}`
+			}
+		case strings.HasPrefix(col, "min"):
+			aggUsageQueries[col] = `{{- $mn := .MetricName -}}json_object({{range $i, $r := .MetricKeys}}{{if $i}},{{end}}'{{$r.Name}}',(MIN({{$mn}}_{{$r.Name}}.value)){{end}}) AS {{.MetricName}}||{{range $i, $r := .MetricKeys}}{{if $i}}|{{end}}json_each({{$mn}},'$.{{$r.Name}}') AS {{$mn}}_{{$r.Name}}{{end}}`
+		case strings.HasPrefix(col, "max"):
+			aggUsageQueries[col] = `{{- $mn := .MetricName -}}json_object({{range $i, $r := .MetricKeys}}{{if $i}},{{end}}'{{$r.Name}}',(MAX({{$mn}}_{{$r.Name}}.value)){{end}}) AS {{.MetricName}}||{{range $i, $r := .MetricKeys}}{{if $i}}|{{end}}json_each({{$mn}},'$.{{$r.Name}}') AS {{$mn}}_{{$r.Name}}{{end}}`
 		default:
 			aggUsageQueries[col] = col
 		}
@@ -1478,7 +1486,7 @@ func (s *CEEMSServer) currentUsage(users []string, fields []string, w http.Respo
 
 	// Get aggUsageCols based on queried fields
 	for iField, field := range fields {
-		if strings.HasPrefix(field, "avg") || strings.HasPrefix(field, "total") {
+		if strings.HasPrefix(field, "avg") || strings.HasPrefix(field, "total") || strings.HasPrefix(field, "min") || strings.HasPrefix(field, "max") {
 			wg.Add(1)
 
 			go func(i int, f string) {

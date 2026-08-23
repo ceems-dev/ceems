@@ -1173,7 +1173,7 @@ then
     get -H "X-Grafana-User: grafana" "127.0.0.1:${port}/api/${api_version}/usage/current/admin?cluster_id=slurm-1&user=usr15&user=usr4&cluster_id=os-1&user=test-user-4&from=${usage_from}&to=${usage_to}&experimental" > "${fixture_output}"
   elif [ "${scenario}" = "api-current-usage-query-k8s" ]
   then
-    get -H "X-Grafana-User: kusr2" "127.0.0.1:${port}/api/${api_version}/usage/current?cluster_id=k8s-1&from=${usage_from}&to=${usage_to}&__terminated" > "${fixture_output}"
+    get -H "X-Grafana-User: kusr2" "127.0.0.1:${port}/api/${api_version}/usage/current?cluster_id=k8s-0&from=${usage_from}&to=${usage_to}&__terminated" > "${fixture_output}"
   elif [ "${scenario}" = "api-current-usage-query-lsf" ]
   then
     get -H "X-Grafana-User: usr4" "127.0.0.1:${port}/api/${api_version}/usage/current?cluster_id=lsf-1&from=${usage_from}&to=${usage_to}&__terminated" > "${fixture_output}"

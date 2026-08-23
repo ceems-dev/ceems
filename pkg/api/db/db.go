@@ -705,6 +705,10 @@ func (s *stats) execStatements(
 				sql.Named(base.UnitsDBTableStructFieldColNameMap["TotalIOReadStats"], unit.TotalIOReadStats),
 				sql.Named(base.UnitsDBTableStructFieldColNameMap["TotalIngressStats"], unit.TotalIngressStats),
 				sql.Named(base.UnitsDBTableStructFieldColNameMap["TotalEgressStats"], unit.TotalEgressStats),
+				sql.Named(base.UnitsDBTableStructFieldColNameMap["TotalCustomStats"], unit.TotalCustomStats),
+				sql.Named(base.UnitsDBTableStructFieldColNameMap["AveCustomStats"], unit.AveCustomStats),
+				sql.Named(base.UnitsDBTableStructFieldColNameMap["MinCustomStats"], unit.MinCustomStats),
+				sql.Named(base.UnitsDBTableStructFieldColNameMap["MaxCustomStats"], unit.MaxCustomStats),
 				sql.Named(base.UnitsDBTableStructFieldColNameMap["Tags"], unit.Tags),
 				sql.Named(base.UnitsDBTableStructFieldColNameMap["Ignore"], unit.Ignore),
 				sql.Named(base.UnitsDBTableStructFieldColNameMap["NumUpdates"], 1),
@@ -745,6 +749,10 @@ func (s *stats) execStatements(
 				sql.Named(base.UsageDBTableStructFieldColNameMap["TotalIOReadStats"], unit.TotalIOReadStats),
 				sql.Named(base.UsageDBTableStructFieldColNameMap["TotalIngressStats"], unit.TotalIngressStats),
 				sql.Named(base.UsageDBTableStructFieldColNameMap["TotalEgressStats"], unit.TotalEgressStats),
+				sql.Named(base.UsageDBTableStructFieldColNameMap["TotalCustomStats"], unit.TotalCustomStats),
+				sql.Named(base.UsageDBTableStructFieldColNameMap["AveCustomStats"], unit.AveCustomStats),
+				sql.Named(base.UsageDBTableStructFieldColNameMap["MinCustomStats"], unit.MinCustomStats),
+				sql.Named(base.UsageDBTableStructFieldColNameMap["MaxCustomStats"], unit.MaxCustomStats),
 				sql.Named(base.UsageDBTableStructFieldColNameMap["NumUpdates"], 1),
 			)
 			if err != nil {
@@ -775,6 +783,10 @@ func (s *stats) execStatements(
 				sql.Named(base.UsageDBTableStructFieldColNameMap["TotalIOReadStats"], unit.TotalIOReadStats),
 				sql.Named(base.UsageDBTableStructFieldColNameMap["TotalIngressStats"], unit.TotalIngressStats),
 				sql.Named(base.UsageDBTableStructFieldColNameMap["TotalEgressStats"], unit.TotalEgressStats),
+				sql.Named(base.UsageDBTableStructFieldColNameMap["TotalCustomStats"], unit.TotalCustomStats),
+				sql.Named(base.UsageDBTableStructFieldColNameMap["AveCustomStats"], unit.AveCustomStats),
+				sql.Named(base.UsageDBTableStructFieldColNameMap["MinCustomStats"], unit.MinCustomStats),
+				sql.Named(base.UsageDBTableStructFieldColNameMap["MaxCustomStats"], unit.MaxCustomStats),
 				sql.Named(base.UsageDBTableStructFieldColNameMap["NumUpdates"], 1),
 			)
 			if err != nil {

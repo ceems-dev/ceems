@@ -285,6 +285,120 @@ func TestAvgMetricMap(t *testing.T) {
 	}
 }
 
+func TestMinMetricMap(t *testing.T) {
+	tests := []struct {
+		name     string
+		existing string
+		new      string
+		expected string
+	}{
+		{
+			name:     "when existing and new have same signature",
+			existing: `{"a":1,"b":2,"c":3}`,
+			new:      `{"a":2,"c":4,"b":1}`,
+			expected: `{"a":1,"b":1,"c":3}`,
+		},
+		{
+			name:     "when new has new keys",
+			existing: `{"a":1,"b":2,"c":3}`,
+			new:      `{"a":2,"c":4,"b":1,"d":9}`,
+			expected: `{"a":1,"b":1,"c":3,"d":9}`,
+		},
+		{
+			name:     "when new has fewer keys",
+			existing: `{"a":1,"b":2,"c":3}`,
+			new:      `{"a":2}`,
+			expected: `{"a":1,"b":2,"c":3}`,
+		},
+		{
+			name:     "when new has signature change",
+			existing: `{"a":1,"b":2,"c":3}`,
+			new:      `{"a":2,"c":"+infinity","b":1,"d":9}`,
+			expected: `{"a":1,"b":1,"c":0,"d":9}`,
+		},
+		{
+			name:     "when new has invalid types",
+			existing: `{"a":1,"b":2,"c":3}`,
+			new:      `{"a":2,"c":3,"b":1}`,
+			expected: `{"a":1,"b":1,"c":3}`,
+		},
+		{
+			name:     "when new has inf/nan types",
+			existing: `{"a":1,"b":2,"c":3}`,
+			new:      `{"a":2,"c":"inf","b":"nan"}`,
+			expected: `{"a":1,"b":0,"c":0}`,
+		},
+		{
+			name:     "when existing has inf/nan types",
+			existing: `{"a":1,"b":"inf","c":3}`,
+			new:      `{"a":2,"c":2,"b":"NaN"}`,
+			expected: `{"a":1,"b":0,"c":2}`,
+		},
+	}
+
+	for _, test := range tests {
+		got := minMetricMap(test.existing, test.new)
+		assert.Equal(t, test.expected, got, test.name)
+	}
+}
+
+func TestMaxMetricMap(t *testing.T) {
+	tests := []struct {
+		name     string
+		existing string
+		new      string
+		expected string
+	}{
+		{
+			name:     "when existing and new have same signature",
+			existing: `{"a":1,"b":2,"c":3}`,
+			new:      `{"a":2,"c":4,"b":1}`,
+			expected: `{"a":2,"b":2,"c":4}`,
+		},
+		{
+			name:     "when new has new keys",
+			existing: `{"a":1,"b":2,"c":3}`,
+			new:      `{"a":2,"c":4,"b":1,"d":9}`,
+			expected: `{"a":2,"b":2,"c":4,"d":9}`,
+		},
+		{
+			name:     "when new has fewer keys",
+			existing: `{"a":1,"b":2,"c":3}`,
+			new:      `{"a":2}`,
+			expected: `{"a":2,"b":2,"c":3}`,
+		},
+		{
+			name:     "when new has signature change",
+			existing: `{"a":1,"b":2,"c":3}`,
+			new:      `{"a":2,"c":"+infinity","b":1,"d":9}`,
+			expected: `{"a":2,"b":2,"c":3,"d":9}`,
+		},
+		{
+			name:     "when new has invalid types",
+			existing: `{"a":1,"b":2,"c":3}`,
+			new:      `{"a":2,"c":3,"b":1}`,
+			expected: `{"a":2,"b":2,"c":3}`,
+		},
+		{
+			name:     "when new has inf/nan types",
+			existing: `{"a":1,"b":2,"c":3}`,
+			new:      `{"a":2,"c":"inf","b":"nan"}`,
+			expected: `{"a":2,"b":2,"c":3}`,
+		},
+		{
+			name:     "when existing has inf/nan types",
+			existing: `{"a":1,"b":"inf","c":3}`,
+			new:      `{"a":2,"c":2,"b":"NaN"}`,
+			expected: `{"a":2,"b":0,"c":3}`,
+		},
+	}
+
+	for _, test := range tests {
+		got := maxMetricMap(test.existing, test.new)
+		assert.Equal(t, test.expected, got, test.name)
+	}
+}
+
 func TestSumMetricMap(t *testing.T) {
 	testSlice := []string{
 		`{"a":null,"b":2,"c":3,"d":"-infinity"}`, `{"a":2,"c":4,"b":1,"d":9,"e":"+inf"}`,

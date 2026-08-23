@@ -1,4 +1,4 @@
-INSERT INTO usage (cluster_id,resource_manager,num_units,project,groupname,username,last_updated_at,total_time_seconds,avg_cpu_usage,avg_cpu_mem_usage,total_cpu_energy_usage_kwh,total_cpu_emissions_gms,avg_gpu_usage,avg_gpu_mem_usage,total_gpu_energy_usage_kwh,total_gpu_emissions_gms,total_io_write_stats,total_io_read_stats,total_ingress_stats,total_egress_stats,num_updates) VALUES (:cluster_id,:resource_manager,:num_units,:project,:groupname,:username,:last_updated_at,:total_time_seconds,:avg_cpu_usage,:avg_cpu_mem_usage,:total_cpu_energy_usage_kwh,:total_cpu_emissions_gms,:avg_gpu_usage,:avg_gpu_mem_usage,:total_gpu_energy_usage_kwh,:total_gpu_emissions_gms,:total_io_write_stats,:total_io_read_stats,:total_ingress_stats,:total_egress_stats,:num_updates) ON CONFLICT(cluster_id,username,project) DO UPDATE SET
+INSERT INTO usage (cluster_id,resource_manager,num_units,project,groupname,username,last_updated_at,total_time_seconds,avg_cpu_usage,avg_cpu_mem_usage,total_cpu_energy_usage_kwh,total_cpu_emissions_gms,avg_gpu_usage,avg_gpu_mem_usage,total_gpu_energy_usage_kwh,total_gpu_emissions_gms,total_io_write_stats,total_io_read_stats,total_ingress_stats,total_egress_stats,total_custom_stats,avg_custom_stats,min_custom_stats,max_custom_stats,num_updates) VALUES (:cluster_id,:resource_manager,:num_units,:project,:groupname,:username,:last_updated_at,:total_time_seconds,:avg_cpu_usage,:avg_cpu_mem_usage,:total_cpu_energy_usage_kwh,:total_cpu_emissions_gms,:avg_gpu_usage,:avg_gpu_mem_usage,:total_gpu_energy_usage_kwh,:total_gpu_emissions_gms,:total_io_write_stats,:total_io_read_stats,:total_ingress_stats,:total_egress_stats,:total_custom_stats,:avg_custom_stats,:min_custom_stats,:max_custom_stats,:num_updates) ON CONFLICT(cluster_id,username,project) DO UPDATE SET
   num_units = num_units + :num_units,
   total_time_seconds = add_metric_map(total_time_seconds, :total_time_seconds),
   avg_cpu_usage = avg_metric_map(avg_cpu_usage, :avg_cpu_usage, CAST(json_extract(total_time_seconds, '$.alloc_cputime') AS REAL), CAST(json_extract(:total_time_seconds, '$.alloc_cputime') AS REAL)),
@@ -13,5 +13,9 @@ INSERT INTO usage (cluster_id,resource_manager,num_units,project,groupname,usern
   total_io_read_stats = add_metric_map(total_io_read_stats, :total_io_read_stats),
   total_ingress_stats = add_metric_map(total_ingress_stats, :total_ingress_stats),
   total_egress_stats = add_metric_map(total_egress_stats, :total_egress_stats),
+  total_custom_stats = add_metric_map(total_custom_stats, :total_custom_stats),
+  avg_custom_stats = avg_metric_map(avg_custom_stats, :avg_custom_stats, CAST(json_extract(total_time_seconds, '$.walltime') AS REAL), CAST(json_extract(:total_time_seconds, '$.walltime') AS REAL)),
+  min_custom_stats = min_metric_map(min_custom_stats, :min_custom_stats),
+  max_custom_stats = max_metric_map(max_custom_stats, :max_custom_stats),
   num_updates = num_updates + :num_updates,
   last_updated_at = :last_updated_at

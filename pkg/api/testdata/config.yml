@@ -186,3 +186,19 @@ updaters:
         total_egress_stats: 
           bytes: total_egress_stats_bytes{uuid=~"{{.UUIDs}}"}
           packets: total_egress_stats_packets{uuid=~"{{.UUIDs}}"}
+        
+        # Total custom stats
+        total_custom_stats:
+          bytes: total_io_read_stats_bytes{uuid=~"{{.UUIDs}}"}
+
+        # Avg custom stats
+        avg_custom_stats:
+          bytes: total_io_read_stats_bytes{uuid=~"{{.UUIDs}}"}
+
+        # Min custom stats
+        min_custom_stats:
+          bytes: total_io_read_stats_bytes{uuid=~"{{.UUIDs}}"}
+
+        # Max custom stats
+        max_custom_stats:
+          bytes: total_io_read_stats_bytes{uuid=~"{{.UUIDs}}"}
