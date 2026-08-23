@@ -421,6 +421,10 @@ then
   then
     desc="cacct with default format"
     fixture='cmd/cacct/testdata/output/e2e-test-cacct-default-format.txt'
+  elif [ "${scenario}" = "cacct-help-format" ]
+  then
+    desc="cacct with help format"
+    fixture='cmd/cacct/testdata/output/e2e-test-cacct-help-format.txt'
   elif [ "${scenario}" = "cacct-long-format" ]
   then
     desc="cacct with long format"
@@ -445,6 +449,10 @@ then
   then
     desc="cacct using invalid config"
     fixture='cmd/cacct/testdata/output/e2e-test-cacct-invalid-config.txt'
+  elif [ "${scenario}" = "cacct-bad-config" ]
+  then
+    desc="cacct using bad config"
+    fixture='cmd/cacct/testdata/output/e2e-test-cacct-bad-config.txt'
   elif [ "${scenario}" = "cacct-tsdata" ]
   then
     desc="cacct to dump time series data"
@@ -1646,12 +1654,15 @@ then
   if [ "${scenario}" = "cacct-default-format" ]
   then
     ./bin/cacct --current-user=usr1 --config-path="cmd/cacct/testdata" --starttime="2022-02-20" --endtime="2022-03-20" > "${fixture_output}" 2>&1
+  elif [ "${scenario}" = "cacct-help-format" ]
+  then
+    ./bin/cacct --current-user=usr1 --config-path="cmd/cacct/testdata" --helpformat > "${fixture_output}" 2>&1
   elif [ "${scenario}" = "cacct-long-format" ]
   then
     ./bin/cacct --current-user=usr1 --config-path="cmd/cacct/testdata" --starttime="2022-02-20" --endtime="2022-03-20" --long > "${fixture_output}" 2>&1
   elif [ "${scenario}" = "cacct-custom-format" ]
   then
-    ./bin/cacct --current-user=usr1 --config-path="cmd/cacct/testdata" --starttime="2022-02-20" --endtime="2022-03-20" --format="jobid,account,cpuusage" > "${fixture_output}" 2>&1
+    ./bin/cacct --current-user=usr1 --config-path="cmd/cacct/testdata" --starttime="2022-02-20" --endtime="2022-03-20" --format="jobid,account,cpuusage,avgUsageSomethingScalar,avgUsageSomethingVector" > "${fixture_output}" 2>&1
   elif [ "${scenario}" = "cacct-admin-user" ]
   then
     ./bin/cacct --current-user=grafana --config-path="cmd/cacct/testdata" --starttime="2022-02-20" --endtime="2022-03-20" --user=usr1,usr2 > "${fixture_output}" 2>&1
@@ -1664,6 +1675,9 @@ then
 	elif [ "${scenario}" = "cacct-invalid-config" ]
   then
     ./bin/cacct --current-user=usr1 --config-path="nonexistant/testdata" --starttime="2022-02-20" --endtime="2022-03-20" > "${fixture_output}" 2>&1 || true
+  elif [ "${scenario}" = "cacct-bad-config" ]
+  then
+    ./bin/cacct --current-user=usr1 --config-path="cmd/cacct/testdata/bad-config" --starttime="2022-02-20" --endtime="2022-03-20" > "${fixture_output}" 2>&1 || true
   elif [ "${scenario}" = "cacct-tsdata" ]
   then
     ./bin/cacct --current-user=usr1 --config-path="cmd/cacct/testdata" --job="147973" --ts --ts.out-dir="${tmpdir}/ts" > "${fixture_output}" 2>&1
@@ -1673,7 +1687,7 @@ then
     sed -i '/^time series data saved to directory/d' "${fixture_output}"
   elif [ "${scenario}" = "cacct-tsdata-fail" ]
   then
-    ./bin/cacct --current-user=usr1 --config-path="cmd/cacct/testdata" --starttime="2022-02-20" --endtime="2022-03-20" --ts --ts.out-dir="${tmpdir}/ts" > "${fixture_output}" 2>&1 || true
+    ./bin/cacct --current-user=grafana --user=all --config-path="cmd/cacct/testdata" --starttime="2022-02-20" --endtime="2024-03-20" --ts --ts.out-dir="${tmpdir}/ts" > "${fixture_output}" 2>&1 || true
   fi
 
 elif [[ "${scenario}" =~ ^"tool" ]]

@@ -167,6 +167,17 @@ func ProfilesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("KO"))
 }
 
+// containsSubString will check if any of elements in l contains s.
+func containsSubstring(l []string, s string) bool {
+	for _, e := range l {
+		if strings.Contains(s, e) {
+			return true
+		}
+	}
+
+	return false
+}
+
 // QueryHandler handles queries.
 func QueryHandler(w http.ResponseWriter, r *http.Request) {
 	var response tsdb.Response[any]
@@ -214,12 +225,12 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 		query = matches[1]
 	}
 
-	// log.Println("Query", query, "UUIDs", uuids)
+	// log.Println("Query", query, "UUIDs", uuids, query)
 
 	var results []any
 
 	switch {
-	case slices.Contains(
+	case containsSubstring(
 		[]string{
 			"avg_cpu_usage", "avg_cpu_mem_usage", "avg_gpu_usage",
 			"avg_gpu_mem_usage", "total_cpu_energy_usage_kwh",
@@ -242,7 +253,7 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 					},
 				})
 		}
-	case slices.Contains(
+	case containsSubstring(
 		[]string{
 			"total_io_read_stats_bytes", "total_io_write_stats_bytes",
 		}, query):
@@ -259,7 +270,7 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 					},
 				})
 		}
-	case slices.Contains(
+	case containsSubstring(
 		[]string{
 			"total_io_read_stats_requests", "total_io_write_stats_requests",
 		}, query):
@@ -276,7 +287,7 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 					},
 				})
 		}
-	case slices.Contains(
+	case containsSubstring(
 		[]string{
 			"total_ingress_stats_bytes", "total_egress_stats_bytes",
 		}, query):
@@ -293,7 +304,7 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 					},
 				})
 		}
-	case slices.Contains(
+	case containsSubstring(
 		[]string{
 			"total_ingress_stats_packets", "total_egress_stats_packets",
 		}, query):
@@ -379,7 +390,7 @@ func QueryRangeHandler(w http.ResponseWriter, r *http.Request) {
 	status := "success"
 
 	switch {
-	case slices.Contains(
+	case containsSubstring(
 		[]string{
 			"avg_cpu_usage", "avg_cpu_mem_usage", "avg_gpu_usage",
 			"avg_gpu_mem_usage", "total_cpu_energy_usage_kwh", "total_gpu_energy_usage_kwh",
@@ -404,7 +415,7 @@ func QueryRangeHandler(w http.ResponseWriter, r *http.Request) {
 					},
 				})
 		}
-	case slices.Contains(
+	case containsSubstring(
 		[]string{
 			"total_io_read_stats_bytes", "total_io_write_stats_bytes",
 		}, query):
@@ -424,7 +435,7 @@ func QueryRangeHandler(w http.ResponseWriter, r *http.Request) {
 					},
 				})
 		}
-	case slices.Contains(
+	case containsSubstring(
 		[]string{
 			"total_io_read_stats_requests", "total_io_write_stats_requests",
 		}, query):
@@ -444,7 +455,7 @@ func QueryRangeHandler(w http.ResponseWriter, r *http.Request) {
 					},
 				})
 		}
-	case slices.Contains(
+	case containsSubstring(
 		[]string{
 			"total_ingress_stats_bytes", "total_egress_stats_bytes",
 		}, query):
@@ -464,7 +475,7 @@ func QueryRangeHandler(w http.ResponseWriter, r *http.Request) {
 					},
 				})
 		}
-	case slices.Contains(
+	case containsSubstring(
 		[]string{
 			"total_ingress_stats_packets", "total_egress_stats_packets",
 		}, query):

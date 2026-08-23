@@ -94,11 +94,8 @@ a typical `metadata.json` would be as follows:
  {
   "fingerprint": "d2213312c639a90c",
   "labels": {
-   "__name__": "uuid:ceems_host_emissions_g_s:pue",
-   "hostname": "ceems-demo",
-   "instance": "localhost:9010",
-   "job": "slurm",
-   "manager": "slurm",
+   "metric": "uuid:ceems_host_emissions_g_s:pue",
+   "nodename": "ceems-demo",
    "provider": "owid",
    "uuid": "258"
   }
@@ -106,11 +103,8 @@ a typical `metadata.json` would be as follows:
  {
   "fingerprint": "85105ad7ffcf540a",
   "labels": {
-   "__name__": "uuid:ceems_host_emissions_g_s:pue",
-   "hostname": "ceems-demo",
-   "instance": "localhost:9010",
-   "job": "slurm",
-   "manager": "slurm",
+   "metric": "uuid:ceems_host_emissions_g_s:pue",
+   "nodename": "ceems-demo",
    "provider": "rte",
    "uuid": "258"
   }
@@ -118,33 +112,24 @@ a typical `metadata.json` would be as follows:
  {
   "fingerprint": "c819bde6e9a529b6",
   "labels": {
-   "__name__": "uuid:ceems_cpu_memory_usage:ratio",
-   "hostname": "ceems-demo",
-   "instance": "localhost:9010",
-   "job": "slurm",
-   "manager": "slurm",
+   "metric": "uuid:ceems_cpu_memory_usage:ratio",
+   "nodename": "ceems-demo",
    "uuid": "258"
   }
  },
  {
   "fingerprint": "90bcc7cfa3cd05fa",
   "labels": {
-   "__name__": "uuid:ceems_cpu_usage:ratio_irate",
-   "hostname": "ceems-demo",
-   "instance": "localhost:9010",
-   "job": "slurm",
-   "manager": "slurm",
+   "metric": "uuid:ceems_cpu_usage:ratio_irate",
+   "nodename": "ceems-demo",
    "uuid": "258"
   }
  },
  {
   "fingerprint": "cbba6b4919ac1bad",
   "labels": {
-   "__name__": "uuid:ceems_host_power_watts:pue",
-   "hostname": "ceems-demo",
-   "instance": "localhost:9010",
-   "job": "slurm",
-   "manager": "slurm",
+   "metric": "uuid:ceems_host_power_watts:pue",
+   "nodename": "ceems-demo",
    "uuid": "258"
   }
  }

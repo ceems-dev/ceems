@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"maps"
 	"math"
 	"strings"
 	"sync"
@@ -280,8 +279,8 @@ func (t *tsdbUpdater) fetchAggMetrics(
 	duration time.Duration,
 	uuids []string,
 	settings *tsdb.Settings,
-) map[string]map[string]tsdb.Metric {
-	aggMetrics := make(map[string]map[string]tsdb.Metric, len(t.config.Queries))
+) map[string]map[string]model.Vector {
+	aggMetrics := make(map[string]map[string]model.Vector, len(t.config.Queries))
 
 	// If duration is less than rateInterval bail
 	if duration < settings.RateInterval {
@@ -325,7 +324,7 @@ func (t *tsdbUpdater) fetchAggMetrics(
 			go func(n string, sn string, q string) {
 				defer wg.Done()
 
-				var aggMetric tsdb.Metric
+				var aggMetric model.Vector
 
 				var err error
 
@@ -350,7 +349,7 @@ func (t *tsdbUpdater) fetchAggMetrics(
 					metricLock.Lock()
 
 					if aggMetrics[n] == nil {
-						aggMetrics[n] = make(map[string]tsdb.Metric)
+						aggMetrics[n] = make(map[string]model.Vector)
 					}
 
 					aggMetrics[n][sn] = aggMetric
@@ -459,7 +458,7 @@ func (t *tsdbUpdater) update(
 	uuidBatches := helper.ChunkBy(allUnitUUIDs[:j], batchSize)
 	numBatches := len(uuidBatches)
 
-	aggMetrics := make(map[string]map[string]tsdb.Metric)
+	aggMetrics := make(map[string]map[string]map[string]float64)
 
 	// Loop over each chunk
 	for iBatch, batchUUIDs := range uuidBatches {
@@ -478,21 +477,43 @@ func (t *tsdbUpdater) update(
 				// If inner map has not been initialized yet, do it
 				// These are parent metrics like avg_cpu_usage, avg_gpu_usage
 				if aggMetrics[metricName] == nil {
-					aggMetrics[metricName] = make(map[string]tsdb.Metric, len(metrics))
+					aggMetrics[metricName] = make(map[string]map[string]float64, len(metrics))
 				}
 				// Each parent metric has sub metrics that operator chooses and we loop
 				// over them here
 				for subMetricName, subMetrics := range metrics {
 					if aggMetrics[metricName][subMetricName] == nil {
-						aggMetrics[metricName][subMetricName] = make(tsdb.Metric, len(subMetrics))
+						aggMetrics[metricName][subMetricName] = make(map[string]float64, len(subMetrics))
 					}
 
-					maps.Copy(aggMetrics[metricName][subMetricName], subMetrics)
+					// Check how many labels each metric returned. We expect it to return
+					// exactly one label per metric which is uuid. If it returns more than
+					// 1, it means there is a query that is aggregated by more than 1 label
+					// which is not supported. If that is the case, emit a warning log
+					var subMetricLabels []string
+
+					// Extract uuid label from model.Vector
+					for _, value := range subMetrics {
+						if len(value.Metric) > len(subMetricLabels) {
+							for l := range value.Metric {
+								subMetricLabels = append(subMetricLabels, string(l))
+							}
+						}
+
+						if uuid, ok := value.Metric["uuid"]; ok {
+							aggMetrics[metricName][subMetricName][string(uuid)] = float64(value.Value)
+						}
+					}
+
+					// If number of labels is more than 1 emit a warning log
+					if len(subMetricLabels) > 1 {
+						t.Logger.Warn("TSDB query must be aggregated over uuid and return only uuid label in result. More than 1 labels found in query results.", "metric", metricName, "sub_metric", subMetricName, "found_labels", strings.Join(subMetricLabels, ","))
+					}
 				}
 			}
 
 			t.Logger.Debug(
-				"progress", "batch_id", iBatch, "total_batches", numBatches, "batch_size", batchSize,
+				"Progress", "batch_id", iBatch, "total_batches", numBatches, "batch_size", batchSize,
 			)
 		}
 	}
@@ -685,7 +706,7 @@ func (t *tsdbUpdater) deleteTimeSeries(
 	//
 	// Join them with | as delimiter. We will use regex match to match all series
 	// with the label uuid=~"$unitids"
-	allUUIDs := strings.Join(unitUUIDs, "|")
+	allUUIDs := strings.ReplaceAll(strings.ReplaceAll(strings.Join(unitUUIDs, "|"), "[", `\[`), "]", `\]`)
 	matchers := t.config.LabelsToDrop
 	matchers = append(matchers, fmt.Sprintf("{uuid=~\"%s\"}", allUUIDs))
 

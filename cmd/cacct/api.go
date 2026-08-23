@@ -10,7 +10,6 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
-	"os"
 	"slices"
 	"strconv"
 	"strings"
@@ -35,8 +34,7 @@ func stats(
 	jobs []string,
 	userNames []string,
 	fields []string,
-	tsData bool,
-	tsDataOut string,
+	includeSummaryStats bool,
 ) ([]models.Unit, []models.Usage, error) {
 	// Add user header to HTTP config
 	userHeaders := http_config.Header{
@@ -126,41 +124,27 @@ func stats(
 		return nil, nil, fmt.Errorf("failed to fetch jobs: %w", err)
 	}
 
-	// Get all units in the given period
-	// Always add user field as we will need to get total usage
-	urlValues.Add("field", "username")
-	urlValues.Add("field", "num_units")
+	// If summary stats are requested, include them
+	var usage []models.Usage
 
-	// If elapsed is requested we need to get total_time_seconds from usage API resource
-	if slices.Contains(urlValues["field"], "elapsed") {
-		urlValues.Add("field", "total_time_seconds")
-	}
+	if includeSummaryStats {
+		// Get all units in the given period
+		// Always add user field as we will need to get total usage
+		urlValues.Add("field", "username")
+		urlValues.Add("field", "num_units")
 
-	logger.Debug("Request to fetch usage", "url", usageReqURL, "usage_query", urlValues.Encode())
-
-	usage, err := doRequest[models.Usage](ctx, usageReqURL, urlValues, apiClient)
-	if err != nil {
-		logger.Error("Failed to fetch usage data from CEEMS API server", "err", err)
-
-		return nil, nil, fmt.Errorf("failed to fetch usage: %w", err)
-	}
-
-	// If tsData is enabled, get time series data
-	if tsData {
-		// If metrics are not configured, return logging a message
-		if len(config.TSDB.Queries) == 0 {
-			logger.Warn("TSDB queries not configured")
-			fmt.Fprintln(os.Stderr, "time series data not available")
-
-			return units, usage, nil
+		// If elapsed is requested we need to get total_time_seconds from usage API resource
+		if slices.Contains(urlValues["field"], "elapsed") {
+			urlValues.Add("field", "total_time_seconds")
 		}
 
-		logger.Debug("Fetching time series data from TSDB")
+		logger.Debug("Request to fetch usage", "url", usageReqURL, "usage_query", urlValues.Encode())
 
-		err := tsdbData(ctx, logger, config, units, tsDataOut)
+		usage, err = doRequest[models.Usage](ctx, usageReqURL, urlValues, apiClient)
 		if err != nil {
-			logger.Error("failed to fetch time series data", "err", err)
-			fmt.Fprintln(os.Stderr, "failed to fetch time series data")
+			logger.Error("Failed to fetch usage data from CEEMS API server", "err", err)
+
+			return nil, nil, fmt.Errorf("failed to fetch usage: %w", err)
 		}
 	}
 

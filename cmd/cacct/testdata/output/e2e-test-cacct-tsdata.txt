@@ -20,8 +20,9 @@
 	{
 		"fingerprint": "554b56cadf9dea4b",
 		"labels": {
-			"__name__": "cpu_usage",
-			"instance": "localhost:9090",
+			"help": "Average usage of CPU during the duration of the job",
+			"metric": "Avg. CPU Usage",
+			"nodename": "localhost",
 			"uuid": "147973"
 		}
 	}

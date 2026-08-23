@@ -357,7 +357,14 @@ func TestTSDBQuerySuccess(t *testing.T) {
 
 	m, err := tsdb.Query(t.Context(), "foo", time.Now(), defaultQueryTimeout)
 	require.NoError(t, err)
-	assert.Equal(t, Metric{"1": 1.1, "2": 2.2}, m)
+
+	// Extract uuid from vector
+	mmap := make(map[string]float64)
+	for _, v := range m {
+		mmap[string(v.Metric["uuid"])] = float64(v.Value)
+	}
+
+	assert.Equal(t, map[string]float64{"1": 1.1, "2": 2.2}, mmap)
 	assert.Equal(t, 15*time.Second, time.Duration(expectedQueryLookback))
 }
 

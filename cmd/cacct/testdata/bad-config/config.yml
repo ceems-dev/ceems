@@ -14,17 +14,12 @@ tsdb:
   web:
     url: http://localhost:9090
   max_units: 2
-  range_queries:
-    - name: cpu_usage
-      title: "Avg. CPU Usage"
-      help: "Average usage of CPU during the duration of the job"
-      query: avg_cpu_usage{uuid=~`{{.UUIDs}}`}
   instant_queries:
-    - name: "avg_-usage-something_Vector"
+    - name: "duplicatename"
       help: "Example metric which gives vector value"
       title: "Avg Metric Vector"
       query: avg_over_time(avg by (uuid,instance) (avg_cpu_usage{uuid=~`{{.UUIDs}}`})[{{.Range}}:])
-    - name: "Avg-UsageSomething-Scalar"
+    - name: "duplicatename"
       help: "Example query which returns scalar value"
       title: "Avg Metric Scalar"
       query: avg_over_time(avg by (uuid) (avg_cpu_usage{uuid=~`{{.UUIDs}}`})[{{.Range}}:])
