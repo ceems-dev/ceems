@@ -30,7 +30,7 @@ var (
 var settingsLock = sync.RWMutex{}
 
 // Metric defines Client metrics.
-type Metric map[string]float64
+// type Metric map[string]float64
 
 // RangeMetric defines Client range metrics.
 // type RangeMetric map[string][]model.SamplePair
@@ -224,7 +224,7 @@ func (t *Client) Labels(ctx context.Context, matchers []string, start time.Time,
 }
 
 // Query makes a Client query.
-func (t *Client) Query(ctx context.Context, query string, queryTime time.Time, timeout time.Duration) (Metric, error) {
+func (t *Client) Query(ctx context.Context, query string, queryTime time.Time, timeout time.Duration) (model.Vector, error) {
 	// Get current scrape interval to use as lookback_delta
 	// This query parameter is undocumented on Prometheus. If we use
 	// default value of 5m, we tend to have metrics 5m **after** compute
@@ -250,7 +250,7 @@ func (t *Client) Query(ctx context.Context, query string, queryTime time.Time, t
 	}
 
 	// Parse data
-	queriedValues := make(Metric)
+	// queriedValues := make(Metric)
 
 	var values model.Vector
 
@@ -261,14 +261,14 @@ func (t *Client) Query(ctx context.Context, query string, queryTime time.Time, t
 		return nil, fmt.Errorf("%w on data: %v", ErrFailedTypeAssertion, result)
 	}
 
-	// Iterate over each value and make UUID to value map
-	for _, value := range values {
-		if uuid, ok := value.Metric["uuid"]; ok {
-			queriedValues[string(uuid)] = float64(value.Value)
-		}
-	}
+	// // Iterate over each value and make UUID to value map
+	// for _, value := range values {
+	// 	if uuid, ok := value.Metric["uuid"]; ok {
+	// 		queriedValues[string(uuid)] = float64(value.Value)
+	// 	}
+	// }
 
-	return queriedValues, nil
+	return values, nil
 }
 
 // RangeQuery makes a Client range query.

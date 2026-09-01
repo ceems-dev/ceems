@@ -86,46 +86,104 @@ tsdb:
     basic_auth:
       username: prometheus
       password: anothersupersecretpassword
+  max_units_for_range_queries: 5
+  scrape_interval: 10s
+  evaluation_interval: 10s
   queries:
     # CPU utilization
-    cpu_usage: uuid:ceems_cpu_usage:ratio_irate{uuid=~"%s"}
+    - name: cpu_usage 
+      title: "CPU Usage (%)"
+      help: "Usage of CPUs in %"
+      query: uuid:ceems_cpu_usage:ratio_irate{uuid=~`{{.UUIDs}}`}
+      kind: range
     
     # CPU Memory utilization
-    cpu_mem_usage: uuid:ceems_cpu_memory_usage:ratio{uuid=~"%s"}
+    - name: cpu_mem_usage
+      title: "CPU Memory Usage (%)" 
+      help: "Ratio of memory used to memory reserved of CPU in %"
+      query: uuid:ceems_cpu_memory_usage:ratio{uuid=~`{{.UUIDs}}`}
+      kind: range
       
     # Host power usage in Watts
-    host_power_usage: uuid:ceems_host_power_watts:pue{uuid=~"%s"}
+    - name: host_power_usage
+      title: "Host Power usage (W)" 
+      help: "Instanteous power usage of host in Watts"
+      query: uuid:ceems_host_power_watts:pue{uuid=~`{{.UUIDs}}`}
+      kind: range
 
     # Host emissions in g/s
-    host_emissions: uuid:ceems_host_emissions_g_s:pue{uuid=~"%s"}
+    - name: host_emissions 
+      title: "Host Eq. Emissions Rate (g/s)"
+      help: "Instanteous emissions rate of host in g/s"
+      query: uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`}
+      kind: range
 
     # GPU utilization
-    avg_gpu_usage: uuid:ceems_gpu_usage:ratio{uuid=~"%s"}
+    - name: avg_gpu_usage
+      title: "GPU Usage (%)" 
+      help: "Usage of GPU in %"
+      query: uuid:ceems_gpu_usage:ratio{uuid=~`{{.UUIDs}}`}
+      kind: range
 
     # GPU memory utilization
-    avg_gpu_mem_usage: uuid:ceems_gpu_memory_usage:ratio{uuid=~"%s"}
+    - name: avg_gpu_mem_usage
+      title: "GPU Memory Usage (%)" 
+      help: "Ratio of memory used to memory reserved of GPU in %"
+      query: uuid:ceems_gpu_memory_usage:ratio{uuid=~`{{.UUIDs}}`}
+      kind: range
 
     # GPU power usage in Watts
-    gpu_power_usage: uuid:ceems_gpu_power_watts:pue{uuid=~"%s"}
+    - name: gpu_power_usage
+      title: "GPU Power Usage (W)"
+      help: "Instanteous Power Usage of GPU in Watts"
+      query: uuid:ceems_gpu_power_watts:pue{uuid=~`{{.UUIDs}}`}
+      kind: range
 
     # GPU emissions in g/s
-    gpu_emissions: uuid:ceems_gpu_emissions_g_s:pue{uuid=~"%s"}
+    - name: gpu_emissions 
+      title: "GPU Eq. Emission Rate (g/s)"
+      help: "Instanteous emissions rate of GPU in g/s"
+      query: uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`}
+      kind: range
 
     # Read IO bytes/s
-    io_read_bytes: irate(ceems_ebpf_read_bytes_total{uuid=~"%s"}[1m])
+    - name: io_read_bytes 
+      title: "IO Read Bandwidth (b/s)"
+      help: "Instanteous IO read bandwidth in bytes/s"
+      query: irate(ceems_ebpf_read_bytes_total{uuid=~`{{.UUIDs}}`}[1m])
+      kind: range
 
     # Write IO bytes/s
-    io_write_bytes: irate(ceems_ebpf_write_bytes_total{uuid=~"%s"}[1m])
+    - name: io_write_bytes 
+      title: "IO Write Bandwidth (b/s)"
+      help: "Instanteous IO write bandwidth in bytes/s"
+      query: irate(ceems_ebpf_write_bytes_total{uuid=~`{{.UUIDs}}`}[1m])
+      kind: range
 ```
+
+The keys in the `tsdb` section are explained as below:
+
+- `tsdb.max_units_for_range_queries`: Maximum number of units' time series to be fetched in a single
+CLI execution. Use an appropriate number based on the deployment as making too many
+range queries to TSDB can spike the memory usage of TSDB server. Default value is 10.
+- `tsdb.scrape_interval`: The scrape interval of the TSDB jobs where queries are being
+executed
+- `tsdb.evaluation_interval`: The evaluation interval of the TSDB recording rules
+- `tsdb.queries`: A list of queries to be executed to fetch the time series data.
+    - `tsdb.queries.name`: An **unique** short name for the query
+    - `tsdb.queries.title`: A human readable short title for the query. It will be included in the
+    output, so choose a name easy to understand for the end users.
+    - `tsdb.queries.help`: A small help text to explain what query metrics means
+    - `tsdb.queries.query`: It is the TSDB query that will be executed. Available
+    template variales are `{{.UUIDs}}`, `{{.ScrapeInterval}}`, `{{.RateInterval}}` and `{{.Range}}`.
+    - `tsdb.queries.kind`: Type of TSDB query. Currently only `range` is supported.
 
 Similar to the CEEMS API server configuration, this example assumes the TSDB server is
 reachable at `tsdb:9090` and basic authentication is configured on the HTTP server. The
 `tsdb.queries` section is where operators configure the queries to pull time series data
 for each metric. If operators used [`ceems_tool`](../usage/ceems-tool.md) to generate
 recording rules for the TSDB, the queries in the sample configuration above will work
-out-of-the-box. The keys in the `queries` object can be chosen freely; they are provided
-for configuration file maintainability. The placeholder `%s` will be replaced by the compute
-unit UUIDs at runtime before executing the queries on the TSDB server.
+out-of-the-box.
 
 :::note[NOTE]
 
@@ -167,36 +225,79 @@ tsdb:
     basic_auth:
       username: prometheus
       password: anothersupersecretpassword
+  max_units_for_range_queries: 5
+  scrape_interval: 10s
+  evaluation_interval: 10s
   queries:
     # CPU utilization
-    cpu_usage: uuid:ceems_cpu_usage:ratio_irate{uuid=~"%s"}
+    - name: cpu_usage 
+      title: "CPU Usage (%)"
+      help: "Usage of CPUs in %"
+      query: uuid:ceems_cpu_usage:ratio_irate{uuid=~`{{.UUIDs}}`}
+      kind: range
     
     # CPU Memory utilization
-    cpu_mem_usage: uuid:ceems_cpu_memory_usage:ratio{uuid=~"%s"}
+    - name: cpu_mem_usage
+      title: "CPU Memory Usage (%)" 
+      help: "Ratio of memory used to memory reserved of CPU in %"
+      query: uuid:ceems_cpu_memory_usage:ratio{uuid=~`{{.UUIDs}}`}
+      kind: range
       
     # Host power usage in Watts
-    host_power_usage: uuid:ceems_host_power_watts:pue{uuid=~"%s"}
+    - name: host_power_usage
+      title: "Host Power usage (W)" 
+      help: "Instanteous power usage of host in Watts"
+      query: uuid:ceems_host_power_watts:pue{uuid=~`{{.UUIDs}}`}
+      kind: range
 
     # Host emissions in g/s
-    host_emissions: uuid:ceems_host_emissions_g_s:pue{uuid=~"%s"}
+    - name: host_emissions 
+      title: "Host Eq. Emissions Rate (g/s)"
+      help: "Instanteous emissions rate of host in g/s"
+      query: uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`}
+      kind: range
 
     # GPU utilization
-    avg_gpu_usage: uuid:ceems_gpu_usage:ratio{uuid=~"%s"}
+    - name: avg_gpu_usage
+      title: "GPU Usage (%)" 
+      help: "Usage of GPU in %"
+      query: uuid:ceems_gpu_usage:ratio{uuid=~`{{.UUIDs}}`}
+      kind: range
 
     # GPU memory utilization
-    avg_gpu_mem_usage: uuid:ceems_gpu_memory_usage:ratio{uuid=~"%s"}
+    - name: avg_gpu_mem_usage
+      title: "GPU Memory Usage (%)" 
+      help: "Ratio of memory used to memory reserved of GPU in %"
+      query: uuid:ceems_gpu_memory_usage:ratio{uuid=~`{{.UUIDs}}`}
+      kind: range
 
     # GPU power usage in Watts
-    gpu_power_usage: uuid:ceems_gpu_power_watts:pue{uuid=~"%s"}
+    - name: gpu_power_usage
+      title: "GPU Power Usage (W)"
+      help: "Instanteous Power Usage of GPU in Watts"
+      query: uuid:ceems_gpu_power_watts:pue{uuid=~`{{.UUIDs}}`}
+      kind: range
 
     # GPU emissions in g/s
-    gpu_emissions: uuid:ceems_gpu_emissions_g_s:pue{uuid=~"%s"}
+    - name: gpu_emissions 
+      title: "GPU Eq. Emission Rate (g/s)"
+      help: "Instanteous emissions rate of GPU in g/s"
+      query: uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`}
+      kind: range
 
     # Read IO bytes/s
-    io_read_bytes: irate(ceems_ebpf_read_bytes_total{uuid=~"%s"}[1m])
+    - name: io_read_bytes 
+      title: "IO Read Bandwidth (b/s)"
+      help: "Instanteous IO read bandwidth in bytes/s"
+      query: irate(ceems_ebpf_read_bytes_total{uuid=~`{{.UUIDs}}`}[1m])
+      kind: range
 
     # Write IO bytes/s
-    io_write_bytes: irate(ceems_ebpf_write_bytes_total{uuid=~"%s"}[1m])
+    - name: io_write_bytes 
+      title: "IO Write Bandwidth (b/s)"
+      help: "Instanteous IO write bandwidth in bytes/s"
+      query: irate(ceems_ebpf_write_bytes_total{uuid=~`{{.UUIDs}}`}[1m])
+      kind: range
 ```
 
 A complete reference can be found in the [Reference](./config-reference.md) section. A valid

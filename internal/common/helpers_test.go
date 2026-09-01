@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/ceems-dev/ceems/pkg/api/base"
 	"github.com/ceems-dev/ceems/pkg/grafana"
 	"github.com/prometheus/common/config"
 	"github.com/stretchr/testify/assert"
@@ -658,5 +659,95 @@ func TestCheckHTTPClientConfigFiles(t *testing.T) {
 		}
 
 		assert.ElementsMatch(t, test.expected, got, test.name)
+	}
+}
+
+func TestChunkByMaxSum(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []int
+		expected [][]int
+	}{
+		{
+			name:     "Simple",
+			input:    []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 7, 2, 4, 5, 1, 4, 2},
+			expected: [][]int{{1, 2, 3, 4}, {5}, {6}, {7}, {8}, {9}, {7, 2}, {4, 5, 1}, {4, 2}},
+		},
+		{
+			name:     "Elements with larger than sum",
+			input:    []int{1, 2, 3, 4, 5, 6, 11, 7, 8, 9, 7, 2, 50, 4, 5, 1, 4, 2, 23},
+			expected: [][]int{{1, 2, 3, 4}, {5}, {6}, {11}, {7}, {8}, {9}, {7, 2}, {50}, {4, 5, 1}, {4, 2}, {23}},
+		},
+	}
+
+	for _, test := range tests {
+		got := ChunkByMaxSum(test.input, 10)
+		assert.Equal(t, test.expected, got, test.name)
+	}
+}
+
+func TestTimeToTimestamp(t *testing.T) {
+	tests := []struct {
+		name     string
+		time     string
+		expected int64
+	}{
+		{
+			name:     "time string in CET location",
+			time:     "2024-11-12T15:23:02+0100",
+			expected: 1731421382000,
+		},
+		{
+			name:     "time string in DST",
+			time:     "2024-10-03T12:51:40+0200",
+			expected: 1727952700000,
+		},
+		{
+			name:     "time string in UTC",
+			time:     "2024-11-12T15:23:02+0000",
+			expected: 1731424982000,
+		},
+	}
+
+	for _, test := range tests {
+		timeStamp := TimeToTimestamp(base.DatetimezoneLayout, test.time)
+		assert.Equal(t, test.expected, timeStamp, test.name)
+	}
+
+	// Check failure case
+	timeStamp := TimeToTimestamp(base.DatetimezoneLayout, "Unknown")
+	assert.Equal(t, int64(0), timeStamp)
+}
+
+func TestChunkBy(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []int
+		expected [][]int
+		size     int
+	}{
+		{
+			name:     "chunk size less than length",
+			input:    []int{1, 2, 3, 4, 5, 6},
+			size:     3,
+			expected: [][]int{{1, 2, 3}, {4, 5, 6}},
+		},
+		{
+			name:     "chunk size more than length",
+			input:    []int{1, 2, 3, 4, 5, 6},
+			size:     10,
+			expected: [][]int{{1, 2, 3, 4, 5, 6}},
+		},
+		{
+			name:     "chunk size 0",
+			input:    []int{1, 2, 3, 4, 5, 6},
+			size:     0,
+			expected: [][]int{{1, 2, 3, 4, 5, 6}},
+		},
+	}
+
+	for _, test := range tests {
+		got := ChunkBy(test.input, test.size)
+		assert.Equal(t, test.expected, got, test.name)
 	}
 }

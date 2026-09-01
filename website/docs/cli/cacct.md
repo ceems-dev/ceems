@@ -17,7 +17,7 @@ sidebar_position: 4
 | `--user`       | Comma separated list of user names to select jobs to display.A special value `all` can be used to fetch jobs of all users when querying user has enough privileges. By default, the running user is used.                   |                |
 | `--format`     | Comma separated list of fields                                                 |                |
 | `--helpformat` | List of available fields                                                       |                |
-| `--ts`         | Time series data of jobs are saved in CSV format                               | `false`        |
+| `--ts.metrics` | Comma separated list of time series metrics. Check available metrics using `--helpformat` flag.                               |         |
 | `--ts.out-dir` | Directory to save time series data                                             | `out`          |
 | `--csv`        | Produce CSV output                                                             | `false`        |
 | `--html`       | Produce HTML output                                                            | `false`        |

@@ -17,7 +17,6 @@ import (
 	"github.com/ceems-dev/ceems/internal/common"
 	"github.com/ceems-dev/ceems/internal/osexec"
 	"github.com/ceems-dev/ceems/pkg/api/base"
-	"github.com/ceems-dev/ceems/pkg/api/helper"
 	"github.com/ceems-dev/ceems/pkg/api/models"
 )
 
@@ -154,7 +153,7 @@ func parseBacctCmdOutput(bacctOutput string, start time.Time, end time.Time, job
 					components[c] = t.Format(base.DatetimezoneLayout)
 				}
 
-				eventTS[c] = helper.TimeToTimestamp(base.DatetimezoneLayout, components[c])
+				eventTS[c] = common.TimeToTimestamp(base.DatetimezoneLayout, components[c])
 			}
 
 			// Get CPU allocations
@@ -439,7 +438,7 @@ func parseBjobsCmdOutput(bjobsOutput []byte, start time.Time, end time.Time, job
 					components[c] = "N/A"
 				}
 
-				eventTS[c] = helper.TimeToTimestamp(base.DatetimezoneLayout, components[c])
+				eventTS[c] = common.TimeToTimestamp(base.DatetimezoneLayout, components[c])
 			}
 
 			// If job has already finished in the past bjobs should not return this job.

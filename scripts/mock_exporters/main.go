@@ -48,7 +48,7 @@ type dcgmCollector struct {
 }
 
 func randFloat(minVal, maxVal float64) float64 {
-	return minVal + rand.Float64()*(maxVal-minVal) //nolint:gosec
+	return minVal + rand.Float64()*(maxVal-minVal)
 }
 
 func newDCGMCollector() *dcgmCollector {
@@ -185,17 +185,17 @@ func (collector *dcgmCollector) Collect(ch chan<- prometheus.Metric) {
 
 	for _, dev := range collector.devices {
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuUtil, prometheus.GaugeValue, 100*rand.Float64(), "host", dev.UUID, dev.IID, //nolint:gosec
+			collector.gpuUtil, prometheus.GaugeValue, 100*rand.Float64(), "host", dev.UUID, dev.IID,
 			"nvidia"+dev.ID, dev.ID, dev.PCIAddr, "NVIDIA A100 80GiB",
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuMemUsed, prometheus.GaugeValue, 100*rand.Float64(), "host", dev.UUID, dev.IID, //nolint:gosec
+			collector.gpuMemUsed, prometheus.GaugeValue, 100*rand.Float64(), "host", dev.UUID, dev.IID,
 			"nvidia"+dev.ID, dev.ID, dev.PCIAddr, "NVIDIA A100 80GiB",
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuMemFree, prometheus.GaugeValue, 100*rand.Float64(), "host", dev.UUID, dev.IID, //nolint:gosec
+			collector.gpuMemFree, prometheus.GaugeValue, 100*rand.Float64(), "host", dev.UUID, dev.IID,
 			"nvidia"+dev.ID, dev.ID, dev.PCIAddr, "NVIDIA A100 80GiB",
 		)
 
@@ -210,62 +210,62 @@ func (collector *dcgmCollector) Collect(ch chan<- prometheus.Metric) {
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuSMActive, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID, //nolint:gosec
+			collector.gpuSMActive, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID,
 			"nvidia"+dev.ID, dev.ID, dev.PCIAddr, "NVIDIA A100 80GiB",
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuSMOcc, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID, //nolint:gosec
+			collector.gpuSMOcc, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID,
 			"nvidia"+dev.ID, dev.ID, dev.PCIAddr, "NVIDIA A100 80GiB",
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuGREngActive, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID, //nolint:gosec
+			collector.gpuGREngActive, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID,
 			"nvidia"+dev.ID, dev.ID, dev.PCIAddr, "NVIDIA A100 80GiB",
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuPipeActive, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID, //nolint:gosec
+			collector.gpuPipeActive, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID,
 			"nvidia"+dev.ID, dev.ID, dev.PCIAddr, "NVIDIA A100 80GiB",
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuFP64Active, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID, //nolint:gosec
+			collector.gpuFP64Active, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID,
 			"nvidia"+dev.ID, dev.ID, dev.PCIAddr, "NVIDIA A100 80GiB",
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuFP32Active, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID, //nolint:gosec
+			collector.gpuFP32Active, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID,
 			"nvidia"+dev.ID, dev.ID, dev.PCIAddr, "NVIDIA A100 80GiB",
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuFP16Active, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID, //nolint:gosec
+			collector.gpuFP16Active, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID,
 			"nvidia"+dev.ID, dev.ID, dev.PCIAddr, "NVIDIA A100 80GiB",
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuDRAMActive, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID, //nolint:gosec
+			collector.gpuDRAMActive, prometheus.GaugeValue, rand.Float64(), "host", dev.UUID, dev.IID,
 			"nvidia"+dev.ID, dev.ID, dev.PCIAddr, "NVIDIA A100 80GiB",
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuNVLRX, prometheus.GaugeValue, 1024*1024*1024*rand.Float64(), "host", dev.UUID, dev.IID, //nolint:gosec
+			collector.gpuNVLRX, prometheus.GaugeValue, 1024*1024*1024*rand.Float64(), "host", dev.UUID, dev.IID,
 			"nvidia"+dev.ID, dev.ID, dev.PCIAddr, "NVIDIA A100 80GiB",
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuNVLTX, prometheus.GaugeValue, 1024*1024*1024*rand.Float64(), "host", dev.UUID, dev.IID, //nolint:gosec
+			collector.gpuNVLTX, prometheus.GaugeValue, 1024*1024*1024*rand.Float64(), "host", dev.UUID, dev.IID,
 			"nvidia"+dev.ID, dev.ID, dev.PCIAddr, "NVIDIA A100 80GiB",
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuPCIeTX, prometheus.GaugeValue, 1024*1024*rand.Float64(), "host", dev.UUID, dev.IID, //nolint:gosec
+			collector.gpuPCIeTX, prometheus.GaugeValue, 1024*1024*rand.Float64(), "host", dev.UUID, dev.IID,
 			"nvidia"+dev.ID, dev.ID, dev.PCIAddr, "NVIDIA A100 80GiB",
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuPCIeRX, prometheus.GaugeValue, 1024*1024*rand.Float64(), "host", dev.UUID, dev.IID, //nolint:gosec
+			collector.gpuPCIeRX, prometheus.GaugeValue, 1024*1024*rand.Float64(), "host", dev.UUID, dev.IID,
 			"nvidia"+dev.ID, dev.ID, dev.PCIAddr, "NVIDIA A100 80GiB",
 		)
 	}
@@ -317,12 +317,12 @@ func (collector *amdSMICollector) Describe(ch chan<- *prometheus.Desc) {
 func (collector *amdSMICollector) Collect(ch chan<- prometheus.Metric) {
 	for idev := range collector.devices {
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuUtil, prometheus.GaugeValue, 100*rand.Float64(), strconv.Itoa(idev), //nolint:gosec
+			collector.gpuUtil, prometheus.GaugeValue, 100*rand.Float64(), strconv.Itoa(idev),
 			"Advanced Micro Devices Inc",
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuMemUtil, prometheus.GaugeValue, 100*rand.Float64(), strconv.Itoa(idev), //nolint:gosec
+			collector.gpuMemUtil, prometheus.GaugeValue, 100*rand.Float64(), strconv.Itoa(idev),
 			"Advanced Micro Devices Inc",
 		)
 		// GPU power reported in micro Watts
@@ -478,7 +478,7 @@ func (collector *amdDeviceMetricsCollector) Describe(ch chan<- *prometheus.Desc)
 func (collector *amdDeviceMetricsCollector) Collect(ch chan<- prometheus.Metric) {
 	for _, dev := range collector.devices {
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuUtil, prometheus.GaugeValue, 100*rand.Float64(), dev.ID, //nolint:gosec
+			collector.gpuUtil, prometheus.GaugeValue, 100*rand.Float64(), dev.ID,
 			dev.IID, dev.UUID,
 		)
 
@@ -488,7 +488,7 @@ func (collector *amdDeviceMetricsCollector) Collect(ch chan<- prometheus.Metric)
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuVRAMUsed, prometheus.GaugeValue, 1024*1024*1024*24*rand.Float64(), dev.ID, //nolint:gosec
+			collector.gpuVRAMUsed, prometheus.GaugeValue, 1024*1024*1024*24*rand.Float64(), dev.ID,
 			dev.IID, dev.UUID,
 		)
 
@@ -498,7 +498,7 @@ func (collector *amdDeviceMetricsCollector) Collect(ch chan<- prometheus.Metric)
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuGTTUsed, prometheus.GaugeValue, 1024*1024*24*rand.Float64(), dev.ID, //nolint:gosec
+			collector.gpuGTTUsed, prometheus.GaugeValue, 1024*1024*24*rand.Float64(), dev.ID,
 			dev.IID, dev.UUID,
 		)
 
@@ -508,7 +508,7 @@ func (collector *amdDeviceMetricsCollector) Collect(ch chan<- prometheus.Metric)
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuVisibleRAMUsed, prometheus.GaugeValue, 1024*1024*24*rand.Float64(), dev.ID, //nolint:gosec
+			collector.gpuVisibleRAMUsed, prometheus.GaugeValue, 1024*1024*24*rand.Float64(), dev.ID,
 			dev.IID, dev.UUID,
 		)
 
@@ -523,42 +523,42 @@ func (collector *amdDeviceMetricsCollector) Collect(ch chan<- prometheus.Metric)
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuSMActive, prometheus.GaugeValue, 100*rand.Float64(), dev.ID, //nolint:gosec
+			collector.gpuSMActive, prometheus.GaugeValue, 100*rand.Float64(), dev.ID,
 			dev.IID, dev.UUID,
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuTensorActive, prometheus.GaugeValue, 100*rand.Float64(), dev.ID, //nolint:gosec
+			collector.gpuTensorActive, prometheus.GaugeValue, 100*rand.Float64(), dev.ID,
 			dev.IID, dev.UUID,
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuProfOccupancy, prometheus.GaugeValue, 100*rand.Float64(), dev.ID, //nolint:gosec
+			collector.gpuProfOccupancy, prometheus.GaugeValue, 100*rand.Float64(), dev.ID,
 			dev.IID, dev.UUID,
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuFP64Ops, prometheus.GaugeValue, 1e8*rand.Float64(), dev.ID, //nolint:gosec
+			collector.gpuFP64Ops, prometheus.GaugeValue, 1e8*rand.Float64(), dev.ID,
 			dev.IID, dev.UUID,
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuFP32Ops, prometheus.GaugeValue, 1e6*rand.Float64(), dev.ID, //nolint:gosec
+			collector.gpuFP32Ops, prometheus.GaugeValue, 1e6*rand.Float64(), dev.ID,
 			dev.IID, dev.UUID,
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuFP16Ops, prometheus.GaugeValue, 1e3*rand.Float64(), dev.ID, //nolint:gosec
+			collector.gpuFP16Ops, prometheus.GaugeValue, 1e3*rand.Float64(), dev.ID,
 			dev.IID, dev.UUID,
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuWriteSize, prometheus.GaugeValue, 5e6*rand.Float64(), dev.ID, //nolint:gosec
+			collector.gpuWriteSize, prometheus.GaugeValue, 5e6*rand.Float64(), dev.ID,
 			dev.IID, dev.UUID,
 		)
 
 		ch <- prometheus.MustNewConstMetric(
-			collector.gpuReadSize, prometheus.GaugeValue, 3e6*rand.Float64(), dev.ID, //nolint:gosec
+			collector.gpuReadSize, prometheus.GaugeValue, 3e6*rand.Float64(), dev.ID,
 			dev.IID, dev.UUID,
 		)
 	}

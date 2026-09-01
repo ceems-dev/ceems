@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/ceems-dev/ceems/internal/common"
 	"github.com/ceems-dev/ceems/pkg/api/base"
-	"github.com/ceems-dev/ceems/pkg/api/helper"
 	"github.com/ceems-dev/ceems/pkg/api/models"
 )
 
@@ -144,7 +144,7 @@ func (o *openstackManager) usersProjectsAssoc(ctx context.Context, current time.
 	// Chunk by userIDs in chunks of of a given size so that we make
 	// concurrent corresponding to chunkSize each time to get projects
 	// of each user
-	userIDChunks := helper.ChunkBy(userIDs, chunkSize)
+	userIDChunks := common.ChunkBy(userIDs, chunkSize)
 
 	// Get user projects
 	userProjects := make(map[string][]Project, len(userIDs))

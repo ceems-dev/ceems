@@ -14,7 +14,7 @@ func apiRequest[T any](req *http.Request, client *http.Client) (T, error) {
 	req.Header.Add("Content-Type", "application/json")
 
 	// Make request
-	resp, err := client.Do(req) //nolint:gosec
+	resp, err := client.Do(req)
 	if err != nil {
 		return *new(T), err
 	}
@@ -48,7 +48,7 @@ func apiTokenRequest(req *http.Request, client *http.Client) (string, error) {
 	req.Header.Add("Content-Type", "application/json")
 
 	// Make request
-	resp, err := client.Do(req) //nolint:gosec
+	resp, err := client.Do(req)
 	if err != nil {
 		return "", err
 	}

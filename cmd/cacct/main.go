@@ -2,6 +2,7 @@ package main
 
 import (
 	"cmp"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -17,9 +18,11 @@ import (
 	"github.com/alecthomas/kingpin/v2"
 	"github.com/ceems-dev/ceems/internal/common"
 	"github.com/ceems-dev/ceems/pkg/api/models"
+	"github.com/iancoleman/strcase"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	http_config "github.com/prometheus/common/config"
+	"github.com/prometheus/common/model"
 	"github.com/prometheus/common/promslog"
 	"github.com/prometheus/common/version"
 	"gopkg.in/yaml.v3"
@@ -50,7 +53,7 @@ var (
 		},
 		"name": {
 			tag:   "name",
-			name:  "Name",
+			name:  "name",
 			help:  "Name of the job",
 			title: "Name",
 			minW:  5,
@@ -58,7 +61,7 @@ var (
 		},
 		"account": {
 			tag:   "project",
-			name:  "Account",
+			name:  "account",
 			help:  "Account name",
 			title: "Account",
 			minW:  5,
@@ -109,6 +112,22 @@ var (
 			name:  "elapsed",
 			help:  "Job elapsed time",
 			title: "Elapsed",
+			minW:  5,
+			maxW:  12,
+		},
+		"totaltime": {
+			tag:   "total_time_seconds",
+			name:  "totalTime",
+			help:  "Wall, CPU and GPU times consumed in seconds over the duration of the job",
+			title: "Total Time(s)",
+			minW:  5,
+			maxW:  12,
+		},
+		"allocation": {
+			tag:   "allocation",
+			name:  "allocation",
+			help:  "Resource allocation of CPU, GPU, memory, etc",
+			title: "Resource Allocation",
 			minW:  5,
 			maxW:  12,
 		},
@@ -196,6 +215,8 @@ var (
 		"startedat",
 		"endedat",
 		"elapsed",
+		"totaltime",
+		"allocation",
 		"state",
 		"cpuusage",
 		"cpumemoryusage",
@@ -229,6 +250,7 @@ var (
 	errConfig   = errors.New("unable to get cacct config")
 	errLogFile  = errors.New("unable to get open log file")
 	errUser     = errors.New("unable to change user context")
+	errNoUnits  = errors.New("no jobs found in the selected period")
 	errInternal = errors.New("internal server error")
 )
 
@@ -287,6 +309,52 @@ func (f field) subtitles() []any {
 // 	}
 // )
 
+const (
+	instantQuery = "instant"
+	rangeQuery   = "range"
+)
+
+type TSDBQuery struct {
+	Name  string `yaml:"name"`
+	Help  string `yaml:"help"`
+	Title string `yaml:"title"`
+	Query string `yaml:"query"`
+	Kind  string `yaml:"kind"`
+}
+
+// UnmarshalYAML implements the yaml.Unmarshaler interface.
+func (q *TSDBQuery) UnmarshalYAML(unmarshal func(any) error) error {
+	// Set a default config
+	*q = TSDBQuery{}
+
+	type plain TSDBQuery
+
+	err := unmarshal((*plain)(q))
+	if err != nil {
+		return err
+	}
+
+	// Check if query is of range or instant
+	if q.Kind != rangeQuery && q.Kind != instantQuery {
+		return fmt.Errorf("invalid value %s found for kind. Must be one of %s or %s", q.Kind, instantQuery, rangeQuery)
+	}
+
+	// Validate config
+	if q.Name == "" || q.Query == "" || q.Kind == "" {
+		return errors.New("name, query and kind cannot be empty in entry of queries")
+	}
+
+	// If title is empty, use same as name
+	if q.Title == "" {
+		q.Title = q.Name
+	}
+
+	// Convert name to camelCase
+	q.Name = strcase.ToLowerCamel(q.Name)
+
+	return nil
+}
+
 // Config contains the cacct configuration settings.
 type Config struct {
 	API struct {
@@ -295,8 +363,16 @@ type Config struct {
 		UserHeaderName string    `yaml:"user_header_name"`
 	} `yaml:"ceems_api_server"`
 	TSDB struct {
-		Web     WebConfig         `yaml:"web"`
-		Queries map[string]string `yaml:"queries"`
+		Web                     WebConfig      `yaml:"web"`
+		ScrapeInterval          model.Duration `yaml:"scrape_interval"`
+		EvaluationInterval      model.Duration `yaml:"evaluation_interval"`
+		QueryMaxSeries          int64          `yaml:"query_max_series"`
+		QueryMinSamples         float64        `yaml:"query_min_samples"`
+		MaxUnitsForRangeQueries int            `yaml:"max_units_for_range_queries"`
+		QueryTimeout            model.Duration `yaml:"query_timeout"`
+		Queries                 []TSDBQuery    `yaml:"queries"`
+		rangeQueries            []TSDBQuery
+		instantQueries          []TSDBQuery
 	} `yaml:"tsdb"`
 	Logging struct {
 		Enabled   bool             `yaml:"enabled"`
@@ -313,6 +389,10 @@ func (c *Config) UnmarshalYAML(unmarshal func(any) error) error {
 	*c = Config{}
 	c.API.UserHeaderName = "X-Grafana-User"
 	c.Logging.Level = promslog.NewLevel()
+	c.TSDB.MaxUnitsForRangeQueries = 10
+	c.TSDB.QueryMaxSeries = 20
+	c.TSDB.QueryMinSamples = 0.5
+	c.TSDB.QueryTimeout = model.Duration(time.Minute)
 
 	err := c.Logging.Level.Set("info")
 	if err != nil {
@@ -342,11 +422,37 @@ func (c *Config) UnmarshalYAML(unmarshal func(any) error) error {
 		return err
 	}
 
+	// Add instant queries to fieldMap and allFields
+	for _, q := range c.TSDB.Queries {
+		nameKey := strings.ToLower(q.Name)
+		switch q.Kind {
+		case instantQuery:
+			fieldMap[nameKey] = &field{
+				name:  q.Name,
+				help:  q.Help,
+				title: q.Title,
+				minW:  2,
+				maxW:  10,
+			}
+			allFields = append(allFields, nameKey)
+		}
+	}
+
 	return nil
 }
 
 // Validate validates the config.
 func (c *Config) Validate() error {
+	// Check there are no duplicate names in range and instant queries
+	var allQueryNames []string
+	for _, q := range c.TSDB.Queries {
+		if slices.Contains(allQueryNames, q.Name) {
+			return fmt.Errorf("name key %s duplicates found in tsdb.queries %s", q.Name, strings.Join(allQueryNames, ","))
+		}
+
+		allQueryNames = append(allQueryNames, q.Name)
+	}
+
 	// If logging is not enabled, nothing to do here
 	if !c.Logging.Enabled {
 		return nil
@@ -375,6 +481,19 @@ func (c *Config) Validate() error {
 	}
 
 	return nil
+}
+
+// SetupTSDBQueries sets up TSDB queries based on CLI args.
+func (c *Config) SetupTSDBQueries(instantQueries []string, rangeQueries []string) {
+	// Add instant queries to fieldMap and allFields
+	for _, q := range c.TSDB.Queries {
+		switch {
+		case q.Kind == instantQuery && slices.Contains(instantQueries, q.Name):
+			c.TSDB.instantQueries = append(c.TSDB.instantQueries, q)
+		case q.Kind == rangeQuery && slices.Contains(rangeQueries, q.Name):
+			c.TSDB.rangeQueries = append(c.TSDB.rangeQueries, q)
+		}
+	}
 }
 
 // WebConfig contains HTTP related config.
@@ -417,9 +536,10 @@ type Response[T any] struct {
 
 func main() {
 	var (
-		tsData, helpFormat, longFormat    bool
+		helpFormat, longFormat            bool
 		htmlOut, csvOut, mdOut            bool
-		tsDataOut                         string
+		summaryStats                      bool
+		tsDataOut, tsMetrics              string
 		accountsFlag, jobsFlag, usersFlag string
 		formatFlag                        string
 		startTime, endTime                string
@@ -454,8 +574,11 @@ func main() {
 		"long", fmt.Sprintf("Equivalent to specifying --format=\"%s\".", strings.Join(allFields, ",")),
 	).Default("false").BoolVar(&longFormat)
 	cacctApp.Flag(
-		"ts", "Time series data of jobs are saved in CSV format (default: false).",
-	).BoolVar(&tsData)
+		"summary", "Include summary statistics at the end in the results.",
+	).Default("true").BoolVar(&summaryStats)
+	cacctApp.Flag(
+		"ts.metrics", "Comma separated list of time series metrics. Check available metrics using --helpformat flag.",
+	).StringVar(&tsMetrics)
 	cacctApp.Flag(
 		"ts.out-dir", "Directory to save time series data.",
 	).Default("out").StringVar(&tsDataOut)
@@ -474,6 +597,15 @@ func main() {
 		kingpin.Fatalf("failed to parse CLI flags: %v", err)
 	}
 
+	// First read the config file to get the queries supplied for TSDB so that we
+	// can add them to helpformat flag.
+	// Either setuid or setgid bits must be applied on the app so that
+	// the config file can be read as the owner of this app
+	config, err := readConfig(mockConfigPath)
+	if err != nil {
+		os.Exit(checkErr(fmt.Errorf("%w: %w", errConfig, err)))
+	}
+
 	// If helpformat, print available fields and return
 	if helpFormat {
 		// First collect keys and sort them
@@ -485,6 +617,18 @@ func main() {
 
 		for _, k := range keys {
 			t.AppendRow(table.Row{fieldMap[k].name, fieldMap[k].help})
+		}
+
+		// Append available time series metrics
+		t.AppendSeparator()
+
+		t.AppendRow(table.Row{"Available Time Series"})
+		t.AppendSeparator()
+
+		for _, q := range config.TSDB.Queries {
+			if q.Kind == rangeQuery {
+				t.AppendRow(table.Row{q.Name, q.Help})
+			}
 		}
 
 		t.Render()
@@ -508,10 +652,42 @@ func main() {
 		formatFields = allFields
 	}
 
-	var fields []string
-	for _, f := range formatFields {
-		fields = append(fields, fieldMap[strings.ToLower(f)].tag)
+	var (
+		activeInstantQueries []string
+		activeRangeQueries   []string
+	)
+
+	// Get active range query names based on CLI args
+	for _, t := range splitString(tsMetrics, ",") {
+		for _, q := range config.TSDB.Queries {
+			if strings.EqualFold(q.Name, t) {
+				activeRangeQueries = append(activeRangeQueries, q.Name)
+			}
+		}
 	}
+
+	// Get active instant query names based on CLI args
+	// ALWAYS include uuid in fields
+	fields := []string{"uuid"}
+
+	for _, f := range formatFields {
+		nameKey := strings.ToLower(f)
+		if field, ok := fieldMap[nameKey]; ok && nameKey != "jobid" {
+			tag := field.tag
+			if tag != "" {
+				fields = append(fields, tag)
+			}
+
+			for _, q := range config.TSDB.Queries {
+				if q.Name == field.name && q.Kind == instantQuery {
+					activeInstantQueries = append(activeInstantQueries, q.Name)
+				}
+			}
+		}
+	}
+
+	// Setup queries on config struct
+	config.SetupTSDBQueries(activeInstantQueries, activeRangeQueries)
 
 	// Always add started and ended ts fields as we will need them for TSDB data retrieval
 	fields = append(fields, []string{"started_at_ts", "ended_at_ts"}...)
@@ -527,22 +703,6 @@ func main() {
 	end, err = parseTime(endTime)
 	if err != nil {
 		kingpin.Fatalf("failed to parse --endtime flag: %v", err)
-	}
-
-	// Ensure to limit period to 1 week asking for metric data
-	// This is to avoid fetching metrics of too many jobs when only
-	// period is set
-	if tsData && end.Sub(start) > 7*24*time.Hour {
-		kingpin.Fatalf("limit period between --starttime and --endtime to 7 days when --ts is enabled")
-	}
-
-	// By this time, user input is validated. Time to read config file
-	// to get HTTP config to connect to CEEMS API server.
-	// Either setuid or setgid bits must be applied on the app so that
-	// the config file can be read as the owner of this app
-	config, err := readConfig(mockConfigPath)
-	if err != nil {
-		os.Exit(checkErr(fmt.Errorf("%w: %w", errConfig, err)))
 	}
 
 	// Setup logger
@@ -623,13 +783,52 @@ func main() {
 	logger.Info("User context changed after setuid syscall")
 
 	// Get stats
-	units, usages, err := stats(logger, config, currentUser.Username, start, end, accounts, jobs, userNames, fields, tsData, tsDataOut)
+	units, usages, err := stats(logger, config, currentUser.Username, start, end, accounts, jobs, userNames, fields, summaryStats)
 	if err != nil {
 		os.Exit(checkErr(err))
 	}
 
+	// If no units found, exit, nothing more to do
+	if len(units) == 0 {
+		os.Exit(checkErr(errNoUnits))
+	}
+
+	// If instant queries have been configured, get results
+	var instantQueryResults map[string]map[string]string
+
+	if len(config.TSDB.instantQueries) > 0 {
+		logger.Debug("Fetching instant queries results from TSDB")
+
+		instantQueryResults, err = executeInstantQueries(logger, config, units)
+		if err != nil {
+			logger.Error("failed to fetch instant query results from TSDB", "err", err)
+			fmt.Fprintln(os.Stderr, "failed to fetch metrics data")
+		}
+	}
+
+	// If tsData is enabled, get time series data
+	if len(config.TSDB.rangeQueries) > 0 {
+		// If found jobs are more than 10, print a warning
+		if len(units) > config.TSDB.MaxUnitsForRangeQueries {
+			logger.Warn("Too many jobs to fetch time series data. Ignoring --ts.metrics flag", "num_units", len(units), "max_allowed_units", config.TSDB.MaxUnitsForRangeQueries)
+			msg := fmt.Sprintf("too many jobs to fetch time series data. Please provide explicit job IDs (less than %d at a time) using --job when --ts.metrics is set", config.TSDB.MaxUnitsForRangeQueries)
+			fmt.Fprintln(os.Stderr, msg)
+
+			goto print_table
+		}
+
+		logger.Debug("Fetching time series data from TSDB")
+
+		err := executeRangeQueries(logger, config, units, tsDataOut)
+		if err != nil {
+			logger.Error("failed to fetch time series data", "err", err)
+			fmt.Fprintln(os.Stderr, "failed to fetch time series data")
+		}
+	}
+
+print_table:
 	// Print stats as table
-	t := newTable(currentUser.Username, userNames, units, usages)
+	t := newTable(currentUser.Username, userNames, units, usages, instantQueryResults, activeInstantQueries, summaryStats)
 
 	// Based on request rendering format
 	switch {
@@ -645,7 +844,17 @@ func main() {
 }
 
 // newTable returns a new table with data.
-func newTable(currentUser string, users []string, units []models.Unit, usages []models.Usage) table.Writer {
+func newTable(currentUser string, users []string, units []models.Unit, usages []models.Usage, instantQueryResults map[string]map[string]string, activeInstantQueries []string, includeSummaryStats bool) table.Writer {
+	// // Get current width
+	// currentWidth := 180
+	// // If we are in terminal override the default width with current width of terminal
+	// if term.IsTerminal(0) {
+	// 	width, _, err := term.GetSize(0)
+	// 	if err == nil {
+	// 		currentWidth = width
+	// 	}
+	// }
+
 	// Make a new writer
 	t := table.NewWriter()
 
@@ -659,8 +868,11 @@ func newTable(currentUser string, users []string, units []models.Unit, usages []
 		Color:   table.ColorOptionsDefault,
 		HTML:    table.DefaultHTMLOptions,
 		Options: table.OptionsDefault,
-		Size:    table.SizeOptionsDefault,
-		Title:   table.TitleOptionsDefault,
+		// Size: table.SizeOptions{
+		// 	WidthMax: currentWidth,
+		// 	WidthMin: 10,
+		// },
+		Title: table.TitleOptionsDefault,
 		Format: table.FormatOptions{
 			Footer: text.FormatDefault,
 			Header: text.FormatUpper,
@@ -712,57 +924,87 @@ func newTable(currentUser string, users []string, units []models.Unit, usages []
 	rows := make([]table.Row, len(units))
 
 	for iunit, unit := range units {
+		// Marshal total time and allocation
+		var totalTime, allocation string
+
+		if len(unit.TotalTime) > 0 {
+			val, err := json.Marshal(unit.TotalTime)
+			if err == nil {
+				totalTime = string(val)
+			}
+		}
+
+		if len(unit.Allocation) > 0 {
+			val, err := json.Marshal(unit.Allocation)
+			if err == nil {
+				allocation = string(val)
+			}
+		}
+
 		row := table.Row{
 			unit.UUID, unit.Name, unit.Project, unit.Group, unit.User, unit.CreatedAt,
-			unit.StartedAt, unit.EndedAt, unit.Elapsed, unit.State,
+			unit.StartedAt, unit.EndedAt, unit.Elapsed, totalTime, allocation, unit.State,
 		}
-		row = append(row, unit.AveCPUUsage.Values("%.2f")...)
-		row = append(row, unit.AveCPUMemUsage.Values("%.2f")...)
-		row = append(row, unit.TotalCPUEnergyUsage.Values("%f")...)
-		row = append(row, unit.TotalCPUEmissions.Values("%f")...)
-		row = append(row, unit.AveGPUUsage.Values("%.2f")...)
-		row = append(row, unit.AveGPUMemUsage.Values("%.2f")...)
-		row = append(row, unit.TotalGPUEnergyUsage.Values("%f")...)
-		row = append(row, unit.TotalGPUEmissions.Values("%f")...)
+		row = append(row, unit.AveCPUUsage.Values("%.2f", len(fieldMap["cpuusage"].keys))...)
+		row = append(row, unit.AveCPUMemUsage.Values("%.2f", len(fieldMap["cpumemoryusage"].keys))...)
+		row = append(row, unit.TotalCPUEnergyUsage.Values("%f", len(fieldMap["hostenergy"].keys))...)
+		row = append(row, unit.TotalCPUEmissions.Values("%f", len(fieldMap["hostemissions"].keys))...)
+		row = append(row, unit.AveGPUUsage.Values("%.2f", len(fieldMap["gpuusage"].keys))...)
+		row = append(row, unit.AveGPUMemUsage.Values("%.2f", len(fieldMap["gpumemoryusage"].keys))...)
+		row = append(row, unit.TotalGPUEnergyUsage.Values("%f", len(fieldMap["gpuenergy"].keys))...)
+		row = append(row, unit.TotalGPUEmissions.Values("%f", len(fieldMap["gpuemissions"].keys))...)
+
+		// Add instant Query results to row
+		for _, query := range activeInstantQueries {
+			row = append(row, instantQueryResults[query][unit.UUID])
+		}
+
 		rows[iunit] = row
 	}
 
 	t.AppendRows(rows)
 
-	// Append summary row
-	t.AppendSeparator()
+	if includeSummaryStats {
+		// Append summary row
+		t.AppendSeparator()
 
-	summaryRow := table.Row{"Summary"}
-	for range headers {
-		summaryRow = append(summaryRow, "")
-	}
+		summaryRow := table.Row{"Summary"}
+		for range headers {
+			summaryRow = append(summaryRow, "")
+		}
 
-	t.AppendRow(summaryRow, rowConfig)
-	t.AppendSeparator()
+		t.AppendRow(summaryRow, rowConfig)
+		t.AppendSeparator()
 
-	for _, usage := range usages {
-		if usage.User == currentUser || slices.Contains(users, usage.User) || slices.Contains(users, "all") {
-			// Check if elapsed time in non zero
-			var totalElapsedTime string
-			if usage.TotalTime["walltime"] > 0 {
-				totalElapsedTime = common.Timespan(time.Duration(usage.TotalTime["walltime"]) * time.Second).Format("15:04:05")
+		for _, usage := range usages {
+			if usage.User == currentUser || slices.Contains(users, usage.User) || slices.Contains(users, "all") {
+				// Check if elapsed time in non zero
+				var totalElapsedTime string
+				if usage.TotalTime["walltime"] > 0 {
+					totalElapsedTime = common.Timespan(time.Duration(usage.TotalTime["walltime"]) * time.Second).Format("15:04:05")
+				}
+
+				// Usage row
+				row := table.Row{
+					usage.NumUnits, "", usage.Project, usage.Group, usage.User, "", "", "", totalElapsedTime, "", "", "",
+				}
+				row = append(row, usage.AveCPUUsage.Values("%.2f", len(fieldMap["cpuusage"].keys))...)
+				row = append(row, usage.AveCPUMemUsage.Values("%.2f", len(fieldMap["cpumemoryusage"].keys))...)
+				row = append(row, usage.TotalCPUEnergyUsage.Values("%f", len(fieldMap["hostenergy"].keys))...)
+				row = append(row, usage.TotalCPUEmissions.Values("%f", len(fieldMap["hostemissions"].keys))...)
+				row = append(row, usage.AveGPUUsage.Values("%.2f", len(fieldMap["gpuusage"].keys))...)
+				row = append(row, usage.AveGPUMemUsage.Values("%.2f", len(fieldMap["gpumemoryusage"].keys))...)
+				row = append(row, usage.TotalGPUEnergyUsage.Values("%f", len(fieldMap["gpuenergy"].keys))...)
+				row = append(row, usage.TotalGPUEmissions.Values("%f", len(fieldMap["gpuemissions"].keys))...)
+
+				// Append instant query results columns as "N/A"
+				for range activeInstantQueries {
+					row = append(row, "N/A")
+				}
+
+				// Append row to table
+				t.AppendFooter(row)
 			}
-
-			// Usage row
-			row := table.Row{
-				usage.NumUnits, "", usage.Project, usage.Group, usage.User, "", "", "", totalElapsedTime, "",
-			}
-			row = append(row, usage.AveCPUUsage.Values("%.2f")...)
-			row = append(row, usage.AveCPUMemUsage.Values("%.2f")...)
-			row = append(row, usage.TotalCPUEnergyUsage.Values("%f")...)
-			row = append(row, usage.TotalCPUEmissions.Values("%f")...)
-			row = append(row, usage.AveGPUUsage.Values("%.2f")...)
-			row = append(row, usage.AveGPUMemUsage.Values("%.2f")...)
-			row = append(row, usage.TotalGPUEnergyUsage.Values("%f")...)
-			row = append(row, usage.TotalGPUEmissions.Values("%f")...)
-
-			// Append row to table
-			t.AppendFooter(row)
 		}
 	}
 
@@ -783,6 +1025,9 @@ func readConfig(mockConfigPath string) (*Config, error) {
 	var config Config
 
 	// If mockConfigPath is set as well, add to configPaths
+	// Do not override configPaths because if there is an existing config
+	// sitting somewhere, we should give priority to it rather than the
+	// mock config
 	if mockConfigPath != "" {
 		configPaths = append(configPaths, mockConfigPath)
 	}
@@ -847,21 +1092,21 @@ func getCurrentUser(mockUserName string) (*user.User, error) {
 
 func parseTime(s string) (time.Time, error) {
 	// First attempt is to parse as YYYY-MM-DDTHH:MM:SS
-	t, err := time.Parse("2006-01-02T15:04:05", s)
+	t, err := time.ParseInLocation("2006-01-02T15:04:05", s, time.Local)
 	if err == nil {
-		return t.In(time.Local), nil
+		return t, nil
 	}
 
 	// Second attempt is to parse as YYYY-MM-DDTHH:MM
-	t, err = time.Parse("2006-01-02T15:04", s)
+	t, err = time.ParseInLocation("2006-01-02T15:04", s, time.Local)
 	if err == nil {
-		return t.In(time.Local), nil
+		return t, nil
 	}
 
 	// Third attempt is to parse as YYYY-MM-DD
-	t, err = time.Parse("2006-01-02", s)
+	t, err = time.ParseInLocation("2006-01-02", s, time.Local)
 	if err == nil {
-		return t.In(time.Local), nil
+		return t, nil
 	}
 
 	// If nothing works, return error
@@ -905,6 +1150,8 @@ func checkErr(err error) int {
 			fmt.Fprintln(os.Stderr, "error: "+errConfig.Error())
 		case errors.Is(err, errUser):
 			fmt.Fprintln(os.Stderr, "error: "+errUser.Error())
+		case errors.Is(err, errNoUnits):
+			fmt.Fprintln(os.Stderr, "error: "+errNoUnits.Error())
 		default:
 			fmt.Fprintln(os.Stderr, "error: internal error")
 		}

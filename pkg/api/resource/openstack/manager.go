@@ -222,11 +222,7 @@ func (o *openstackManager) FetchUsersProjects(
 		}
 	}
 
-	return []models.ClusterUsers{
-			{Cluster: o.cluster, Users: o.userProjectsCache.userModels},
-		}, []models.ClusterProjects{
-			{Cluster: o.cluster, Projects: o.userProjectsCache.projectModels},
-		}, nil
+	return []models.ClusterUsers{{Cluster: o.cluster, Users: o.userProjectsCache.userModels}}, []models.ClusterProjects{{Cluster: o.cluster, Projects: o.userProjectsCache.projectModels}}, nil
 }
 
 // servers endpoint.

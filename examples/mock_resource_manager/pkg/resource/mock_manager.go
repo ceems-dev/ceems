@@ -77,33 +77,6 @@ func (s *mockManager) FetchUnits(_ context.Context, _ time.Time, _ time.Time) ([
 }
 
 // FetchUsersProjects returnc current users and projects.
-func (s *mockManager) FetchUsersProjects(
-	_ context.Context,
-	_ time.Time,
-) ([]models.ClusterUsers, []models.ClusterProjects, error) {
-	return []models.ClusterUsers{
-			{
-				Cluster: models.Cluster{
-					ID: "mock",
-				},
-				Users: []models.User{
-					{
-						Name:     "usr1",
-						Projects: models.List{"prj1", "prj2"},
-					},
-				},
-			},
-		}, []models.ClusterProjects{
-			{
-				Cluster: models.Cluster{
-					ID: "mock",
-				},
-				Projects: []models.Project{
-					{
-						Name:  "usr1",
-						Users: models.List{"prj1", "prj2"},
-					},
-				},
-			},
-		}, nil
+func (s *mockManager) FetchUsersProjects(_ context.Context, _ time.Time) ([]models.ClusterUsers, []models.ClusterProjects, error) {
+	return []models.ClusterUsers{{Cluster: models.Cluster{ID: "mock"}, Users: []models.User{{Name: "usr1", Projects: models.List{"prj1", "prj2"}}}}}, []models.ClusterProjects{{Cluster: models.Cluster{ID: "mock"}, Projects: []models.Project{{Name: "usr1", Users: models.List{"prj1", "prj2"}}}}}, nil
 }

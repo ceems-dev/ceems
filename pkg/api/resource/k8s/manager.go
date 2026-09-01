@@ -171,11 +171,7 @@ func (k *k8sManager) FetchUsersProjects(
 	// Fetch users and namespaces association
 	userModels, projectModels := k.fetchUserNSs(ctx, currentTime)
 
-	return []models.ClusterUsers{
-			{Cluster: k.cluster, Users: userModels},
-		}, []models.ClusterProjects{
-			{Cluster: k.cluster, Projects: projectModels},
-		}, nil
+	return []models.ClusterUsers{{Cluster: k.cluster, Users: userModels}}, []models.ClusterProjects{{Cluster: k.cluster, Projects: projectModels}}, nil
 }
 
 func (k *k8sManager) fetchPods(

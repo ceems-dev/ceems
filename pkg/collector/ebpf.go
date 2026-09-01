@@ -1123,8 +1123,7 @@ func loadObject(path string) (*ebpf.Collection, error) {
 
 	spec, err := ebpf.LoadCollectionSpecFromReader(reader)
 	if err != nil {
-		var ve *ebpf.VerifierError
-		if errors.As(err, &ve) {
+		if ve, ok := errors.AsType[*ebpf.VerifierError](err); ok {
 			err = fmt.Errorf("%+v", ve) //nolint:errorlint
 		}
 
@@ -1134,8 +1133,7 @@ func loadObject(path string) (*ebpf.Collection, error) {
 	// Instantiate a Collection from a CollectionSpec.
 	coll, err := ebpf.NewCollection(spec)
 	if err != nil {
-		var ve *ebpf.VerifierError
-		if errors.As(err, &ve) {
+		if ve, ok := errors.AsType[*ebpf.VerifierError](err); ok {
 			err = fmt.Errorf("%+v", ve) //nolint:errorlint
 		}
 

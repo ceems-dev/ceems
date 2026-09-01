@@ -232,7 +232,7 @@ basic_auth:
 #
 authorization:
   # Sets the authentication type of the request.
-  [ type: <string> | default: Bearer ]
+  [ type: <string> | default = Bearer ]
   # Sets the credentials of the request. It is mutually exclusive with
   # `credentials_file`.
   [ credentials: <secret> ]
@@ -250,7 +250,7 @@ oauth2:
 [ follow_redirects: <boolean> | default = true ]
 
 # Whether to enable HTTP2.
-[ enable_http2: <boolean> | default: true ]
+[ enable_http2: <boolean> | default = true ]
 
 # Configures the API request's TLS settings.
 #
@@ -510,7 +510,7 @@ extra_config:
   #
   # Default value is 50
   #
-  [ query_max_series: <int>  | default: 50 ]
+  [ query_max_series: <int>  | default = 50 ]
 
   # Minimum number of samples that are guaranteed to be available for executing the queries
   # of the updater. It is expressed as a proportion of `--query.max-samples` and takes a value
@@ -518,7 +518,7 @@ extra_config:
   #
   # Default value is 0.5
   #
-  [ query_min_samples: <float>  | default: 0.5 ]
+  [ query_min_samples: <float>  | default = 0.5 ]
 
   # Scrape interval corresponding to the scrape targets that generate metrics provided in
   # `queries` section.
@@ -527,7 +527,7 @@ extra_config:
   # 
   # Units Supported: y, w, d, h, m, s, ms.
   # 
-  [ scrape_interval: <duration> | default: 0s ]
+  [ scrape_interval: <duration> | default = 0s ]
 
   # Evaluation interval corresponding to the recording rules that generate metrics provided in
   # `queries` section.
@@ -536,7 +536,7 @@ extra_config:
   # 
   # Units Supported: y, w, d, h, m, s, ms.
   # 
-  [ evaluation_interval: <duration> | default: 0s ]
+  [ evaluation_interval: <duration> | default = 0s ]
 
   # Compute units that have a total lifetime less than this value will be deleted from 
   # TSDB to reduce the number of labels and cardinality.
@@ -545,14 +545,14 @@ extra_config:
   #
   # Units Supported: y, w, d, h, m, s, ms.
   #
-  [ cutoff_duration: <duration> | default: 0s ]
+  [ cutoff_duration: <duration> | default = 0s ]
 
   # The ignored units' (based on `cutoff_duration`) metrics will be dropped from the TSDB
   # when set to `true`. This can be used to reduce the number of labels and cardinality of TSDB.
   #
   # TSDB must be started with the `--web.enable-admin-api` flag for this to work.
   #
-  [ delete_ignored: <boolean> | default: false ]
+  [ delete_ignored: <boolean> | default = false ]
 
   # List of labels to delete from TSDB. These labels should be valid matchers for TSDB.
   # More information on the delete API of Prometheus: https://prometheus.io/docs/prometheus/latest/querying/api/#delete-series
@@ -564,15 +564,6 @@ extra_config:
 
   # Define queries that are used to estimate aggregate metrics of each compute unit.
   # These queries will be passed to golang's text/template package to build them.
-  # Available template variables:
-  # - UUIDs -> UUIDs string delimited by "|", e.g., 123|345|567
-  # - ScrapeInterval -> Scrape interval of TSDB in time.Duration format, e.g., 15s, 1m
-  # - ScrapeIntervalMilli -> Scrape interval of TSDB in milliseconds, e.g., 15000, 60000
-  # - EvaluationInterval -> Evaluation interval of TSDB in time.Duration format, e.g., 15s, 1m
-  # - EvaluationIntervalMilli -> Evaluation interval of TSDB in milliseconds, e.g., 15s, 1m
-  # - RateInterval -> Rate interval in time.Duration format. It is estimated based on Scrape interval as 4*scrape_interval
-  # - Range -> Duration of interval where aggregation is being made in time.Duration format
-  #
   queries:
     [ <queries_config> ]
 ```
@@ -607,6 +598,18 @@ A `queries_config` allows configuring PromQL queries for the TSDB updater of the
 # using `ceems_tool`. Moreover the placeholders are the default values for different
 # metrics. If operators deploy more exporters of their own, queries
 # must be modified accordingly.
+#
+# Available template variables:
+# - UUIDs -> UUIDs string delimited by "|", e.g., 123|345|567
+# - ScrapeInterval -> Scrape interval of TSDB in time.Duration format, e.g., 15s, 1m
+# - ScrapeIntervalMilli -> Scrape interval of TSDB in milliseconds, e.g., 15000, 60000
+# - EvaluationInterval -> Evaluation interval of TSDB in time.Duration format, e.g., 15s, 1m
+# - EvaluationIntervalMilli -> Evaluation interval of TSDB in milliseconds, e.g., 15s, 1m
+# - RateInterval -> Rate interval in time.Duration format. It is estimated based on Scrape interval as 4*scrape_interval
+# - Range -> Duration of interval where aggregation is being made in time.Duration format
+#
+# IMPORTANT: Always use backticks around {{.UUIDs}} template variable to escape characters
+# like "[" and "]" which can be found in identifiers of resource managers like LSF.
 #
 # Average CPU utilization
 #
@@ -913,29 +916,35 @@ A valid sample configuration file can be found in the
 #
 logging:
   # Enable system logging
-  enabled: false
+  [ enabled: <boolean> | default = false]
 
   # Logging level. Valid options are
+  #
   # - info
   # - debug
   # - warn
   # - error 
   #
-  level: info
+  # Default: info
+  #
+  [ level: <string> | default = info ]
 
   # Logging format. Valid options are
+  #
   # - logfmt
   # - json
   # - warn
   # - error 
   #
-  format: logfmt
+  # Default: logfmt
+  #
+  [ format: <string> | default = logfmt ]
 
   # Directory where logging file will be saved.
   # This directory must exist with correct
   # permissions for logging file to be created.
   #
-  directory: /var/log/ceems
+  [ directory: <filepath> | default = /var/log/ceems ]
 
 # Configuration of the CEEMS API server
 #
@@ -964,46 +973,129 @@ tsdb:
   #
   web: <web_client_config>
 
+  # Max number of units' time series data to be fetched in a single CLI execution. Use
+  # an appropriate number to avoid spiking the memory usage of TSDB server.
+  #
+  # Default: 10
+  #
+  [ max_units: <int> | default = 10 ]
+
+  # Scrape interval corresponding to the scrape targets that generate metrics provided in
+  # `queries` section.
+  # 
+  # Default value `0s` means global scrape interval of the TSDB instance will be used.
+  # 
+  # Units Supported: y, w, d, h, m, s, ms.
+  # 
+  [ scrape_interval: <duration> | default = 0s ]
+
+  # Evaluation interval corresponding to the recording rules that generate metrics provided in
+  # `queries` section.
+  # 
+  # Default value `0s` means global evaluation interval of the TSDB instance will be used.
+  # 
+  # Units Supported: y, w, d, h, m, s, ms.
+  # 
+  [ evaluation_interval: <duration> | default = 0s ]
+
   # To dump the time series data for each metric, this section must be configured.
   # The key name is the name of the metric, and the value is the PromQL query to get
-  # time series data. The placeholder `%s` will be replaced by a list of job IDs delimited
-  # by `|`, which is the syntax expected by the TSDB server.
+  # time series data.
   #
   # If the TSDB server has been configured with the recording rules generated by `ceems_tool`,
   # the following queries should work out-of-the-box.
   #
-  # # CPU utilization
-  # cpu_usage: uuid:ceems_cpu_usage:ratio_irate{uuid=~"%s"}
-
-  # # CPU Memory utilization
-  # cpu_mem_usage: uuid:ceems_cpu_memory_usage:ratio{uuid=~"%s"}
-    
-  # # Host power usage in Watts
-  # host_power_usage: uuid:ceems_host_power_watts:pue{uuid=~"%s"}
-
-  # # Host emissions in g/s
-  # host_emissions: uuid:ceems_host_emissions_g_s:pue{uuid=~"%s"}
-
-  # # GPU utilization
-  # avg_gpu_usage: uuid:ceems_gpu_usage:ratio{uuid=~"%s"}
-
-  # # GPU memory utilization
-  # avg_gpu_mem_usage: uuid:ceems_gpu_memory_usage:ratio{uuid=~"%s"}
-
-  # # GPU power usage in Watts
-  # gpu_power_usage: uuid:ceems_gpu_power_watts:pue{uuid=~"%s"}
-
-  # # GPU emissions in g/s
-  # gpu_emissions: uuid:ceems_gpu_emissions_g_s:pue{uuid=~"%s"}
-
-  # # Read IO bytes
-  # io_read_bytes: irate(ceems_ebpf_read_bytes_total{uuid=~"%s"}[1m])
-
-  # # Write IO bytes
-  # io_write_bytes: irate(ceems_ebpf_write_bytes_total{uuid=~"%s"}[1m])
+  # CPU utilization
+  # - name: cpu_usage 
+  #   title: "CPU Usage (%)"
+  #   help: "Usage of CPUs in %"
+  #   query: uuid:ceems_cpu_usage:ratio_irate{uuid=~`{{.UUIDs}}`}
   #
-  queries:
-    [ <string>: <promql_query> ... ]
+  # # CPU Memory utilization
+  # - name: cpu_mem_usage
+  #   title: "CPU Memory Usage (%)" 
+  #   help: "Ratio of memory used to memory reserved of CPU in %"
+  #   query: uuid:ceems_cpu_memory_usage:ratio{uuid=~`{{.UUIDs}}`}
+  # 
+  # # Host power usage in Watts
+  # - name: host_power_usage
+  #   title: "Host Power usage (W)" 
+  #   help: "Instanteous power usage of host in Watts"
+  #   query: uuid:ceems_host_power_watts:pue{uuid=~`{{.UUIDs}}`}
+  #
+  # # Host emissions in g/s
+  # - name: host_emissions 
+  #   title: "Host Eq. Emissions Rate (g/s)"
+  #   help: "Instanteous emissions rate of host in g/s"
+  #   query: uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`}
+  #
+  # # GPU utilization
+  # - name: avg_gpu_usage
+  #   title: "GPU Usage (%)" 
+  #   help: "Usage of GPU in %"
+  #   query: uuid:ceems_gpu_usage:ratio{uuid=~`{{.UUIDs}}`}
+  #
+  # # GPU memory utilization
+  # - name: avg_gpu_mem_usage
+  #   title: "GPU Memory Usage (%)" 
+  #   help: "Ratio of memory used to memory reserved of GPU in %"
+  #   query: uuid:ceems_gpu_memory_usage:ratio{uuid=~`{{.UUIDs}}`}
+  #
+  # # GPU power usage in Watts
+  # - name: gpu_power_usage
+  #   title: "GPU Power Usage (W)"
+  #   help: "Instanteous Power Usage of GPU in Watts"
+  #   query: uuid:ceems_gpu_power_watts:pue{uuid=~`{{.UUIDs}}`}
+  #
+  # # GPU emissions in g/s
+  # - name: gpu_emissions 
+  #   title: "GPU Eq. Emission Rate (g/s)"
+  #   help: "Instanteous emissions rate of GPU in g/s"
+  #   query: uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`}
+  #
+  # # Read IO bytes/s
+  # - name: io_read_bytes 
+  #   title: "IO Read Bandwidth (b/s)"
+  #   help: "Instanteous IO read bandwidth in bytes/s"
+  #   query: irate(ceems_ebpf_read_bytes_total{uuid=~`{{.UUIDs}}`}[1m])
+  #
+  # # Write IO bytes/s
+  # - name: io_write_bytes 
+  #   title: "IO Write Bandwidth (b/s)"
+  #   help: "Instanteous IO write bandwidth in bytes/s"
+  #   query: irate(ceems_ebpf_write_bytes_total{uuid=~`{{.UUIDs}}`}[1m])
+  range_queries:
+    [ - <tsdb_query> ]
+```
+
+### `<tsdb_query>`
+
+A `tsdb_query` allows to configure TSDB metrics in the `cacct` config file.
+
+```yaml
+tsdb_query:
+  # A UNIQUE short name for the query
+  [ name: <string> ]
+  # A human readable name for the query
+  [ title: <secret> ]
+  # A small help text explaining the query metrics
+  [ help: <string> ]
+  # Valid PromQL query
+  #
+  # Available template variables:
+  #
+  # - UUIDs -> UUIDs string delimited by "|", e.g., 123|345|567
+  # - ScrapeInterval -> Scrape interval of TSDB in time.Duration format, e.g., 15s, 1m
+  # - ScrapeIntervalMilli -> Scrape interval of TSDB in milliseconds, e.g., 15000, 60000
+  # - EvaluationInterval -> Evaluation interval of TSDB in time.Duration format, e.g., 15s, 1m
+  # - EvaluationIntervalMilli -> Evaluation interval of TSDB in milliseconds, e.g., 15s, 1m
+  # - RateInterval -> Rate interval in time.Duration format. It is estimated based on Scrape interval as 4*scrape_interval
+  # - Range -> Duration of interval where aggregation is being made in time.Duration format
+  #
+  # IMPORTANT: Always use backticks around {{.UUIDs}} template variable to escape characters
+  # like "[" and "]" which can be found in identifiers of resource managers like LSF.
+  #
+  [ query: <promql_query> ]
 ```
 
 ## `<web_client_config>`
@@ -1029,7 +1121,7 @@ basic_auth:
 #
 authorization:
   # Sets the authentication type of the request.
-  [ type: <string> | default: Bearer ]
+  [ type: <string> | default = Bearer ]
   # Sets the credentials of the request. It is mutually exclusive with
   # `credentials_file`.
   [ credentials: <secret> ]
@@ -1047,7 +1139,7 @@ oauth2:
 [ follow_redirects: <boolean> | default = true ]
 
 # Whether to enable HTTP2.
-[ enable_http2: <boolean> | default: true ]
+[ enable_http2: <boolean> | default = true ]
 
 # Configures the API request's TLS settings.
 #
@@ -1095,7 +1187,7 @@ tls_config:
 # contain port numbers.
 [ no_proxy: <string> ]
 # Use proxy URL indicated by environment variables (HTTP_PROXY, https_proxy, HTTPs_PROXY, https_proxy, and no_proxy)
-[ proxy_from_environment: <boolean> | default: false ]
+[ proxy_from_environment: <boolean> | default = false ]
 # Specifies headers to send to proxies during CONNECT requests.
 [ proxy_connect_header:
   [ <string>: [<secret>, ...] ] ]

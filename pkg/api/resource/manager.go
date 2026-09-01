@@ -201,7 +201,7 @@ func (b Manager) FetchUnits(ctx context.Context, start time.Time, end time.Time)
 
 	var wg sync.WaitGroup
 
-	wg.Add((len(b.Fetchers)))
+	wg.Add(len(b.Fetchers))
 
 	for _, fetcher := range b.Fetchers {
 		go func(f Fetcher) {
@@ -247,7 +247,7 @@ func (b Manager) FetchUsersProjects(
 
 	var wg sync.WaitGroup
 
-	wg.Add((len(b.Fetchers)))
+	wg.Add(len(b.Fetchers))
 
 	for _, fetcher := range b.Fetchers {
 		go func(f Fetcher) {

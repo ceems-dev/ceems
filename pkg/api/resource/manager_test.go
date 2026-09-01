@@ -54,25 +54,7 @@ func (d *mockResourceManager) FetchUsersProjects(
 	_ context.Context,
 	currentTime time.Time,
 ) ([]models.ClusterUsers, []models.ClusterProjects, error) {
-	return []models.ClusterUsers{
-			{
-				Cluster: models.Cluster{ID: "mock"},
-				Users: []models.User{
-					{
-						Name: "foo",
-					},
-				},
-			},
-		}, []models.ClusterProjects{
-			{
-				Cluster: models.Cluster{ID: "mock"},
-				Projects: []models.Project{
-					{
-						Name: "fooprj",
-					},
-				},
-			},
-		}, nil
+	return []models.ClusterUsers{{Cluster: models.Cluster{ID: "mock"}, Users: []models.User{{Name: "foo"}}}}, []models.ClusterProjects{{Cluster: models.Cluster{ID: "mock"}, Projects: []models.Project{{Name: "fooprj"}}}}, nil
 }
 
 func mockConfig(tmpDir string, cfg string) string {
