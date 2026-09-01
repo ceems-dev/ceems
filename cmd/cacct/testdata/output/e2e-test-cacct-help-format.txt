@@ -1,24 +1,30 @@
-+-------------------------+--------------------------------------------------------------------+
-| FIELD                   | DESCRIPTION                                                        |
-+-------------------------+--------------------------------------------------------------------+
-| account                 | Account name                                                       |
-| avgUsageSomethingScalar | Example query which returns scalar value                           |
-| avgUsageSomethingVector | Example metric which gives vector value                            |
-| cpuMemoryUsage          | Average CPU memory usage over the duration of the job              |
-| cpuUsage                | Average CPU usage over the duration of the job                     |
-| createdAt               | Job creation time                                                  |
-| elapsed                 | Job elapsed time                                                   |
-| endedAt                 | Job end time                                                       |
-| gpuEmissions            | Total eq. emissions due to GPU(s) energy usage duration of the job |
-| gpuEnergy               | Total energy usage by the GPU(s) duration of the job               |
-| gpuMemoryUsage          | Average GPU(s) memory usage over the duration of the job           |
-| gpuUsage                | Average GPU(s) usage over the duration of the job                  |
-| group                   | Group name                                                         |
-| hostEmissions           | Total eq. emissions due to host energy usage duration of the job   |
-| hostEnergy              | Total energy usage by the host duration of the job                 |
-| jobID                   | Job ID                                                             |
-| name                    | Name of the job                                                    |
-| startedAt               | Job start time                                                     |
-| state                   | Job state                                                          |
-| user                    | User name                                                          |
-+-------------------------+--------------------------------------------------------------------+
++-------------------------+--------------------------------------------------------------------------+
+| FIELD                   | DESCRIPTION                                                              |
++-------------------------+--------------------------------------------------------------------------+
+| account                 | Account name                                                             |
+| allocation              | Resource allocation of CPU, GPU, memory, etc                             |
+| avgUsageSomethingScalar | Example query which returns scalar value                                 |
+| avgUsageSomethingVector | Example metric which gives vector value                                  |
+| cpuMemoryUsage          | Average CPU memory usage over the duration of the job                    |
+| cpuUsage                | Average CPU usage over the duration of the job                           |
+| createdAt               | Job creation time                                                        |
+| elapsed                 | Job elapsed time                                                         |
+| endedAt                 | Job end time                                                             |
+| gpuEmissions            | Total eq. emissions due to GPU(s) energy usage duration of the job       |
+| gpuEnergy               | Total energy usage by the GPU(s) duration of the job                     |
+| gpuMemoryUsage          | Average GPU(s) memory usage over the duration of the job                 |
+| gpuUsage                | Average GPU(s) usage over the duration of the job                        |
+| group                   | Group name                                                               |
+| hostEmissions           | Total eq. emissions due to host energy usage duration of the job         |
+| hostEnergy              | Total energy usage by the host duration of the job                       |
+| jobID                   | Job ID                                                                   |
+| name                    | Name of the job                                                          |
+| startedAt               | Job start time                                                           |
+| state                   | Job state                                                                |
+| totalTime               | Wall, CPU and GPU times consumed in seconds over the duration of the job |
+| user                    | User name                                                                |
++-------------------------+--------------------------------------------------------------------------+
+| Available Time Series   |                                                                          |
++-------------------------+--------------------------------------------------------------------------+
+| cpuUsage                | Average usage of CPU during the duration of the job                      |
++-------------------------+--------------------------------------------------------------------------+

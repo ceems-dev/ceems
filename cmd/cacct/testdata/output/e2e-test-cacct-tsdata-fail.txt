@@ -1,4 +1,4 @@
-too many jobs to fetch time series data. Please provide explicit job IDs (less than 2 at a time) using --job when --ts flag is enabled
+too many jobs to fetch time series data. Please provide explicit job IDs (less than 2 at a time) using --job when --ts.metrics is set
 ┌─────────┬─────────┬───────┬──────────┬────────┬────────┬──────────┬─────────────────────────┬────────┬────────┬──────────┬─────────────────────────┐
 │ JOB ID  │ ACCOUNT │ USER  │ ELAPSED  │ CPU US │ CPU ME │ HOST ENE │       HOST EMISSIO      │ GPU US │ GPU ME │ GPU ENER │       GPU EMISSION      │
 │         │         │       │          │ AGE(%) │ M. USA │ RGY(KWH) │         NS(GMS)         │ AGE(%) │ M. USA │ GY(KWH)  │          S(GMS)         │

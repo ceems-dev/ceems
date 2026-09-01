@@ -73,14 +73,14 @@ data, the `--ts` flag must be passed.
 
 :::important[IMPORTANT]
 
-When the `--ts` flag is used, it is compulsory to set at least one compute unit ID using
+When the `--ts.metrics` flag is set, it is compulsory to set at least one compute unit ID using
 the `--job` flag. If users want time series data for multiple jobs, a comma-separated list
 of IDs can be passed to the `--job` flag.
 
 :::
 
 ```bash
-cacct --job=1234,1233 --ts --ts.out-dir=data
+cacct --job=1234,1233 --ts.metrics="cpuusage" --ts.out-dir=data
 ```
 
 With the above command, the time series data of compute units 1234 and 1233 will be saved

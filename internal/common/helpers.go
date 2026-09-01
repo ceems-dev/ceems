@@ -515,3 +515,61 @@ func CheckHTTPClientConfigFiles(config *config_util.HTTPClientConfig) ([]string,
 
 	return readPaths, nil
 }
+
+// ChunkByMaxSum chunks the slice into chunks so that sum of each chunk will not exceed
+// maxSum.
+func ChunkByMaxSum[T int | int16 | int32 | int64 | uint | uint16 | uint32 | uint64](nums []T, maxSum T) [][]T {
+	var result [][]T
+	if maxSum <= 0 {
+		return result
+	}
+
+	var (
+		currentChunk []T
+		currentSum   T = 0
+	)
+
+	for _, num := range nums {
+		if currentSum+num > maxSum {
+			if len(currentChunk) > 0 {
+				result = append(result, currentChunk)
+			}
+
+			currentChunk = []T{num}
+			currentSum = num
+		} else {
+			currentChunk = append(currentChunk, num)
+			currentSum += num
+		}
+	}
+
+	if len(currentChunk) > 0 {
+		result = append(result, currentChunk)
+	}
+
+	return result
+}
+
+// TimeToTimestamp converts a date in a given layout to unix timestamp of the date.
+func TimeToTimestamp(layout string, date string) int64 {
+	t, err := time.Parse(layout, date)
+	if err == nil {
+		return t.UnixMilli()
+	}
+
+	return 0
+}
+
+// ChunkBy splits the slice into chunks of given size.
+func ChunkBy[T any](items []T, chunkSize int) [][]T {
+	if chunkSize == 0 {
+		return [][]T{items}
+	}
+
+	_chunks := make([][]T, 0, (len(items)/chunkSize)+1)
+	for chunkSize < len(items) {
+		items, _chunks = items[chunkSize:], append(_chunks, items[0:chunkSize:chunkSize])
+	}
+
+	return append(_chunks, items)
+}

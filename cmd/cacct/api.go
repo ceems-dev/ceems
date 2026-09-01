@@ -91,7 +91,7 @@ func stats(
 	// Even if normal user make a request by requesting
 	// with --user flag, if that user is not in admin list, empty
 	// result will be returned
-	var unitsReqURL, usageReqURL string
+	var unitsReqURL, usageReqURL *url.URL
 
 	if len(userNames) > 0 {
 		// If --user flag does not contain special value "all", add them to the query.
@@ -103,14 +103,14 @@ func stats(
 			}
 		}
 
-		unitsReqURL = apiURL.JoinPath("/api/v1/units/admin").String()
-		usageReqURL = apiURL.JoinPath("/api/v1/usage/current/admin").String()
+		unitsReqURL = apiURL.JoinPath("/api/v1/units/admin")
+		usageReqURL = apiURL.JoinPath("/api/v1/usage/current/admin")
 	} else {
-		unitsReqURL = apiURL.JoinPath("/api/v1/units").String()
-		usageReqURL = apiURL.JoinPath("/api/v1/usage/current").String()
+		unitsReqURL = apiURL.JoinPath("/api/v1/units")
+		usageReqURL = apiURL.JoinPath("/api/v1/usage/current")
 	}
 
-	logger.Debug("Request to fetch units", "url", unitsReqURL, "units_query", urlValues.Encode())
+	logger.Debug("Request to fetch units", "url", unitsReqURL.Redacted(), "units_query", urlValues.Encode())
 
 	// If CEEMS URL is available make a API request
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -138,7 +138,7 @@ func stats(
 			urlValues.Add("field", "total_time_seconds")
 		}
 
-		logger.Debug("Request to fetch usage", "url", usageReqURL, "usage_query", urlValues.Encode())
+		logger.Debug("Request to fetch usage", "url", usageReqURL.Redacted(), "usage_query", urlValues.Encode())
 
 		usage, err = doRequest[models.Usage](ctx, usageReqURL, urlValues, apiClient)
 		if err != nil {
@@ -152,9 +152,9 @@ func stats(
 }
 
 // doRequest does an API request to CEEMS API server and returns response.
-func doRequest[T any](ctx context.Context, reqURL string, urlValues url.Values, client *http.Client) ([]T, error) {
+func doRequest[T any](ctx context.Context, reqURL *url.URL, urlValues url.Values, client *http.Client) ([]T, error) {
 	// Make a new request
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}

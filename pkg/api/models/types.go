@@ -135,11 +135,18 @@ func (m MetricMap) Keys() []string {
 }
 
 // Values returns a slice of string representation of map values.
-func (m MetricMap) Values(format string) []any {
+func (m MetricMap) Values(format string, l int) []any {
 	// Return empty string when map is nil
 	// Useful in table generation for cacct app
 	if len(m) == 0 {
-		return []any{""}
+		l = max(l, 1)
+
+		s := make([]any, l)
+		for ik := range l {
+			s[ik] = ""
+		}
+
+		return s
 	}
 
 	s := make([]any, len(m))

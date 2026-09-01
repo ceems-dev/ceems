@@ -13,18 +13,20 @@ ceems_api_server:
 tsdb:
   web:
     url: http://localhost:9090
-  max_units: 2
-  range_queries:
+  max_units_for_range_queries: 2
+  queries:
     - name: cpu_usage
       title: "Avg. CPU Usage"
       help: "Average usage of CPU during the duration of the job"
       query: avg_cpu_usage{uuid=~`{{.UUIDs}}`}
-  instant_queries:
+      kind: range
     - name: "avg_-usage-something_Vector"
       help: "Example metric which gives vector value"
       title: "Avg Metric Vector"
       query: avg_over_time(avg by (uuid,instance) (avg_cpu_usage{uuid=~`{{.UUIDs}}`})[{{.Range}}:])
+      kind: instant
     - name: "Avg-UsageSomething-Scalar"
       help: "Example query which returns scalar value"
       title: "Avg Metric Scalar"
       query: avg_over_time(avg by (uuid) (avg_cpu_usage{uuid=~`{{.UUIDs}}`})[{{.Range}}:])
+      kind: instant
