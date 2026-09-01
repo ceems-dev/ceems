@@ -422,7 +422,7 @@ func sysReadFile(file string) ([]byte, error) {
 	// From docs:
 	// The int, uint, and uintptr types are usually 32 bits wide on 32-bit systems and 64 bits wide on 64-bit systems.
 	// Safe to ignore this gosec warning
-	n, err := unix.Read(int(f.Fd()), b) //nolint:gosec
+	n, err := unix.Read(int(f.Fd()), b)
 	if err != nil {
 		return nil, err
 	}

@@ -14,7 +14,6 @@ import (
 
 	"github.com/ceems-dev/ceems/internal/common"
 	"github.com/ceems-dev/ceems/pkg/api/base"
-	"github.com/ceems-dev/ceems/pkg/api/helper"
 	"github.com/ceems-dev/ceems/pkg/api/models"
 	"github.com/ceems-dev/ceems/pkg/api/updater"
 	"github.com/ceems-dev/ceems/pkg/tsdb"
@@ -455,7 +454,7 @@ func (t *tsdbUpdater) update(
 	// Batch UUIDs into slices of 1000 so that we make TSDB requests for each 1000 units
 	// This is to safeguard against OOM errors due to a very large number of units
 	// that can spread across big time interval
-	uuidBatches := helper.ChunkBy(allUnitUUIDs[:j], batchSize)
+	uuidBatches := common.ChunkBy(allUnitUUIDs[:j], batchSize)
 	numBatches := len(uuidBatches)
 
 	aggMetrics := make(map[string]map[string]map[string]float64)

@@ -18,7 +18,6 @@ import (
 	internal_osexec "github.com/ceems-dev/ceems/internal/osexec"
 	"github.com/ceems-dev/ceems/internal/security"
 	"github.com/ceems-dev/ceems/pkg/api/base"
-	"github.com/ceems-dev/ceems/pkg/api/helper"
 	"github.com/ceems-dev/ceems/pkg/api/models"
 	"kernel.org/pub/linux/libs/security/libcap/cap"
 )
@@ -212,7 +211,7 @@ func parseSacctCmdOutput(sacctOutput string, start time.Time, end time.Time) ([]
 					}
 				}
 
-				eventTS[c] = helper.TimeToTimestamp(base.DatetimezoneLayout, components[sacctFieldMap[c]])
+				eventTS[c] = common.TimeToTimestamp(base.DatetimezoneLayout, components[sacctFieldMap[c]])
 			}
 
 			// Parse alloctres to get billing, nnodes, ncpus, ngpus and mem

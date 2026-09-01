@@ -1680,14 +1680,14 @@ then
     ./bin/cacct --current-user=usr1 --config-path="cmd/cacct/testdata/bad-config" --starttime="2022-02-20" --endtime="2022-03-20" > "${fixture_output}" 2>&1 || true
   elif [ "${scenario}" = "cacct-tsdata" ]
   then
-    ./bin/cacct --current-user=usr1 --config-path="cmd/cacct/testdata" --job="147973" --ts --ts.out-dir="${tmpdir}/ts" > "${fixture_output}" 2>&1
+    ./bin/cacct --current-user=usr1 --config-path="cmd/cacct/testdata" --job="147973" --ts.metrics="cpuusage" --ts.out-dir="${tmpdir}/ts" > "${fixture_output}" 2>&1
     cat "${tmpdir}/ts/metadata.json" >> "${fixture_output}"
     cat "${tmpdir}/ts/554b56cadf9dea4b.csv" >> "${fixture_output}"
     # Remove line that says time series data has been saved in the output file as it will contain directory name which changes on every run
     sed -i '/^time series data saved to directory/d' "${fixture_output}"
   elif [ "${scenario}" = "cacct-tsdata-fail" ]
   then
-    ./bin/cacct --current-user=grafana --user=all --config-path="cmd/cacct/testdata" --starttime="2022-02-20" --endtime="2024-03-20" --ts --ts.out-dir="${tmpdir}/ts" > "${fixture_output}" 2>&1 || true
+    ./bin/cacct --current-user=grafana --user=all --config-path="cmd/cacct/testdata" --starttime="2022-02-20" --endtime="2024-03-20" --ts.metrics="cpuusage" --ts.out-dir="${tmpdir}/ts" > "${fixture_output}" 2>&1 || true
   fi
 
 elif [[ "${scenario}" =~ ^"tool" ]]

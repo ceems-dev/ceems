@@ -129,11 +129,7 @@ func (s *slurmScheduler) FetchUsersProjects(
 			return nil, nil, err
 		}
 
-		return []models.ClusterUsers{
-				{Cluster: s.cluster, Users: users},
-			}, []models.ClusterProjects{
-				{Cluster: s.cluster, Projects: projects},
-			}, nil
+		return []models.ClusterUsers{{Cluster: s.cluster, Users: users}}, []models.ClusterProjects{{Cluster: s.cluster, Projects: projects}}, nil
 	}
 
 	return nil, nil, fmt.Errorf("unknown fetch mode for projects for SLURM cluster %s", s.cluster.ID)

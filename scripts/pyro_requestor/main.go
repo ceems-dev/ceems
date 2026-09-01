@@ -54,7 +54,7 @@ func main() {
 		log.Fatalln("failed to marshal message", err)
 	}
 
-	req, err := http.NewRequest(http.MethodPost, *url, bytes.NewBuffer(data)) //nolint:noctx
+	req, err := http.NewRequest(http.MethodPost, *url, bytes.NewBuffer(data))
 	if err != nil {
 		log.Fatalln("failed to create new request", err)
 	}

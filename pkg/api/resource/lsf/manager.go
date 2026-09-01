@@ -115,11 +115,7 @@ func (s *lsfScheduler) FetchUsersProjects(
 		users, projects := s.fetchUserProjects(current)
 		s.logger.Info("LSF user account data fetched", "cluster_id", s.cluster.ID, "num_users", len(users), "num_accounts", len(projects))
 
-		return []models.ClusterUsers{
-				{Cluster: s.cluster, Users: users, Append: true},
-			}, []models.ClusterProjects{
-				{Cluster: s.cluster, Projects: projects, Append: true},
-			}, nil
+		return []models.ClusterUsers{{Cluster: s.cluster, Users: users, Append: true}}, []models.ClusterProjects{{Cluster: s.cluster, Projects: projects, Append: true}}, nil
 	}
 
 	return nil, nil, fmt.Errorf("unknown fetch mode for projects for LSF cluster %s", s.cluster.ID)

@@ -48,7 +48,7 @@ func NewMultiHostReverseProxy(c *rpConfig) (*httputil.ReverseProxy, error) {
 		return nil, err
 	}
 
-	director := func(req *http.Request) {
+	rewrite := func(req *httputil.ProxyRequest) {
 		rewriteRequestURL(c.logger, req, targets)
 	}
 
@@ -60,7 +60,7 @@ func NewMultiHostReverseProxy(c *rpConfig) (*httputil.ReverseProxy, error) {
 		rw.Write([]byte("failed to find redfish target"))
 	}
 
-	return &httputil.ReverseProxy{Director: director, Transport: httpRoundTripper, ErrorHandler: errorHandler}, nil
+	return &httputil.ReverseProxy{Rewrite: rewrite, Transport: httpRoundTripper, ErrorHandler: errorHandler}, nil
 }
 
 // rewriteRequestURL rewrites the request URL to point to the target.
@@ -72,7 +72,7 @@ func NewMultiHostReverseProxy(c *rpConfig) (*httputil.ReverseProxy, error) {
 //
 // Always X-Redfish-Url header is checked for BMC hostname and if not found,
 // target URL is looked up from provided targets.
-func rewriteRequestURL(logger *slog.Logger, req *http.Request, targets map[string]*url.URL) {
+func rewriteRequestURL(logger *slog.Logger, preq *httputil.ProxyRequest, targets map[string]*url.URL) {
 	var target *url.URL
 
 	var remoteIPs []string
@@ -82,10 +82,10 @@ func rewriteRequestURL(logger *slog.Logger, req *http.Request, targets map[strin
 	var ok bool
 
 	// First get the remote address of the client
-	remoteIPs = req.Header[http.CanonicalHeaderKey(realIPHeaderName)]
+	remoteIPs = preq.In.Header[http.CanonicalHeaderKey(realIPHeaderName)]
 
 	// Add remoteAddr only when not on testing
-	ip, _, err := net.SplitHostPort(req.RemoteAddr)
+	ip, _, err := net.SplitHostPort(preq.In.RemoteAddr)
 	if err == nil && os.Getenv("__IS_TESTING") == "" {
 		remoteIPs = append(remoteIPs, ip)
 	}
@@ -107,7 +107,7 @@ func rewriteRequestURL(logger *slog.Logger, req *http.Request, targets map[strin
 	// If target is not found in map, check header
 	// Always use CanonicalHeaderKey as golang always canonicalize headers
 	// internally
-	if targetURL := req.Header.Get(redfishURLHeaderName); targetURL != "" {
+	if targetURL := preq.In.Header.Get(redfishURLHeaderName); targetURL != "" {
 		target, err = url.Parse(targetURL)
 		if err != nil {
 			logger.Error("Fetched Redfish URL from headers is invalid", "err", err)
@@ -136,21 +136,21 @@ rewrite_req:
 
 	targetQuery := target.RawQuery
 
-	req.URL.Scheme = target.Scheme
-	req.URL.Host = target.Host
-	req.URL.Path, req.URL.RawPath = joinURLPath(target, req.URL)
+	preq.Out.URL.Scheme = target.Scheme
+	preq.Out.URL.Host = target.Host
+	preq.Out.URL.Path, preq.Out.URL.RawPath = joinURLPath(target, preq.Out.URL)
 
-	if targetQuery == "" || req.URL.RawQuery == "" {
-		req.URL.RawQuery = targetQuery + req.URL.RawQuery
+	if targetQuery == "" || preq.Out.URL.RawQuery == "" {
+		preq.Out.URL.RawQuery = targetQuery + preq.Out.URL.RawQuery
 	} else {
-		req.URL.RawQuery = targetQuery + "&" + req.URL.RawQuery
+		preq.Out.URL.RawQuery = targetQuery + "&" + preq.Out.URL.RawQuery
 	}
 
 	// Strip X-Redfish-Url header before proxying request to target
-	req.Header.Del(redfishURLHeaderName)
+	preq.Out.Header.Del(redfishURLHeaderName)
 
 	// Strip Authorization header as well
-	req.Header.Del(authorization)
+	preq.Out.Header.Del(authorization)
 }
 
 func singleJoiningSlash(a, b string) string {

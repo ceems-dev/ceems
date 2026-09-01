@@ -51,13 +51,5 @@ func (d *defaultResourceManager) FetchUsersProjects(
 ) ([]models.ClusterUsers, []models.ClusterProjects, error) {
 	d.logger.Info("Empty users and projects fetched from default NoOp cluster")
 
-	return []models.ClusterUsers{
-			{
-				Cluster: models.Cluster{ID: "default"},
-			},
-		}, []models.ClusterProjects{
-			{
-				Cluster: models.Cluster{ID: "default"},
-			},
-		}, nil
+	return []models.ClusterUsers{{Cluster: models.Cluster{ID: "default"}}}, []models.ClusterProjects{{Cluster: models.Cluster{ID: "default"}}}, nil
 }

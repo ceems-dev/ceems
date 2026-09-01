@@ -1323,7 +1323,7 @@ func (c *cgroupCollector) cpusFromChildren(path string) (int, error) {
 	// In cgroup v1, they are flat whereas in cgroup v2 they are inside libvirt folder
 	var vcpuPath string
 
-	if c.cgroupManager.mode == cgroups.Unified && !(c.cgroupManager.nonSystemdLayout) {
+	if c.cgroupManager.mode == cgroups.Unified && !c.cgroupManager.nonSystemdLayout {
 		vcpuPath = fmt.Sprintf("%s%s/libvirt/vcpu*", c.cgroupManager.root, path)
 	} else {
 		vcpuPath = fmt.Sprintf("%s%s/vcpu*", c.cgroupManager.root, path)
