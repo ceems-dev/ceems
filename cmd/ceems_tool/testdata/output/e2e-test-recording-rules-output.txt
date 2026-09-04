@@ -1,5 +1,5 @@
-Number of series found for job series are: 91
-Number of series found for uuid series are: 728
+Number of series found for job series are: 80
+Number of series found for uuid series are: 592
 amd-device-metrics-gpu-gpu.rules
 ---
 # Recording rules for AMD GPUs scrape job amd-device-metrics-gpu.
@@ -94,7 +94,7 @@ groups:
               "(.*)"
             )
           * on (provider) group_left ()
-            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"} 
+            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid",instance="compute-emissions:9017"}
 
 
       # Profiling metrics
@@ -188,7 +188,7 @@ groups:
             (
                 job:ceems_gpu_power_watts:pue{job="amd-device-metrics-gpu"} / 3.6e+06
               * on (job) group_right ()
-                label_replace(ceems_emissions_gCo2_kWh, "job", "amd-device-metrics-gpu", "instance", "(.*)")
+                label_replace(ceems_emissions_gCo2_kWh{instance="compute-emissions:9017"}, "job", "amd-device-metrics-gpu", "instance", "(.*)")
             )
           )
 amd-smi-gpu-gpu.rules
@@ -253,7 +253,7 @@ groups:
               "(.*)"
             )
           * on (provider) group_left ()
-            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"}
+            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid",instance="compute-emissions:9017"}
 
 
   # The following recording rules estimate the average GPU, GPU memory usages and
@@ -285,7 +285,7 @@ groups:
             (
                 job:ceems_gpu_power_watts:pue{job="amd-smi-gpu"} / 3.6e+06
               * on (job) group_right ()
-                label_replace(ceems_emissions_gCo2_kWh, "job", "amd-smi-gpu", "instance", "(.*)")
+                label_replace(ceems_emissions_gCo2_kWh{instance="compute-emissions:9017"}, "job", "amd-smi-gpu", "instance", "(.*)")
             )
           )
 cpu-cray-amd-gpu.rules
@@ -397,7 +397,7 @@ groups:
               "(.*)"
             )
           * on (provider) group_left ()
-            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"} 
+            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid",instance="compute-emissions:9017"}
 
 
   # The following recording rules estimate the average CPU, CPU memory usages and
@@ -460,7 +460,7 @@ groups:
             (
                 job:ceems_host_power_watts:pue{job="cpu-cray-amd-gpu"} / 3.6e+06
               * on (job) group_right ()
-                label_replace(ceems_emissions_gCo2_kWh, "job", "cpu-cray-amd-gpu", "instance", "(.*)")
+                label_replace(ceems_emissions_gCo2_kWh{instance="compute-emissions:9017"}, "job", "cpu-cray-amd-gpu", "instance", "(.*)")
             )
           )
 
@@ -726,7 +726,7 @@ groups:
               "(.*)"
             )
           * on (provider) group_left ()
-            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"} 
+            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid",instance="compute-emissions:9017"}
 
 
   # The following recording rules estimate the average CPU, CPU memory usages and
@@ -781,7 +781,7 @@ groups:
             (
                 job:ceems_host_power_watts:pue{job="cpu-hwmon-amd-gpu"} / 3.6e+06
               * on (job) group_right ()
-                label_replace(ceems_emissions_gCo2_kWh, "job", "cpu-hwmon-amd-gpu", "instance", "(.*)")
+                label_replace(ceems_emissions_gCo2_kWh{instance="compute-emissions:9017"}, "job", "cpu-hwmon-amd-gpu", "instance", "(.*)")
             )
           )
 
@@ -1013,7 +1013,7 @@ groups:
               "(.*)"
             )
           * on (provider) group_left ()
-            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"} 
+            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid",instance="compute-emissions:9017"}
 
 
   # The following recording rules estimate the average CPU, CPU memory usages and
@@ -1068,7 +1068,7 @@ groups:
             (
                 job:ceems_host_power_watts:pue{job="cpu-ipmi-nvidia-gpu"} / 3.6e+06
               * on (job) group_right ()
-                label_replace(ceems_emissions_gCo2_kWh, "job", "cpu-ipmi-nvidia-gpu", "instance", "(.*)")
+                label_replace(ceems_emissions_gCo2_kWh{instance="compute-emissions:9017"}, "job", "cpu-ipmi-nvidia-gpu", "instance", "(.*)")
             )
           )
 
@@ -1332,7 +1332,7 @@ groups:
               "(.*)"
             )
           * on (provider) group_left ()
-            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"} 
+            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid",instance="compute-emissions:9017"}
 
 
   # The following recording rules estimate the average CPU, CPU memory usages and
@@ -1387,7 +1387,7 @@ groups:
             (
                 job:ceems_host_power_watts:pue{job="cpu-only-ipmi"} / 3.6e+06
               * on (job) group_right ()
-                label_replace(ceems_emissions_gCo2_kWh, "job", "cpu-only-ipmi", "instance", "(.*)")
+                label_replace(ceems_emissions_gCo2_kWh{instance="compute-emissions:9017"}, "job", "cpu-only-ipmi", "instance", "(.*)")
             )
           )
 
@@ -1608,7 +1608,7 @@ groups:
               "(.*)"
             )
           * on (provider) group_left ()
-            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"} 
+            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid",instance="compute-emissions:9017"}
 
 
   # The following recording rules estimate the average CPU, CPU memory usages and
@@ -1671,7 +1671,7 @@ groups:
             (
                 job:ceems_host_power_watts:pue{job="cpu-only-rapl"} / 3.6e+06
               * on (job) group_right ()
-                label_replace(ceems_emissions_gCo2_kWh, "job", "cpu-only-rapl", "instance", "(.*)")
+                label_replace(ceems_emissions_gCo2_kWh{instance="compute-emissions:9017"}, "job", "cpu-only-rapl", "instance", "(.*)")
             )
           )
 
@@ -1937,7 +1937,7 @@ groups:
               "(.*)"
             )
           * on (provider) group_left ()
-            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"} 
+            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid",instance="compute-emissions:9017"}
 
 
   # The following recording rules estimate the average CPU, CPU memory usages and
@@ -1992,7 +1992,7 @@ groups:
             (
                 job:ceems_host_power_watts:pue{job="cpu-only-redfish"} / 3.6e+06
               * on (job) group_right ()
-                label_replace(ceems_emissions_gCo2_kWh, "job", "cpu-only-redfish", "instance", "(.*)")
+                label_replace(ceems_emissions_gCo2_kWh{instance="compute-emissions:9017"}, "job", "cpu-only-redfish", "instance", "(.*)")
             )
           )
 
@@ -2256,7 +2256,7 @@ groups:
               "(.*)"
             )
           * on (provider) group_left ()
-            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"} 
+            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid",instance="compute-emissions:9017"}
 
 
   # The following recording rules estimate the average CPU, CPU memory usages and
@@ -2311,7 +2311,7 @@ groups:
             (
                 job:ceems_host_power_watts:pue{job="cpu-redfish-nvidia-gpu"} / 3.6e+06
               * on (job) group_right ()
-                label_replace(ceems_emissions_gCo2_kWh, "job", "cpu-redfish-nvidia-gpu", "instance", "(.*)")
+                label_replace(ceems_emissions_gCo2_kWh{instance="compute-emissions:9017"}, "job", "cpu-redfish-nvidia-gpu", "instance", "(.*)")
             )
           )
 
@@ -2527,7 +2527,7 @@ groups:
               "(.*)"
             )
           * on (provider) group_left ()
-            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"}
+            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid",instance="compute-emissions:9017"}
 
 
       # Profiling metrics
@@ -2640,7 +2640,7 @@ groups:
             (
                 job:ceems_gpu_power_watts:pue{job="ipmi-nvidia-gpu"} / 3.6e+06
               * on (job) group_right ()
-                label_replace(ceems_emissions_gCo2_kWh, "job", "ipmi-nvidia-gpu", "instance", "(.*)")
+                label_replace(ceems_emissions_gCo2_kWh{instance="compute-emissions:9017"}, "job", "ipmi-nvidia-gpu", "instance", "(.*)")
             )
           )
 nvidia-gpu-gpu.rules
@@ -2734,7 +2734,7 @@ groups:
               "(.*)"
             )
           * on (provider) group_left ()
-            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid"}
+            ceems_emissions_gCo2_kWh{country_code="FR",provider="owid",instance="compute-emissions:9017"}
 
 
       # Profiling metrics
@@ -2847,7 +2847,7 @@ groups:
             (
                 job:ceems_gpu_power_watts:pue{job="nvidia-gpu"} / 3.6e+06
               * on (job) group_right ()
-                label_replace(ceems_emissions_gCo2_kWh, "job", "nvidia-gpu", "instance", "(.*)")
+                label_replace(ceems_emissions_gCo2_kWh{instance="compute-emissions:9017"}, "job", "nvidia-gpu", "instance", "(.*)")
             )
           )
 amd-device-metrics-gpu-gpu.rules
@@ -8682,7 +8682,6 @@ queries:
 
   total_cpu_emissions_gms:
 
-    owid_total: sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider=`owid`} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
 
 
 
@@ -8693,7 +8692,6 @@ queries:
 
   total_gpu_emissions_gms:
 
-    owid_total: sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider=`owid`} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
 
 
 

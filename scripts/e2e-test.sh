@@ -1835,6 +1835,7 @@ then
         --collector.ipmi.test-mode \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/openipmi/ipmitool" \
         --collector.rapl \
+        --collector.emissions \
         --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:9016" \
         --web.disable-exporter-metrics \
