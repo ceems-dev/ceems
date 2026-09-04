@@ -457,6 +457,7 @@ func efInstance(ctx context.Context, api v1.API, start time.Time, end time.Time)
 	// instances of emissions collectors are running which is not ideal. Emit a warning
 	instances = slices.Compact(instances)
 	slices.Sort(instances)
+
 	if len(instances) > 1 {
 		fmt.Fprintln(os.Stderr, `WARNING: multiple instances of emissions collectors are detected. The generated recording rules might not work in this case. Ensure there is only one single instance of emissions collector running in the cluster.`)
 	}
