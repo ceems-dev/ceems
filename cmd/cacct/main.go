@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -543,6 +544,7 @@ func main() {
 		accountsFlag, jobsFlag, usersFlag string
 		formatFlag                        string
 		startTime, endTime                string
+		accountsFilter                    *regexp.Regexp
 	)
 
 	cacctApp.Version(version.Print("caact"))
@@ -591,6 +593,11 @@ func main() {
 	cacctApp.Flag(
 		"markdown", "Produce markdown output (default: false).",
 	).Default("false").BoolVar(&mdOut)
+
+	// Hidden flags
+	cacctApp.Flag(
+		"account-filter", "Filter results based on the regex expression on account. Useful to limit results in output when jobs of all users are quered.",
+	).Hidden().RegexpVar(&accountsFilter)
 
 	_, err := cacctApp.Parse(os.Args[1:])
 	if err != nil {
@@ -793,13 +800,38 @@ func main() {
 		os.Exit(checkErr(errNoUnits))
 	}
 
+	// If account filter is set, filter results of units and usages
+	var (
+		unitsFiltered  []models.Unit
+		usagesFiltered []models.Usage
+	)
+
+	if accountsFilter != nil {
+		for _, unit := range units {
+			if accountsFilter.MatchString(unit.Project) {
+				unitsFiltered = append(unitsFiltered, unit)
+			}
+		}
+
+		for _, usage := range usages {
+			if accountsFilter.MatchString(usage.Project) {
+				usagesFiltered = append(usagesFiltered, usage)
+			}
+		}
+
+		logger.Debug("Number of units and usages after filtering using account filter", "filter", accountsFilter, "num_units", len(unitsFiltered), "num_usages", len(usagesFiltered))
+	} else {
+		unitsFiltered = units
+		usagesFiltered = usages
+	}
+
 	// If instant queries have been configured, get results
 	var instantQueryResults map[string]map[string]string
 
 	if len(config.TSDB.instantQueries) > 0 {
 		logger.Debug("Fetching instant queries results from TSDB")
 
-		instantQueryResults, err = executeInstantQueries(logger, config, units)
+		instantQueryResults, err = executeInstantQueries(logger, config, unitsFiltered)
 		if err != nil {
 			logger.Error("failed to fetch instant query results from TSDB", "err", err)
 			fmt.Fprintln(os.Stderr, "failed to fetch metrics data")
@@ -809,8 +841,8 @@ func main() {
 	// If tsData is enabled, get time series data
 	if len(config.TSDB.rangeQueries) > 0 {
 		// If found jobs are more than 10, print a warning
-		if len(units) > config.TSDB.MaxUnitsForRangeQueries {
-			logger.Warn("Too many jobs to fetch time series data. Ignoring --ts.metrics flag", "num_units", len(units), "max_allowed_units", config.TSDB.MaxUnitsForRangeQueries)
+		if len(unitsFiltered) > config.TSDB.MaxUnitsForRangeQueries {
+			logger.Warn("Too many jobs to fetch time series data. Ignoring --ts.metrics flag", "num_units", len(unitsFiltered), "max_allowed_units", config.TSDB.MaxUnitsForRangeQueries)
 			msg := fmt.Sprintf("too many jobs to fetch time series data. Please provide explicit job IDs (less than %d at a time) using --job when --ts.metrics is set", config.TSDB.MaxUnitsForRangeQueries)
 			fmt.Fprintln(os.Stderr, msg)
 
@@ -819,7 +851,7 @@ func main() {
 
 		logger.Debug("Fetching time series data from TSDB")
 
-		err := executeRangeQueries(logger, config, units, tsDataOut)
+		err := executeRangeQueries(logger, config, unitsFiltered, tsDataOut)
 		if err != nil {
 			logger.Error("failed to fetch time series data", "err", err)
 			fmt.Fprintln(os.Stderr, "failed to fetch time series data")
@@ -828,7 +860,7 @@ func main() {
 
 print_table:
 	// Print stats as table
-	t := newTable(currentUser.Username, userNames, units, usages, instantQueryResults, activeInstantQueries, summaryStats)
+	t := newTable(currentUser.Username, userNames, unitsFiltered, usagesFiltered, instantQueryResults, activeInstantQueries, summaryStats)
 
 	// Based on request rendering format
 	switch {
