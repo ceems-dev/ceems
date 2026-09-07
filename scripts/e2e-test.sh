@@ -473,6 +473,10 @@ then
   then
     desc="ceems tool to generate recording rules"
     fixture='cmd/ceems_tool/testdata/output/e2e-test-recording-rules-output.txt'
+  elif [ "${scenario}" = "tool-recording-rules-multiple-emissions" ]
+  then
+    desc="ceems tool to generate recording rules when multiple emissions targets are present"
+    fixture='cmd/ceems_tool/testdata/output/e2e-test-recording-rules-multiple-emissions-output.txt'
   elif [ "${scenario}" = "tool-relabel-configs" ]
   then
     desc="ceems tool to generate relabel config"
@@ -1835,7 +1839,6 @@ then
         --collector.ipmi.test-mode \
         --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/openipmi/ipmitool" \
         --collector.rapl \
-        --collector.emissions \
         --collector.force-hostname="testhost-1" \
         --web.listen-address "127.0.0.1:9016" \
         --web.disable-exporter-metrics \
@@ -1945,6 +1948,96 @@ then
 
       # Generate TSDB updater queries
       ./bin/ceems_tool tsdb create-ceems-tsdb-updater-queries >> "${fixture_output}" 2>&1
+  elif [ "${scenario}" = "tool-recording-rules-multiple-emissions" ] 
+  then
+      ./bin/mock_exporters test-mode dcgm amd-smi amd-device-metrics > /dev/null 2>&1 &
+      MOCK_SERVERS_PID=$!
+
+      waitport "9400"
+      waitport "9500"
+      waitport "9600"
+
+      # IPMI and RAPL available
+      ./bin/ceems_exporter \
+        --path.sysfs="pkg/collector/testdata/sys" \
+        --path.cgroupfs="pkg/collector/testdata/sys/fs/cgroup" \
+        --path.procfs="pkg/collector/testdata/proc" \
+        --collector.cgroups.force-version="v1" \
+        --collector.slurm \
+        --collector.gpu.type="nogpu" \
+        --collector.ipmi \
+        --collector.ipmi.test-mode \
+        --collector.ipmi.dcmi.cmd="pkg/collector/testdata/ipmi/freeipmi/ipmi-dcmi" \
+        --collector.rapl \
+        --collector.emissions \
+        --collector.force-hostname="testhost-1" \
+        --web.listen-address "127.0.0.1:9010" \
+        --web.disable-exporter-metrics \
+        --log.level="debug" > /dev/null 2>&1 &
+      MOCK_EXPORTER1_PID=$!
+
+      # Emissions target
+      ./bin/ceems_exporter \
+        --collector.disable-defaults \
+        --collector.emissions \
+        --collector.emissions.provider=owid \
+        --collector.force-hostname="testhost-1" \
+        --web.listen-address "127.0.0.1:9011" \
+        --web.disable-exporter-metrics \
+        --log.level="debug" > /dev/null 2>&1 &
+      MOCK_EXPORTER2_PID=$!
+
+      waitport "9010"
+      waitport "9011"
+
+      prometheus \
+        --config.file cmd/ceems_tool/testdata/prometheus-emissions.yml \
+        --storage.tsdb.retention.time 10y \
+        --storage.tsdb.path "${tmpdir}/tsdb" \
+        --log.level="debug" >> "${logfile}" 2>&1 &
+      PROMETHEUS_PID=$!
+
+      echo "${PROMETHEUS_PID} ${MOCK_SERVERS_PID} ${MOCK_EXPORTER1_PID} ${MOCK_EXPORTER2_PID}" > "${pidfile}"
+
+      waitport "9090"
+
+      # Sleep a while for Prometheus to scrape metrics
+      sleep 30
+
+      ./bin/ceems_tool tsdb create-recording-rules --country-code=FR --output-dir "${tmpdir}/rules" >> "${logfile}" 2>&1
+
+      # Add content of each recording file to fixture_output
+      find "${tmpdir}/rules" -type f -print0 | sort -z | while IFS= read -r -d $'\0' file; do
+          # Check generated rules
+          promtool check rules "${file}" >> "${logfile}" 2>&1
+
+          echo $(basename "${file}") >> "${fixture_output}"
+          cat "$file" >> "${fixture_output}"
+      done
+
+      # Rules without emissions target
+      ./bin/ceems_tool tsdb create-recording-rules --country-code=FR --disable-providers --output-dir "${tmpdir}/rules" >> "${logfile}" 2>&1
+
+      # Add content of each recording file to fixture_output
+      find "${tmpdir}/rules" -type f -print0 | sort -z | while IFS= read -r -d $'\0' file; do
+          # Check generated rules
+          promtool check rules "${file}" >> "${logfile}" 2>&1
+
+          echo $(basename "${file}") >> "${fixture_output}"
+          cat "$file" >> "${fixture_output}"
+      done
+
+      # Rules with static emission factor
+      ./bin/ceems_tool tsdb create-recording-rules --emission-factor=50 --output-dir "${tmpdir}/rules" >> "${logfile}" 2>&1
+
+      # Add content of each recording file to fixture_output
+      find "${tmpdir}/rules" -type f -print0 | sort -z | while IFS= read -r -d $'\0' file; do
+        # Check generated rules
+          promtool check rules "${file}" >> "${logfile}" 2>&1
+
+          echo $(basename "${file}") >> "${fixture_output}"
+          cat "$file" >> "${fixture_output}"
+      done
   elif [ "${scenario}" = "tool-relabel-configs" ] 
   then
       ./bin/mock_exporters test-mode dcgm amd-smi amd-device-metrics >> "${logfile}" 2>&1 &

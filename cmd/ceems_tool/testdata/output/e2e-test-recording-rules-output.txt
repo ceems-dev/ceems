@@ -1,5 +1,5 @@
-Number of series found for job series are: 80
-Number of series found for uuid series are: 592
+Number of series found for job series are: 91
+Number of series found for uuid series are: 728
 amd-device-metrics-gpu-gpu.rules
 ---
 # Recording rules for AMD GPUs scrape job amd-device-metrics-gpu.
@@ -8682,6 +8682,7 @@ queries:
 
   total_cpu_emissions_gms:
 
+    owid_total: sum_over_time(sum by (uuid) (uuid:ceems_host_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider=`owid`} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
 
 
 
@@ -8692,6 +8693,7 @@ queries:
 
   total_gpu_emissions_gms:
 
+    owid_total: sum_over_time(sum by (uuid) (uuid:ceems_gpu_emissions_g_s:pue{uuid=~`{{.UUIDs}}`,provider=`owid`} > 0 < inf)[{{.Range}}:{{.ScrapeInterval}}]) * {{.ScrapeIntervalMilli}} / 1e3
 
 
 
