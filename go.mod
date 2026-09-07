@@ -21,7 +21,7 @@ require (
 	github.com/jellydator/ttlcache/v3 v3.4.1
 	github.com/mattn/go-sqlite3 v1.14.50
 	github.com/prometheus/client_golang v1.24.1
-	github.com/prometheus/common v0.70.1
+	github.com/prometheus/common v0.71.0
 	github.com/prometheus/exporter-toolkit v0.19.0
 	github.com/prometheus/procfs v0.22.0
 	github.com/prometheus/prometheus v0.314.0
@@ -32,7 +32,7 @@ require (
 	github.com/swaggo/swag/v2 v2.0.0-rc5
 	github.com/wneessen/go-fileperm v0.2.1
 	github.com/zeebo/xxh3 v1.1.0
-	golang.org/x/crypto v0.55.0
+	golang.org/x/crypto v0.56.0
 	golang.org/x/sys v0.47.0
 	google.golang.org/grpc v1.83.2
 	google.golang.org/protobuf v1.36.12
