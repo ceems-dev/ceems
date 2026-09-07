@@ -95,7 +95,11 @@ groups:
               "(.*)"
             )
           * on (provider) group_left ()
-            ceems_emissions_gCo2_kWh{country_code="{{$.CountryCode}}",provider="{{$v}}"} 
+{{- if ne $.Instance "" }}
+            ceems_emissions_gCo2_kWh{country_code="{{$.CountryCode}}",provider="{{$v}}",instance="{{$.Instance}}"}
+{{- else }}
+            ceems_emissions_gCo2_kWh{country_code="{{$.CountryCode}}",provider="{{$v}}"}
+{{- end }}
 {{ end }}
 {{- else }}
 {{- if gt $.EmissionFactor.Value 0.0 }}
@@ -178,7 +182,11 @@ groups:
             (
                 job:ceems_gpu_power_watts:pue{job="{{$.GPUJob}}"} / 3.6e+06
               * on (job) group_right ()
+{{- if ne $.Instance "" }}
+                label_replace(ceems_emissions_gCo2_kWh{instance="{{$.Instance}}"}, "job", "{{$.GPUJob}}", "instance", "(.*)")
+{{- else }}
                 label_replace(ceems_emissions_gCo2_kWh, "job", "{{$.GPUJob}}", "instance", "(.*)")
+{{- end }}
             )
           )
 {{- else }}

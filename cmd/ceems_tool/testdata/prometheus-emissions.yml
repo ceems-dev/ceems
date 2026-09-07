@@ -1,0 +1,27 @@
+---
+
+global:
+  scrape_interval: 500ms
+  evaluation_interval: 1s
+
+
+rule_files:
+  - rules/*.rules
+
+# scrape configuration
+scrape_configs:
+  # Only CPU hosts with IPMI available
+  - job_name: cpu-only-ipmi
+    static_configs:
+      - targets: ["localhost:9010"]
+        labels:
+          instance: compute-ipmi-0:9010
+          hostname: compute-ipmi-0
+
+  # Emissions job
+  - job_name: emissions
+    static_configs:
+      - targets: ["localhost:9011"]
+        labels:
+          instance: compute-emissions:9011
+          hostname: compute-emissions

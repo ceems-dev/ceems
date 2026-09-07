@@ -190,6 +190,7 @@ test-e2e: $(PROMTOOL) build pkg/collector/testdata/sys/.unpacked pkg/collector/t
 	./scripts/e2e-test.sh -s redfish-proxy-frontend-tls-backend-tls
 	./scripts/e2e-test.sh -s redfish-proxy-targetless-frontend-plain-backend-plain
 	./scripts/e2e-test.sh -s tool-recording-rules
+	./scripts/e2e-test.sh -s tool-recording-rules-multiple-emissions
 	./scripts/e2e-test.sh -s tool-relabel-configs
 	./scripts/e2e-test.sh -s tool-web-config
 	./scripts/e2e-test.sh -s cacct-default-format
@@ -289,6 +290,7 @@ test-e2e-update: build pkg/collector/testdata/sys/.unpacked pkg/collector/testda
 	./scripts/e2e-test.sh -s redfish-proxy-frontend-tls-backend-tls -u || true
 	./scripts/e2e-test.sh -s redfish-proxy-targetless-frontend-plain-backend-plain -u || true
 	./scripts/e2e-test.sh -s tool-recording-rules -u || true
+	./scripts/e2e-test.sh -s tool-recording-rules-multiple-emissions -u || true
 	./scripts/e2e-test.sh -s tool-relabel-configs -u || true
 	./scripts/e2e-test.sh -s tool-web-config -u || true
 	./scripts/e2e-test.sh -s cacct-default-format -u || true

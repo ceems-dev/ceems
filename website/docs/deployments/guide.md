@@ -235,6 +235,14 @@ API before using it in their production environment.
 
 :::
 
+:::tip[TIP]
+
+Avoid enabling emissions collector on the CEEMS exporter instances running on compute nodes.
+At any given time ensure that there is only a **single** instance of emissions collector to
+avoid duplicating the metrics on the Prometheus server.
+
+:::
+
 CEEMS package supports static emission factors from historical data provided by
 [OWID](https://ourworldindata.org/co2-and-greenhouse-gas-emissions). To estimate emissions using
 this static factor, there is no need to deploy the above instance of CEEMS exporter and emissions will

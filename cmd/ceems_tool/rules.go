@@ -41,6 +41,10 @@ const (
 	amdDevExporterPkgPowerMetric = "gpu_package_power"
 )
 
+const (
+	emissionsMetric = "ceems_emissions_gCo2_kWh"
+)
+
 var (
 	seriesNames = []string{
 		"ceems_compute_unit_cpu_user_seconds_total",
@@ -51,7 +55,7 @@ var (
 		redfishPowerMetric,
 		crayPowerMetric,
 		hwmonPowerMetric,
-		"ceems_emissions_gCo2_kWh",
+		emissionsMetric,
 		dcgmPowerMetric,
 		dcgmInstantPowerMetric,
 		amdSMIPowerMetric,
@@ -129,6 +133,7 @@ type rulesTemplateData struct {
 	EmissionFactor     EmissionFactor
 	Providers          model.LabelValues
 	CountryCode        string
+	Instance           string
 	RateInterval       string
 	EvaluationInterval string
 }
@@ -229,6 +234,8 @@ func CreatePromRecordingRules(
 
 	var providers model.LabelValues
 
+	var emissionCollectorInstance string
+
 	if emissionFactorValue == 0 {
 		// If no emission factor value has been passed, attempt to get from time series or
 		// static OWID data
@@ -244,6 +251,9 @@ func CreatePromRecordingRules(
 				}
 			}
 		}
+
+		// Get instance of emission collector
+		emissionCollectorInstance = efInstance(ctx, api, stime, etime)
 	} else {
 		emissionFactor = EmissionFactor{Provider: "custom", Value: emissionFactorValue}
 	}
@@ -387,6 +397,7 @@ func CreatePromRecordingRules(
 			EmissionFactor:     emissionFactor,
 			Providers:          providers,
 			CountryCode:        countryCode,
+			Instance:           emissionCollectorInstance,
 			RateInterval:       rateInterval.String(),
 			EvaluationInterval: evalInterval.String(),
 		}
@@ -428,10 +439,36 @@ func scrapeIntervals(ctx context.Context, api v1.API) (map[string]time.Duration,
 	return scrapeIntervals, nil
 }
 
+// efInstance returns first found instance of emission factor metric. In case when operators run emissions collector on
+// multiple instances, it comes handy.
+func efInstance(ctx context.Context, api v1.API, start time.Time, end time.Time) string {
+	// First fetch all the available series of emissions
+	series, _, err := api.Series(ctx, []string{emissionsMetric}, start, end)
+	if err != nil || len(series) == 0 {
+		return ""
+	}
+
+	var instances []string
+	for _, s := range series {
+		instances = append(instances, string(s["instance"]))
+	}
+
+	// Remove duplicates and if more than one instance is found, it means multiple
+	// instances of emissions collectors are running which is not ideal. Emit a warning
+	instances = slices.Compact(instances)
+	slices.Sort(instances)
+
+	if len(instances) > 1 {
+		fmt.Fprintln(os.Stderr, `WARNING: multiple instances of emissions collectors are detected. The generated recording rules might not work in this case. Ensure there is only one single instance of emissions collector running in the cluster.`)
+	}
+
+	return instances[0]
+}
+
 // efProviders returns a slice of available emission factor providers.
 func efProviders(ctx context.Context, api v1.API, start time.Time, end time.Time, countryCode string, disableProviders bool) (model.LabelValues, error) {
 	// Run query to get label values.
-	matcher := fmt.Sprintf(`ceems_emissions_gCo2_kWh{country_code="%s"}`, countryCode)
+	matcher := fmt.Sprintf(`%s{country_code="%s"}`, emissionsMetric, countryCode)
 
 	providers, _, err := api.LabelValues(ctx, "provider", []string{matcher}, start, end) // Ignoring warnings for now.
 	if err != nil {
