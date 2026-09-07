@@ -6,7 +6,7 @@ sidebar_position: 10
 
 The following reference applies to the configuration files of the CEEMS API server,
 CEEMS LB, and web configuration. CEEMS uses Prometheus'
-[client config](https://github.com/prometheus/common/tree/main/config)
+[client config](https://pkg.go.dev/github.com/prometheus/common/config#HTTPClientConfig)
 to configure HTTP clients. Thus, most of the configuration used to configure HTTP
 clients resembles that of Prometheus'. The configuration reference has also been
 inspired by Prometheus documentation.
