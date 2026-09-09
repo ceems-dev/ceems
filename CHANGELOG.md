@@ -1,5 +1,55 @@
 # Changelog
 
+## 0.16.0 / 2026-09-09
+
+### Breaking Changes
+
+#### cacct
+
+The configuration file of `cacct` has some breaking changes. Users need to migrate the
+section `tsdb.queries` in `cacct`'s configuration file. A key-value configuration has been
+changed to list of objects to have more flexibility and to support `instant` type queries
+in the future. For instance, if the old configuration file is as follows:
+
+```yaml
+tsdb:
+  web:
+    url: http://localhost:9090
+  queries:
+    cpu_usage: uuid:ceems_cpu_usage:ratio_irate{uuid=~"%s"}
+    cpu_mem_usage: uuid:ceems_cpu_memory_usage:ratio{uuid=~"%s"}
+```
+
+It must be modified as follows:
+
+```yaml
+tsdb:
+  web:
+    url: http://localhost:9090
+  queries:
+    - name: cpu_usage
+      title: "CPU Usage"
+      help: "CPU usage during the duration of the job"
+      query: uuid:ceems_cpu_usage:ratio_irate{uuid=~`{{.UUIDs}}`}
+      kind: range
+    - name: cpu_mem_usage
+      title: "CPU Memory Usage"
+      help: "CPU memory usage during the duration of the job"
+      query: uuid:ceems_cpu_memory_usage:ratio{uuid=~`{{.UUIDs}}`}
+      kind: range
+```
+
+where `name`, `query` and `kind` are mandatory keys where as `help` and `title` are
+optional. Currently, only `range` type queries are supported for `kind` key. More details
+on the full configuration file can be found in [docs](https://ceems-dev.github.io/ceems/docs/configuration/cacct).
+
+### List of PRs
+
+- [FEAT] feat: Support filtering results returned by API server [#596](https://github.com/ceems-dev/ceems/pull/596) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Ensure ceems_tool accounts multiple instances of emission collectors [#593](https://github.com/ceems-dev/ceems/pull/593) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [BREAKING] feat: Refactor cacct app to configure TSDB custom queries [#585](https://github.com/ceems-dev/ceems/pull/585) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump dependencies [#583](https://github.com/ceems-dev/ceems/pull/583), [#584](https://github.com/ceems-dev/ceems/pull/584), [#586](https://github.com/ceems-dev/ceems/pull/586), [#588](https://github.com/ceems-dev/ceems/pull/588), [#589](https://github.com/ceems-dev/ceems/pull/589), [#590](https://github.com/ceems-dev/ceems/pull/590), [#591](https://github.com/ceems-dev/ceems/pull/591), [#594](https://github.com/ceems-dev/ceems/pull/594), [#595](https://github.com/ceems-dev/ceems/pull/595) ([@dependabot](https://github.com/dependabot))
+
 ## 0.15.1 / 2026-08-15
 
 - [MAINT] refactor: Support user supplied SM count for NVIDIA GPUs [#582](https://github.com/ceems-dev/ceems/pull/582) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
