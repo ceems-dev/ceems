@@ -8,7 +8,7 @@ NETWORKDIR := network/
 BPFTESTDIR := test/
 
 NETWORK = bpf_network.o bpf_network_v519.o bpf_network_v64.o
-VFS = bpf_vfs.o bpf_vfs_v511.o bpf_vfs_v62.o bpf_vfs_v614.o
+VFS = bpf_vfs.o bpf_vfs_v511.o bpf_vfs_v62.o bpf_vfs_v614.o bpf_vfs_v618.o
 
 OBJSDIR       := objs/
 DEPSDIR       := deps/
@@ -42,6 +42,7 @@ endef
 $(eval $(call DEFINE_VFS_VARIANT,v511))
 $(eval $(call DEFINE_VFS_VARIANT,v62))
 $(eval $(call DEFINE_VFS_VARIANT,v614))
+$(eval $(call DEFINE_VFS_VARIANT,v618))
 
 define DEFINE_NET_VARIANT
 VAR := $1
@@ -57,7 +58,7 @@ ifeq ($(BPF_TARGET_COMPILE),1)
 
 # VFSDIR
 objs/%.ll: $(VFSDIR)%.c
-	$(CLANG) $(CLANG_FLAGS) -D__KERNEL_POST_v615 -c $< -o $@
+	$(CLANG) $(CLANG_FLAGS) -D__KERNEL_POST_v618 -c $< -o $@
 
 objs/%_v511.ll:
 	$(CLANG) $(CLANG_FLAGS) -D__KERNEL_PRE_v511 -c $< -o $@
@@ -68,8 +69,11 @@ objs/%_v62.ll:
 objs/%_v614.ll:
 	$(CLANG) $(CLANG_FLAGS) -D__KERNEL_POST_v63_PRE_v614 -c $< -o $@
 
+objs/%_v618.ll:
+	$(CLANG) $(CLANG_FLAGS) -D__KERNEL_POST_v614_PRE_v618 -c $< -o $@
+
 $(DEPSDIR)%.d: $(VFSDIR)%.c
-	$(CLANG) $(CLANG_FLAGS) -D__KERNEL_POST_v615 -MM -MP -MT $(patsubst $(DEPSDIR)%.d, $(OBJSDIR)%.ll, $@)   $< > $@
+	$(CLANG) $(CLANG_FLAGS) -D__KERNEL_POST_v618 -MM -MP -MT $(patsubst $(DEPSDIR)%.d, $(OBJSDIR)%.ll, $@)   $< > $@
 
 $(DEPSDIR)%_v511.d:
 	$(CLANG) $(CLANG_FLAGS) -D__KERNEL_PRE_v511 -MM -MP -MT $(patsubst $(DEPSDIR)%.d, $(OBJSDIR)%.ll, $@)   $< > $@
@@ -79,6 +83,9 @@ $(DEPSDIR)%_v62.d:
 
 $(DEPSDIR)%_v614.d:
 	$(CLANG) $(CLANG_FLAGS) -D__KERNEL_POST_v63_PRE_v614 -MM -MP -MT $(patsubst $(DEPSDIR)%.d, $(OBJSDIR)%.ll, $@)   $< > $@
+
+$(DEPSDIR)%_v618.d:
+	$(CLANG) $(CLANG_FLAGS) -D__KERNEL_POST_v614_PRE_v618 -MM -MP -MT $(patsubst $(DEPSDIR)%.d, $(OBJSDIR)%.ll, $@)   $< > $@
 
 # NETWORKDIR
 objs/%.ll: $(NETWORKDIR)%.c

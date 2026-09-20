@@ -320,10 +320,16 @@ func TestVFSBPFObjects(t *testing.T) {
 		obj     string
 	}{
 		{
-			name:    "kernel >= 6.15",
+			name:    "kernel >= 6.19",
+			procfs:  t.TempDir(),
+			version: "Ubuntu 6.19.0-35.35~22.04.1-generic 6.19.13",
+			obj:     "bpf_vfs.o",
+		},
+		{
+			name:    "kernel >= 6.15 and kernel < 6.19",
 			procfs:  t.TempDir(),
 			version: "Ubuntu 6.17.0-35.35~22.04.1-generic 6.17.13",
-			obj:     "bpf_vfs.o",
+			obj:     "bpf_vfs_v618.o",
 		},
 		{
 			name:    "kernel >= 6.2 and kernel < 6.14",

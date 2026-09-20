@@ -4596,6 +4596,10 @@ struct inode {
 	void *i_private;
 };
 
+struct delegated_inode {
+	struct inode *di_inode;
+};
+
 struct dentry_operations {
 	int (*d_revalidate)(struct dentry *, unsigned int);
 	int (*d_weak_revalidate)(struct dentry *, unsigned int);
