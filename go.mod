@@ -26,15 +26,15 @@ require (
 	github.com/prometheus/procfs v0.22.0
 	github.com/prometheus/prometheus v0.314.0
 	github.com/steiler/acls v0.1.6
-	github.com/stmcginnis/gofish v0.25.0
+	github.com/stmcginnis/gofish v0.26.0
 	github.com/stretchr/testify v1.12.1
 	github.com/swaggo/http-swagger/v2 v2.0.2
-	github.com/swaggo/swag/v2 v2.0.0-rc5
+	github.com/swaggo/swag/v2 v2.0.0-rc6
 	github.com/wneessen/go-fileperm v0.2.1
 	github.com/zeebo/xxh3 v1.1.0
 	golang.org/x/crypto v0.57.0
 	golang.org/x/sys v0.48.0
-	google.golang.org/grpc v1.83.2
+	google.golang.org/grpc v1.84.0
 	google.golang.org/protobuf v1.36.12
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.37.0
