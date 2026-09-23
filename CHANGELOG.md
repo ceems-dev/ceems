@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.16.1 / 2026-09-23
+
+- [MAINT] maint: Update vfs_* func sigs for kernel >=6.19 [#604](https://github.com/ceems-dev/ceems/pull/604) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] build: Bump forked ebpf package commit to get latest Py offsets [#600](https://github.com/ceems-dev/ceems/pull/600) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump dependencies [#597](https://github.com/ceems-dev/ceems/pull/597), Bump dependencies [#598](https://github.com/ceems-dev/ceems/pull/598), Bump dependencies [#599](https://github.com/ceems-dev/ceems/pull/599), Bump dependencies [#601](https://github.com/ceems-dev/ceems/pull/601), Bump dependencies [#602](https://github.com/ceems-dev/ceems/pull/602), Bump dependencies [#606](https://github.com/ceems-dev/ceems/pull/606), Bump dependencies [#607](https://github.com/ceems-dev/ceems/pull/607) ([@dependabot](https://github.com/dependabot))
+
 ## 0.16.0 / 2026-09-09
 
 ### Breaking Changes
