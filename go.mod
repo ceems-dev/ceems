@@ -22,7 +22,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.52
 	github.com/prometheus/client_golang v1.24.1
 	github.com/prometheus/common v0.71.0
-	github.com/prometheus/exporter-toolkit v0.19.0
+	github.com/prometheus/exporter-toolkit v0.20.0
 	github.com/prometheus/procfs v0.22.0
 	github.com/prometheus/prometheus v0.314.0
 	github.com/steiler/acls v0.1.6
@@ -37,11 +37,11 @@ require (
 	google.golang.org/grpc v1.84.0
 	google.golang.org/protobuf v1.36.12
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/api v0.37.0
-	k8s.io/apimachinery v0.37.0
-	k8s.io/client-go v0.37.0
-	k8s.io/kubelet v0.37.0
-	k8s.io/streaming v0.37.0
+	k8s.io/api v0.37.1
+	k8s.io/apimachinery v0.37.1
+	k8s.io/client-go v0.37.1
+	k8s.io/kubelet v0.37.1
+	k8s.io/streaming v0.37.1
 	kernel.org/pub/linux/libs/security/libcap/cap v1.2.78
 )
 
