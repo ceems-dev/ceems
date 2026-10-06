@@ -11,6 +11,11 @@ updates:
       interval: "weekly"
     groups:
       go-dependencies:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+      go-dependencies-security-updates:
+        applies-to: "security-updates"
         patterns:
           - "*"
 
@@ -20,6 +25,11 @@ updates:
       interval: "weekly"
     groups:
       npm-dependencies:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+      npm-dependencies-security-updates:
+        applies-to: "security-updates"
         patterns:
           - "*"
 
@@ -29,5 +39,10 @@ updates:
       interval: "weekly"
     groups:
       actions-dependencies:
+        applies-to: "version-updates"
+        patterns:
+          - "*"
+      actions-dependencies-security-updates:
+        applies-to: "security-updates"
         patterns:
           - "*"
