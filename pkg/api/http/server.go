@@ -313,7 +313,10 @@ func New(c *Config) (*CEEMSServer, error) {
 			}
 		}
 
-		router.Use(middleware.ClientIPFromXFF(c.Web.TrustedIPPrefixes...))
+		// Panics if there are no IP prefixes
+		if len(c.Web.TrustedIPPrefixes) > 0 {
+			router.Use(middleware.ClientIPFromXFF(c.Web.TrustedIPPrefixes...))
+		}
 		router.Use(httprate.LimitBy(c.Web.RequestsLimit, time.Minute, func(r *http.Request) (string, error) {
 			return httprate.CanonicalizeIP(middleware.GetClientIP(r.Context())), nil
 		}))
