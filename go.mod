@@ -3,12 +3,12 @@ module github.com/ceems-dev/ceems
 go 1.26.0
 
 require (
-	connectrpc.com/connect v1.21.0
+	connectrpc.com/connect v1.21.1
 	github.com/alecthomas/kingpin/v2 v2.4.0
 	github.com/ceems-dev/perf-utils v0.0.0-20250716113832-99ba71e88ef4
 	github.com/cilium/ebpf v0.22.0
 	github.com/containerd/cgroups/v3 v3.1.3
-	github.com/go-chi/chi/v5 v5.3.2
+	github.com/go-chi/chi/v5 v5.5.0
 	github.com/go-chi/httprate v0.16.1
 	github.com/go-kit/log v0.2.1
 	github.com/golang-migrate/migrate/v4 v4.20.1
@@ -23,8 +23,8 @@ require (
 	github.com/prometheus/client_golang v1.25.0
 	github.com/prometheus/common v0.72.1
 	github.com/prometheus/exporter-toolkit v0.20.0
-	github.com/prometheus/procfs v0.22.0
-	github.com/prometheus/prometheus v0.315.0
+	github.com/prometheus/procfs v0.23.0
+	github.com/prometheus/prometheus v0.315.1
 	github.com/steiler/acls v0.1.6
 	github.com/stmcginnis/gofish v0.27.0
 	github.com/stretchr/testify v1.12.1
