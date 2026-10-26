@@ -32,7 +32,7 @@ func TestCEEMSLBExecutable(t *testing.T) {
 	bytesRead, err := os.ReadFile(configPath)
 	require.NoError(t, err)
 
-	err = os.WriteFile(tmpConfigPath, bytesRead, 0640)
+	err = os.WriteFile(tmpConfigPath, bytesRead, 0o640)
 	require.NoError(t, err)
 
 	lb := exec.CommandContext(
