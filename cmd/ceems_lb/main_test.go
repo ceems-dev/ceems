@@ -29,7 +29,10 @@ func TestCEEMSLBExecutable(t *testing.T) {
 	configPath, err := filepath.Abs("../../build/config/ceems_lb/ceems_lb.yml")
 	require.NoError(t, err)
 
-	err = os.Link(configPath, tmpConfigPath)
+	bytesRead, err := os.ReadFile(configPath)
+	require.NoError(t, err)
+
+	err = os.WriteFile(tmpConfigPath, bytesRead, 0o640)
 	require.NoError(t, err)
 
 	lb := exec.CommandContext(
