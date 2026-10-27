@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.16.2 / 2026-10-27
+
+- [MAINT] refactor: Update tcp_* and udp_* func signatures for kernel >= 7.1 [#633](https://github.com/ceems-dev/ceems/pull/633) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [DOCS] docs: Offer private vulnerability reporting in the issue chooser [#622](https://github.com/ceems-dev/ceems/pull/622) ([@MrBeldum](https://github.com/MrBeldum))
+- [MAINT] Bump dependencies [#610](https://github.com/ceems-dev/ceems/pull/610), Bump dependencies [#611](https://github.com/ceems-dev/ceems/pull/611), Bump dependencies [#612](https://github.com/ceems-dev/ceems/pull/612), Bump dependencies [#613](https://github.com/ceems-dev/ceems/pull/613), Bump dependencies [#614](https://github.com/ceems-dev/ceems/pull/614), Bump dependencies [#615](https://github.com/ceems-dev/ceems/pull/615), Bump dependencies [#616](https://github.com/ceems-dev/ceems/pull/616), Bump dependencies [#617](https://github.com/ceems-dev/ceems/pull/617), Bump dependencies [#618](https://github.com/ceems-dev/ceems/pull/618), Bump dependencies [#620](https://github.com/ceems-dev/ceems/pull/620), Bump dependencies [#621](https://github.com/ceems-dev/ceems/pull/621), Bump dependencies [#625](https://github.com/ceems-dev/ceems/pull/625), Bump dependencies [#626](https://github.com/ceems-dev/ceems/pull/626), Bump dependencies [#627](https://github.com/ceems-dev/ceems/pull/627), Bump dependencies [#628](https://github.com/ceems-dev/ceems/pull/628), Bump dependencies [#629](https://github.com/ceems-dev/ceems/pull/629), Bump dependencies [#630](https://github.com/ceems-dev/ceems/pull/630), Bump dependencies [#632](https://github.com/ceems-dev/ceems/pull/632), Bump dependencies [#634](https://github.com/ceems-dev/ceems/pull/634), Bump dependencies [#635](https://github.com/ceems-dev/ceems/pull/635), Bump dependencies [#637](https://github.com/ceems-dev/ceems/pull/637) ([@dependabot](https://github.com/dependabot))
+
 ## 0.16.1 / 2026-09-23
 
 - [MAINT] maint: Update vfs_* func sigs for kernel >=6.19 [#604](https://github.com/ceems-dev/ceems/pull/604) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
