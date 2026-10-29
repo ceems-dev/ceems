@@ -41,7 +41,7 @@ require (
 	k8s.io/apimachinery v0.37.1
 	k8s.io/client-go v0.37.1
 	k8s.io/kubelet v0.37.1
-	k8s.io/streaming v0.37.1
+	k8s.io/streaming v0.37.2
 	kernel.org/pub/linux/libs/security/libcap/cap v1.2.78
 )
 
