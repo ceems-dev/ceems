@@ -8,6 +8,7 @@ import { myCustomApiMdGenerator } from "./customMdGenerators";
 // Constants
 const organizationName = "ceems-dev";
 const projectName = "ceems";
+const website = "ceems.dev"
 
 // Global variables that will be replaced
 // in markdown files
@@ -41,10 +42,10 @@ const config: Config = {
   favicon: "img/favicon.ico",
 
   // Set the production url of your site here
-  url: `https://${organizationName}.github.io`,
+  url: `https://${website}`,
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: `/${projectName}/`,
+  baseUrl: `/`,
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
@@ -189,7 +190,7 @@ const config: Config = {
           label: "API",
         },
         {
-          href: `https://ceems-demo.myaddr.tools`,
+          href: `https://demo.${website}`,
           label: "Demo",
           position: "right",
         },
@@ -243,7 +244,7 @@ const config: Config = {
           items: [
             {
               label: "Demo",
-              href: `https://ceems-demo.myaddr.tools`,
+              href: `https://demo.${website}`,
             },
             {
               label: "GitHub",
