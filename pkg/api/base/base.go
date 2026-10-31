@@ -20,7 +20,7 @@ const CEEMSDBName = "ceems.db"
 // CEEMSServerApp is kinpin app.
 var CEEMSServerApp = *kingpin.New(
 	CEEMSServerAppName,
-	"API server for reporting usage statistics for batchjobs/VMs/Pods.",
+	"API server for reporting usage statistics for SLURM, LSF, Openstack and Kubernetes workloads.",
 )
 
 // DB table names.

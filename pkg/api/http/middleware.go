@@ -6,7 +6,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"log/slog"
 	"net/http"
 	"net/url"
@@ -19,26 +18,17 @@ import (
 
 // Define our struct.
 type authenticationMiddleware struct {
-	logger          *slog.Logger
-	whitelistedURLs *regexp.Regexp
-	db              *sql.DB
-	cors            *cors
-	headers         []string
-	adminUsers      func(context.Context, *sql.DB) ([]string, error)
+	logger     *slog.Logger
+	db         *sql.DB
+	cors       *cors
+	headers    []string
+	adminUsers func(context.Context, *sql.DB) ([]string, error)
 }
 
 // newAuthenticationMiddleware returns a new instance authenticationMiddleware.
-func newAuthenticationMiddleware(routePrefix string, corsOrigin *regexp.Regexp, headers []string, db *sql.DB, logger *slog.Logger) (*authenticationMiddleware, error) {
+func newAuthenticationMiddleware(corsOrigin *regexp.Regexp, headers []string, db *sql.DB, logger *slog.Logger) (*authenticationMiddleware, error) {
 	// Setup CORS
 	cors := newCORS(corsOrigin, headers)
-
-	// Playground: https://regex101.com/r/lkmsWz/3
-	urlsRegex, err := regexp.Compile(
-		fmt.Sprintf("^(?:(%s)?)/(swagger|debug|health|demo)(.*)", strings.TrimSuffix(routePrefix, "/")),
-	)
-	if err != nil {
-		return nil, err
-	}
 
 	// Check if atleast one header name is configured.
 	if len(headers) == 0 {
@@ -46,12 +36,11 @@ func newAuthenticationMiddleware(routePrefix string, corsOrigin *regexp.Regexp, 
 	}
 
 	return &authenticationMiddleware{
-		logger:          logger,
-		whitelistedURLs: urlsRegex,
-		db:              db,
-		cors:            cors,
-		headers:         headers,
-		adminUsers:      AdminUserNames,
+		logger:     logger,
+		db:         db,
+		cors:       cors,
+		headers:    headers,
+		adminUsers: AdminUserNames,
 	}, nil
 }
 
@@ -68,20 +57,6 @@ func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler 
 
 		// Dont apply Middleware for preflight requests
 		if r.Method == http.MethodOptions {
-			goto end
-		}
-
-		// If requested URI is one of the following, skip checking for user header
-		//  - /
-		//  - /health endpoint
-		//  - /demo/* endpoint
-		//  - /swagger/* endpoints
-		//  - /debug/* endpoints
-		//
-		// NOTE that we only skip checking X-Grafana-User header. In prod when
-		// basic auth is enabled, all these end points are under auth and hence an
-		// unautorised user cannot access these end points
-		if r.URL.Path == "/" || amw.whitelistedURLs.MatchString(r.URL.Path) {
 			goto end
 		}
 

@@ -60,7 +60,7 @@ Installation instructions of CEEMS components can be found in
 
 ## 📽️ Demo
 
-<p><a href="https://ceems-demo.myaddr.tools" target="_blank">
+<p><a href="https://demo.ceems.dev" target="_blank">
 <img src="https://raw.githubusercontent.com/ceems-dev/ceems/main/website/static/img/dashboards/demo_screenshot.png" alt="Access Demo">
 </a></p>
 
@@ -70,12 +70,12 @@ consumption is estimated by assuming a Thermal Design Power (TDP) value and curr
 usage of the instance. Several dashboards have been created in Grafana for visualizing
 metrics which are listed below.
 
-- [Overall usage of cluster](https://ceems-demo.myaddr.tools/d/adrenju36n2tcb/cluster-status?orgId=1&from=now-1h&to=now&timezone=browser&var-job=slurm&var-provider=rte&var-country_code=FR&refresh=15m)
-- [Usage of different Projects/Accounts by SLURM and Openstack](https://ceems-demo.myaddr.tools/d/cdreu45pp9erkd/user-and-project-stats?orgId=1&from=now-90d&to=now&timezone=browser&refresh=15m)
-- [Usage of Openstack resources by a given user and project](https://ceems-demo.myaddr.tools/d/be5x3it7gpx4wf/user-openstack-vm-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=pebbles&var-account=bedrock&var-provider=rte)
-- [Usage of k8s resources by a given user and project](https://ceems-demo.myaddr.tools/d/eethlvcs613wgf/user-k8s-pods-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=bedrock:unknown&var-account=bedrock&var-provider=rte)
-- [Usage of SLURM resources by a given user and project](https://ceems-demo.myaddr.tools/d/slurm-job-summary/user-slurm-job-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=arnold&var-account=bedrock&var-provider=rte)
-- [Usage of LSF resources by a given user and project](https://ceems-demo.myaddr.tools/d/lsf-job-summary/user-lsf-job-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=barney&var-account=bedrock&var-provider=owid)
+- [Overall usage of cluster](https://demo.ceems.dev/grafana/d/adrenju36n2tcb/cluster-status?orgId=1&from=now-1h&to=now&timezone=browser&var-job=slurm&var-provider=rte&var-country_code=FR&refresh=15m)
+- [Usage of different Projects/Accounts by SLURM and Openstack](https://demo.ceems.dev/grafana/d/cdreu45pp9erkd/user-and-project-stats?orgId=1&from=now-90d&to=now&timezone=browser&refresh=15m)
+- [Usage of Openstack resources by a given user and project](https://demo.ceems.dev/grafana/d/be5x3it7gpx4wf/user-openstack-vm-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=pebbles&var-account=bedrock&var-provider=rte)
+- [Usage of k8s resources by a given user and project](https://demo.ceems.dev/grafana/d/eethlvcs613wgf/user-k8s-pods-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=bedrock:unknown&var-account=bedrock&var-provider=rte)
+- [Usage of SLURM resources by a given user and project](https://demo.ceems.dev/grafana/d/slurm-job-summary/user-slurm-job-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=arnold&var-account=bedrock&var-provider=rte)
+- [Usage of LSF resources by a given user and project](https://demo.ceems.dev/grafana/d/lsf-job-summary/user-lsf-job-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=barney&var-account=bedrock&var-provider=owid)
 
 > [!WARNING]
 > All the dashboards provided in the demo instance are only meant to be for demonstrative

@@ -914,7 +914,7 @@ const docTemplate = `{
     },
     "info": {
         "contact": {
-            "email": "mahendra.paipuri@gmail.com",
+            "email": "git@paipuri.com",
             "name": "Mahendra Paipuri",
             "url": "https://github.com/ceems-dev/ceems/issues"
         },
@@ -932,7 +932,7 @@ const docTemplate = `{
     },
     "externalDocs": {
         "description": "",
-        "url": "https://ceems-dev.github.io/ceems/"
+        "url": "https://ceems.dev/"
     },
     "paths": {
         "/clusters/admin": {
@@ -1052,62 +1052,6 @@ const docTemplate = `{
                 "summary": "Demo Units/Usage endpoints",
                 "tags": [
                     "demo"
-                ]
-            }
-        },
-        "/health": {
-            "get": {
-                "description": "This health endpoint can be used to check on the health of the API server\nin containerised and Kubernetes environments.\n\nThis endpoint does not need any user header. However, if basic auth\nis enabled, authentication header must be provided to get status.",
-                "responses": {
-                    "200": {
-                        "content": {
-                            "text/plain": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "401": {
-                        "content": {
-                            "text/plain": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "Unauthorized"
-                    },
-                    "503": {
-                        "content": {
-                            "text/plain": {
-                                "schema": {
-                                    "type": "string"
-                                }
-                            }
-                        },
-                        "description": "KO"
-                    }
-                },
-                "security": [
-                    {
-                        "BasicAuth": []
-                    }
-                ],
-                "servers": [
-                    {
-                        "description": "Demo CEEMS API server URL for health, swagger and debug endpoints only.",
-                        "url": "https://ceems-demo.myaddr.tools:6443"
-                    },
-                    {
-                        "description": "Current CEEMS API server URL for health, swagger and debug endpoints only.",
-                        "url": "{scheme}://{host}:{port}{basepath}"
-                    }
-                ],
-                "summary": "Health check endpoint for API server.",
-                "tags": [
-                    "health"
                 ]
             }
         },
@@ -2226,11 +2170,11 @@ const docTemplate = `{
     "servers": [
         {
             "description": "Demo CEEMS API server URL.",
-            "url": "https://ceems-demo.myaddr.tools:6443/api/v1"
+            "url": "https://demo.ceems.dev/ceems/api/v1"
         },
         {
             "description": "Current CEEMS API server URL.",
-            "url": "{scheme}://{host}:{port}{basepath}",
+            "url": "{scheme}://{host}{port}{basepath}",
             "variables": {
                 "basepath": {
                     "default": "/api/v1"
@@ -2239,7 +2183,7 @@ const docTemplate = `{
                     "default": "localhost"
                 },
                 "port": {
-                    "default": "9020"
+                    "default": ":9020"
                 },
                 "scheme": {
                     "default": "http",
@@ -2257,7 +2201,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Title:            "CEEMS API",
-	Description:      "OpenAPI specification (OAS) for the CEEMS REST API.\n\nSee the Interactive Docs to try CEEMS API methods without writing code, and get\nthe complete schema of resources exposed by the API.\n\nIf basic auth is enabled, all the endpoints require authentication.\n\nAll the endpoints, except `health`, `swagger`, `debug` and `demo`,\nmust send a user-agent header.\n\nA demo instance of CEEMS API server is provided for the users to test. This\ninstance is running at `https://ceems-demo.myaddr.tools:6443` and it is the\ndefault server that will serve the requests originating from current OAS client.\n\nSome of the valid users for this demo instance are:\n- arnold\n- betty\n- edna\n- gazoo\n- wilma\n\nEvery request must contain a `X-Grafana-User` header with one of the usernames\nabove as the value to the header. This is how CEEMS API server recognise the user.\n\nSome of the valid projects for this demo instance are:\n- bedrock\n- cornerstone\n\nDemo instance have CORS enabled to allow cross-domain communication from the browser.\nAll responses have a wildcard same-origin which makes them completely public and\naccessible to everyone, including any code on any site.\n\nTo test admin resources, users can use `admin` as `X-Grafana-User`.\n\nTimestamps must be specified in milliseconds, unless otherwise specified.",
+	Description:      "OpenAPI specification (OAS) for the CEEMS REST API.\n\nSee the Interactive Docs to try CEEMS API methods without writing code, and get\nthe complete schema of resources exposed by the API.\n\nIf basic auth is enabled, all the endpoints require authentication.\n\nAll the endpoints, except `health`, `swagger`, `debug` and `demo`,\nmust send a user-agent header.\n\nA demo instance of CEEMS API server is provided for the users to test. This\ninstance is running at `https://demo.ceems.dev/ceems/` and it is the\ndefault server that will serve the requests originating from current OAS client.\n\nSome of the valid users for this demo instance are:\n- arnold\n- betty\n- edna\n- gazoo\n- wilma\n\nEvery request must contain a `X-Grafana-User` header with one of the usernames\nabove as the value to the header. This is how CEEMS API server recognise the user.\n\nSome of the valid projects for this demo instance are:\n- bedrock\n- cornerstone\n\nDemo instance have CORS enabled to allow cross-domain communication from the browser.\nAll responses have a wildcard same-origin which makes them completely public and\naccessible to everyone, including any code on any site.\n\nTo test admin resources, users can use `admin` as `X-Grafana-User`.\n\nTimestamps must be specified in milliseconds, unless otherwise specified.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
