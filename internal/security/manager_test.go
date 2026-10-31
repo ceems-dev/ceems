@@ -1,6 +1,7 @@
 package security
 
 import (
+	"fmt"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -10,6 +11,7 @@ import (
 	"github.com/steiler/acls"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"kernel.org/pub/linux/libs/security/libcap/cap"
 )
 
 func skipUnprivileged(t *testing.T) {
@@ -96,6 +98,110 @@ func TestNewManager(t *testing.T) {
 
 	_, err = NewManager(c, noOpLogger)
 	require.Error(t, err)
+}
+
+func TestDefaultCaps(t *testing.T) {
+	tmpDir := t.TempDir()
+
+	// Expected in case of systemd >= 254 and in desktop env
+	capSet, err := cap.FromText("cap_wake_alarm=i")
+	require.NoError(t, err)
+
+	// Empty capset
+	emptyCapSet := cap.NewSet()
+
+	tests := []struct {
+		name       string
+		cmdOut     string
+		displayEnv bool
+		expected   *cap.Set
+	}{
+		{
+			name: "systemd > 254 in Desktop env",
+			cmdOut: `systemd 259 (259.9-0ubuntu0.1)
++PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE`,
+			displayEnv: true,
+			expected:   capSet,
+		},
+		{
+			name: "systemd = 254 in Desktop env",
+			cmdOut: `systemd 254 (254.9-0ubuntu0.1)
++PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE`,
+			displayEnv: true,
+			expected:   capSet,
+		},
+		{
+			name: "systemd < 254 in Desktop env",
+			cmdOut: `systemd 252 (252.9-0ubuntu0.1)
+		+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE`,
+			displayEnv: true,
+			expected:   emptyCapSet,
+		},
+		{
+			name: "systemd > 254 in headless env",
+			cmdOut: `systemd 259 (259.9-0ubuntu0.1)
+		+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE`,
+			displayEnv: false,
+			expected:   emptyCapSet,
+		},
+		{
+			name: "systemd = 254 in headless env",
+			cmdOut: `systemd 254 (254.9-0ubuntu0.1)
+		+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE`,
+			displayEnv: false,
+			expected:   emptyCapSet,
+		},
+		{
+			name: "systemd < 254 in headless env",
+			cmdOut: `systemd 252 (252.9-0ubuntu0.1)
+		+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE`,
+			displayEnv: false,
+			expected:   emptyCapSet,
+		},
+		{
+			name:       "no systemctl output",
+			displayEnv: true,
+			expected:   emptyCapSet,
+		},
+		{
+			name: "illegal systemctl output",
+			cmdOut: `systemd sdfsd (254.9-0ubuntu0.1)
+		+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE`,
+			displayEnv: true,
+			expected:   emptyCapSet,
+		},
+	}
+
+	// Make a new test config
+	c, err := testConfig(tmpDir)
+	require.NoError(t, err)
+
+	// Make a new manager
+	m, err := NewManager(c, noOpLogger)
+	require.NoError(t, err)
+
+	// Override systemctl path
+	m.systemctlBinPath = filepath.Join(tmpDir, "systemctl")
+
+	for _, test := range tests {
+		// Write content of systemctl --version to file
+		content := fmt.Sprintf(`#!/bin/bash
+
+echo """%s"""`, test.cmdOut)
+		err = os.WriteFile(m.systemctlBinPath, []byte(content), 0o700)
+		require.NoError(t, err, test.name)
+
+		// Set/Unset display env var
+		if test.displayEnv {
+			t.Setenv("DISPLAY", ":0")
+		} else {
+			t.Setenv("DISPLAY", "")
+		}
+
+		// Get default caps
+		got := m.defaultCaps()
+		assert.Equal(t, test.expected, got, test.name)
+	}
 }
 
 func TestACLs(t *testing.T) {

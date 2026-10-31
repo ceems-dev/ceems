@@ -14,9 +14,11 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
-	_ "net/http/pprof" // #nosec
+	"net/http/pprof"
 	"net/netip"
 	"net/url"
+	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"slices"
@@ -31,6 +33,7 @@ import (
 	"github.com/ceems-dev/ceems/pkg/api/docs"
 	"github.com/ceems-dev/ceems/pkg/api/models"
 	"github.com/ceems-dev/ceems/pkg/sqlite3"
+	"github.com/felixge/fgprof"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httprate"
 	"github.com/gorilla/mux"
@@ -38,6 +41,7 @@ import (
 	"github.com/prometheus/common/config"
 	"github.com/prometheus/common/model"
 	"github.com/prometheus/exporter-toolkit/web"
+	"github.com/stretchr/testify/assert/yaml"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
@@ -56,6 +60,11 @@ const (
 const (
 	currentUsage = "current"
 	globalUsage  = "global"
+)
+
+var (
+	fgprofHandler = fgprof.Handler()
+	fgprofMu      sync.Mutex
 )
 
 // WebConfig makes HTTP web config from CLI args.
@@ -210,7 +219,6 @@ func New(c *Config) (*CEEMSServer, error) {
 			WriteTimeout:      10 * time.Second,
 			ReadHeaderTimeout: 2 * time.Second, // slowloris attack: https://app.deepsource.com/directory/analyzers/go/issues/GO-S2112
 		},
-		externalURL: c.Web.ExternalURL,
 		webConfig: &web.FlagConfig{
 			WebListenAddresses: &c.Web.Addresses,
 			WebSystemdSocket:   &c.Web.WebSystemdSocket,
@@ -231,32 +239,52 @@ func New(c *Config) (*CEEMSServer, error) {
 		healthCheck: getDBStatus,
 	}
 
-	// Get route prefix based on external URL path
-	var routePrefix string
-	if c.Web.RoutePrefix != "/" {
-		routePrefix = fmt.Sprintf("%s/api/%s/", c.Web.RoutePrefix, base.APIVersion)
-	} else {
-		routePrefix = fmt.Sprintf("/api/%s/", base.APIVersion)
+	// Calculate external URL
+	server.externalURL, err = computeExternalURL(c.Web.ExternalURL, c.Web.Addresses[0], c.Web.WebConfigFile)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse external URL %s: %w", c.Web.ExternalURL, err)
 	}
 
-	c.Logger.Debug("CEEMS API server running on prefix", "prefix", routePrefix)
+	// Default -web.route-prefix to path of -web.external-url.
+	if c.Web.RoutePrefix == "" {
+		c.Web.RoutePrefix = server.externalURL.Path
+	} else {
+		server.externalURL.Path = c.Web.RoutePrefix
+	}
+
+	// RoutePrefix must always be at least '/'.
+	c.Web.RoutePrefix = "/" + strings.Trim(c.Web.RoutePrefix, "/")
+
+	// Get route prefix based on external URL path
+	if c.Web.RoutePrefix != "/" {
+		router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, c.Web.RoutePrefix+"/", http.StatusFound)
+		})
+	}
+
+	webRouter := router.PathPrefix(c.Web.RoutePrefix).Subrouter()
+
+	c.Logger.Debug("CEEMS API server running on prefix", "prefix", c.Web.RoutePrefix)
 
 	// Make a landing page from config
+	landingConfig := c.Web.LandingConfig
+	landingConfig.RoutePrefix = c.Web.RoutePrefix
+
 	landingPage, err := web.NewLandingPage(*c.Web.LandingConfig)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create landing page: %w", err)
 	}
 
 	// Landing page
-	router.Handle("/", landingPage)
+	webRouter.Handle("/", landingPage)
 
 	// pprof debug end points. Expose them only on localhost
 	if c.Web.EnableDebugServer {
-		router.PathPrefix("/debug/").Handler(http.DefaultServeMux).Methods(http.MethodGet).Host("localhost")
+		webRouter.HandleFunc(`/debug{subpath:[a-zA-Z0-9=\-\/]+}`, server.debug).Host("localhost")
 	}
 
 	// Swagger
-	router.PathPrefix("/swagger/").Handler(httpSwagger.Handler(
+	webRouter.PathPrefix("/swagger").Handler(httpSwagger.Handler(
 		httpSwagger.URL("doc.json"), // The url pointing to API definition
 		httpSwagger.DeepLinking(true),
 		httpSwagger.DocExpansion("list"),
@@ -264,29 +292,30 @@ func New(c *Config) (*CEEMSServer, error) {
 	))
 
 	// Health endpoint
-	router.HandleFunc("/health", server.health)
+	webRouter.HandleFunc("/health", server.health)
 
 	// Create a sub router with apiVersion as PathPrefix
 	// Allow only GET and OPTIONS methods
-	subRouter := router.Methods(http.MethodGet, http.MethodOptions).PathPrefix(routePrefix).Subrouter()
+	apiRouter := router.Methods(http.MethodGet, http.MethodOptions).PathPrefix(path.Clean(fmt.Sprintf("%s/api/%s/", c.Web.RoutePrefix, base.APIVersion))).Subrouter()
 
 	// Allow only GET methods
-	subRouter.HandleFunc("/"+usersResourceName, server.users)
-	subRouter.HandleFunc("/"+projectsResourceName, server.projects)
-	subRouter.HandleFunc("/"+unitsResourceName, server.units)
-	subRouter.HandleFunc(fmt.Sprintf("/%s/{mode:(?:current|global)}", usageResourceName), server.usage)
-	subRouter.HandleFunc(fmt.Sprintf("/%s/verify", unitsResourceName), server.verifyUnitsOwnership)
+	apiRouter.HandleFunc("/"+usersResourceName, server.users)
+	apiRouter.HandleFunc("/"+projectsResourceName, server.projects)
+	apiRouter.HandleFunc("/"+unitsResourceName, server.units)
+	apiRouter.HandleFunc(fmt.Sprintf("/%s/{mode:(?:current|global)}", usageResourceName), server.usage)
+	apiRouter.HandleFunc(fmt.Sprintf("/%s/verify", unitsResourceName), server.verifyUnitsOwnership)
 
 	// Admin end points
-	subRouter.HandleFunc(fmt.Sprintf("/%s/admin", usersResourceName), server.usersAdmin)
-	subRouter.HandleFunc(fmt.Sprintf("/%s/admin", projectsResourceName), server.projectsAdmin)
-	subRouter.HandleFunc(fmt.Sprintf("/%s/admin", clustersResourceName), server.clustersAdmin)
-	subRouter.HandleFunc(fmt.Sprintf("/%s/admin", unitsResourceName), server.unitsAdmin)
-	subRouter.HandleFunc(fmt.Sprintf("/%s/{mode:(?:current|global)}/admin", usageResourceName), server.usageAdmin)
-	subRouter.HandleFunc(fmt.Sprintf("/%s/{mode:(?:current|global)}/admin", statsResourceName), server.statsAdmin)
+	apiRouter.HandleFunc(fmt.Sprintf("/%s/admin", usersResourceName), server.usersAdmin)
+	apiRouter.HandleFunc(fmt.Sprintf("/%s/admin", projectsResourceName), server.projectsAdmin)
+	apiRouter.HandleFunc(fmt.Sprintf("/%s/admin", clustersResourceName), server.clustersAdmin)
+	apiRouter.HandleFunc(fmt.Sprintf("/%s/admin", unitsResourceName), server.unitsAdmin)
+	apiRouter.HandleFunc(fmt.Sprintf("/%s/{mode:(?:current|global)}/admin", usageResourceName), server.usageAdmin)
+	apiRouter.HandleFunc(fmt.Sprintf("/%s/{mode:(?:current|global)}/admin", statsResourceName), server.statsAdmin)
 
 	// A demo end point that returns mocked data for units and/or usage tables
-	subRouter.HandleFunc("/demo/{resource:(?:units|usage)}", server.demo)
+	demoRouter := router.Methods(http.MethodGet, http.MethodOptions).PathPrefix(path.Clean(fmt.Sprintf("%s/api/%s/", c.Web.RoutePrefix, base.APIVersion))).Subrouter()
+	demoRouter.HandleFunc("/demo/{resource:(?:units|usage)}", server.demo)
 
 	// Open DB connection
 	dsn := fmt.Sprintf(
@@ -324,12 +353,12 @@ func New(c *Config) (*CEEMSServer, error) {
 	}
 
 	// Add a middleware that verifies headers and pass them in requests
-	amw, err := newAuthenticationMiddleware(routePrefix, c.Web.CORSOrigin, c.Web.UserHeaderNames, server.db, c.Logger)
+	amw, err := newAuthenticationMiddleware(c.Web.CORSOrigin, c.Web.UserHeaderNames, server.db, c.Logger)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create middleware: %w", err)
 	}
 
-	router.Use(amw.Middleware)
+	apiRouter.Use(amw.Middleware)
 
 	// If compression is enabled, setup middleware
 	if c.Web.EnableCompression {
@@ -349,26 +378,21 @@ func New(c *Config) (*CEEMSServer, error) {
 
 // Start launches CEEMS HTTP server godoc.
 func (s *CEEMSServer) Start(_ context.Context) error {
-	// Set swagger info
-	docs.SwaggerInfo.BasePath = "/api/" + base.APIVersion
-	docs.SwaggerInfo.Schemes = []string{"http", "https"}
-	docs.SwaggerInfo.Host = s.server.Addr
-
-	// If externalURL is set, use it for Swagger Host
-	if s.externalURL.Host != "" {
-		docs.SwaggerInfo.Host = s.externalURL.Host
-		docs.SwaggerInfo.Schemes = []string{s.externalURL.Scheme}
-	}
-
-	// If externalURL is not set, ensure the server address is of good format.
-	host, port, err := net.SplitHostPort(docs.SwaggerInfo.Host)
-	if err == nil && host == "" {
-		docs.SwaggerInfo.Host = "localhost:" + port
+	// Replace the static server URL variables using current external URL
+	// This is sort of a hacky way to do as Swagger does not allow to override these
+	// variables using API
+	baseAPIPath := path.Clean(s.externalURL.Path + "/api/" + base.APIVersion)
+	docs.SwaggerInfo.SwaggerTemplate = strings.ReplaceAll(docs.SwaggerInfo.SwaggerTemplate, `"default": "/api/v1"`, fmt.Sprintf(`"default": "%s"`, baseAPIPath))
+	docs.SwaggerInfo.SwaggerTemplate = strings.ReplaceAll(docs.SwaggerInfo.SwaggerTemplate, `"default": "localhost"`, fmt.Sprintf(`"default": "%s"`, s.externalURL.Hostname()))
+	if s.externalURL.Port() != "" {
+		docs.SwaggerInfo.SwaggerTemplate = strings.ReplaceAll(docs.SwaggerInfo.SwaggerTemplate, `"default": ":9020"`, fmt.Sprintf(`"default": ":%s"`, s.externalURL.Port()))
+	} else {
+		docs.SwaggerInfo.SwaggerTemplate = strings.ReplaceAll(docs.SwaggerInfo.SwaggerTemplate, `"default": ":9020"`, `"default": ""`)
 	}
 
 	s.logger.Info("Starting " + base.CEEMSServerAppName)
 
-	err = web.ListenAndServe(s.server, s.webConfig, s.logger)
+	err := web.ListenAndServe(s.server, s.webConfig, s.logger)
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {
 		s.logger.Error("Failed to Listen and Serve HTTP server", "err", err)
 
@@ -435,32 +459,49 @@ func (s *CEEMSServer) setWriteDeadline(deadline time.Duration, w http.ResponseWr
 	}
 }
 
-// Health check    godoc
-//
-//	@Summary		Health check endpoint for API server.
-//	@Description	This health endpoint can be used to check on the health of the API server
-//	@Description	in containerised and Kubernetes environments.
-//	@Description
-//	@Description				This endpoint does not need any user header. However, if basic auth
-//	@Description				is enabled, authentication header must be provided to get status.
-//	@servers.url				https://ceems-demo.myaddr.tools:6443
-//	@servers.description		Demo CEEMS API server URL for health, swagger and debug endpoints only.
-//	@servers.url				{scheme}://{host}:{port}{basepath}
-//	@servers.description		Current CEEMS API server URL for health, swagger and debug endpoints only.
-//	@servers.variables.enum		scheme http
-//	@servers.variables.enum		scheme https
-//	@servers.variables.default	scheme http
-//	@servers.variables.default	host localhost
-//	@servers.variables.default	port 9020
-//	@servers.variables.default	basepath /api/v1
-//	@Security					BasicAuth
-//	@Tags						health
-//	@Produce					plain
-//	@Success					200	{string}	string	"OK"
-//	@Failure					401	{string}	string	"Unauthorized"
-//	@Failure					503	{string}	string	"KO"
-//	@Router						/health [get]
-//
+// GET /debug
+// pprof and fgprof debug server.
+func (s *CEEMSServer) debug(w http.ResponseWriter, r *http.Request) {
+	subpath := mux.Vars(r)["subpath"]
+
+	if subpath == "/pprof" {
+		http.Redirect(w, r, r.URL.Path+"/", http.StatusMovedPermanently) //nolint: gosec
+
+		return
+	}
+
+	if !strings.HasPrefix(subpath, "/pprof/") {
+		http.NotFound(w, r)
+
+		return
+	}
+
+	subpath = strings.TrimPrefix(subpath, "/pprof/")
+
+	switch subpath {
+	case "cmdline":
+		pprof.Cmdline(w, r)
+	case "profile":
+		pprof.Profile(w, r)
+	case "symbol":
+		pprof.Symbol(w, r)
+	case "trace":
+		pprof.Trace(w, r)
+	case "fgprof":
+		if !fgprofMu.TryLock() {
+			http.Error(w, "Could not enable fgprof profiling: fgprof profiling already in use", http.StatusInternalServerError)
+
+			return
+		}
+		defer fgprofMu.Unlock()
+
+		fgprofHandler.ServeHTTP(w, r)
+	default:
+		r.URL.Path = "/debug/pprof/" + subpath
+		pprof.Index(w, r)
+	}
+}
+
 // GET /health
 // Get health status of the server.
 func (s *CEEMSServer) health(w http.ResponseWriter, r *http.Request) {
@@ -2162,4 +2203,65 @@ func convertTimeLocation(sourceLoc *time.Location, targetLoc *time.Location, val
 	}
 
 	return val
+}
+
+// webConfigHasTLSServerConfig reports whether the web config file at path configures TLS,
+// i.e. contains a tls_server_config section that sets at least one TLS-enabling field, as
+// decided by exporter-toolkit's own TLSConfig.IsEnabled(). An empty path, or a file that
+// cannot be read or parsed as YAML, is treated as not configuring TLS; a definitive error
+// for such cases is reported later by toolkit_web.Validate.
+func webConfigHasTLSServerConfig(path string) bool {
+	if path == "" {
+		return false
+	}
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return false
+	}
+
+	var webConfig web.Config
+
+	err = yaml.Unmarshal(data, &webConfig)
+	if err != nil {
+		return false
+	}
+
+	return webConfig.TLSConfig.IsEnabled()
+}
+
+// computeExternalURL computes a sanitized external URL from a raw input. It infers unset
+// URL parts from the OS and the given listen address. When u is empty, the scheme of the
+// inferred URL is set to https if webConfigFile configures TLS.
+func computeExternalURL(u *url.URL, listenAddr string, webConfigFile string) (*url.URL, error) {
+	if u == nil || u.Scheme == "" || u.Host == "" {
+		hostname, err := os.Hostname()
+		if err != nil {
+			return nil, err
+		}
+
+		_, port, err := net.SplitHostPort(listenAddr)
+		if err != nil {
+			return nil, err
+		}
+
+		scheme := "http"
+		if webConfigHasTLSServerConfig(webConfigFile) {
+			scheme = "https"
+		}
+
+		u = &url.URL{
+			Scheme: scheme,
+			Host:   fmt.Sprintf("%s:%s", hostname, port),
+		}
+	}
+
+	ppref := strings.TrimRight(u.Path, "/")
+	if ppref != "" && !strings.HasPrefix(ppref, "/") {
+		ppref = "/" + ppref
+	}
+
+	u.Path = ppref
+
+	return u, nil
 }

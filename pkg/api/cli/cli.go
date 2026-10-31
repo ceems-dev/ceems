@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"strconv"
 	"sync"
 	"syscall"
 	"time"
@@ -97,7 +98,7 @@ func NewCEEMSServer() (*CEEMSServer, error) {
 //	@description	must send a user-agent header.
 //	@description
 //	@description	A demo instance of CEEMS API server is provided for the users to test. This
-//	@description	instance is running at `https://ceems-demo.myaddr.tools:6443` and it is the
+//	@description	instance is running at `https://demo.ceems.dev/ceems/` and it is the
 //	@description	default server that will serve the requests originating from current OAS client.
 //	@description
 //	@description	Some of the valid users for this demo instance are:
@@ -124,26 +125,26 @@ func NewCEEMSServer() (*CEEMSServer, error) {
 //
 //	@contact.name				Mahendra Paipuri
 //	@contact.url				https://github.com/ceems-dev/ceems/issues
-//	@contact.email				mahendra.paipuri@gmail.com
+//	@contact.email				git@paipuri.com
 //
 //	@license.name				GPL-3.0 license
 //	@license.url				https://www.gnu.org/licenses/gpl-3.0.en.html
 //
 //	@securityDefinitions.basic	BasicAuth
 //
-//	@servers.url				https://ceems-demo.myaddr.tools:6443/api/v1
+//	@servers.url				https://demo.ceems.dev/ceems/api/v1
 //	@servers.description		Demo CEEMS API server URL.
 //
-// @servers.url				{scheme}://{host}:{port}{basepath}
+// @servers.url				{scheme}://{host}{port}{basepath}
 // @servers.description		Current CEEMS API server URL.
 // @servers.variables.enum		scheme http
 // @servers.variables.enum		scheme https
 // @servers.variables.default	scheme http
 // @servers.variables.default	host localhost
-// @servers.variables.default	port 9020
+// @servers.variables.default	port :9020
 // @servers.variables.default	basepath /api/v1
 //
-// @externalDocs.url			https://ceems-dev.github.io/ceems/
+// @externalDocs.url			https://ceems.dev/
 //
 // @x-logo						{"url": "https://raw.githubusercontent.com/ceems-dev/ceems/refs/heads/main/website/static/img/logo.png", "altText": "CEEMS logo"}
 func (b *CEEMSServer) Main() error {
@@ -182,7 +183,7 @@ func (b *CEEMSServer) Main() error {
 	b.App.Flag(
 		"web.route-prefix",
 		"Prefix for the internal routes of web endpoints.",
-	).Default("/").StringVar(&routePrefix)
+	).Default("").StringVar(&routePrefix)
 	b.App.Flag(
 		"web.max-requests",
 		"Maximum number of requests allowed in 1 minute period per client identified by Real IP address. "+
@@ -226,7 +227,7 @@ func (b *CEEMSServer) Main() error {
 	b.App.Flag(
 		"web.external-url",
 		"External URL at which CEEMS API server is reachable.",
-	).Hidden().Default("").URLVar(&externalURL)
+	).Hidden().URLVar(&externalURL)
 	b.App.Flag(
 		"web.user-header-name",
 		"Username will be fetched from these headers. (default: X-Grafana-User).",
@@ -375,6 +376,7 @@ func (b *CEEMSServer) Main() error {
 						Text:    "Health Status",
 					},
 				},
+				Profiling: strconv.FormatBool(enableDebugServer),
 			},
 		},
 		DB: *dbConfig,
