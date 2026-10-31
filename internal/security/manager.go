@@ -9,10 +9,12 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strconv"
 	"syscall"
 
+	"github.com/ceems-dev/ceems/internal/osexec"
 	"github.com/steiler/acls"
 	"github.com/wneessen/go-fileperm"
 	"kernel.org/pub/linux/libs/security/libcap/cap"
@@ -21,6 +23,9 @@ import (
 const (
 	deleteACLCtx = "delete_acl_entries"
 )
+
+// Systemd regex matcher.
+var systemdVersionRegex = regexp.MustCompile(`(?m)systemd\s(\d+)`)
 
 type deleteACLEntriesCtxData struct {
 	acls []acl
@@ -46,6 +51,7 @@ type Manager struct {
 	caps             []cap.Value
 	acls             []acl
 	securityContexts map[string]*SecurityContext
+	systemctlBinPath string
 }
 
 // NewManager returns a new instance of security manager.
@@ -54,8 +60,9 @@ func NewManager(c *Config, logger *slog.Logger) (*Manager, error) {
 
 	// Start a new instance of manager
 	manager := &Manager{
-		logger: logger,
-		caps:   c.Caps,
+		logger:           logger,
+		caps:             c.Caps,
+		systemctlBinPath: "systemctl",
 	}
 
 	// Get current user
@@ -221,7 +228,7 @@ func (m *Manager) DropPrivileges(enableEffective bool) error {
 		// Get if the current process has any capabilities at all
 		// by comparing against a new capability set
 		// If no capabilities found, nothing to do, return
-		isPriv, err := existing.Cf(cap.NewSet())
+		isPriv, err := existing.Cf(m.defaultCaps())
 		if err == nil && isPriv == 0 {
 			return nil
 		}
@@ -366,6 +373,43 @@ func (m *Manager) pathsReachable() error {
 	}
 
 	return nil
+}
+
+// defaultCaps returns default capabilities a process should have. As of systemd >= 254,
+// desktop environments will have cap_wake_alarm=i by default.
+// Ref: https://github.com/systemd/systemd/issues/41386
+func (m *Manager) defaultCaps() *cap.Set {
+	// Get systemd version
+	output, err := osexec.ExecuteWithTimeout(m.systemctlBinPath, []string{"--version"}, 2, nil)
+	if err != nil {
+		m.logger.Warn("Failed to get systemd version", "err", err)
+
+		return cap.NewSet()
+	}
+
+	// Find matches
+	matches := systemdVersionRegex.FindStringSubmatch(string(output))
+	if len(matches) == 2 {
+		// Convert version string to int
+		val, err := strconv.ParseInt(matches[1], 10, 64)
+		if err == nil {
+			// If systemd version is >= 254 and if we are in desktop environment, there
+			// will be cap_wake_alaram by default.
+			// This can happen when running with systemctl --user mode. But this is a
+			// edge case and there is no reason for people to run ceems_api_server
+			// in that mode.
+			if val >= 254 && os.Getenv("DISPLAY") != "" {
+				capSet, err := cap.FromText("cap_wake_alarm=i")
+				if err == nil {
+					return capSet
+				}
+
+				return cap.NewSet()
+			}
+		}
+	}
+
+	return cap.NewSet()
 }
 
 // DropCapabilities drops any existing capabilities on the process.

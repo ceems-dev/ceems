@@ -704,10 +704,10 @@ components:
       type: http
 externalDocs:
   description: ""
-  url: https://ceems-dev.github.io/ceems/
+  url: https://ceems.dev/
 info:
   contact:
-    email: mahendra.paipuri@gmail.com
+    email: git@paipuri.com
     name: Mahendra Paipuri
     url: https://github.com/ceems-dev/ceems/issues
   description: |-
@@ -722,7 +722,7 @@ info:
     must send a user-agent header.
 
     A demo instance of CEEMS API server is provided for the users to test. This
-    instance is running at `https://ceems-demo.myaddr.tools:6443` and it is the
+    instance is running at `https://demo.ceems.dev/ceems/` and it is the
     default server that will serve the requests originating from current OAS client.
 
     Some of the valid users for this demo instance are:
@@ -845,45 +845,6 @@ paths:
       summary: Demo Units/Usage endpoints
       tags:
       - demo
-  /health:
-    get:
-      description: |-
-        This health endpoint can be used to check on the health of the API server
-        in containerised and Kubernetes environments.
-
-        This endpoint does not need any user header. However, if basic auth
-        is enabled, authentication header must be provided to get status.
-      responses:
-        "200":
-          content:
-            text/plain:
-              schema:
-                type: string
-          description: OK
-        "401":
-          content:
-            text/plain:
-              schema:
-                type: string
-          description: Unauthorized
-        "503":
-          content:
-            text/plain:
-              schema:
-                type: string
-          description: KO
-      security:
-      - BasicAuth: []
-      servers:
-      - description: Demo CEEMS API server URL for health, swagger and debug endpoints
-          only.
-        url: https://ceems-demo.myaddr.tools:6443
-      - description: Current CEEMS API server URL for health, swagger and debug endpoints
-          only.
-        url: '{scheme}://{host}:{port}{basepath}'
-      summary: Health check endpoint for API server.
-      tags:
-      - health
   /projects:
     get:
       description: |
@@ -1767,16 +1728,16 @@ paths:
       - users
 servers:
 - description: Demo CEEMS API server URL.
-  url: https://ceems-demo.myaddr.tools:6443/api/v1
+  url: https://demo.ceems.dev/ceems/api/v1
 - description: Current CEEMS API server URL.
-  url: '{scheme}://{host}:{port}{basepath}'
+  url: '{scheme}://{host}{port}{basepath}'
   variables:
     basepath:
       default: /api/v1
     host:
       default: localhost
     port:
-      default: "9020"
+      default: :9020
     scheme:
       default: http
       enum:

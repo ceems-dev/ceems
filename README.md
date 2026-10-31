@@ -6,7 +6,7 @@
 | CI/CD   | [![ci](https://github.com/ceems-dev/ceems/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ceems-dev/ceems/actions/workflows/ci.yml?query=branch%3Amain) [![CircleCI](https://dl.circleci.com/status-badge/img/circleci/UVxmfk5AT3EHZpsg3FdfaR/PKvLaAH1ahBZf8kBKHhCiA/tree/main.svg?style=svg&circle-token=CCIPRJ_67vq2cGkBpm9syySEp7tTW_7d4d6f3e8d72486acf477768f4f0a1d5235ab2a0)](https://dl.circleci.com/status-badge/redirect/circleci/UVxmfk5AT3EHZpsg3FdfaR/PKvLaAH1ahBZf8kBKHhCiA/tree/main)  [![Coverage](https://img.shields.io/badge/Coverage-78.4%25-brightgreen)](https://github.com/ceems-dev/ceems/actions/workflows/ci.yml?query=branch%3Amain)                                                                                          |
 | Docs    | [![docs](https://img.shields.io/badge/docs-passing-green?style=flat&link=https://ceems-dev.github.io/ceems/docs/)](https://ceems-dev.github.io/ceems/)  [![Go Doc](https://godoc.org/github.com/ceems-dev/ceems?status.svg)](http://godoc.org/github.com/ceems-dev/ceems) [![Discord](https://img.shields.io/discord/1466874652189003973?label=discord)](https://discord.gg/bedRvX5uVY)                                                                                                                                                                                                                            |
 | Package | [![Release](https://img.shields.io/github/v/release/ceems-dev/ceems.svg?include_prereleases)](https://github.com/ceems-dev/ceems/releases/latest) [![Releases downloads](https://img.shields.io/github/downloads/ceems-dev/ceems/total.svg)](https://github.com/ceems-dev/ceems/releases)                                                                                                                                                                    |
-| Meta    | [![GitHub License](https://img.shields.io/github/license/ceems-dev/ceems)](https://github.com/ceems-dev/ceems) [![Go Report Card](https://ceems-demo.myaddr.tools:2443/badge/github.com/ceems-dev/ceems)](https://ceems-demo.myaddr.tools:2443/report/github.com/ceems-dev/ceems) [![code style](https://img.shields.io/badge/code%20style-gofmt-blue.svg)](https://pkg.go.dev/cmd/gofmt) [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/13395/badge)](https://www.bestpractices.dev/projects/13395) |
+| Meta    | [![GitHub License](https://img.shields.io/github/license/ceems-dev/ceems)](https://github.com/ceems-dev/ceems) [![Go Report Card](https://demo.ceems.dev:8443/badge/github.com/ceems-dev/ceems)](https://demo.ceems.dev:8443/report/github.com/ceems-dev/ceems) [![code style](https://img.shields.io/badge/code%20style-gofmt-blue.svg)](https://pkg.go.dev/cmd/gofmt) [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/13395/badge)](https://www.bestpractices.dev/projects/13395) |
 
 <!-- markdown-link-check-enable -->
 
@@ -60,7 +60,7 @@ Installation instructions of CEEMS components can be found in
 
 ## 📽️ Demo
 
-<p><a href="https://ceems-demo.myaddr.tools" target="_blank">
+<p><a href="https://demo.ceems.dev" target="_blank">
 <img src="https://raw.githubusercontent.com/ceems-dev/ceems/main/website/static/img/dashboards/demo_screenshot.png" alt="Access Demo">
 </a></p>
 
@@ -70,12 +70,12 @@ consumption is estimated by assuming a Thermal Design Power (TDP) value and curr
 usage of the instance. Several dashboards have been created in Grafana for visualizing
 metrics which are listed below.
 
-- [Overall usage of cluster](https://ceems-demo.myaddr.tools/d/adrenju36n2tcb/cluster-status?orgId=1&from=now-1h&to=now&timezone=browser&var-job=slurm&var-provider=rte&var-country_code=FR&refresh=15m)
-- [Usage of different Projects/Accounts by SLURM and Openstack](https://ceems-demo.myaddr.tools/d/cdreu45pp9erkd/user-and-project-stats?orgId=1&from=now-90d&to=now&timezone=browser&refresh=15m)
-- [Usage of Openstack resources by a given user and project](https://ceems-demo.myaddr.tools/d/be5x3it7gpx4wf/user-openstack-vm-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=pebbles&var-account=bedrock&var-provider=rte)
-- [Usage of k8s resources by a given user and project](https://ceems-demo.myaddr.tools/d/eethlvcs613wgf/user-k8s-pods-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=bedrock:unknown&var-account=bedrock&var-provider=rte)
-- [Usage of SLURM resources by a given user and project](https://ceems-demo.myaddr.tools/d/slurm-job-summary/user-slurm-job-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=arnold&var-account=bedrock&var-provider=rte)
-- [Usage of LSF resources by a given user and project](https://ceems-demo.myaddr.tools/d/lsf-job-summary/user-lsf-job-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=barney&var-account=bedrock&var-provider=owid)
+- [Overall usage of cluster](https://demo.ceems.dev/grafana/d/adrenju36n2tcb/cluster-status?orgId=1&from=now-1h&to=now&timezone=browser&var-job=slurm&var-provider=rte&var-country_code=FR&refresh=15m)
+- [Usage of different Projects/Accounts by SLURM and Openstack](https://demo.ceems.dev/grafana/d/cdreu45pp9erkd/user-and-project-stats?orgId=1&from=now-90d&to=now&timezone=browser&refresh=15m)
+- [Usage of Openstack resources by a given user and project](https://demo.ceems.dev/grafana/d/be5x3it7gpx4wf/user-openstack-vm-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=pebbles&var-account=bedrock&var-provider=rte)
+- [Usage of k8s resources by a given user and project](https://demo.ceems.dev/grafana/d/eethlvcs613wgf/user-k8s-pods-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=bedrock:unknown&var-account=bedrock&var-provider=rte)
+- [Usage of SLURM resources by a given user and project](https://demo.ceems.dev/grafana/d/slurm-job-summary/user-slurm-job-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=arnold&var-account=bedrock&var-provider=rte)
+- [Usage of LSF resources by a given user and project](https://demo.ceems.dev/grafana/d/lsf-job-summary/user-lsf-job-summary?orgId=1&from=now-90d&to=now&timezone=browser&var-user=barney&var-account=bedrock&var-provider=owid)
 
 > [!WARNING]
 > All the dashboards provided in the demo instance are only meant to be for demonstrative
