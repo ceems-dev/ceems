@@ -383,6 +383,7 @@ func (s *CEEMSServer) Start(_ context.Context) error {
 	// variables using API
 	baseAPIPath := path.Clean(s.externalURL.Path + "/api/" + base.APIVersion)
 	docs.SwaggerInfo.SwaggerTemplate = strings.ReplaceAll(docs.SwaggerInfo.SwaggerTemplate, `"default": "/api/v1"`, fmt.Sprintf(`"default": "%s"`, baseAPIPath))
+
 	docs.SwaggerInfo.SwaggerTemplate = strings.ReplaceAll(docs.SwaggerInfo.SwaggerTemplate, `"default": "localhost"`, fmt.Sprintf(`"default": "%s"`, s.externalURL.Hostname()))
 	if s.externalURL.Port() != "" {
 		docs.SwaggerInfo.SwaggerTemplate = strings.ReplaceAll(docs.SwaggerInfo.SwaggerTemplate, `"default": ":9020"`, fmt.Sprintf(`"default": ":%s"`, s.externalURL.Port()))
