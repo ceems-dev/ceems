@@ -2,7 +2,7 @@
   "projectBaseUrl": "${workspaceFolder}",
   "ignorePatterns": [
     {
-      "pattern": "^/ceems"
+      "pattern": "^/docs"
     },
     {
       "pattern": "https://www.intel.com/content/dam/www/public/us/en/documents/technical-specifications/dcmi-v1-5-rev-spec.pdf"

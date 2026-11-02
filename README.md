@@ -3,10 +3,10 @@
 
 |         |                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| CI/CD   | [![ci](https://github.com/ceems-dev/ceems/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ceems-dev/ceems/actions/workflows/ci.yml?query=branch%3Amain) [![CircleCI](https://dl.circleci.com/status-badge/img/circleci/UVxmfk5AT3EHZpsg3FdfaR/PKvLaAH1ahBZf8kBKHhCiA/tree/main.svg?style=svg&circle-token=CCIPRJ_67vq2cGkBpm9syySEp7tTW_7d4d6f3e8d72486acf477768f4f0a1d5235ab2a0)](https://dl.circleci.com/status-badge/redirect/circleci/UVxmfk5AT3EHZpsg3FdfaR/PKvLaAH1ahBZf8kBKHhCiA/tree/main)  [![Coverage](https://img.shields.io/badge/Coverage-78.5%25-brightgreen)](https://github.com/ceems-dev/ceems/actions/workflows/ci.yml?query=branch%3Amain)                                                                                          |
+| CI/CD   | [![ci](https://github.com/ceems-dev/ceems/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ceems-dev/ceems/actions/workflows/ci.yml?query=branch%3Amain) [![Coverage](https://img.shields.io/badge/Coverage-78.4%25-brightgreen)](https://github.com/ceems-dev/ceems/actions/workflows/ci.yml?query=branch%3Amain)                                                                                          |
 | Docs    | [![docs](https://img.shields.io/badge/docs-passing-green?style=flat&link=https://ceems-dev.github.io/ceems/docs/)](https://ceems-dev.github.io/ceems/)  [![Go Doc](https://godoc.org/github.com/ceems-dev/ceems?status.svg)](http://godoc.org/github.com/ceems-dev/ceems) [![Discord](https://img.shields.io/discord/1466874652189003973?label=discord)](https://discord.gg/bedRvX5uVY)                                                                                                                                                                                                                            |
 | Package | [![Release](https://img.shields.io/github/v/release/ceems-dev/ceems.svg?include_prereleases)](https://github.com/ceems-dev/ceems/releases/latest) [![Releases downloads](https://img.shields.io/github/downloads/ceems-dev/ceems/total.svg)](https://github.com/ceems-dev/ceems/releases)                                                                                                                                                                    |
-| Meta    | [![GitHub License](https://img.shields.io/github/license/ceems-dev/ceems)](https://github.com/ceems-dev/ceems) [![Go Report Card](https://ceems-demo.myaddr.tools:2443/badge/github.com/ceems-dev/ceems)](https://ceems-demo.myaddr.tools:2443/report/github.com/ceems-dev/ceems) [![code style](https://img.shields.io/badge/code%20style-gofmt-blue.svg)](https://pkg.go.dev/cmd/gofmt) [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/13395/badge)](https://www.bestpractices.dev/projects/13395) |
+| Meta    | [![GitHub License](https://img.shields.io/github/license/ceems-dev/ceems)](https://github.com/ceems-dev/ceems) [![Go Report Card](https://goreportcard.ceems.dev/badge/github.com/ceems-dev/ceems)](https://goreportcard.ceems.dev/report/github.com/ceems-dev/ceems) [![code style](https://img.shields.io/badge/code%20style-gofmt-blue.svg)](https://pkg.go.dev/cmd/gofmt) [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/13395/badge)](https://www.bestpractices.dev/projects/13395) |
 
 <!-- markdown-link-check-enable -->
 
@@ -208,9 +208,8 @@ interest group hosted by [Inria](https://www.inria.fr/) and including [CNRS](htt
 [RENATER](https://www.renater.fr/en/accueil-english/) and several Universities as
 well as other organizations, has been extensively used in the development of CEEMS.
 
-- The demo instance has been deployed on the [CROCC](https://drocc.fr/crocc/)
-which was kindly sponsored by [ISDM MESO](https://isdm.umontpellier.fr/mesolr)
-in Montpellier, France.
+- The demo instance has been deployed on the [cloud@vd](https://virtualdata.fr/services/cloud-at-vd)
+which was kindly sponsored by [IJCLab](https://www.ijclab.in2p3.fr/en/home/) in Paris, France.
 
 ## 💬 Contact
 

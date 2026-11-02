@@ -251,8 +251,16 @@ const config: Config = {
               href: `https://github.com/${organizationName}/${projectName}`,
             },
             {
+              label: "Releases",
+              href: `https://github.com/${organizationName}/${projectName}/releases`,
+            },
+            {
               label: "Helm Charts",
               href: `https://github.com/${organizationName}/helm-charts`,
+            },
+            {
+              label: "Ansible",
+              href: `https://github.com/${organizationName}/ansible`,
             },
           ],
         },
