@@ -113,61 +113,61 @@ func TestDefaultCaps(t *testing.T) {
 	tests := []struct {
 		name       string
 		cmdOut     string
-		displayEnv bool
+		desktopEnv bool
 		expected   *cap.Set
 	}{
 		{
 			name: "systemd > 254 in Desktop env",
 			cmdOut: `systemd 259 (259.9-0ubuntu0.1)
 +PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE`,
-			displayEnv: true,
+			desktopEnv: true,
 			expected:   capSet,
 		},
 		{
 			name: "systemd = 254 in Desktop env",
 			cmdOut: `systemd 254 (254.9-0ubuntu0.1)
 +PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE`,
-			displayEnv: true,
+			desktopEnv: true,
 			expected:   capSet,
 		},
 		{
 			name: "systemd < 254 in Desktop env",
 			cmdOut: `systemd 252 (252.9-0ubuntu0.1)
 		+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE`,
-			displayEnv: true,
+			desktopEnv: true,
 			expected:   emptyCapSet,
 		},
 		{
 			name: "systemd > 254 in headless env",
 			cmdOut: `systemd 259 (259.9-0ubuntu0.1)
 		+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE`,
-			displayEnv: false,
+			desktopEnv: false,
 			expected:   emptyCapSet,
 		},
 		{
 			name: "systemd = 254 in headless env",
 			cmdOut: `systemd 254 (254.9-0ubuntu0.1)
 		+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE`,
-			displayEnv: false,
+			desktopEnv: false,
 			expected:   emptyCapSet,
 		},
 		{
 			name: "systemd < 254 in headless env",
 			cmdOut: `systemd 252 (252.9-0ubuntu0.1)
 		+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE`,
-			displayEnv: false,
+			desktopEnv: false,
 			expected:   emptyCapSet,
 		},
 		{
 			name:       "no systemctl output",
-			displayEnv: true,
+			desktopEnv: true,
 			expected:   emptyCapSet,
 		},
 		{
 			name: "illegal systemctl output",
 			cmdOut: `systemd sdfsd (254.9-0ubuntu0.1)
 		+PAM +AUDIT +SELINUX +APPARMOR +IMA +IPE +SMACK +SECCOMP +GCRYPT -GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 -IDN +KMOD +LIBCRYPTSETUP +LIBCRYPTSETUP_PLUGINS +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK +BTF -XKBCOMMON -UTMP +SYSVINIT +LIBARCHIVE`,
-			displayEnv: true,
+			desktopEnv: true,
 			expected:   emptyCapSet,
 		},
 	}
@@ -192,10 +192,10 @@ echo """%s"""`, test.cmdOut)
 		require.NoError(t, err, test.name)
 
 		// Set/Unset display env var
-		if test.displayEnv {
-			t.Setenv("DISPLAY", ":0")
+		if test.desktopEnv {
+			t.Setenv("XDG_SESSION_DESKTOP", "KDE")
 		} else {
-			t.Setenv("DISPLAY", "")
+			t.Setenv("XDG_SESSION_DESKTOP", "")
 		}
 
 		// Get default caps

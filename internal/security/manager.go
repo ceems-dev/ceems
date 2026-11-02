@@ -398,7 +398,11 @@ func (m *Manager) defaultCaps() *cap.Set {
 			// This can happen when running with systemctl --user mode. But this is a
 			// edge case and there is no reason for people to run ceems_api_server
 			// in that mode.
-			if val >= 254 && os.Getenv("DISPLAY") != "" {
+			// To detect if we are in headless or Desktop mode, use XDG_SESSION_DESKTOP
+			// which is more realiable than DISPLAY.
+			// Ref: https://superuser.com/questions/1074068/what-is-the-difference-between-desktop-session-xdg-session-desktop-and-xdg-cur/1643180#1643180
+			// Ref: https://www.freedesktop.org/software/systemd/man/latest/pam_systemd.html
+			if val >= 254 && os.Getenv("XDG_SESSION_DESKTOP") != "" {
 				capSet, err := cap.FromText("cap_wake_alarm=i")
 				if err == nil {
 					return capSet
