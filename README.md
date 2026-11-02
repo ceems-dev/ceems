@@ -203,6 +203,9 @@ improvement.
 
 ## 🙏 Acknowledgements
 
+- A huge thanks to [IDRIS](http://www.idris.fr/), which operates Jean Zay supercomputer,
+who had been a great support throughout the development of CEEMS.
+
 - [Grid5000](https://www.grid5000.fr/w/Grid5000:Home) platform, supported by a scientific
 interest group hosted by [Inria](https://www.inria.fr/) and including [CNRS](https://www.cnrs.fr/en),
 [RENATER](https://www.renater.fr/en/accueil-english/) and several Universities as
