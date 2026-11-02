@@ -375,7 +375,7 @@ const config: Config = {
         language: "rust",
         logoClass: "rust",
       },
-    ],https://dashboard.algolia.com/apps/KQ58EXUULN/crawler/crawler/ad8b7076-6d79-40cc-b89f-44ec62351f43/editor?tab=url-tester
+    ],
     algolia: {
       // The application ID provided by Algolia
       appId: 'KQ58EXUULN',
