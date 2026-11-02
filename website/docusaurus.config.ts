@@ -375,18 +375,13 @@ const config: Config = {
         language: "rust",
         logoClass: "rust",
       },
-    ],
+    ],https://dashboard.algolia.com/apps/KQ58EXUULN/crawler/crawler/ad8b7076-6d79-40cc-b89f-44ec62351f43/editor?tab=url-tester
     algolia: {
       // The application ID provided by Algolia
       appId: 'KQ58EXUULN',
       // Public API key: it is safe to commit it
-      apiKey: '16e0dc2efb99e9d654683fd9b9602082',
-      indexName: 'mahendrapaipuriio',
-      // // Optional: Replace parts of the item URLs from Algolia. Useful when using the same search index for multiple deployments using a different baseUrl. You can use regexp or string in the `from` param. For example: localhost:3000 vs myCompany.com/docs
-      replaceSearchResultPathname: {
-        from: '/ceems/',
-        to: '/',
-      },
+      apiKey: '04b21253b1cc361fb93228b268f5b85e',
+      indexName: 'ceems',
       // We may need to tune `contextualSearch` and `searchParameters` to handle search for versioned docs
       // Optional: see doc section -- https://docusaurus.io/docs/search#contextual-search
       contextualSearch: false,
