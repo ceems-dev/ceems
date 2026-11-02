@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.16.3 / 2026-11-02
+
+- [MAINT] ci: Remove circleci and use GH actions for arm tests [#641](https://github.com/ceems-dev/ceems/pull/641) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [BUGFIX] bugfix: Ensure api server can be served at path correctly [#639](https://github.com/ceems-dev/ceems/pull/639) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
+- [MAINT] Bump dependencies [#638](https://github.com/ceems-dev/ceems/pull/638), Bump dependencies [#640](https://github.com/ceems-dev/ceems/pull/640) ([@dependabot](https://github.com/dependabot))
+
 ## 0.16.2 / 2026-10-27
 
 - [MAINT] refactor: Update tcp_* and udp_* func signatures for kernel >= 7.1 [#633](https://github.com/ceems-dev/ceems/pull/633) ([@mahendrapaipuri](https://github.com/mahendrapaipuri))
