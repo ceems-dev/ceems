@@ -208,9 +208,8 @@ interest group hosted by [Inria](https://www.inria.fr/) and including [CNRS](htt
 [RENATER](https://www.renater.fr/en/accueil-english/) and several Universities as
 well as other organizations, has been extensively used in the development of CEEMS.
 
-- The demo instance has been deployed on the [CROCC](https://drocc.fr/crocc/)
-which was kindly sponsored by [ISDM MESO](https://isdm.umontpellier.fr/mesolr)
-in Montpellier, France.
+- The demo instance has been deployed on the [cloud@vd](https://virtualdata.fr/services/cloud-at-vd)
+which was kindly sponsored by [IJCLab](https://www.ijclab.in2p3.fr/en/home/) in Paris, France.
 
 ## 💬 Contact
 
