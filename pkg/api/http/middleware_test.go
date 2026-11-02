@@ -21,7 +21,7 @@ func mockAdminUsers(_ context.Context, _ *sql.DB) ([]string, error) {
 
 func setupMiddleware() (http.Handler, error) {
 	// Setup middileware
-	amw, err := newAuthenticationMiddleware("/api/v1", regexp.MustCompile("^(?:.*)$"), []string{base.GrafanaUserHeader}, nil, noOpLogger)
+	amw, err := newAuthenticationMiddleware(regexp.MustCompile("^(?:.*)$"), []string{base.GrafanaUserHeader}, nil, noOpLogger)
 	if err != nil {
 		return nil, err
 	}
@@ -38,15 +38,11 @@ func setupMiddleware() (http.Handler, error) {
 
 func TestNewMiddleware(t *testing.T) {
 	// Valid route prefix
-	_, err := newAuthenticationMiddleware("/api/v1", regexp.MustCompile("^(?:.*)$"), []string{base.GrafanaUserHeader}, nil, noOpLogger)
+	_, err := newAuthenticationMiddleware(regexp.MustCompile("^(?:.*)$"), []string{base.GrafanaUserHeader}, nil, noOpLogger)
 	require.NoError(t, err)
 
-	// Invald route prefix
-	_, err = newAuthenticationMiddleware("/(?!\\/)", regexp.MustCompile("^(?:.*)$"), []string{base.GrafanaUserHeader}, nil, noOpLogger)
-	require.Error(t, err)
-
 	// No user headers
-	_, err = newAuthenticationMiddleware("/api/v1", regexp.MustCompile("^(?:.*)$"), nil, nil, noOpLogger)
+	_, err = newAuthenticationMiddleware(regexp.MustCompile("^(?:.*)$"), nil, nil, noOpLogger)
 	require.Error(t, err)
 }
 
@@ -82,30 +78,6 @@ func TestMiddleware(t *testing.T) {
 			endpoint: "/api/v1/units/admin",
 			code:     http.StatusForbidden,
 			header:   true,
-			admin:    false,
-		},
-		{
-			name:     "user accessing swagger resource",
-			method:   http.MethodGet,
-			endpoint: "/swagger/index.html",
-			code:     200,
-			header:   false,
-			admin:    false,
-		},
-		{
-			name:     "user accessing debug resource",
-			method:   http.MethodGet,
-			endpoint: "/debug/pprof",
-			code:     200,
-			header:   false,
-			admin:    false,
-		},
-		{
-			name:     "user accessing health resource",
-			method:   http.MethodGet,
-			endpoint: "/health",
-			code:     200,
-			header:   false,
 			admin:    false,
 		},
 		{
