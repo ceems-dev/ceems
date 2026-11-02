@@ -1,27 +1,66 @@
 {
   "__inputs": [
     {
-      "name": "DS_PROMETHEUS",
-      "label": "Prometheus datasource. When CEEMS LB is enabled, datasource corresponding to CEEMS LB must be configured here.",
+      "name": "DS_YESOREYERAM-INFINITY-DATASOURCE",
+      "label": "yesoreyeram-infinity-datasource",
       "description": "",
       "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
+      "pluginId": "yesoreyeram-infinity-datasource",
+      "pluginName": "Infinity"
+    },
+    {
+      "name": "VAR_ORGID",
+      "type": "constant",
+      "label": "Grafana Organization ID",
+      "value": "",
+      "description": "Grafana Organization ID"
+    },
+    {
+      "name": "VAR_CLUSTERID",
+      "type": "constant",
+      "label": "CEEMS Cluster ID defined in CEEMS API server config",
+      "value": "",
+      "description": "CEEMS Cluster ID defined in CEEMS API server config"
+    },
+    {
+      "name": "VAR_ENDPOINT",
+      "type": "constant",
+      "label": "Set it to /admin for admin dashboards to consult usage statistics of any user. For user dashboards that restrict data to current logged user, set it to empty space",
+      "value": "",
+      "description": "Set it to /admin for admin dashboards to consult usage statistics of any user. For user dashboards that restrict data to current logged user, set it to empty space"
     }
   ],
   "__elements": {},
   "__requires": [
     {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "11.3.1"
+      "version": "13.3.0"
     },
     {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
+      "type": "panel",
+      "id": "piechart",
+      "name": "Pie chart",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
     },
     {
       "type": "panel",
@@ -30,10 +69,10 @@
       "version": ""
     },
     {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
+      "type": "datasource",
+      "id": "yesoreyeram-infinity-datasource",
+      "name": "Infinity",
+      "version": "4.1.4"
     }
   ],
   "annotations": {
@@ -52,11 +91,10 @@
       }
     ]
   },
-  "description": "Time series metrics of a Openstack VM",
+  "description": "List of Openstack VMs",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
   "links": [
     {
       "asDropdown": false,
@@ -68,37 +106,365 @@
       "title": "Powered by CEEMS",
       "tooltip": "Go To GitHub",
       "type": "link",
-      "url": "https://github.com/ceems-dev/ceems"
+      "url": "https://github.com/mahendrapaipuri/ceems"
     }
   ],
+  "liveNow": false,
   "panels": [
     {
+      "collapsed": false,
       "gridPos": {
-        "h": 13,
-        "w": 8,
+        "h": 1,
+        "w": 24,
         "x": 0,
         "y": 0
       },
       "id": 53,
-      "options": {
-        "code": {
-          "language": "plaintext",
-          "showLineNumbers": false,
-          "showMiniMap": false
-        },
-        "content": "<span> \n  The following metrics are aggregated over entire VM duration\n</span>\n<br>\n<br>\n\n<table><tbody>\n  <tr>\n    <th rowspan=\"4\">Average Utilization (%)</th>\n    <th>CPU</th>\n    <td colspan=\"5\">${cpu_usage}</td>\n  </tr>\n  <tr>\n    <th>CPU Memory</th>\n    <td colspan=\"5\">${cpumem_usage}</td>\n  </tr>\n  <tr>\n    <th>GPU</th>\n    <td colspan=\"5\">${gpu_usage}</td>\n  </tr>\n  <tr>\n    <th>GPU Memory</td>\n    <td colspan=\"5\">${gpumem_usage}</td>\n  </tr>\n  <tr>\n    <th rowspan=\"3\">Energy Consumption (kWh)</th>\n    <th>Host</th>\n    <td colspan=\"5\">${cpu_energy}</td>\n  </tr>\n  <tr>\n    <th>GPU</th>\n    <td colspan=\"5\">${gpu_energy}</td>\n  </tr>\n  <tr>\n    <th>Total</th>\n    <td colspan=\"5\">${total_energy}</td>\n  </tr>\n  <tr>\n    <th rowspan=\"6\">Equivalent Emissions (gms)</th>\n    <th>Emission Factor</th>\n    <th>RTE</th>\n    <th>Elec. Maps</th>\n    <th>W. Time</th>\n    <th>OWID</th>\n    <th>World Avg.</th>\n  </tr>\n  <tr>\n    <th>Host</th>\n    <td>${cpu_emissions_rte}</td>\n    <td>${cpu_emissions_emaps}</td>\n    <td>${cpu_emissions_wt}</td>\n    <td>${cpu_emissions_owid}</td>\n    <td>${cpu_emissions_global}</td>\n  </tr>\n  <tr>\n    <th>GPU</th>\n    <td>${gpu_emissions_rte}</td>\n    <td>${gpu_emissions_emaps}</td>\n    <td>${gpu_emissions_wt}</td>\n    <td>${gpu_emissions_owid}</td>\n    <td>${gpu_emissions_global}</td>\n  </tr>\n  <tr>\n    <th>Total</th>\n    <td>${total_emissions_rte}</td>\n    <td>${total_emissions_emaps}</td>\n    <td>${total_emissions_wt}</td>\n    <td>${total_emissions_owid}</td>\n    <td>${total_emissions_global}</td>\n  </tr>\n</tbody></table>",
-        "mode": "html"
+      "title": "Aggregate Usage Statistics of User ${user} from ${__from:date:YYYY-MM-DD HH:mm:ss} to ${__to:date:YYYY-MM-DD HH:mm:ss}",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
       },
-      "pluginVersion": "11.3.1",
-      "title": "Aggregate Metrics",
-      "type": "text"
+      "description": "Average usage statistics of all VMs of the user",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 30
+              },
+              {
+                "color": "green",
+                "value": 70
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 8,
+        "x": 0,
+        "y": 1
+      },
+      "id": 10,
+      "options": {
+        "barShape": "flat",
+        "barWidthFactor": 0.5,
+        "effects": {
+          "barGlow": false,
+          "centerGlow": false,
+          "gradient": false
+        },
+        "endpointMarker": "point",
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "segmentCount": 1,
+        "segmentSpacing": 0.3,
+        "shape": "gauge",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto",
+        "sparkline": false,
+        "textMode": "auto"
+      },
+      "pluginVersion": "13.3.0",
+      "targets": [
+        {
+          "columns": [
+            {
+              "selector": "avg_cpu_usage.global",
+              "text": "Average CPU Usage",
+              "type": "number"
+            },
+            {
+              "selector": "avg_gpu_usage.global",
+              "text": "Average GPU Usage",
+              "type": "number"
+            },
+            {
+              "selector": "avg_cpu_mem_usage.global",
+              "text": "Average CPU Mem Usage",
+              "type": "number"
+            },
+            {
+              "selector": "avg_gpu_mem_usage.global",
+              "text": "Average GPU Mem Usage",
+              "type": "number"
+            },
+            {
+              "selector": "username",
+              "text": "User",
+              "type": "string"
+            }
+          ],
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
+          },
+          "filterExpression": "User == \"${user}\"",
+          "filters": [],
+          "format": "table",
+          "global_query_id": "",
+          "parser": "backend",
+          "refId": "A",
+          "root_selector": "data",
+          "source": "url",
+          "type": "json",
+          "url": "/api/v1/usage/current${endpoint}",
+          "url_options": {
+            "data": "",
+            "headers": [],
+            "method": "GET",
+            "params": [
+              {
+                "key": "project",
+                "value": "${account}"
+              },
+              {
+                "key": "from",
+                "value": "${__from:date:seconds}"
+              },
+              {
+                "key": "to",
+                "value": "${__to:date:seconds}"
+              },
+              {
+                "key": "cluster_id",
+                "value": "${clusterId}"
+              },
+              {
+                "key": "user",
+                "value": "${user}"
+              },
+              {
+                "key": "field",
+                "value": "avg_cpu_usage"
+              },
+              {
+                "key": "field",
+                "value": "avg_cpu_mem_usage"
+              },
+              {
+                "key": "field",
+                "value": "avg_gpu_usage"
+              },
+              {
+                "key": "field",
+                "value": "avg_gpu_mem_usage"
+              },
+              {
+                "key": "field",
+                "value": "username"
+              }
+            ]
+          }
+        }
+      ],
+      "title": "⚙️ Average Utilization by ${user} ⚙️",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
+      },
+      "description": "Total energy consumption of all VMs of the user",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "kwatth"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 8,
+        "y": 1
+      },
+      "id": 35,
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.3.0",
+      "targets": [
+        {
+          "columns": [
+            {
+              "selector": "total_cpu_energy_usage_kwh.total",
+              "text": "Host",
+              "type": "number"
+            },
+            {
+              "selector": "total_gpu_energy_usage_kwh.total",
+              "text": "GPU",
+              "type": "number"
+            },
+            {
+              "selector": "username",
+              "text": "User",
+              "type": "string"
+            }
+          ],
+          "computed_columns": [],
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
+          },
+          "filterExpression": "User == \"${user}\"",
+          "filters": [],
+          "format": "table",
+          "global_query_id": "",
+          "parser": "backend",
+          "refId": "A",
+          "root_selector": "data",
+          "source": "url",
+          "type": "json",
+          "url": "/api/v1/usage/current${endpoint}",
+          "url_options": {
+            "data": "",
+            "headers": [],
+            "method": "GET",
+            "params": [
+              {
+                "key": "project",
+                "value": "${account}"
+              },
+              {
+                "key": "user",
+                "value": "${user}"
+              },
+              {
+                "key": "from",
+                "value": "${__from:date:seconds}"
+              },
+              {
+                "key": "to",
+                "value": "${__to:date:seconds}"
+              },
+              {
+                "key": "field",
+                "value": "total_cpu_energy_usage_kwh"
+              },
+              {
+                "key": "field",
+                "value": "total_gpu_energy_usage_kwh"
+              },
+              {
+                "key": "field",
+                "value": "username"
+              },
+              {
+                "key": "cluster_id",
+                "value": "${clusterId}"
+              }
+            ]
+          }
+        }
+      ],
+      "title": "⚡ Total Energy Consumption by ${user} ⚡",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Total",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Host"
+                }
+              },
+              "right": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "GPU"
+                }
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "User": true
+            },
+            "includeByName": {},
+            "indexByName": {
+              "GPU": 1,
+              "Host": 0,
+              "Total": 3,
+              "User": 2
+            },
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "stat"
     },
     {
       "gridPos": {
-        "h": 13,
+        "h": 12,
         "w": 8,
-        "x": 8,
-        "y": 0
+        "x": 16,
+        "y": 1
       },
       "id": 31,
       "options": {
@@ -107,33 +473,227 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "<span> \n  Following table gives different VM meta data\n</span>\n<br>\n<br>\n\n<table width=\"100%\">\n  <thead>\n    <tr>\n      <th scope=\"col\">Attribute</th>\n      <th scope=\"col\">Value</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th scope=\"row\">UUID</th>\n      <td>${uuid}</td>\n    </tr>\n    <tr>\n      <th scope=\"row\">Name</th>\n      <td>${name}</td>\n    </tr>\n    <tr>\n      <th scope=\"row\">Account</th>\n      <td>${account}</td>\n    </tr>\n    <tr>\n      <th scope=\"row\">Created At</th>\n      <td>${submit:date:YYYY-MM-DD HH:mm:SS Z}</td>\n    </tr>\n    <tr>\n      <th scope=\"row\">Started At</th>\n      <td>${start:date:YYYY-MM-DD HH:mm:SS Z}</td>\n    </tr>\n    <tr>\n      <th scope=\"row\">Ended At</th>\n      <td>${end:date:YYYY-MM-DD HH:mm:SS Z}</td>\n    </tr>\n    <tr>\n      <th scope=\"row\">Elapsed Time</th>\n      <td>${elapsed}</td>\n    </tr>\n    <tr>\n      <th scope=\"row\">State</th>\n      <td>${state}</td>\n    </tr>\n  </tbody>\n</table>\n",
-        "mode": "html"
+        "content": "# README\n\nThe panels to the left show the overall usage by the user\n<span style=\"color:red\">**${user}**</span> using the project <span style=\"color:red\">**${account}**</span>\nduring the period\n${__from:date:YYYY-MM-DD HH:mm:ss} to ${__to:date:YYYY-MM-DD HH:mm:ss}.\n\n- Average CPU, GPU, CPU memory and GPU memory usage is the average over all the VMs\nof the user during the above stated period.\n\n- Total energy usage is the total energy consumed by the VMs of the user during the above\nstated period.\n\n  - Host corresponds to the energy consumption by host components such as CPU, CPU memory and other\n  peripherals of the node excluding GPU (if present)\n  - GPU corresponds to the energy consumption of GPUs alone.\n  - Total is the sum of power consumption of Host and GPUs.\n\n- Total emissions is the total equivalent emissions due the energy consumed by the VMs\nof the user during the above stated period. Real time emission factors\n[RTE eCO2](https://www.rte-france.com/en/eco2mix/co2-emissions),\n[Electricity Maps](https://app.electricitymaps.com/map/72h) and\nstatic emission factor from [OWID](https://ourworldindata.org/co2-and-greenhouse-gas-emissions)\nare supported in the estimation of the emissions.\n\n  - Host is the equivalent emissions due to the energy consumed by host components such as CPU, CPU memory and\n  other peripherals of the node excluding GPU (if present)\n  - GPU is the equivalent emissions due to energy consumption of GPUs alone.\n  - Total is the sum of equivalent emissions of Host and GPUs.",
+        "mode": "markdown"
       },
-      "pluginVersion": "11.3.1",
-      "title": "Job Details",
+      "pluginVersion": "13.3.0",
       "type": "text"
     },
     {
-      "gridPos": {
-        "h": 13,
-        "w": 8,
-        "x": 16,
-        "y": 0
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
       },
-      "id": 54,
-      "options": {
-        "code": {
-          "language": "plaintext",
-          "showLineNumbers": false,
-          "showMiniMap": false
+      "description": "Total emissions from the energy consumption of all VMs of the user using emission factor from RTE eCO2 mix data",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "massg"
         },
-        "content": "This dashboard presents the time series metrics of VM ${uuid} running under project ${account}.\nCurrently the following time series metrics are available:\n\n- **CPU Stats**:\n\n    - *CPU Usage*: This shows the usage of CPU by the VM and it is estimated using CPU time.\n        In one second interval, if CPU works only for 0.2 seconds, CPU usage will be reported as 20%. \n        If a VM has _n_ cpus and uses all _n_\n        cpus all the time, the usage will be 100% all the time. If the VM uses only _n/2_ cpus or uses\n        _n_ cpus only 50% of time, the resulting CPU usage will be 50%.\n\n    - *CPU Memory Usage*: This is the percentage of memory used by the VM compared to the total memory available\n        to the VM.\n\n    - *Host Energy Usage*: This is the energy consumption estimated based on total energy consumption\n        (excluding GPUs) of the\n        compute node and the resources used by the VM. Thus it includes CPU, CPU memory and other peripherals \n        on the compute node excluding GPUs. The estimation is made using CPU time, memory used\n        by the VM relative to total CPU time and total memory used by the compute node. If there are multiple\n        VMs running on the node at a given time, the reported energy consumption is the energy consumed only\n        by the current VM.\n<br />\n\n- **GPU Stats**:\n\n    - *GPU Usage*: This shows the GPU usage reported by [NVML](https://developer.nvidia.com/management-library-nvml).\n        According to [NVML docs](https://docs.nvidia.com/deploy/nvml-api/structnvmlUtilization__t.html#structnvmlUtilization__t),\n        it is percent of time over the past sample period during which one or more kernels was executing on the GPU.\n\n    - *GPU Memory Usage*: This is the percentage of memory used by the VM compared to the available memory on\n        the GPU.\n\n    - *GPU Energy Usage*: This is the energy consumption reported by [NVML](https://developer.nvidia.com/management-library-nvml)\n        by the GPU.\n<br />\n\n- **GPU Profiling Stats**: NVIDIA DCGM [docs](https://docs.nvidia.com/datacenter/dcgm/latest/user-guide/feature-overview.html#profiling-metrics)\nexplains all the presented GPU profiling metrics.\n<br />\n\n- **IO Stats**:\n\n    - *Read/Write bandwidths*: Read/Write bandwidths for different\n        file systems.\n\n    - *Read/Write Requests*: Number of requests for read/write for different \n        file systems.\n\n    - *Read/Write Errors*: Number of errors while executing read/write requests\n        for different file systems.\n<br />\n",
-        "mode": "markdown"
+        "overrides": []
       },
-      "pluginVersion": "11.3.1",
-      "title": "README",
-      "type": "text"
+      "gridPos": {
+        "h": 6,
+        "w": 8,
+        "x": 8,
+        "y": 7
+      },
+      "id": 36,
+      "options": {
+        "colorMode": "none",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.3.0",
+      "targets": [
+        {
+          "columns": [
+            {
+              "selector": "total_cpu_emissions_gms",
+              "text": "Host",
+              "type": "string"
+            },
+            {
+              "selector": "total_gpu_emissions_gms",
+              "text": "GPU",
+              "type": "string"
+            },
+            {
+              "selector": "username",
+              "text": "User",
+              "type": "string"
+            }
+          ],
+          "computed_columns": [],
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
+          },
+          "filterExpression": "User == \"${user}\"",
+          "filters": [],
+          "format": "table",
+          "global_query_id": "",
+          "parser": "backend",
+          "refId": "A",
+          "root_selector": "data",
+          "source": "url",
+          "type": "json",
+          "url": "/api/v1/usage/current${endpoint}",
+          "url_options": {
+            "data": "",
+            "headers": [],
+            "method": "GET",
+            "params": [
+              {
+                "key": "project",
+                "value": "${account}"
+              },
+              {
+                "key": "user",
+                "value": "${user}"
+              },
+              {
+                "key": "cluster_id",
+                "value": "${clusterId}"
+              },
+              {
+                "key": "from",
+                "value": "${__from:date:seconds}"
+              },
+              {
+                "key": "to",
+                "value": "${__to:date:seconds}"
+              },
+              {
+                "key": "field",
+                "value": "total_cpu_emissions_gms"
+              },
+              {
+                "key": "field",
+                "value": "total_gpu_emissions_gms"
+              },
+              {
+                "key": "field",
+                "value": "username"
+              }
+            ]
+          }
+        }
+      ],
+      "title": "👣 Total Equivalent Emissions estimated using ${provider:text} by ${user} 👣",
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "format": "json",
+            "jsonPaths": [
+              {
+                "alias": "Host rte",
+                "path": "rte_total"
+              },
+              {
+                "alias": "Host emaps",
+                "path": "emaps_total"
+              },
+              {
+                "alias": "Host owid",
+                "path": "owid_total"
+              }
+            ],
+            "source": "Host"
+          }
+        },
+        {
+          "id": "extractFields",
+          "options": {
+            "format": "json",
+            "jsonPaths": [
+              {
+                "alias": "GPU rte",
+                "path": "rte_total"
+              },
+              {
+                "alias": "GPU emaps",
+                "path": "emaps_total"
+              },
+              {
+                "alias": "GPU owid",
+                "path": "owid_total"
+              }
+            ],
+            "source": "GPU"
+          }
+        },
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "byVariable": false,
+            "include": {
+              "pattern": "(Host|GPU)\\s*${provider}"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Total",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byType",
+                  "options": "number"
+                }
+              },
+              "right": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "GPU"
+                }
+              }
+            },
+            "mode": "reduceRow",
+            "reduce": {
+              "include": [],
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(Host|GPU)(.*)",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "stat"
     },
     {
       "collapsed": true,
@@ -143,173 +703,187 @@
         "x": 0,
         "y": 13
       },
-      "id": 1,
+      "id": 54,
       "panels": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
           },
-          "description": "Time series of CPU usage of the VM",
+          "description": "Average usage statistics of all VMs of the user",
           "fieldConfig": {
             "defaults": {
               "color": {
-                "mode": "palette-classic"
+                "mode": "thresholds"
               },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineStyle": {
-                  "fill": "solid"
-                },
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "min": 0,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "red",
+                    "value": 0
                   },
                   {
-                    "color": "red",
-                    "value": 80
+                    "color": "orange",
+                    "value": 30
+                  },
+                  {
+                    "color": "green",
+                    "value": 70
                   }
                 ]
               },
               "unit": "percent"
-            },
-            "overrides": []
+            }
           },
           "gridPos": {
-            "h": 8,
+            "h": 12,
             "w": 8,
             "x": 0,
             "y": 14
           },
-          "id": 2,
-          "interval": "10s",
-          "maxDataPoints": 1448,
+          "id": 42,
           "options": {
-            "legend": {
+            "barShape": "flat",
+            "barWidthFactor": 0.5,
+            "effects": {
+              "barGlow": false,
+              "centerGlow": false,
+              "gradient": false
+            },
+            "endpointMarker": "point",
+            "minVizHeight": 75,
+            "minVizWidth": 75,
+            "orientation": "auto",
+            "reduceOptions": {
               "calcs": [
-                "min",
-                "max",
                 "mean"
               ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
+              "fields": "",
+              "values": false
             },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
+            "segmentCount": 1,
+            "segmentSpacing": 0.3,
+            "shape": "gauge",
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true,
+            "sizing": "auto",
+            "sparkline": false,
+            "textMode": "auto"
           },
-          "pluginVersion": "11.3.1",
+          "pluginVersion": "13.3.0",
           "targets": [
             {
+              "columns": [
+                {
+                  "selector": "avg_cpu_usage.global",
+                  "text": "Average CPU Usage",
+                  "type": "number"
+                },
+                {
+                  "selector": "avg_gpu_usage.global",
+                  "text": "Average GPU Usage",
+                  "type": "number"
+                },
+                {
+                  "selector": "avg_cpu_mem_usage.global",
+                  "text": "Average CPU Mem Usage",
+                  "type": "number"
+                },
+                {
+                  "selector": "avg_gpu_mem_usage.global",
+                  "text": "Average GPU Mem Usage",
+                  "type": "number"
+                },
+                {
+                  "selector": "username",
+                  "text": "User",
+                  "type": "string"
+                }
+              ],
               "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "type": "yesoreyeram-infinity-datasource",
+                "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
               },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_cpu_usage:ratio_irate{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "CPU Total",
-              "range": true,
-              "refId": "A"
+              "filterExpression": "",
+              "filters": [],
+              "format": "table",
+              "global_query_id": "",
+              "parser": "backend",
+              "refId": "A",
+              "root_selector": "data",
+              "source": "url",
+              "type": "json",
+              "url": "/api/v1/usage/current${endpoint}",
+              "url_options": {
+                "data": "",
+                "headers": [],
+                "method": "GET",
+                "params": [
+                  {
+                    "key": "project",
+                    "value": "${account}"
+                  },
+                  {
+                    "key": "from",
+                    "value": "${__from:date:seconds}"
+                  },
+                  {
+                    "key": "to",
+                    "value": "${__to:date:seconds}"
+                  },
+                  {
+                    "key": "cluster_id",
+                    "value": "${clusterId}"
+                  },
+                  {
+                    "key": "field",
+                    "value": "avg_cpu_usage"
+                  },
+                  {
+                    "key": "field",
+                    "value": "avg_cpu_mem_usage"
+                  },
+                  {
+                    "key": "field",
+                    "value": "avg_gpu_usage"
+                  },
+                  {
+                    "key": "field",
+                    "value": "avg_gpu_mem_usage"
+                  },
+                  {
+                    "key": "field",
+                    "value": "username"
+                  },
+                  {
+                    "key": "user",
+                    "value": "${user}"
+                  }
+                ]
+              }
             }
           ],
-          "title": "CPU Utilization",
-          "type": "timeseries"
+          "title": "⚙️ Average Utilization by ${account} ⚙️",
+          "type": "gauge"
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
           },
-          "description": "Time series of CPU memory usage of the VM",
+          "description": "Total energy consumption of all VMs of the user",
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "palette-classic"
               },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineStyle": {
-                  "fill": "solid"
-                },
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "min": 0,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
                   {
                     "color": "green",
-                    "value": null
+                    "value": 0
                   },
                   {
                     "color": "red",
@@ -317,149 +891,193 @@
                   }
                 ]
               },
-              "unit": "bytes"
-            },
-            "overrides": []
+              "unit": "kwatth"
+            }
           },
           "gridPos": {
-            "h": 8,
+            "h": 6,
             "w": 8,
             "x": 8,
             "y": 14
           },
-          "id": 3,
-          "interval": "10s",
-          "maxDataPoints": 1488,
+          "id": 44,
           "options": {
-            "legend": {
+            "colorMode": "none",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
               "calcs": [
-                "min",
-                "max",
-                "mean"
+                "sum"
               ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
+              "fields": "",
+              "values": false
             },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
           },
-          "pluginVersion": "11.3.1",
+          "pluginVersion": "13.3.0",
           "targets": [
             {
+              "columns": [
+                {
+                  "selector": "total_cpu_energy_usage_kwh.total",
+                  "text": "Host",
+                  "type": "number"
+                },
+                {
+                  "selector": "total_gpu_energy_usage_kwh.total",
+                  "text": "GPU",
+                  "type": "number"
+                },
+                {
+                  "selector": "username",
+                  "text": "User",
+                  "type": "string"
+                }
+              ],
+              "computed_columns": [],
               "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "type": "yesoreyeram-infinity-datasource",
+                "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
               },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (ceems_compute_unit_memory_total_bytes{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total usable",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "exemplar": false,
-              "expr": "sum without (instance,hostname) (ceems_compute_unit_memory_used_bytes{uuid=\"${uuid}\"})",
-              "format": "time_series",
-              "instant": false,
-              "legendFormat": "Used",
-              "range": true,
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (ceems_compute_unit_memory_rss_bytes{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "RSS",
-              "range": true,
-              "refId": "C"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (ceems_compute_unit_memory_cache_bytes{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Cached",
-              "range": true,
-              "refId": "D"
+              "filterExpression": "",
+              "filters": [],
+              "format": "table",
+              "global_query_id": "",
+              "parser": "backend",
+              "refId": "A",
+              "root_selector": "data",
+              "source": "url",
+              "type": "json",
+              "url": "/api/v1/usage/current${endpoint}",
+              "url_options": {
+                "data": "",
+                "headers": [],
+                "method": "GET",
+                "params": [
+                  {
+                    "key": "project",
+                    "value": "${account}"
+                  },
+                  {
+                    "key": "from",
+                    "value": "${__from:date:seconds}"
+                  },
+                  {
+                    "key": "to",
+                    "value": "${__to:date:seconds}"
+                  },
+                  {
+                    "key": "field",
+                    "value": "total_cpu_energy_usage_kwh"
+                  },
+                  {
+                    "key": "field",
+                    "value": "total_gpu_energy_usage_kwh"
+                  },
+                  {
+                    "key": "field",
+                    "value": "username"
+                  },
+                  {
+                    "key": "cluster_id",
+                    "value": "${clusterId}"
+                  },
+                  {
+                    "key": "user",
+                    "value": "${user}"
+                  }
+                ]
+              }
             }
           ],
-          "title": "CPU Memory Utilization",
-          "type": "timeseries"
+          "title": "⚡ Total Energy Consumption by ${account} ⚡",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Total",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Host"
+                    }
+                  },
+                  "right": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "GPU"
+                    }
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "User": true
+                },
+                "includeByName": {},
+                "indexByName": {
+                  "GPU": 1,
+                  "Host": 0,
+                  "Total": 3,
+                  "User": 2
+                },
+                "renameByName": {}
+              }
+            }
+          ],
+          "type": "stat"
+        },
+        {
+          "gridPos": {
+            "h": 12,
+            "w": 8,
+            "x": 16,
+            "y": 14
+          },
+          "id": 48,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "# README\n\nThe panels to the left show the overall usage by the project\n<span style=\"color:red\">**${account}**</span> during the period\n${__from:date:YYYY-MM-DD HH:mm:ss} to ${__to:date:YYYY-MM-DD HH:mm:ss}. This includes\nthe usage of all the users in the project. For consulting only user specific usage,\nplease refer to the panels above.\n\n- Average CPU, GPU, CPU memory and GPU memory usage is the average over all the VMs\nof the user during the above stated period.\n\n- Total energy usage is the total energy consumed by the VMs of the user during the above\nstated period.\n\n  - Host corresponds to the energy consumption by host components such as CPU, CPU memory and other\n  peripherals of the node excluding GPU (if present)\n  - GPU corresponds to the energy consumption of GPUs alone.\n  - Total is the sum of power consumption of Host and GPUs.\n\n- Total emissions is the total equivalent emissions due the energy consumed by the VMs\nof the user during the above stated period. Real time emission factors\n[RTE eCO2](https://www.rte-france.com/en/eco2mix/co2-emissions),\n[Electricity Maps](https://app.electricitymaps.com/map/72h) and\nstatic emission factor from [OWID](https://ourworldindata.org/co2-and-greenhouse-gas-emissions)\nare supported in the estimation of the emissions.\n\n  - Host corresponds to the energy consumption by host components such as CPU, CPU memory and other\n  peripherals of the node excluding GPU (if present)\n  - GPU is the equivalent emissions due to energy consumption of GPUs alone.\n  - Total is the sum of equivalent emissions of Host and GPUs.",
+            "mode": "markdown"
+          },
+          "pluginVersion": "13.3.0",
+          "targets": [],
+          "title": "",
+          "type": "text"
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
           },
-          "description": "Time series of estimated VM power usage",
+          "description": "Total emissions from the energy consumption of all VMs of the user using emission factor from RTE eCO2 mix data",
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "palette-classic"
               },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineStyle": {
-                  "fill": "solid"
-                },
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "min": 0,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
                   {
                     "color": "green",
-                    "value": null
+                    "value": 0
                   },
                   {
                     "color": "red",
@@ -467,56 +1085,198 @@
                   }
                 ]
               },
-              "unit": "watt"
-            },
-            "overrides": []
+              "unit": "massg"
+            }
           },
           "gridPos": {
-            "h": 8,
+            "h": 6,
             "w": 8,
-            "x": 16,
-            "y": 14
+            "x": 8,
+            "y": 20
           },
-          "id": 4,
-          "interval": "10s",
-          "maxDataPoints": 1488,
+          "id": 50,
           "options": {
-            "legend": {
+            "colorMode": "none",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
               "calcs": [
-                "min",
-                "max",
-                "mean"
+                "sum"
               ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
+              "fields": "",
+              "values": false
             },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
           },
-          "pluginVersion": "11.3.1",
+          "pluginVersion": "13.3.0",
           "targets": [
             {
+              "columns": [
+                {
+                  "selector": "total_cpu_emissions_gms",
+                  "text": "Host",
+                  "type": "string"
+                },
+                {
+                  "selector": "total_gpu_emissions_gms",
+                  "text": "GPU",
+                  "type": "string"
+                },
+                {
+                  "selector": "username",
+                  "text": "User",
+                  "type": "string"
+                }
+              ],
+              "computed_columns": [],
               "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "type": "yesoreyeram-infinity-datasource",
+                "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
               },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_host_power_watts:pue{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total consumption",
-              "range": true,
-              "refId": "A"
+              "filterExpression": "",
+              "filters": [],
+              "format": "table",
+              "global_query_id": "",
+              "parser": "backend",
+              "refId": "A",
+              "root_selector": "data",
+              "source": "url",
+              "type": "json",
+              "url": "/api/v1/usage/current${endpoint}",
+              "url_options": {
+                "data": "",
+                "headers": [],
+                "method": "GET",
+                "params": [
+                  {
+                    "key": "project",
+                    "value": "${account}"
+                  },
+                  {
+                    "key": "user",
+                    "value": "${user}"
+                  },
+                  {
+                    "key": "cluster_id",
+                    "value": "${clusterId}"
+                  },
+                  {
+                    "key": "from",
+                    "value": "${__from:date:seconds}"
+                  },
+                  {
+                    "key": "to",
+                    "value": "${__to:date:seconds}"
+                  },
+                  {
+                    "key": "field",
+                    "value": "total_cpu_emissions_gms"
+                  },
+                  {
+                    "key": "field",
+                    "value": "total_gpu_emissions_gms"
+                  },
+                  {
+                    "key": "field",
+                    "value": "username"
+                  }
+                ]
+              }
             }
           ],
-          "title": "Power Usage",
-          "type": "timeseries"
+          "title": "👣 Total Equivalent Emissions estimated using ${provider:text} by ${account} 👣",
+          "transformations": [
+            {
+              "id": "extractFields",
+              "options": {
+                "format": "json",
+                "jsonPaths": [
+                  {
+                    "alias": "Host rte",
+                    "path": "rte_total"
+                  },
+                  {
+                    "alias": "Host emaps",
+                    "path": "emaps_total"
+                  },
+                  {
+                    "alias": "Host owid",
+                    "path": "owid_total"
+                  }
+                ],
+                "source": "Host"
+              }
+            },
+            {
+              "id": "extractFields",
+              "options": {
+                "format": "json",
+                "jsonPaths": [
+                  {
+                    "alias": "GPU rte",
+                    "path": "rte_total"
+                  },
+                  {
+                    "alias": "GPU emaps",
+                    "path": "emaps_total"
+                  },
+                  {
+                    "alias": "GPU owid",
+                    "path": "owid_total"
+                  }
+                ],
+                "source": "GPU"
+              }
+            },
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "byVariable": false,
+                "include": {
+                  "pattern": "(Host|GPU)\\s*${provider}"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Total",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byType",
+                      "options": "number"
+                    }
+                  },
+                  "right": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "GPU"
+                    }
+                  }
+                },
+                "mode": "reduceRow",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(Host|GPU)(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "stat"
         }
       ],
-      "title": "CPU Stats",
+      "title": "Aggregate Usage Statistics of Project ${account} from ${__from:date:YYYY-MM-DD HH:mm:ss} to ${__to:date:YYYY-MM-DD HH:mm:ss}",
       "type": "row"
     },
     {
@@ -527,2534 +1287,1050 @@
         "x": 0,
         "y": 14
       },
-      "id": 7,
+      "id": 55,
       "panels": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
           },
-          "description": "Time series of GPU usage reported by nVIDIA-DCGM",
+          "description": "Total energy consumption of each user in the project ${account}",
           "fieldConfig": {
             "defaults": {
               "color": {
+                "fixedColor": "#73BF69",
                 "mode": "palette-classic"
               },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
                 "hideFrom": {
                   "legend": false,
                   "tooltip": false,
                   "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
                 }
               },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "percent"
-            },
-            "overrides": []
+              "unit": "kwatth"
+            }
           },
           "gridPos": {
-            "h": 8,
+            "h": 10,
             "w": 8,
             "x": 0,
-            "y": 68
+            "y": 15
           },
-          "id": 8,
-          "interval": "10s",
-          "maxDataPoints": 1488,
+          "id": 37,
           "options": {
+            "displayLabels": [
+              "name",
+              "value"
+            ],
             "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
               "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
+              "placement": "right",
+              "showLegend": true,
+              "values": [
+                "value",
+                "percent"
+              ]
             },
+            "pieType": "donut",
+            "reduceOptions": {
+              "calcs": [
+                "allValues"
+              ],
+              "fields": "/^Total$/",
+              "values": true
+            },
+            "sort": "desc",
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.1",
+          "pluginVersion": "13.3.0",
           "targets": [
             {
+              "columns": [
+                {
+                  "selector": "total_cpu_energy_usage_kwh.total",
+                  "text": "Host",
+                  "type": "number"
+                },
+                {
+                  "selector": "username",
+                  "text": "User",
+                  "type": "string"
+                },
+                {
+                  "selector": "total_gpu_energy_usage_kwh.total",
+                  "text": "GPU",
+                  "type": "number"
+                }
+              ],
               "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "type": "yesoreyeram-infinity-datasource",
+                "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
               },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_usage:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "GPU: {{gpu}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_usage:ratio{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Average Usage on all GPUs",
-              "range": true,
-              "refId": "B"
+              "filters": [],
+              "format": "table",
+              "global_query_id": "",
+              "parser": "backend",
+              "refId": "A",
+              "root_selector": "data",
+              "source": "url",
+              "type": "json",
+              "url": "/api/v1/usage/current${endpoint}",
+              "url_options": {
+                "data": "",
+                "headers": [],
+                "method": "GET",
+                "params": [
+                  {
+                    "key": "project",
+                    "value": "${account}"
+                  },
+                  {
+                    "key": "from",
+                    "value": "${__from:date:seconds}"
+                  },
+                  {
+                    "key": "to",
+                    "value": "${__to:date:seconds}"
+                  },
+                  {
+                    "key": "cluster_id",
+                    "value": "${clusterId}"
+                  },
+                  {
+                    "key": "user",
+                    "value": "${user}"
+                  },
+                  {
+                    "key": "field",
+                    "value": "total_cpu_energy_usage_kwh"
+                  },
+                  {
+                    "key": "field",
+                    "value": "username"
+                  },
+                  {
+                    "key": "field",
+                    "value": "total_gpu_energy_usage_kwh"
+                  }
+                ]
+              }
             }
           ],
-          "title": "GPU Utilization",
-          "type": "timeseries"
+          "title": "⚡ Total Energy Consumption by users of ${account} ⚡",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Total",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "Host"
+                    }
+                  },
+                  "right": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "GPU"
+                    }
+                  }
+                },
+                "mode": "binary",
+                "reduce": {
+                  "reducer": "sum"
+                },
+                "replaceFields": false
+              }
+            }
+          ],
+          "type": "piechart"
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
           },
-          "description": "Time series of GPU memory usage reported by nVIDIA-DCGM",
+          "description": "Total emissions from the energy consumption of all VMs of the user using emission factor from RTE eCO2 mix data",
           "fieldConfig": {
             "defaults": {
               "color": {
+                "fixedColor": "#73BF69",
                 "mode": "palette-classic"
               },
               "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
                 "hideFrom": {
                   "legend": false,
                   "tooltip": false,
                   "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
                 }
               },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "percent"
-            },
-            "overrides": []
+              "unit": "massg"
+            }
           },
           "gridPos": {
-            "h": 8,
+            "h": 10,
             "w": 8,
             "x": 8,
-            "y": 68
+            "y": 15
           },
-          "id": 22,
-          "interval": "10s",
-          "maxDataPoints": 1488,
+          "id": 51,
           "options": {
+            "displayLabels": [
+              "name",
+              "value"
+            ],
             "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
               "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
+              "placement": "right",
+              "showLegend": true,
+              "values": [
+                "percent",
+                "value"
+              ]
             },
+            "pieType": "donut",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "/^Total$/",
+              "values": true
+            },
+            "sort": "desc",
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
-          "pluginVersion": "11.3.1",
+          "pluginVersion": "13.3.0",
           "targets": [
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_memory_usage:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "GPU: {{gpu}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_memory_usage:ratio{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Average Memory Usage on all GPUs",
-              "range": true,
-              "refId": "B"
-            }
-          ],
-          "title": "GPU Memory Utilization",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "Time series of GPU power usage reported by nVIDIA-DCGM",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
+              "columns": [
+                {
+                  "selector": "total_cpu_emissions_gms",
+                  "text": "Host",
+                  "type": "string"
                 },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
+                {
+                  "selector": "total_gpu_emissions_gms",
+                  "text": "GPU",
+                  "type": "string"
                 },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
+                {
+                  "selector": "username",
+                  "text": "User",
+                  "type": "string"
                 }
+              ],
+              "computed_columns": [],
+              "datasource": {
+                "type": "yesoreyeram-infinity-datasource",
+                "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
               },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
+              "filterExpression": "",
+              "filters": [],
+              "format": "table",
+              "global_query_id": "",
+              "parser": "backend",
+              "refId": "A",
+              "root_selector": "data",
+              "source": "url",
+              "type": "json",
+              "url": "/api/v1/usage/current${endpoint}",
+              "url_options": {
+                "data": "",
+                "headers": [],
+                "method": "GET",
+                "params": [
                   {
-                    "color": "green"
+                    "key": "project",
+                    "value": "${account}"
                   },
                   {
-                    "color": "red",
-                    "value": 80
+                    "key": "user",
+                    "value": "${user}"
+                  },
+                  {
+                    "key": "cluster_id",
+                    "value": "${clusterId}"
+                  },
+                  {
+                    "key": "from",
+                    "value": "${__from:date:seconds}"
+                  },
+                  {
+                    "key": "to",
+                    "value": "${__to:date:seconds}"
+                  },
+                  {
+                    "key": "field",
+                    "value": "total_cpu_emissions_gms"
+                  },
+                  {
+                    "key": "field",
+                    "value": "total_gpu_emissions_gms"
+                  },
+                  {
+                    "key": "field",
+                    "value": "username"
                   }
                 ]
-              },
-              "unit": "watt"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 16,
-            "y": 68
-          },
-          "id": 25,
-          "interval": "10s",
-          "maxDataPoints": 1488,
-          "options": {
-            "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.3.1",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_gpu_power_watts:pue{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "GPU: {{gpu}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname,gpuuuid) (uuid:ceems_gpu_power_watts:pue{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total Usage on all GPUs",
-              "range": true,
-              "refId": "B"
+              }
             }
           ],
-          "title": "GPU Power Usage",
-          "type": "timeseries"
+          "title": "👣 Total Equivalent Emissions  estimated using ${provider:text} by users of ${account} 👣",
+          "transformations": [
+            {
+              "id": "extractFields",
+              "options": {
+                "format": "json",
+                "jsonPaths": [
+                  {
+                    "alias": "Host rte",
+                    "path": "rte_total"
+                  },
+                  {
+                    "alias": "Host emaps",
+                    "path": "emaps_total"
+                  },
+                  {
+                    "alias": "Host owid",
+                    "path": "owid_total"
+                  }
+                ],
+                "source": "Host"
+              }
+            },
+            {
+              "id": "extractFields",
+              "options": {
+                "format": "json",
+                "jsonPaths": [
+                  {
+                    "alias": "GPU rte",
+                    "path": "rte_total"
+                  },
+                  {
+                    "alias": "GPU emaps",
+                    "path": "emaps_total"
+                  },
+                  {
+                    "alias": "GPU owid",
+                    "path": "owid_total"
+                  }
+                ],
+                "source": "GPU"
+              }
+            },
+            {
+              "id": "filterFieldsByName",
+              "options": {
+                "byVariable": false,
+                "include": {
+                  "pattern": "(((Host|GPU)\\s*${provider})|User)"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Total",
+                "binary": {
+                  "left": {
+                    "matcher": {
+                      "id": "byType",
+                      "options": "number"
+                    }
+                  },
+                  "right": {
+                    "matcher": {
+                      "id": "byName",
+                      "options": "GPU"
+                    }
+                  }
+                },
+                "mode": "reduceRow",
+                "reduce": {
+                  "reducer": "sum"
+                }
+              }
+            },
+            {
+              "id": "renameByRegex",
+              "options": {
+                "regex": "(Host|GPU)(.*)",
+                "renamePattern": "$1"
+              }
+            }
+          ],
+          "type": "piechart"
+        },
+        {
+          "gridPos": {
+            "h": 10,
+            "w": 8,
+            "x": 16,
+            "y": 15
+          },
+          "id": 49,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "# README\n\nThe panels to the left show the breakdown of total energy consumption and\nequivalent emissions for project\n<span style=\"color:red\">**${account}**</span> during the period\n${__from:date:YYYY-MM-DD HH:mm:ss} to ${__to:date:YYYY-MM-DD HH:mm:ss}.\n\n- Total energy consumption is sum of energy consumed by host and GPUs (if present)\nfor all VMs ran during this period.\n\n- Total equivalent emissions is the sum of equivalent emissions from the energy\nconsumed by host and GPUs (if present) for all VMs ran during this period. Real time emission factors\n[RTE eCO2](https://www.rte-france.com/en/eco2mix/co2-emissions),\n[Electricity Maps](https://app.electricitymaps.com/map/72h) and\nstatic emission factor from [OWID](https://ourworldindata.org/co2-and-greenhouse-gas-emissions)\nare supported in the estimation of the emissions.\n",
+            "mode": "markdown"
+          },
+          "pluginVersion": "13.3.0",
+          "targets": [],
+          "title": "",
+          "type": "text"
         }
       ],
-      "title": "GPU Stats",
+      "title": "Breakdown of ${account}'s Energy & Emissions Usage  from ${__from:date:YYYY-MM-DD HH:mm:ss} to ${__to:date:YYYY-MM-DD HH:mm:ss}",
       "type": "row"
     },
     {
-      "collapsed": true,
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
         "y": 15
       },
-      "id": 42,
-      "panels": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "Time series of GPU SM Activity & Occupancy reported by nVIDIA-DCGM",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "percent"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 0,
-            "y": 392
-          },
-          "id": 34,
-          "interval": "10s",
-          "maxDataPoints": 1488,
-          "options": {
-            "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.4.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_sm_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "SM Activity on GPU: {{gpu}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_sm_active:ratio{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Average SM Activity on all GPUs",
-              "range": true,
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_sm_occupancy:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "SM Occupancy GPU: {{gpu}}",
-              "range": true,
-              "refId": "C"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_sm_occupancy:ratio{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Average SM Occupancy on all GPUs",
-              "range": true,
-              "refId": "D"
-            }
-          ],
-          "title": "GPU SM Activity & Occupancy",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "Time series of GPU Graphics and Tensor Engines Activity reported by nVIDIA-DCGM",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "percent"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 8,
-            "y": 392
-          },
-          "id": 35,
-          "interval": "10s",
-          "maxDataPoints": 1488,
-          "options": {
-            "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.4.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_gr_engine_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Graphics Engine Activity on GPU: {{gpu}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_gr_engine_active:ratio{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Average Graphics Engine Activity on all GPUs",
-              "range": true,
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_pipe_tensor_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Tensor Pipe Activity on GPU: {{gpu}}",
-              "range": true,
-              "refId": "C"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_pipe_tensor_active:ratio{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Average Tensor Pipe Activity on all GPUs",
-              "range": true,
-              "refId": "D"
-            }
-          ],
-          "title": "GPU Graphics and Tensor Engines Activity",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "Time series of GPU FP{64, 32, 16} Engines Activity reported by nVIDIA-DCGM",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "percent"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 16,
-            "y": 392
-          },
-          "id": 39,
-          "interval": "10s",
-          "maxDataPoints": 1488,
-          "options": {
-            "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.4.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_pipe_fp64_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "FP64 Activity on GPU: {{gpu}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_pipe_fp32_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "FP32 Activity on GPU: {{gpu}}",
-              "range": true,
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_pipe_fp16_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "FP16 Activity on GPU: {{gpu}}",
-              "range": true,
-              "refId": "C"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_pipe_fp64_active:ratio{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Average FP64 Engine Activity on all GPUs",
-              "range": true,
-              "refId": "D"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_pipe_fp32_active:ratio{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Average FP32 Engine Activity on all GPUs",
-              "range": true,
-              "refId": "E"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_pipe_fp16_active:ratio{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Average FP16 Engine Activity on all GPUs",
-              "range": true,
-              "refId": "F"
-            }
-          ],
-          "title": "GPU FP Engines Activity",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "Time series of fraction of cycles where data was sent to or received from GPU reported by nVIDIA-DCGM",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "percent"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 0,
-            "y": 400
-          },
-          "id": 38,
-          "interval": "10s",
-          "maxDataPoints": 1488,
-          "options": {
-            "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.4.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname) (uuid:ceems_gpu_prof_dram_active:ratio{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "GPU: {{gpu}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_dram_active:ratio{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Average Memory BW Utilization on all GPUs",
-              "range": true,
-              "refId": "B"
-            }
-          ],
-          "title": "GPU Memory BW Utilization",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "Time series of GPU NVLink Bandwidth reported by nVIDIA-DCGM",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "binBps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 8,
-            "y": 400
-          },
-          "id": 40,
-          "interval": "10s",
-          "maxDataPoints": 1488,
-          "options": {
-            "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.4.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_gpu_prof_nvlink_tx_bytes:sum{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Transmitted on GPU: {{gpu}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_nvlink_tx_bytes:sum{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total Transmitted Bandwidth on all GPUs",
-              "range": true,
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_gpu_prof_nvlink_rx_bytes:sum{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Received on GPU: {{gpu}}",
-              "range": true,
-              "refId": "C"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_nvlink_rx_bytes:sum{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total Received Bandwidth on all GPUs",
-              "range": true,
-              "refId": "D"
-            }
-          ],
-          "title": "GPU NVLink Bandwidth",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "Time series of GPU PCIe Bandwidth reported by nVIDIA-DCGM",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "binBps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 16,
-            "y": 400
-          },
-          "id": 41,
-          "interval": "10s",
-          "maxDataPoints": 1488,
-          "options": {
-            "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.4.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_gpu_prof_pcie_tx_bytes:sum{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Transmitted on GPU: {{gpu}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_pcie_tx_bytes:sum{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total Transmitted Bandwidth on all GPUs",
-              "range": true,
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_gpu_prof_pcie_rx_bytes:sum{gpuuuid=~\"${gpu}\",uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Received on GPU: {{gpu}}",
-              "range": true,
-              "refId": "C"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname,gpuuuid) (uuid:ceems_gpu_prof_pcie_rx_bytes:sum{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "TOtal Received Bandwidth on all GPUs",
-              "range": true,
-              "refId": "D"
-            }
-          ],
-          "title": "GPU PCIe Bandwidth",
-          "type": "timeseries"
-        }
-      ],
-      "title": "GPU Profiling Stats",
+      "id": 56,
+      "title": "VM Metrics from ${__from:date:YYYY-MM-DD HH:mm:ss} to ${__to:date:YYYY-MM-DD HH:mm:ss}",
       "type": "row"
     },
     {
-      "collapsed": true,
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
+      },
+      "description": "List of all Openstack VMs of user ${user} with project ${account}. By clicking the row, user will be redirected to the dashboard that shows the time series metrics of that compute unit.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "footer": {
+              "reducers": []
+            },
+            "inspect": false,
+            "wrapText": false
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "Openstack VM Metrics Dashboard",
+              "url": "/d/de5zvcrpxkv7kb/_?orgId=${orgId}&var-uuid=${__data.fields.UUID}&from=now-24h&to=now&var-provider=rte&var-submit=${__data.fields.created_at_ts}&var-start=${__data.fields.started_at_ts}&var-end=${__data.fields.ended_at_ts}&var-name=${__data.fields.Name}&var-nodelist=${__data.fields.Nodelist}&var-state=${__data.fields.State}&var-elapsed=${__data.fields.Elapsed}&var-account=${account}&var-cpu_usage=${__data.fields[\"CPU Usage (%)\"]}&var-cpumem_usage=${__data.fields[\"CPU Mem Usage (%)\"]}&var-cpu_energy=${__data.fields[\"Host Energy (kWh)\"]}&var-cpu_emissions_rte=${__data.fields[\"Host Emissions RTE (gms)\"]}&var-cpu_emissions_emaps=${__data.fields[\"Host Emissions EMaps (gms)\"]}&var-cpu_emissions_owid=${__data.fields[\"Host Emissions OWID (gms)\"]}&var-gpu_usage=${__data.fields[\"GPU Usage (%)\"]}&var-gpumem_usage=${__data.fields[\"GPU Mem Usage (%)\"]}&var-gpu_energy=${__data.fields[\"GPU Energy (kWh)\"]}&var-gpu_emissions_rte=${__data.fields[\"GPU Emissions RTE (gms)\"]}&var-gpu_emissions_emaps=${__data.fields[\"GPU Emissions EMaps (gms)\"]}&var-gpu_emissions_owid=${__data.fields[\"GPU Emissions OWID (gms)\"]}&var-total_energy=${__data.fields[\"Total Energy (kWh)\"]}&var-total_emissions_rte=${__data.fields[\"Total Emissions RTE (gms)\"]}&var-total_emissions_emaps=${__data.fields[\"Total Emissions EMaps (gms)\"]}&var-total_emissions_owid=${__data.fields[\"Total Emissions OWID (gms)\"]}"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/(created_at_ts|ended_at_ts|project|started_at_ts)/"
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom.viz",
+                "value": true
+              }
+            ]
+          }
+        ]
+      },
       "gridPos": {
-        "h": 1,
+        "h": 27,
         "w": 24,
         "x": 0,
         "y": 16
       },
       "id": 52,
-      "panels": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "Time series of Read/Write Bandwidth to different file systems.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "binBps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 0,
-            "y": 225
-          },
-          "id": 49,
-          "interval": "10s",
-          "maxDataPoints": 1488,
-          "options": {
-            "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.4.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_io_read_bytes:irate{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Read Bandwith on {{mountpoint}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_io_write_bytes:irate{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Write Bandwith on {{mountpoint}}",
-              "range": true,
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (mountpoint) (uuid:ceems_io_read_bytes:irate{uuid=\"${uuid}\"}))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total Read Bandwith on {{mountpoint}}",
-              "range": true,
-              "refId": "C"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (mountpoint) (uuid:ceems_io_write_bytes:irate{uuid=\"${uuid}\"}))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total Write Bandwith on {{mountpoint}}",
-              "range": true,
-              "refId": "D"
-            }
-          ],
-          "title": "IO Read/Write Bandwidth",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "Time series of Read/Write Requests to different file systems.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "reqps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 8,
-            "y": 225
-          },
-          "id": 50,
-          "interval": "10s",
-          "maxDataPoints": 1488,
-          "options": {
-            "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.4.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_io_read_requests:irate{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Read Requests on {{mountpoint}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_io_write_requests:irate{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Write Requests on {{mountpoint}}",
-              "range": true,
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (mountpoint) (uuid:ceems_io_read_requests:irate{uuid=\"${uuid}\"}))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total Read Requests on {{mountpoint}}",
-              "range": true,
-              "refId": "C"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (mountpoint) (uuid:ceems_io_write_requests:irate{uuid=\"${uuid}\"}))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total Write Requests on {{mountpoint}}",
-              "range": true,
-              "refId": "D"
-            }
-          ],
-          "title": "IO Read/Write Requests",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "Time series of Read/Write Errors to different file systems.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "si:errors/s"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 8,
-            "x": 16,
-            "y": 225
-          },
-          "id": 51,
-          "interval": "10s",
-          "maxDataPoints": 1488,
-          "options": {
-            "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.4.0",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_io_read_errors:irate{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Read Errors on {{mountpoint}}",
-              "range": true,
-              "refId": "A"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_io_write_errors:irate{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Write Errors on {{mountpoint}}",
-              "range": true,
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (mountpoint) (uuid:ceems_io_read_errors:irate{uuid=\"${uuid}\"}))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total Read Errors on {{mountpoint}}",
-              "range": true,
-              "refId": "C"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (mountpoint) (uuid:ceems_io_write_errors:irate{uuid=\"${uuid}\"}))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total Write Errors on {{mountpoint}}",
-              "range": true,
-              "refId": "D"
-            }
-          ],
-          "title": "IO Read/Write Errors",
-          "type": "timeseries"
-        }
-      ],
-      "title": "IO Stats",
-      "type": "row"
-    },
-    {
-      "collapsed": true,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 17
+      "options": {
+        "cellHeight": "sm",
+        "enablePagination": true,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Start Time"
+          }
+        ],
+        "zebraStriping": false
       },
-      "id": 58,
-      "panels": [
+      "pluginVersion": "13.3.0",
+      "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "description": "Time series of Job Network Ingress/Egress Bandwidth.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "binBps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 27
-          },
-          "id": 59,
-          "options": {
-            "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.3.1",
-          "targets": [
+          "columns": [
             {
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_net_ingress_bytes:irate{uuid=\"${uuid}\"})",
-              "legendFormat": "Ingress Bandwith {{proto}}/{{family}}",
-              "range": true,
-              "refId": "A",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              }
+              "selector": "uuid",
+              "text": "UUID",
+              "type": "string"
             },
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_net_egress_bytes:irate{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Egress Bandwith {{proto}}/{{family}}",
-              "range": true,
-              "refId": "B"
+              "selector": "started_at",
+              "text": "Start Time",
+              "timestampFormat": "2006-01-02T15:04:05Z07:00",
+              "type": "string"
             },
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (proto,family) (uuid:ceems_net_ingress_bytes:irate{uuid=\"${uuid}\"}))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total Ingress Bandwith {{proto}}/{{family}}",
-              "range": true,
-              "refId": "C"
+              "selector": "ended_at",
+              "text": "End Time",
+              "type": "string"
             },
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (proto,family) (uuid:ceems_net_egress_bytes:irate{uuid=\"${uuid}\"}))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total Egress Bandwith {{proto}}/{{family}}",
-              "range": true,
-              "refId": "D"
+              "selector": "elapsed",
+              "text": "Elapsed",
+              "type": "string"
+            },
+            {
+              "selector": "state",
+              "text": "State",
+              "type": "string"
+            },
+            {
+              "selector": "avg_cpu_usage.global",
+              "text": "CPU Usage (%)",
+              "type": "number"
+            },
+            {
+              "selector": "total_cpu_energy_usage_kwh.total",
+              "text": "Host Energy (kWh)",
+              "type": "number"
+            },
+            {
+              "selector": "total_cpu_emissions_gms.rte_total",
+              "text": "Host Emissions RTE (gms)",
+              "type": "number"
+            },
+            {
+              "selector": "avg_gpu_usage.global",
+              "text": "GPU Usage (%)",
+              "type": "number"
+            },
+            {
+              "selector": "total_gpu_energy_usage_kwh.total",
+              "text": "GPU Energy (kWh)",
+              "type": "number"
+            },
+            {
+              "selector": "total_gpu_emissions_gms.rte_total",
+              "text": "GPU Emissions RTE (gms)",
+              "type": "number"
+            },
+            {
+              "selector": "started_at_ts",
+              "text": "",
+              "type": "number"
+            },
+            {
+              "selector": "ended_at_ts",
+              "text": "",
+              "type": "number"
+            },
+            {
+              "selector": "username",
+              "text": "",
+              "type": "string"
+            },
+            {
+              "selector": "project",
+              "text": "",
+              "type": "string"
+            },
+            {
+              "selector": "total_time_seconds.walltime",
+              "text": "",
+              "type": "number"
+            },
+            {
+              "selector": "avg_cpu_mem_usage.global",
+              "text": "CPU Mem Usage (%)",
+              "type": "number"
+            },
+            {
+              "selector": "avg_gpu_mem_usage.global",
+              "text": "GPU Mem Usage (%)",
+              "type": "number"
+            },
+            {
+              "selector": "created_at_ts",
+              "text": "",
+              "type": "number"
+            },
+            {
+              "selector": "name",
+              "text": "Name",
+              "type": "string"
+            },
+            {
+              "selector": "total_cpu_emissions_gms.emaps_total",
+              "text": "Host Emissions EMaps (gms)",
+              "type": "number"
+            },
+            {
+              "selector": "total_cpu_emissions_gms.owid_total",
+              "text": "Host Emissions OWID (gms)",
+              "type": "number"
+            },
+            {
+              "selector": "total_gpu_emissions_gms.emaps_total",
+              "text": "GPU Emissions EMaps (gms)",
+              "type": "number"
+            },
+            {
+              "selector": "total_gpu_emissions_gms.owid_total",
+              "text": "GPU Emissions OWID (gms)",
+              "type": "number"
             }
           ],
-          "title": "Network Ingress/Egress Bandwidth",
-          "type": "timeseries"
-        },
-        {
+          "computed_columns": [],
           "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
           },
-          "description": "Time series of Job Network Ingress/Egress Packets.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
+          "filters": [],
+          "format": "table",
+          "global_query_id": "",
+          "pagination_mode": "none",
+          "parser": "backend",
+          "refId": "A",
+          "root_selector": "data",
+          "source": "url",
+          "type": "json",
+          "url": "/api/v1/units${endpoint}",
+          "url_options": {
+            "data": "",
+            "headers": [],
+            "method": "GET",
+            "params": [
+              {
+                "key": "project",
+                "value": "${account}"
               },
-              "custom": {
-                "axisBorderShow": false,
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "barWidthFactor": 0.6,
-                "drawStyle": "line",
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "insertNulls": false,
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
+              {
+                "key": "from",
+                "value": "${__from:date:seconds}"
               },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
+              {
+                "key": "to",
+                "value": "${__to:date:seconds}"
               },
-              "unit": "pps"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 27
-          },
-          "id": 60,
-          "options": {
-            "legend": {
-              "calcs": [
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "bottom",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "11.3.1",
-          "targets": [
-            {
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_net_ingress_packets:irate{uuid=\"${uuid}\"})",
-              "legendFormat": "Ingress Packets {{proto}}/{{family}}",
-              "range": true,
-              "refId": "A",
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+              {
+                "key": "cluster_id",
+                "value": "${clusterId}"
+              },
+              {
+                "key": "user",
+                "value": "${user}"
+              },
+              {
+                "key": "running",
+                "value": "1"
               }
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (uuid:ceems_net_egress_packets:irate{uuid=\"${uuid}\"})",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Egress Packets {{proto}}/{{family}}",
-              "range": true,
-              "refId": "B"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (proto,family) (uuid:ceems_net_ingress_packets:irate{uuid=\"${uuid}\"}))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total Ingress Packets {{proto}}/{{family}}",
-              "range": true,
-              "refId": "C"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum without (instance,hostname) (sum by (proto,family) (uuid:ceems_net_egress_packets:irate{uuid=\"${uuid}\"}))",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "Total Egress Packets {{proto}}/{{family}}",
-              "range": true,
-              "refId": "D"
-            }
-          ],
-          "title": "Network Ingress/Egress Packets",
-          "type": "timeseries"
+            ]
+          }
         }
       ],
-      "title": "Network Stats",
-      "type": "row"
+      "title": "List of Openstack VMs",
+      "transformations": [
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Total Energy (kWh)",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Host Energy (kWh)"
+                }
+              },
+              "right": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "GPU Energy (kWh)"
+                }
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Total Emissions EMaps (gms)",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Host Emissions EMaps (gms)"
+                }
+              },
+              "right": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "GPU Emissions EMaps (gms)"
+                }
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Total Emissions OWID (gms)",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Host Emissions OWID (gms)"
+                }
+              },
+              "right": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "GPU Emissions OWID (gms)"
+                }
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "calculateField",
+          "options": {
+            "alias": "Total Emissions RTE (gms)",
+            "binary": {
+              "left": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Host Emissions RTE (gms)"
+                }
+              },
+              "right": {
+                "matcher": {
+                  "id": "byName",
+                  "options": "GPU Emissions RTE (gms)"
+                }
+              }
+            },
+            "mode": "binary",
+            "reduce": {
+              "reducer": "sum"
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Partition": false,
+              "QoS": false,
+              "created_at_ts": false,
+              "ended_at_ts": false,
+              "project": false,
+              "started_at_ts": false,
+              "total_time_seconds.walltime": true,
+              "username": true
+            },
+            "includeByName": {},
+            "indexByName": {
+              "CPU Mem Usage (%)": 11,
+              "CPU Usage (%)": 10,
+              "Elapsed": 4,
+              "End Time": 3,
+              "GPU Emissions EMaps (gms)": 20,
+              "GPU Emissions OWID (gms)": 21,
+              "GPU Emissions RTE (gms)": 19,
+              "GPU Energy (kWh)": 18,
+              "GPU Mem Usage (%)": 17,
+              "GPU Usage (%)": 16,
+              "Host Emissions EMaps (gms)": 14,
+              "Host Emissions OWID (gms)": 15,
+              "Host Emissions RTE (gms)": 13,
+              "Host Energy (kWh)": 12,
+              "Name": 1,
+              "Nodelist": 22,
+              "Partition": 23,
+              "QoS": 24,
+              "Start Time": 2,
+              "State": 5,
+              "Total Emissions EMaps (gms)": 8,
+              "Total Emissions OWID (gms)": 9,
+              "Total Emissions RTE (gms)": 7,
+              "Total Energy (kWh)": 6,
+              "UUID": 0,
+              "created_at_ts": 25,
+              "ended_at_ts": 26,
+              "project": 27,
+              "started_at_ts": 28,
+              "total_time_seconds.walltime": 29,
+              "username": 30
+            },
+            "renameByName": {}
+          }
+        }
+      ],
+      "type": "table"
     }
   ],
-  "schemaVersion": 40,
+  "preload": false,
+  "refresh": "",
+  "schemaVersion": 42,
   "tags": [
-    "openstack",
-    "emissions",
-    "energy",
     "vm",
-    "cloud"
+    "aggregate",
+    "openstack",
+    "energy",
+    "emissions"
   ],
   "templating": {
     "list": [
       {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "label": "UUID",
-        "name": "uuid",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
+        "allowCustomValue": true,
         "current": {},
         "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS}"
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
         },
-        "definition": "query_result(max_over_time((sum without (instance,hostname) (ceems_compute_unit_gpu_index_flag{uuid=\"${uuid}\"}))[$__range:]))",
-        "label": "GPU:",
-        "multi": true,
-        "name": "gpu",
+        "definition": "",
+        "includeAll": false,
+        "label": "User:",
+        "name": "user",
         "options": [],
         "query": {
-          "qryType": 3,
-          "query": "query_result(max_over_time((sum without (instance,hostname) (ceems_compute_unit_gpu_index_flag{uuid=\"${uuid}\"}))[$__range:]))",
-          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+          "infinityQuery": {
+            "columns": [
+              {
+                "selector": "name",
+                "text": "__text",
+                "type": "string"
+              },
+              {
+                "selector": "name",
+                "text": "__value",
+                "type": "string"
+              }
+            ],
+            "filters": [],
+            "format": "table",
+            "parser": "backend",
+            "refId": "",
+            "root_selector": "data",
+            "source": "url",
+            "type": "json",
+            "url": "/api/v1/users/admin",
+            "url_options": {
+              "data": "",
+              "headers": [],
+              "method": "GET",
+              "params": [
+                {
+                  "key": "cluster_id",
+                  "value": "os-0"
+                }
+              ]
+            }
+          },
+          "query": "",
+          "queryType": "infinity"
         },
         "refresh": 1,
-        "regex": "/index=\"(?<text>[^\"]+)|gpuuuid=\"(?<value>[^\"]+)/g",
+        "regex": "gazoo|betty",
+        "regexApplyTo": "value",
         "type": "query"
       },
       {
-        "current": {
-          "text": "",
-          "value": ""
+        "allowCustomValue": true,
+        "current": {},
+        "datasource": {
+          "type": "yesoreyeram-infinity-datasource",
+          "uid": "${DS_YESOREYERAM-INFINITY-DATASOURCE}"
         },
-        "hide": 2,
-        "name": "name",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "submit",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "start",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "end",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "state",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "elapsed",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
+        "definition": "",
+        "includeAll": false,
+        "label": "Project:",
         "name": "account",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
+        "options": [],
+        "query": {
+          "infinityQuery": {
+            "columns": [
+              {
+                "selector": "",
+                "text": "",
+                "type": "string"
+              }
+            ],
+            "filters": [],
+            "format": "table",
+            "parser": "backend",
+            "refId": "",
+            "root_selector": "data.projects[*]",
+            "source": "url",
+            "type": "uql",
+            "uql": "parse-json\n| scope \"data\"\n| jsonata \"[projects]\"",
+            "url": "/api/v1/users/admin",
+            "url_options": {
+              "data": "",
+              "headers": [],
+              "method": "GET",
+              "params": [
+                {
+                  "key": "cluster_id",
+                  "value": "os-0"
+                },
+                {
+                  "key": "user",
+                  "value": "${user}"
+                }
+              ]
+            }
+          },
+          "query": "",
+          "queryType": "infinity"
+        },
+        "refresh": 1,
+        "regex": "",
+        "regexApplyTo": "value",
+        "type": "query"
       },
       {
+        "allowCustomValue": true,
         "current": {
-          "text": "",
-          "value": ""
+          "text": "rte",
+          "value": "rte"
         },
-        "hide": 2,
-        "name": "cpu_usage",
+        "includeAll": false,
+        "label": "Emission Factor Provider:",
+        "name": "provider",
         "options": [
           {
             "selected": true,
-            "text": "",
-            "value": ""
+            "text": "RTE eCO2 Mix",
+            "value": "rte"
+          },
+          {
+            "selected": false,
+            "text": "Electricity Maps",
+            "value": "emaps"
+          },
+          {
+            "selected": false,
+            "text": "OWID",
+            "value": "owid"
           }
         ],
-        "query": "",
-        "type": "textbox"
+        "query": "RTE eCO2 Mix : rte, Electricity Maps : emaps, OWID : owid",
+        "type": "custom",
+        "valuesFormat": "csv"
       },
       {
-        "current": {
-          "text": "",
-          "value": ""
-        },
+        "description": "Grafana Organization ID",
         "hide": 2,
-        "name": "cpumem_usage",
+        "name": "orgId",
+        "query": "${VAR_ORGID}",
+        "skipUrlSync": true,
+        "type": "constant",
+        "current": {
+          "value": "${VAR_ORGID}",
+          "text": "${VAR_ORGID}",
+          "selected": false
+        },
         "options": [
           {
-            "selected": true,
-            "text": "",
-            "value": ""
+            "value": "${VAR_ORGID}",
+            "text": "${VAR_ORGID}",
+            "selected": false
           }
-        ],
-        "query": "",
-        "type": "textbox"
+        ]
       },
       {
-        "current": {
-          "text": "",
-          "value": ""
-        },
+        "description": "CEEMS Cluster ID defined in CEEMS API server config",
         "hide": 2,
-        "name": "cpu_energy",
+        "name": "clusterId",
+        "query": "${VAR_CLUSTERID}",
+        "skipUrlSync": true,
+        "type": "constant",
+        "current": {
+          "value": "${VAR_CLUSTERID}",
+          "text": "${VAR_CLUSTERID}",
+          "selected": false
+        },
         "options": [
           {
-            "selected": true,
-            "text": "",
-            "value": ""
+            "value": "${VAR_CLUSTERID}",
+            "text": "${VAR_CLUSTERID}",
+            "selected": false
           }
-        ],
-        "query": "",
-        "type": "textbox"
+        ]
       },
       {
-        "current": {
-          "text": "",
-          "value": ""
-        },
+        "description": "Set it to /admin for admin dashboards to consult usage statistics of any user. For user dashboards that restrict data to current logged user, set it to empty space.",
         "hide": 2,
-        "name": "cpu_emissions_rte",
+        "name": "endpoint",
+        "query": "${VAR_ENDPOINT}",
+        "skipUrlSync": true,
+        "type": "constant",
+        "current": {
+          "value": "${VAR_ENDPOINT}",
+          "text": "${VAR_ENDPOINT}",
+          "selected": false
+        },
         "options": [
           {
-            "selected": true,
-            "text": "",
-            "value": ""
+            "value": "${VAR_ENDPOINT}",
+            "text": "${VAR_ENDPOINT}",
+            "selected": false
           }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "cpu_emissions_emaps",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "cpu_emissions_wt",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "cpu_emissions_owid",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "cpu_emissions_global",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "gpu_usage",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "gpumem_usage",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "gpu_energy",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "gpu_emissions_rte",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "gpu_emissions_emaps",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "gpu_emissions_wt",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "gpu_emissions_owid",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "gpu_emissions_global",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "total_energy",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "total_emissions_rte",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "total_emissions_emaps",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "total_emissions_wt",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "total_emissions_owid",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
-      },
-      {
-        "current": {
-          "text": "",
-          "value": ""
-        },
-        "hide": 2,
-        "name": "total_emissions_global",
-        "options": [
-          {
-            "selected": true,
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
-        "type": "textbox"
+        ]
       }
     ]
   },
   "time": {
-    "from": "2025-02-07T15:58:19.000Z",
-    "to": "2025-02-07T16:05:03.000Z"
+    "from": "now-90d",
+    "to": "now"
   },
   "timepicker": {
-    "hidden": false,
     "refresh_intervals": [
       "5m",
       "15m",
@@ -3064,9 +2340,9 @@
       "1d"
     ]
   },
-  "timezone": "",
-  "title": "Single VM Metrics",
-  "uid": "os-vm-metrics",
-  "version": 1,
+  "timezone": "browser",
+  "title": "User Openstack VM Summary",
+  "uid": "be5x3it7gpx4wf",
+  "version": 7,
   "weekStart": ""
 }
