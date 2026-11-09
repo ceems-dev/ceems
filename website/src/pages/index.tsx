@@ -23,12 +23,12 @@ function HomepageHeader() {
         </div>
         <br></br>
         <div className={styles.buttons}>
-          <Link className="button button--secondary button--lg" to="https://ceems-demo.myaddr.tools">
+          <Link className="button button--secondary button--lg" to="https://demo.ceems.dev/grafana">
             Demo
           </Link>
         </div>
         <br></br>
-        <iframe src="https://ceems-demo.myaddr.tools/playlists/play/fe63euztbeeiof?kiosk" height="1200" width="100%" title="Demo Playlist"></iframe>
+        <iframe src="https://demo.ceems.dev/grafana/playlists/play/fe63euztbeeiof?kiosk" height="1200" width="100%" title="Demo Playlist"></iframe>
       </div>
     </header>
   );
