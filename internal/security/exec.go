@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/ceems-dev/ceems/internal/osexec"
-	"kernel.org/pub/linux/libs/security/libcap/cap"
+	libcap "kernel.org/pub/linux/libs/security/libcap/cap"
 )
 
 // Custom errors.
@@ -20,7 +20,7 @@ var (
 type SCConfig struct {
 	Logger *slog.Logger
 	Func   func(any) error
-	Caps   []cap.Value
+	Caps   []libcap.Value
 	Name   string
 
 	// Execute function natively without a security context.
@@ -33,10 +33,10 @@ type SCConfig struct {
 // safely executed with required privileges on a thread locked to OS.
 type SecurityContext struct {
 	logger       *slog.Logger
-	launcher     *cap.Launcher
+	launcher     *libcap.Launcher
 	f            func(any) error
-	caps         []cap.Value
-	capSet       *cap.Set
+	caps         []libcap.Value
+	capSet       *libcap.Set
 	execNatively bool
 	Name         string
 }
@@ -48,13 +48,13 @@ func NewSecurityContext(c *SCConfig) (*SecurityContext, error) {
 		logger:       c.Logger,
 		caps:         c.Caps,
 		Name:         c.Name,
-		capSet:       cap.NewSet(),
+		capSet:       libcap.NewSet(),
 		execNatively: c.ExecNatively,
 		f:            c.Func,
 	}
 
 	// Create a new Launcher after embedding the function inside enclave
-	s.launcher = cap.FuncLauncher(s.targetFunc)
+	s.launcher = libcap.FuncLauncher(s.targetFunc)
 
 	return s, nil
 }
@@ -82,12 +82,12 @@ func (s *SecurityContext) raiseCaps() error {
 		return nil
 	}
 
-	err := s.capSet.SetFlag(cap.Permitted, true, s.caps...)
+	err := s.capSet.SetFlag(libcap.Permitted, true, s.caps...)
 	if err != nil {
 		return fmt.Errorf("raising: error setting permitted capabilities: %w", err)
 	}
 
-	err = s.capSet.SetFlag(cap.Effective, true, s.caps...)
+	err = s.capSet.SetFlag(libcap.Effective, true, s.caps...)
 	if err != nil {
 		return fmt.Errorf("raising: error setting effective capabilities: %w", err)
 	}
@@ -107,7 +107,7 @@ func (s *SecurityContext) dropCaps() error {
 		return nil
 	}
 
-	err := s.capSet.SetFlag(cap.Effective, false, s.caps...)
+	err := s.capSet.SetFlag(libcap.Effective, false, s.caps...)
 	if err != nil {
 		return fmt.Errorf("dropping: error setting effective capabilities: %w", err)
 	}
@@ -131,10 +131,10 @@ func (s *SecurityContext) targetFunc(data any) error {
 	// for the error is lack of privileges.
 	err := s.raiseCaps()
 	if err != nil {
-		s.logger.Error("Failed to raise capabilities", "name", s.Name, "caps", cap.GetProc().String(), "err", err)
+		s.logger.Error("Failed to raise capabilities", "name", s.Name, "caps", libcap.GetProc().String(), "err", err)
 	}
 
-	s.logger.Debug("Executing in security context", "name", s.Name, "caps", cap.GetProc().String())
+	s.logger.Debug("Executing in security context", "name", s.Name, "caps", libcap.GetProc().String())
 
 	// Execute function
 	err = s.f(data)
@@ -142,7 +142,7 @@ func (s *SecurityContext) targetFunc(data any) error {
 		// Attempt to drop capabilities and ignore any errors
 		capsErr := s.dropCaps()
 		if capsErr != nil {
-			s.logger.Warn("Failed to drop capabilities", "name", s.Name, "caps", cap.GetProc().String(), "err", capsErr)
+			s.logger.Warn("Failed to drop capabilities", "name", s.Name, "caps", libcap.GetProc().String(), "err", capsErr)
 		}
 
 		return err
@@ -153,7 +153,7 @@ func (s *SecurityContext) targetFunc(data any) error {
 	// Ignore any errors
 	err = s.dropCaps()
 	if err != nil {
-		s.logger.Warn("Failed to drop capabilities", "name", s.Name, "caps", cap.GetProc().String(), "err", err)
+		s.logger.Warn("Failed to drop capabilities", "name", s.Name, "caps", libcap.GetProc().String(), "err", err)
 	}
 
 	return nil

@@ -14,7 +14,6 @@ import (
 	"github.com/stretchr/testify/require"
 	v1 "k8s.io/api/admission/v1"
 	"k8s.io/api/admission/v1beta1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -42,11 +41,9 @@ func TestHandler(t *testing.T) {
 			method: http.MethodPost,
 			url:    mutatePath,
 			req: &v1.AdmissionReview{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       "AdmissionReview",
-					APIVersion: "admission.k8s.io/v1",
-				},
-				Response: &v1.AdmissionResponse{},
+				Kind:       "AdmissionReview",
+				APIVersion: "admission.k8s.io/v1",
+				Response:   &v1.AdmissionResponse{},
 				Request: &v1.AdmissionRequest{
 					Name:      "name",
 					Namespace: "ns",
@@ -62,11 +59,9 @@ func TestHandler(t *testing.T) {
 			method: http.MethodPost,
 			url:    mutatePath,
 			req: &v1beta1.AdmissionReview{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       "AdmissionReview",
-					APIVersion: "admission.k8s.io/v1beta1",
-				},
-				Response: &v1beta1.AdmissionResponse{},
+				Kind:       "AdmissionReview",
+				APIVersion: "admission.k8s.io/v1beta1",
+				Response:   &v1beta1.AdmissionResponse{},
 				Request: &v1beta1.AdmissionRequest{
 					Name:      "name",
 					Namespace: "ns",
@@ -89,11 +84,9 @@ func TestHandler(t *testing.T) {
 			method: http.MethodPost,
 			url:    mutatePath,
 			req: &v1.AdmissionReview{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       "AdmissionReview",
-					APIVersion: "admission.k8s.io/v1",
-				},
-				Response: &v1.AdmissionResponse{},
+				Kind:       "AdmissionReview",
+				APIVersion: "admission.k8s.io/v1",
+				Response:   &v1.AdmissionResponse{},
 			},
 			handler: handler.Serve(podsMutation),
 			code:    400,
@@ -103,11 +96,9 @@ func TestHandler(t *testing.T) {
 			method: http.MethodPost,
 			url:    mutatePath,
 			req: &v1beta1.AdmissionReview{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       "AdmissionReview",
-					APIVersion: "admission.k8s.io/v1beta1",
-				},
-				Response: &v1beta1.AdmissionResponse{},
+				Kind:       "AdmissionReview",
+				APIVersion: "admission.k8s.io/v1beta1",
+				Response:   &v1beta1.AdmissionResponse{},
 			},
 			handler: handler.Serve(podsMutation),
 			code:    400,
@@ -118,11 +109,9 @@ func TestHandler(t *testing.T) {
 			url:     mutatePath,
 			handler: handler.Serve(podsValidation),
 			req: &v1.AdmissionReview{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       "AdmissionReview",
-					APIVersion: "admission.k8s.io/v1",
-				},
-				Response: &v1.AdmissionResponse{},
+				Kind:       "AdmissionReview",
+				APIVersion: "admission.k8s.io/v1",
+				Response:   &v1.AdmissionResponse{},
 				Request: &v1.AdmissionRequest{
 					Name:      "name",
 					Namespace: "ns",
@@ -137,11 +126,9 @@ func TestHandler(t *testing.T) {
 			url:     mutatePath,
 			handler: handler.Serve(podsValidation),
 			req: &v1beta1.AdmissionReview{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       "AdmissionReview",
-					APIVersion: "admission.k8s.io/v1beta1",
-				},
-				Response: &v1beta1.AdmissionResponse{},
+				Kind:       "AdmissionReview",
+				APIVersion: "admission.k8s.io/v1beta1",
+				Response:   &v1beta1.AdmissionResponse{},
 				Request: &v1beta1.AdmissionRequest{
 					Name:      "name",
 					Namespace: "ns",
@@ -155,11 +142,9 @@ func TestHandler(t *testing.T) {
 			method: http.MethodPost,
 			url:    mutatePath,
 			req: &v1.AdmissionReview{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       "AdmissionReview",
-					APIVersion: "admission.k8s.io/v1",
-				},
-				Response: &v1.AdmissionResponse{},
+				Kind:       "AdmissionReview",
+				APIVersion: "admission.k8s.io/v1",
+				Response:   &v1.AdmissionResponse{},
 				Request: &v1.AdmissionRequest{
 					Name:      "name",
 					Namespace: "ns",
@@ -175,11 +160,9 @@ func TestHandler(t *testing.T) {
 			method: http.MethodPost,
 			url:    mutatePath,
 			req: &v1beta1.AdmissionReview{
-				TypeMeta: metav1.TypeMeta{
-					Kind:       "AdmissionReview",
-					APIVersion: "admission.k8s.io/v1beta1",
-				},
-				Response: &v1beta1.AdmissionResponse{},
+				Kind:       "AdmissionReview",
+				APIVersion: "admission.k8s.io/v1beta1",
+				Response:   &v1beta1.AdmissionResponse{},
 				Request: &v1beta1.AdmissionRequest{
 					Name:      "name",
 					Namespace: "ns",

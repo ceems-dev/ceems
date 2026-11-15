@@ -8,7 +8,7 @@ import (
 	"github.com/ceems-dev/ceems/internal/osexec"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"kernel.org/pub/linux/libs/security/libcap/cap"
+	libcap "kernel.org/pub/linux/libs/security/libcap/cap"
 )
 
 var noOpLogger = slog.New(slog.DiscardHandler)
@@ -38,10 +38,10 @@ func TestNewSecurityLauncher(t *testing.T) {
 	skipUnprivileged(t)
 
 	// target caps
-	var values []cap.Value
+	var values []libcap.Value
 
 	for _, c := range []string{"cap_setuid", "cap_setgid"} {
-		value, err := cap.FromName(c)
+		value, err := libcap.FromName(c)
 		require.NoError(t, err)
 
 		values = append(values, value)

@@ -16,7 +16,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v7
         with:
-          go-version: 1.26.x
+          go-version: 1.27.x
 
       - name: Create a sample object file
         run: |
@@ -28,5 +28,5 @@ jobs:
       - name: Lint
         uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.13.2
+          version: v2.15.0
           args: --timeout=5m

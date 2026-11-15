@@ -17,7 +17,7 @@ import (
 	"github.com/ceems-dev/ceems/internal/osexec"
 	"github.com/steiler/acls"
 	"github.com/wneessen/go-fileperm"
-	"kernel.org/pub/linux/libs/security/libcap/cap"
+	libcap "kernel.org/pub/linux/libs/security/libcap/cap"
 )
 
 const (
@@ -32,10 +32,10 @@ type deleteACLEntriesCtxData struct {
 }
 
 type Config struct {
-	RunAsUser      string      // Change to this user if app is started as root
-	Caps           []cap.Value // Capabilities necessary for the app
-	ReadPaths      []string    // Paths that "RunAsUser" user able to read
-	ReadWritePaths []string    // Paths that "RunAsUser" user able to read/write
+	RunAsUser      string         // Change to this user if app is started as root
+	Caps           []libcap.Value // Capabilities necessary for the app
+	ReadPaths      []string       // Paths that "RunAsUser" user able to read
+	ReadWritePaths []string       // Paths that "RunAsUser" user able to read/write
 }
 
 type acl struct {
@@ -48,7 +48,7 @@ type Manager struct {
 	logger           *slog.Logger
 	runAsUser        *user.User
 	currentUser      *user.User
-	caps             []cap.Value
+	caps             []libcap.Value
 	acls             []acl
 	securityContexts map[string]*SecurityContext
 	systemctlBinPath string
@@ -193,14 +193,14 @@ func NewManager(c *Config, logger *slog.Logger) (*Manager, error) {
 		manager.securityContexts = make(map[string]*SecurityContext)
 
 		// If there is no FOWNER cap already in caps, add it
-		if !slices.Contains(manager.caps, cap.FOWNER) {
-			manager.caps = append(manager.caps, cap.FOWNER)
+		if !slices.Contains(manager.caps, libcap.FOWNER) {
+			manager.caps = append(manager.caps, libcap.FOWNER)
 		}
 
 		// Create a new security context
 		cfg := &SCConfig{
 			Name:   deleteACLCtx,
-			Caps:   []cap.Value{cap.FOWNER},
+			Caps:   []libcap.Value{libcap.FOWNER},
 			Func:   deleteACLEntries,
 			Logger: logger,
 		}
@@ -223,7 +223,7 @@ func NewManager(c *Config, logger *slog.Logger) (*Manager, error) {
 // environments.
 func (m *Manager) DropPrivileges(enableEffective bool) error {
 	if syscall.Geteuid() != 0 {
-		existing := cap.GetProc()
+		existing := libcap.GetProc()
 
 		// Get if the current process has any capabilities at all
 		// by comparing against a new capability set
@@ -351,7 +351,7 @@ func (m *Manager) changeUser() error {
 
 	// Note this is not the regular SetUID! Look at the 'cap' package docs for it, it preserves
 	// capabilities post-SetUID, which we use to lock things down immediately
-	err = cap.SetUID(localUserUID)
+	err = libcap.SetUID(localUserUID)
 	if err != nil {
 		return fmt.Errorf("could not setuid to %d: %w", localUserUID, err)
 	}
@@ -378,13 +378,13 @@ func (m *Manager) pathsReachable() error {
 // defaultCaps returns default capabilities a process should have. As of systemd >= 254,
 // desktop environments will have cap_wake_alarm=i by default.
 // Ref: https://github.com/systemd/systemd/issues/41386
-func (m *Manager) defaultCaps() *cap.Set {
+func (m *Manager) defaultCaps() *libcap.Set {
 	// Get systemd version
 	output, err := osexec.ExecuteWithTimeout(m.systemctlBinPath, []string{"--version"}, 2, nil)
 	if err != nil {
 		m.logger.Warn("Failed to get systemd version", "err", err)
 
-		return cap.NewSet()
+		return libcap.NewSet()
 	}
 
 	// Find matches
@@ -403,17 +403,17 @@ func (m *Manager) defaultCaps() *cap.Set {
 			// Ref: https://superuser.com/questions/1074068/what-is-the-difference-between-desktop-session-xdg-session-desktop-and-xdg-cur/1643180#1643180
 			// Ref: https://www.freedesktop.org/software/systemd/man/latest/pam_systemd.html
 			if val >= 254 && os.Getenv("XDG_SESSION_DESKTOP") != "" {
-				capSet, err := cap.FromText("cap_wake_alarm=i")
+				capSet, err := libcap.FromText("cap_wake_alarm=i")
 				if err == nil {
 					return capSet
 				}
 
-				return cap.NewSet()
+				return libcap.NewSet()
 			}
 		}
 	}
 
-	return cap.NewSet()
+	return libcap.NewSet()
 }
 
 // DropCapabilities drops any existing capabilities on the process.
@@ -439,25 +439,25 @@ func GetDefaultRunAsUser() (string, error) {
 // It only add the capabilities to `permitted` set and it is responsible of the
 // functions that need privileges to enable `effective` set before perfoming
 // privileged action and then dropping them off straight after.
-func setCapabilities(caps []cap.Value, enableEffective bool) error {
+func setCapabilities(caps []libcap.Value, enableEffective bool) error {
 	// Start with an empty capability set
-	newcaps := cap.NewSet()
+	newcaps := libcap.NewSet()
 
 	// Permitted makes the permission possible to get, effective makes it 'active'
 	for _, c := range caps {
-		err := newcaps.SetFlag(cap.Permitted, true, c)
+		err := newcaps.SetFlag(libcap.Permitted, true, c)
 		if err != nil {
 			return fmt.Errorf("error setting permitted setcap: %w", err)
 		}
 
 		// Only enable effective set before performing a privileged operation
-		err = newcaps.SetFlag(cap.Effective, enableEffective, c)
+		err = newcaps.SetFlag(libcap.Effective, enableEffective, c)
 		if err != nil {
 			return fmt.Errorf("error setting effective setcap: %w", err)
 		}
 
 		// We do not want these capabilities to be inherited by subprocesses
-		err = newcaps.SetFlag(cap.Inheritable, false, c)
+		err = newcaps.SetFlag(libcap.Inheritable, false, c)
 		if err != nil {
 			return fmt.Errorf("error setting inheritable setcap: %w", err)
 		}

@@ -18,7 +18,7 @@ import (
 	"github.com/prometheus/common/promslog/flag"
 	"github.com/prometheus/common/version"
 	"github.com/prometheus/exporter-toolkit/web"
-	"kernel.org/pub/linux/libs/security/libcap/cap"
+	libcap "kernel.org/pub/linux/libs/security/libcap/cap"
 )
 
 // CEEMSExporter represents the `ceems_exporter` cli.
@@ -37,9 +37,9 @@ var CEEMSExporterApp = *kingpin.New(
 )
 
 var (
-	appCaps           = make([]cap.Value, 0) // Unique slice of all required caps of currently enabled collectors
-	appReadPaths      = make([]string, 0)    // Slice of paths that exporter needs read access
-	appReadWritePaths = make([]string, 0)    // Slice of paths that exporter needs read write access
+	appCaps           = make([]libcap.Value, 0) // Unique slice of all required caps of currently enabled collectors
+	appReadPaths      = make([]string, 0)       // Slice of paths that exporter needs read access
+	appReadWritePaths = make([]string, 0)       // Slice of paths that exporter needs read write access
 )
 
 // Placeholders that will be replaced with node labels.

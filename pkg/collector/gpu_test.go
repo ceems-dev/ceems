@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes/fake"
 )
@@ -216,23 +215,19 @@ func TestNewGPUSMIWithK8s(t *testing.T) {
 
 	gpuPods := []runtime.Object{
 		&v1.Pod{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "pod11",
-				UID:       "uid11",
-				Namespace: "nvidia-gpu-operator",
-				Labels: map[string]string{
-					"app": "gpu-feature-discovery",
-				},
+			Name:      "pod11",
+			UID:       "uid11",
+			Namespace: "nvidia-gpu-operator",
+			Labels: map[string]string{
+				"app": "gpu-feature-discovery",
 			},
 		},
 		&v1.Pod{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "pod12",
-				UID:       "uid12",
-				Namespace: "amd-gpu-operator",
-				Labels: map[string]string{
-					"app.kubernetes.io/name": "metrics-exporter",
-				},
+			Name:      "pod12",
+			UID:       "uid12",
+			Namespace: "amd-gpu-operator",
+			Labels: map[string]string{
+				"app.kubernetes.io/name": "metrics-exporter",
 			},
 		},
 	}
