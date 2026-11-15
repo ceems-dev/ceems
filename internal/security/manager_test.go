@@ -11,7 +11,7 @@ import (
 	"github.com/steiler/acls"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"kernel.org/pub/linux/libs/security/libcap/cap"
+	libcap "kernel.org/pub/linux/libs/security/libcap/cap"
 )
 
 func skipUnprivileged(t *testing.T) {
@@ -104,17 +104,17 @@ func TestDefaultCaps(t *testing.T) {
 	tmpDir := t.TempDir()
 
 	// Expected in case of systemd >= 254 and in desktop env
-	capSet, err := cap.FromText("cap_wake_alarm=i")
+	capSet, err := libcap.FromText("cap_wake_alarm=i")
 	require.NoError(t, err)
 
 	// Empty capset
-	emptyCapSet := cap.NewSet()
+	emptyCapSet := libcap.NewSet()
 
 	tests := []struct {
 		name       string
 		cmdOut     string
 		desktopEnv bool
-		expected   *cap.Set
+		expected   *libcap.Set
 	}{
 		{
 			name: "systemd > 254 in Desktop env",
@@ -258,7 +258,7 @@ func TestGetDefaultRunAsUserPriv(t *testing.T) {
 // 	skipUnprivileged(t)
 
 // 	// Target a cap
-// 	value, err := cap.FromName("cap_sys_admin")
+// 	value, err := libcap.FromName("cap_sys_admin")
 // 	require.NoError(t, err)
 
 // 	// Make test config
@@ -269,7 +269,7 @@ func TestGetDefaultRunAsUserPriv(t *testing.T) {
 // 	// test finishes.
 // 	cfg := Config{
 // 		RunAsUser: "root",
-// 		Caps:      []cap.Value{value},
+// 		Caps:      []libcap.Value{value},
 // 	}
 
 // 	// Drop all privileges
@@ -277,16 +277,16 @@ func TestGetDefaultRunAsUserPriv(t *testing.T) {
 // 	require.NoError(t, err)
 
 // 	// Check process do not have any privileges
-// 	capName := cap.GetProc().String()
+// 	capName := libcap.GetProc().String()
 
 // 	require.NoError(t, err)
 // 	assert.EqualValues(t, "cap_sys_admin=p", capName)
 
 // 	// Get current caps
-// 	current := cap.GetProc()
+// 	current := libcap.GetProc()
 
 // 	// Setback current caps
-// 	err = current.SetFlag(cap.Effective, true, value)
+// 	err = current.SetFlag(libcap.Effective, true, value)
 // 	require.NoError(t, err)
 
 // 	err = current.SetProc()

@@ -1,6 +1,6 @@
 module github.com/ceems-dev/ceems
 
-go 1.26.7
+go 1.27.1
 
 require (
 	connectrpc.com/connect v1.21.1

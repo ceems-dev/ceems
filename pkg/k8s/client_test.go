@@ -30,44 +30,36 @@ var noOpLogger = slog.New(slog.DiscardHandler)
 var (
 	testPods = []runtime.Object{
 		&v1.Pod{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "pod11",
-				UID:       "uid11",
-				Namespace: "ns1",
-				Labels: map[string]string{
-					"label1": "value1",
-				},
+			Name:      "pod11",
+			UID:       "uid11",
+			Namespace: "ns1",
+			Labels: map[string]string{
+				"label1": "value1",
 			},
 		},
 		&v1.Pod{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "pod12",
-				UID:       "uid12",
-				Namespace: "ns1",
-				Labels: map[string]string{
-					"label1": "value1",
-				},
+			Name:      "pod12",
+			UID:       "uid12",
+			Namespace: "ns1",
+			Labels: map[string]string{
+				"label1": "value1",
 			},
 		},
 		&v1.Pod{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "pod21",
-				UID:       "uid21",
-				Namespace: "ns2",
-				Labels: map[string]string{
-					"label2": "value2",
-				},
+			Name:      "pod21",
+			UID:       "uid21",
+			Namespace: "ns2",
+			Labels: map[string]string{
+				"label2": "value2",
 			},
 		},
 	}
 
 	testRoleBindings = []runtime.Object{
 		&rbacv1.RoleBinding{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "rb1",
-				UID:       "rb1",
-				Namespace: "foo",
-			},
+			Name:      "rb1",
+			UID:       "rb1",
+			Namespace: "foo",
 			Subjects: []rbacv1.Subject{
 				{
 					Kind:      "User",
@@ -92,11 +84,9 @@ var (
 			},
 		},
 		&rbacv1.RoleBinding{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "rb2",
-				UID:       "rb2",
-				Namespace: "foo",
-			},
+			Name:      "rb2",
+			UID:       "rb2",
+			Namespace: "foo",
 			Subjects: []rbacv1.Subject{
 				{
 					Kind:      "User",
@@ -106,11 +96,9 @@ var (
 			},
 		},
 		&rbacv1.RoleBinding{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "rb3",
-				UID:       "rb3",
-				Namespace: "bar",
-			},
+			Name:      "rb3",
+			UID:       "rb3",
+			Namespace: "bar",
 			Subjects: []rbacv1.Subject{
 				{
 					Kind:      "User",
@@ -482,12 +470,10 @@ func TestConfigMap(t *testing.T) {
 	fakeClientset := fake.NewClientset(
 		[]runtime.Object{
 			&v1.ConfigMap{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      "cm",
-					UID:       "cm",
-					Namespace: "default",
-				},
-				Data: expectedData,
+				Name:      "cm",
+				UID:       "cm",
+				Namespace: "default",
+				Data:      expectedData,
 			},
 		}...,
 	)

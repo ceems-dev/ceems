@@ -32,7 +32,7 @@ import (
 	"github.com/prometheus/common/promslog/flag"
 	"github.com/prometheus/common/version"
 	"github.com/prometheus/exporter-toolkit/web"
-	"kernel.org/pub/linux/libs/security/libcap/cap"
+	libcap "kernel.org/pub/linux/libs/security/libcap/cap"
 )
 
 // CEEMSAPIAppConfig contains the configuration of CEEMS API server.
@@ -412,10 +412,10 @@ func (b *CEEMSServer) Main() error {
 	//
 	// So, we keep the privileges only as a insurance and once we confirm with resource manager
 	// we decide to either keep them or drop them.
-	var allCaps []cap.Value
+	var allCaps []libcap.Value
 
 	for _, name := range []string{"cap_setuid", "cap_setgid"} {
-		value, err := cap.FromName(name)
+		value, err := libcap.FromName(name)
 		if err != nil {
 			logger.Error("Error parsing capability %s: %w", name, err)
 

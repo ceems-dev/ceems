@@ -13,7 +13,7 @@ const website = "ceems.dev"
 // Global variables that will be replaced
 // in markdown files
 let globalVars = {
-  goVersion: "1.26.x", // Everytime Go version is updated, this needs to be updated as well
+  goVersion: "1.27.x", // Everytime Go version is updated, this needs to be updated as well
   ceemsVersion: "",
   ceemsOrg: organizationName,
   ceemsContOrg: "ceems",

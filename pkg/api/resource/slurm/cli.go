@@ -19,7 +19,7 @@ import (
 	"github.com/ceems-dev/ceems/internal/security"
 	"github.com/ceems-dev/ceems/pkg/api/base"
 	"github.com/ceems-dev/ceems/pkg/api/models"
-	"kernel.org/pub/linux/libs/security/libcap/cap"
+	libcap "kernel.org/pub/linux/libs/security/libcap/cap"
 )
 
 var (
@@ -72,9 +72,9 @@ func preflightsCLI(slurm *slurmScheduler) error {
 	// Check if current capabilities have required caps
 	haveCaps := true
 
-	currentCaps := cap.GetProc().String()
-	for _, cap := range requiredCaps {
-		if !strings.Contains(currentCaps, cap) {
+	currentCaps := libcap.GetProc().String()
+	for _, c := range requiredCaps {
+		if !strings.Contains(currentCaps, c) {
 			haveCaps = false
 
 			break
@@ -87,12 +87,12 @@ func preflightsCLI(slurm *slurmScheduler) error {
 		slurm.cmdExecMode = capabilityMode
 		slurm.logger.Info("Current user/process have enough privileges to execute SLURM commands", "user", currentUser.Username)
 
-		var caps []cap.Value
+		var caps []libcap.Value
 
 		var err error
 
 		for _, name := range requiredCaps {
-			value, err := cap.FromName(name)
+			value, err := libcap.FromName(name)
 			if err != nil {
 				slurm.logger.Error("Error parsing capability %s: %w", name, err)
 

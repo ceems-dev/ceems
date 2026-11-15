@@ -19,7 +19,7 @@ import (
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/prometheus/procfs"
-	"kernel.org/pub/linux/libs/security/libcap/cap"
+	libcap "kernel.org/pub/linux/libs/security/libcap/cap"
 )
 
 var (
@@ -118,18 +118,18 @@ func SanitizeMetricName(metricName string) string {
 }
 
 // setupAppCaps sets up the required capabilities for the app.
-func setupAppCaps(capabilities []string) ([]cap.Value, error) {
+func setupAppCaps(capabilities []string) ([]libcap.Value, error) {
 	// If there is nothing to setup, return
 	if len(capabilities) == 0 {
 		return nil, nil
 	}
 
-	var caps []cap.Value
+	var caps []libcap.Value
 
 	var errs error
 
 	for _, name := range capabilities {
-		value, err := cap.FromName(name)
+		value, err := libcap.FromName(name)
 		if err != nil {
 			errs = errors.Join(errs, err)
 		}
@@ -138,9 +138,9 @@ func setupAppCaps(capabilities []string) ([]cap.Value, error) {
 	}
 
 	// Add to global caps
-	for _, cap := range caps {
-		if !slices.Contains(appCaps, cap) {
-			appCaps = append(appCaps, cap)
+	for _, c := range caps {
+		if !slices.Contains(appCaps, c) {
+			appCaps = append(appCaps, c)
 		}
 	}
 
