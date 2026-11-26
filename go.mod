@@ -23,7 +23,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.53
 	github.com/prometheus/client_golang v1.25.0
 	github.com/prometheus/common v0.74.0
-	github.com/prometheus/exporter-toolkit v0.20.0
+	github.com/prometheus/exporter-toolkit v0.21.0
 	github.com/prometheus/procfs v0.23.0
 	github.com/prometheus/prometheus v0.316.0
 	github.com/steiler/acls v0.1.6
@@ -42,7 +42,7 @@ require (
 	k8s.io/apimachinery v0.37.2
 	k8s.io/client-go v0.37.2
 	k8s.io/kubelet v0.37.2
-	k8s.io/streaming v0.37.2
+	k8s.io/streaming v0.37.3
 	kernel.org/pub/linux/libs/security/libcap/cap v1.2.78
 )
 
@@ -89,8 +89,8 @@ require (
 	github.com/klauspost/compress v1.20.3 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.10 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
-	github.com/mdlayher/socket v0.6.0 // indirect
-	github.com/mdlayher/vsock v1.3.0 // indirect
+	github.com/mdlayher/socket v0.8.0 // indirect
+	github.com/mdlayher/vsock v1.4.0 // indirect
 	github.com/moby/spdystream v0.5.1 // indirect
 	github.com/moby/sys/userns v0.1.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
