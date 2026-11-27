@@ -736,7 +736,7 @@ func gpuData(
 
 		// Host power query assuming GPU power is in host power
 		hostPowerOnlyQuery = fmt.Sprintf(
-			`(%s - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(%s{job="%s"}, "hostname", "$1", "Hostname","(.*)"))))`,
+			`(%s - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(%s{job="%s"}, "hostname", "$1", "Hostname","(.+)"))))`,
 			hostPowerQuery, dcgmInstantPowerMetric, gpu.job,
 		)
 
@@ -748,7 +748,7 @@ func gpuData(
 
 		// Host power query assuming GPU power is in host power
 		hostPowerOnlyQuery = fmt.Sprintf(
-			`(%s - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(%s{job="%s"}, "hostname", "$1", "Hostname","(.*)"))))`,
+			`(%s - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(%s{job="%s"}, "hostname", "$1", "Hostname","(.+)"))))`,
 			hostPowerQuery, dcgmPowerMetric, gpu.job,
 		)
 

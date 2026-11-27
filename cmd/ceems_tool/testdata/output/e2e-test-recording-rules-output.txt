@@ -943,7 +943,7 @@ groups:
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
       - record: instance:ceems_ipmi_dcmi_power_current_watts:pue
-        expr: 1 * (ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"} - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"}, "hostname", "$1", "Hostname","(.*)"))))
+        expr: 1 * (ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"} - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"}, "hostname", "$1", "Hostname","(.+)"))))
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -1057,7 +1057,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * (ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"} - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"}, "hostname", "$1", "Hostname","(.*)")))))
+          sum by (job) (1 * (ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"} - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"}, "hostname", "$1", "Hostname","(.+)")))))
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
@@ -3813,7 +3813,7 @@ groups:
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
       - record: instance:ceems_ipmi_dcmi_power_current_watts:pue
-        expr: 1 * (ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"} - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"}, "hostname", "$1", "Hostname","(.*)"))))
+        expr: 1 * (ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"} - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"}, "hostname", "$1", "Hostname","(.+)"))))
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -3925,7 +3925,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * (ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"} - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"}, "hostname", "$1", "Hostname","(.*)")))))
+          sum by (job) (1 * (ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"} - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"}, "hostname", "$1", "Hostname","(.+)")))))
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
@@ -5044,7 +5044,7 @@ groups:
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
       - record: instance:ceems_redfish_power_current_watts:pue
-        expr: 1 * (sum without (chassis) (ceems_redfish_power_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_2"}) - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="nvidia-gpu"}, "hostname", "$1", "Hostname","(.*)"))))
+        expr: 1 * (sum without (chassis) (ceems_redfish_power_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_2"}) - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="nvidia-gpu"}, "hostname", "$1", "Hostname","(.+)"))))
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -5188,7 +5188,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * (sum without (chassis) (ceems_redfish_power_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_2"}) - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="nvidia-gpu"}, "hostname", "$1", "Hostname","(.*)")))))
+          sum by (job) (1 * (sum without (chassis) (ceems_redfish_power_current_watts{job="cpu-redfish-nvidia-gpu",chassis="Chassis_2"}) - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="nvidia-gpu"}, "hostname", "$1", "Hostname","(.+)")))))
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
@@ -6718,7 +6718,7 @@ groups:
 
       # Total power (Watts) consumed by the instance by accounting Power Usage Effectiveness (PUE) value.
       - record: instance:ceems_ipmi_dcmi_power_current_watts:pue
-        expr: 1 * (ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"} - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"}, "hostname", "$1", "Hostname","(.*)"))))
+        expr: 1 * (ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"} - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"}, "hostname", "$1", "Hostname","(.+)"))))
 
       # Total host power (Watts) consumed by the compute unit accounting PUE value.
       #
@@ -6830,7 +6830,7 @@ groups:
       # Total power (Watts) consumed by all hosts excluding GPUs in a Prometheus job accounting PUE value.
       - record: job:ceems_host_power_watts:pue
         expr: |2
-          sum by (job) (1 * (ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"} - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"}, "hostname", "$1", "Hostname","(.*)")))))
+          sum by (job) (1 * (ceems_ipmi_dcmi_power_current_watts{job="cpu-ipmi-nvidia-gpu"} - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT{job="ipmi-nvidia-gpu"}, "hostname", "$1", "Hostname","(.+)")))))
 
       # Total equivalent emissions rate (g/s) due to the power consumed by all ths hosts excluding GPUs
       # in a Prometheus job accounting PUE value.
