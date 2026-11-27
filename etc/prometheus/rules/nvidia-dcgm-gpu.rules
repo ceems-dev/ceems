@@ -30,7 +30,7 @@ groups:
       # Ref: https://github.com/NVIDIA/DCGM/issues/80#issuecomment-1537603016
       - record: uuid:ceems_gpu_usage:ratio
         expr: |2
-            label_replace(label_replace(label_replace(DCGM_FI_PROF_GR_ENGINE_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+            label_replace(label_replace(label_replace(DCGM_FI_PROF_GR_ENGINE_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)") * 100
             * on (gpuuuid,gpuiid,hostname) group_right ()
             ceems_compute_unit_gpu_index_flag
 
@@ -38,11 +38,11 @@ groups:
       - record: uuid:ceems_gpu_memory_usage:ratio
         expr: |2
           (
-              label_replace(label_replace(label_replace(DCGM_FI_DEV_FB_USED, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+              label_replace(label_replace(label_replace(DCGM_FI_DEV_FB_USED, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)") * 100
             /
               (
-                  label_replace(label_replace(label_replace(DCGM_FI_DEV_FB_USED, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") + 
-                  label_replace(label_replace(label_replace(DCGM_FI_DEV_FB_FREE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+                  label_replace(label_replace(label_replace(DCGM_FI_DEV_FB_USED, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)") + 
+                  label_replace(label_replace(label_replace(DCGM_FI_DEV_FB_FREE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)")
               )
           )
           * on (gpuuuid,gpuiid,hostname) group_right ()
@@ -70,7 +70,7 @@ groups:
       - record: dev:DCGM_FI_DEV_POWER_USAGE_INSTANT:pue
         labels:
           ceemspowersources: nvidia-dcgm
-        expr: label_replace(label_replace(label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") # * <pue>
+        expr: label_replace(label_replace(label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)") # * <pue>
 
       # When profiling metrics are available, we split the total power consumed by physical
       # GPU among all MIG instances based on "effective" SM usage on each MIG instance. This
@@ -85,9 +85,9 @@ groups:
             (
               (
                 (
-                      label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+                      label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)")
                     * on (gpuuuid,gpuiid,hostname)
-                      label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_OCCUPANCY, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+                      label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_OCCUPANCY, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)")
                   * on (gpuuuid, gpuiid,hostname) group_right ()
                     ceems_compute_unit_gpu_sm_count
                 )
@@ -96,9 +96,9 @@ groups:
               (
                 sum by (gpuuuid,hostname) (
                     (
-                          label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+                          label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)")
                         * on (gpuuuid,gpuiid,hostname)
-                          label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_OCCUPANCY, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+                          label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_OCCUPANCY, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)")
                       * on (gpuuuid,gpuiid,hostname) group_right ()
                         ceems_compute_unit_gpu_sm_count
                     )
@@ -156,73 +156,73 @@ groups:
     rules:
       - record: uuid:ceems_gpu_prof_sm_active:ratio
         expr: |2
-          label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)") * 100
           * on (gpuuuid,gpuiid,hostname) group_right ()
           ceems_compute_unit_gpu_index_flag
 
       - record: uuid:ceems_gpu_prof_sm_occupancy:ratio
         expr: |2
-          label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_OCCUPANCY, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_SM_OCCUPANCY, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)") * 100
           * on (gpuuuid,gpuiid,hostname) group_right ()
           ceems_compute_unit_gpu_index_flag
 
       - record: uuid:ceems_gpu_prof_gr_engine_active:ratio
         expr: |2
-          label_replace(label_replace(label_replace(DCGM_FI_PROF_GR_ENGINE_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_GR_ENGINE_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)") * 100
           * on (gpuuuid,gpuiid,hostname) group_right ()
           ceems_compute_unit_gpu_index_flag
 
       - record: uuid:ceems_gpu_prof_pipe_tensor_active:ratio
         expr: |2
-          label_replace(label_replace(label_replace(DCGM_FI_PROF_PIPE_TENSOR_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_PIPE_TENSOR_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)") * 100
           * on (gpuuuid,gpuiid,hostname) group_right ()
           ceems_compute_unit_gpu_index_flag
 
       - record: uuid:ceems_gpu_prof_pipe_fp64_active:ratio
         expr: |2
-          label_replace(label_replace(label_replace(DCGM_FI_PROF_PIPE_FP64_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_PIPE_FP64_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)") * 100
           * on (gpuuuid,gpuiid,hostname) group_right ()
           ceems_compute_unit_gpu_index_flag
 
       - record: uuid:ceems_gpu_prof_pipe_fp32_active:ratio
         expr: |2
-          label_replace(label_replace(label_replace(DCGM_FI_PROF_PIPE_FP32_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_PIPE_FP32_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)") * 100
           * on (gpuuuid,gpuiid,hostname) group_right ()
           ceems_compute_unit_gpu_index_flag
 
       - record: uuid:ceems_gpu_prof_pipe_fp16_active:ratio
         expr: |2
-          label_replace(label_replace(label_replace(DCGM_FI_PROF_PIPE_FP16_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_PIPE_FP16_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)") * 100
           * on (gpuuuid,gpuiid,hostname) group_right ()
           ceems_compute_unit_gpu_index_flag
 
       - record: uuid:ceems_gpu_prof_dram_active:ratio
         expr: |2
-          label_replace(label_replace(label_replace(DCGM_FI_PROF_DRAM_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)") * 100
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_DRAM_ACTIVE, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)") * 100
           * on (gpuuuid,gpuiid,hostname) group_right ()
           ceems_compute_unit_gpu_index_flag
 
       - record: uuid:ceems_gpu_prof_nvlink_tx_bytes:rate
         expr: |2
-          label_replace(label_replace(label_replace(DCGM_FI_PROF_NVLINK_TX_BYTES, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_NVLINK_TX_BYTES, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)")
           * on (gpuuuid,gpuiid,hostname) group_right ()
           ceems_compute_unit_gpu_index_flag
 
       - record: uuid:ceems_gpu_prof_nvlink_rx_bytes:rate
         expr: |2
-          label_replace(label_replace(label_replace(DCGM_FI_PROF_NVLINK_RX_BYTES, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_NVLINK_RX_BYTES, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)")
           * on (gpuuuid,gpuiid,hostname) group_right ()
           ceems_compute_unit_gpu_index_flag
 
       - record: uuid:ceems_gpu_prof_pcie_tx_bytes:rate
         expr: |2
-          label_replace(label_replace(label_replace(DCGM_FI_PROF_PCIE_TX_BYTES, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_PCIE_TX_BYTES, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)")
           * on (gpuuuid,gpuiid,hostname) group_right ()
           ceems_compute_unit_gpu_index_flag
 
       - record: uuid:ceems_gpu_prof_pcie_rx_bytes:rate
         expr: |2
-          label_replace(label_replace(label_replace(DCGM_FI_PROF_PCIE_RX_BYTES, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.*)")
+          label_replace(label_replace(label_replace(DCGM_FI_PROF_PCIE_RX_BYTES, "gpuuuid", "$1", "UUID", "(.*)"), "gpuiid", "$1", "GPU_I_ID", "(.*)"), "hostname", "$1", "Hostname", "(.+)")
           * on (gpuuuid,gpuiid,hostname) group_right ()
           ceems_compute_unit_gpu_index_flag
 

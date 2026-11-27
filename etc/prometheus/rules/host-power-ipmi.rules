@@ -41,7 +41,7 @@ groups:
       # #
       # # The following rule must be used when NVIDIA GPUs power usage is included in IPMI DCMI power usage.
       # - record: instance:ceems_ipmi_dcmi_power_current_watts:pue
-      #   expr: (ceems_ipmi_dcmi_power_current_watts - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT, "hostname", "$1", "Hostname","(.*)")))) # * <pue>
+      #   expr: (ceems_ipmi_dcmi_power_current_watts - on (hostname) group_left () sum by (hostname) (avg by (hostname,device) (label_replace(DCGM_FI_DEV_POWER_USAGE_INSTANT, "hostname", "$1", "Hostname","(.+)")))) # * <pue>
       # #
       # # The following rule must be used when AMD GPUs power usage is included in IPMI DCMI power usage.
       # # and AMD device metric exporter is used and metric labels are prefixed by `amd_`.
